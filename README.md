@@ -482,16 +482,6 @@
             <h1>Nested Farey Channels & Fractional-Slice Coprimality Heuristic</h1>
             <div class="author">Wessen Getachew</div>
             <div class="date">October 2025</div>
-            
-
-<div style="text-align: center; margin-top: 12px; font-size: 0.9em;">
-                <span style="opacity: 0.8;">Explore more prime visualizations:</span>
-                <a href="https://wessengetachew.github.io/GCD/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">GCD Patterns</a>
-                <span style="opacity: 0.5;">|</span>
-                <a href="https://wessengetachew.github.io/Primes/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Prime Spirals</a>
-<span style="opacity: 0.5;">|</span>
-                <a href="https://wessengetachew.github.io/Ethiopian/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Epsilon Pi Calculator</a>
-            </div>
         </header>
 
         <div class="abstract">
@@ -927,6 +917,54 @@ function is_prime_candidate(m, k, slice="half",
                     <input type="checkbox" id="showLegend" checked style="margin-right: 5px;">
                     Legend
                 </label>
+            </div>
+
+            <div class="controls" style="margin-top: 15px; padding: 15px; background: rgba(39, 174, 96, 0.1); border-radius: 8px; border: 2px solid rgba(39, 174, 96, 0.3);">
+                <strong style="color: #27ae60;">GCD=1 Labels:</strong>
+                <label style="display: inline-flex; align-items: center; margin-left: 15px;">
+                    <input type="checkbox" id="showGCD1Labels" onchange="updateGCD1LabelControls()" style="margin-right: 5px;">
+                    Show Labels on Coprime Points
+                </label>
+                
+                <div id="gcd1LabelControls" style="display: none; margin-top: 10px; margin-left: 15px; padding-left: 15px; border-left: 3px solid #27ae60;">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                        <div class="control-group">
+                            <label for="labelType">Label Type:</label>
+                            <select id="labelType" style="min-width: 150px;">
+                                <option value="r-value">r value</option>
+                                <option value="gcd-value">gcd value (always 1)</option>
+                                <option value="mod-value">Modulus (m)</option>
+                                <option value="farey">Farey fraction (r/m)</option>
+                                <option value="theta-deg">Angle θ (degrees)</option>
+                                <option value="theta-rad">Angle θ (radians)</option>
+                                <option value="both-rm">Both (r,m)</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="labelFontSize">Size:</label>
+                            <input type="range" id="labelFontSize" min="6" max="24" value="10" step="1" style="width: 100px;">
+                            <span id="labelFontSizeVal">10</span>px
+                        </div>
+                        <div class="control-group">
+                            <label for="labelColor">Color:</label>
+                            <select id="labelColor">
+                                <option value="auto">Auto (adapt)</option>
+                                <option value="white">White</option>
+                                <option value="black">Black</option>
+                                <option value="green">Green</option>
+                                <option value="blue">Blue</option>
+                                <option value="cyan">Cyan</option>
+                                <option value="yellow">Yellow</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>
+                                <input type="checkbox" id="hideGCD1Dots">
+                                Hide Dots (labels only)
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="controls" style="margin-top: 15px;">
@@ -2227,6 +2265,18 @@ function is_prime_candidate(m, k, slice="half",
             drawConcentricRings();
         }
 
+        // Update label font size display
+        document.getElementById('labelFontSize')?.addEventListener('input', function() {
+            document.getElementById('labelFontSizeVal').textContent = this.value;
+        });
+        
+        // Toggle GCD=1 label controls visibility
+        function updateGCD1LabelControls() {
+            const showLabels = document.getElementById('showGCD1Labels').checked;
+            const controlsDiv = document.getElementById('gcd1LabelControls');
+            controlsDiv.style.display = showLabels ? 'block' : 'none';
+        }
+
         // Update point size display
         document.getElementById('pointSize')?.addEventListener('input', function() {
             document.getElementById('pointSizeVal').textContent = this.value;
@@ -2708,23 +2758,110 @@ function is_prime_candidate(m, k, slice="half",
 
                     // Draw point
                     const shouldFill = colorMode !== 'open-blocked' || isOpen;
-                    if (shouldFill) {
-                        ctx.fillStyle = color;
-                        ctx.beginPath();
-                        ctx.arc(x, y, size, 0, 2 * Math.PI);
-                        ctx.fill();
-                        
-                        if (highlightTracked && isTracked) {
-                            ctx.strokeStyle = '#FF8C00';
-                            ctx.lineWidth = 2;
+                    
+                    // Check if we should show GCD=1 labels
+                    const showGCD1Labels = document.getElementById('showGCD1Labels')?.checked || false;
+                    const hideGCD1Dots = document.getElementById('hideGCD1Dots')?.checked || false;
+                    
+                    // Draw dot (unless hidden for GCD=1 labels)
+                    if (!(isOpen && showGCD1Labels && hideGCD1Dots)) {
+                        if (shouldFill) {
+                            ctx.fillStyle = color;
+                            ctx.beginPath();
+                            ctx.arc(x, y, size, 0, 2 * Math.PI);
+                            ctx.fill();
+                            
+                            if (highlightTracked && isTracked) {
+                                ctx.strokeStyle = '#FF8C00';
+                                ctx.lineWidth = 2;
+                                ctx.stroke();
+                            }
+                        } else {
+                            ctx.strokeStyle = color;
+                            ctx.lineWidth = Math.max(1.5, size * 0.5);
+                            ctx.beginPath();
+                            ctx.arc(x, y, size, 0, 2 * Math.PI);
                             ctx.stroke();
                         }
-                    } else {
-                        ctx.strokeStyle = color;
-                        ctx.lineWidth = Math.max(1.5, size * 0.5);
-                        ctx.beginPath();
-                        ctx.arc(x, y, size, 0, 2 * Math.PI);
-                        ctx.stroke();
+                    }
+                    
+                    // Draw label if GCD=1 and labels enabled
+                    if (isOpen && showGCD1Labels) {
+                        const labelType = document.getElementById('labelType')?.value || 'r-value';
+                        const labelSize = parseInt(document.getElementById('labelFontSize')?.value || 10);
+                        const labelColorOption = document.getElementById('labelColor')?.value || 'auto';
+                        
+                        // Determine label text
+                        let labelText = '';
+                        switch(labelType) {
+                            case 'r-value':
+                                labelText = r.toString();
+                                break;
+                            case 'gcd-value':
+                                labelText = '1';
+                                break;
+                            case 'mod-value':
+                                labelText = m.toString();
+                                break;
+                            case 'farey':
+                                labelText = `${r}/${m}`;
+                                break;
+                            case 'theta-deg':
+                                const deg = ((baseTheta * 180 / Math.PI) + (globalRot + localRot + individualRot * (m - minMod)) * 180 / Math.PI) % 360;
+                                labelText = deg.toFixed(0) + '°';
+                                break;
+                            case 'theta-rad':
+                                const rad = theta % (2 * Math.PI);
+                                labelText = rad.toFixed(2);
+                                break;
+                            case 'both-rm':
+                                labelText = `${r},${m}`;
+                                break;
+                            default:
+                                labelText = r.toString();
+                        }
+                        
+                        // Determine label color
+                        let labelColor;
+                        if (labelColorOption === 'auto') {
+                            labelColor = darkBg ? 'white' : 'black';
+                        } else if (labelColorOption === 'white') {
+                            labelColor = 'white';
+                        } else if (labelColorOption === 'black') {
+                            labelColor = 'black';
+                        } else if (labelColorOption === 'green') {
+                            labelColor = '#27ae60';
+                        } else if (labelColorOption === 'blue') {
+                            labelColor = '#3498db';
+                        } else if (labelColorOption === 'cyan') {
+                            labelColor = '#00ffff';
+                        } else if (labelColorOption === 'yellow') {
+                            labelColor = '#ffff00';
+                        }
+                        
+                        // Draw label with background for readability
+                        ctx.font = `${labelSize}px Arial`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        
+                        // Measure text for background
+                        const metrics = ctx.measureText(labelText);
+                        const textWidth = metrics.width;
+                        const textHeight = labelSize;
+                        const padding = 2;
+                        
+                        // Draw semi-transparent background
+                        ctx.fillStyle = darkBg ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.7)';
+                        ctx.fillRect(
+                            x - textWidth/2 - padding,
+                            y - textHeight/2 - padding,
+                            textWidth + padding*2,
+                            textHeight + padding*2
+                        );
+                        
+                        // Draw label text
+                        ctx.fillStyle = labelColor;
+                        ctx.fillText(labelText, x, y);
                     }
                 }
             }
