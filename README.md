@@ -482,16 +482,6 @@
             <h1>Nested Farey Channels & Fractional-Slice Coprimality Heuristic</h1>
             <div class="author">Wessen Getachew</div>
             <div class="date">October 2025</div>
-            
-
-<div style="text-align: center; margin-top: 12px; font-size: 0.9em;">
-                <span style="opacity: 0.8;">Explore more prime visualizations:</span>
-                <a href="https://wessengetachew.github.io/GCD/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">GCD Patterns</a>
-                <span style="opacity: 0.5;">|</span>
-                <a href="https://wessengetachew.github.io/Primes/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Prime Spirals</a>
-<span style="opacity: 0.5;">|</span>
-                <a href="https://wessengetachew.github.io/Ethiopian/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Epsilon Pi Calculator</a>
-            </div>
         </header>
 
         <div class="abstract">
@@ -648,10 +638,10 @@
             <div id="batchResults"></div>
 
             <div class="export-buttons">
-                <button class="secondary" onclick="exportTestScreenshot()"> Export Screenshot</button>
-                <button class="secondary" onclick="exportTestData('json')"> Export JSON</button>
-                <button class="secondary" onclick="exportTestData('csv')"> Export CSV</button>
-                <button class="secondary" onclick="clearTestHistory()"> Clear History</button>
+                <button class="secondary" onclick="exportTestScreenshot()">📸 Export Screenshot</button>
+                <button class="secondary" onclick="exportTestData('json')">📄 Export JSON</button>
+                <button class="secondary" onclick="exportTestData('csv')">📊 Export CSV</button>
+                <button class="secondary" onclick="clearTestHistory()">🗑️ Clear History</button>
             </div>
 
             <div id="testHistory" style="display: none;">
@@ -781,16 +771,65 @@ function is_prime_candidate(m, k, slice="half",
             <div class="controls">
                 <div class="control-group">
                     <label for="minMod">Min Modulus:</label>
-                    <input type="number" id="minMod" value="2" min="2" max="200">
+                    <input type="number" id="minMod" value="1" min="1" max="200">
                 </div>
                 <div class="control-group">
                     <label for="maxMod">Max Modulus:</label>
-                    <input type="number" id="maxMod" value="12" min="2" max="200">
+                    <input type="number" id="maxMod" value="100" min="1" max="200">
                 </div>
                 <div class="control-group">
                     <label for="pointSize">Point Size:</label>
-                    <input type="range" id="pointSize" min="1" max="10" value="3" step="0.5" style="width: 100px;">
-                    <span id="pointSizeVal">3</span>px
+                    <input type="range" id="pointSize" min="1" max="10" value="2" step="0.5" style="width: 100px;">
+                    <span id="pointSizeVal">2</span>px
+                </div>
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="invertRings">
+                        Invert (Outer→Inner)
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="concentricDarkBg">
+                        Black Background
+                    </label>
+                </div>
+            </div>
+
+            <div class="controls" style="margin-top: 10px;">
+                <div class="control-group">
+                    <label for="globalRotation">Global Rotation:</label>
+                    <input type="range" id="globalRotation" min="0" max="360" value="0" step="1" style="width: 150px;">
+                    <span id="globalRotationVal">0</span>°
+                </div>
+                <div class="control-group">
+                    <label for="localRotation">Local Rotation:</label>
+                    <input type="range" id="localRotation" min="0" max="360" value="0" step="1" style="width: 150px;">
+                    <span id="localRotationVal">0</span>°
+                </div>
+                <div class="control-group">
+                    <label for="individualRotation">Individual m Rotation:</label>
+                    <input type="range" id="individualRotation" min="0" max="360" value="0" step="1" style="width: 150px;">
+                    <span id="individualRotationVal">0</span>°
+                </div>
+            </div>
+
+            <div class="controls" style="margin-top: 10px;">
+                <div class="control-group">
+                    <label for="trackResidue">Track r:</label>
+                    <input type="number" id="trackResidue" value="1" min="1" max="200">
+                </div>
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="showAllR" checked>
+                        Show All r
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="highlightTracked" checked>
+                        Highlight Tracked r
+                    </label>
                 </div>
             </div>
 
@@ -2319,14 +2358,29 @@ function is_prime_candidate(m, k, slice="half",
             const showLabels = document.getElementById('showLabels').checked;
             const showAxes = document.getElementById('showAxes').checked;
             const showLegend = document.getElementById('showLegend').checked;
+            
+            // NEW FEATURES
+            const invertRings = document.getElementById('invertRings')?.checked || false;
+            const darkBg = document.getElementById('concentricDarkBg')?.checked || false;
+            const globalRot = parseFloat(document.getElementById('globalRotation')?.value || 0) * Math.PI / 180;
+            const localRot = parseFloat(document.getElementById('localRotation')?.value || 0) * Math.PI / 180;
+            const individualRot = parseFloat(document.getElementById('individualRotation')?.value || 0) * Math.PI / 180;
+            const trackR = parseInt(document.getElementById('trackResidue')?.value || 1);
+            const showAllR = document.getElementById('showAllR')?.checked !== false;
+            const highlightTracked = document.getElementById('highlightTracked')?.checked !== false;
 
-            if (isNaN(minMod) || isNaN(maxMod) || minMod >= maxMod) return;
+            if (isNaN(minMod) || isNaN(maxMod) || minMod > maxMod) return;
 
-            ctx.clearRect(0, 0, width, height);
+            // Background
+            ctx.fillStyle = darkBg ? '#000000' : '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+            
+            const textColor = darkBg ? '#ffffff' : '#2c3e50';
+            const gridColor = darkBg ? '#444444' : '#e0e0e0';
 
             // Draw axes
             if (showAxes) {
-                ctx.strokeStyle = '#e0e0e0';
+                ctx.strokeStyle = gridColor;
                 ctx.lineWidth = 2;
                 ctx.beginPath();
                 ctx.moveTo(0, centerY);
@@ -2339,29 +2393,31 @@ function is_prime_candidate(m, k, slice="half",
             const maxRadius = Math.min(width, height) / 2 - 80;
             const radiusStep = maxRadius / (maxMod - minMod + 1);
 
-            // For fixed-m mode, get the fixed value
+            // For fixed-m mode
             let fixedM = null;
             if (mode === 'fixed-m') {
                 fixedM = parseInt(document.getElementById('fixedMValue').value);
             }
 
-            // For fixed-r mode, get the fixed value
+            // For fixed-r mode
             let fixedR = null;
             if (mode === 'fixed-r') {
                 fixedR = parseInt(document.getElementById('fixedRValue').value);
             }
 
-            // Collect all GCD values for local coloring
+            // Collect all GCD values for legend
             let allGCDs = new Set();
-            if (colorMode === 'gcd-local' || colorMode === 'gcd-global') {
-                for (let m = minMod; m <= maxMod; m++) {
-                    if (mode === 'primes-only' && !isPrime(m)) continue;
-                    if (mode === 'fixed-m' && m !== fixedM) continue;
-                    
-                    for (let r = 1; r < m; r++) {
-                        if (mode === 'fixed-r' && r !== fixedR) continue;
-                        allGCDs.add(gcd(r, m));
-                    }
+            for (let m = minMod; m <= maxMod; m++) {
+                if (m === 1) {
+                    allGCDs.add(1);
+                    continue;
+                }
+                if (mode === 'primes-only' && !isPrime(m)) continue;
+                if (mode === 'fixed-m' && m !== fixedM) continue;
+                
+                for (let r = 1; r < m; r++) {
+                    if (mode === 'fixed-r' && r !== fixedR) continue;
+                    allGCDs.add(gcd(r, m));
                 }
             }
 
@@ -2370,12 +2426,19 @@ function is_prime_candidate(m, k, slice="half",
                 if (mode === 'primes-only' && !isPrime(m)) continue;
                 if (mode === 'fixed-m' && m !== fixedM) continue;
 
-                const radius = radiusStep * (m - minMod + 1);
+                // Calculate radius - invert if needed
+                let radius;
+                if (invertRings) {
+                    radius = radiusStep * (maxMod - m + 1);
+                } else {
+                    radius = radiusStep * (m - minMod + 1);
+                }
+                
                 const prime = isPrime(m);
 
                 // Draw ring circle
                 if (showRings) {
-                    ctx.strokeStyle = prime ? '#27ae60' : '#95a5a6';
+                    ctx.strokeStyle = prime ? '#27ae60' : (darkBg ? '#888888' : '#95a5a6');
                     ctx.lineWidth = prime ? 3 : 1.5;
                     ctx.setLineDash(prime ? [] : [10, 5]);
                     ctx.beginPath();
@@ -2386,11 +2449,33 @@ function is_prime_candidate(m, k, slice="half",
 
                 // Draw label
                 if (showLabels) {
-                    ctx.fillStyle = prime ? '#27ae60' : '#7f8c8d';
-                    ctx.font = `bold ${Math.max(12, width/200)}px serif`;
+                    ctx.fillStyle = prime ? '#27ae60' : textColor;
+                    ctx.font = `bold ${Math.max(10, Math.min(14, width/180))}px Arial`;
                     const label = mode === 'fixed-r' ? `m=${m}, r=${fixedR}` : 
                                  mode === 'fixed-m' ? `m=${fixedM}` : `m=${m}`;
                     ctx.fillText(label, centerX + radius + 10, centerY);
+                }
+
+                // Special handling for m=1
+                if (m === 1) {
+                    const theta = globalRot + localRot + individualRot * (m - minMod);
+                    const x = centerX + radius * Math.cos(theta);
+                    const y = centerY - radius * Math.sin(theta);
+                    
+                    const isTracked = (1 === trackR);
+                    const size = (highlightTracked && isTracked) ? pointSize * 2 : pointSize;
+                    
+                    ctx.fillStyle = (highlightTracked && isTracked) ? '#FFD700' : '#27ae60';
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    if (highlightTracked && isTracked) {
+                        ctx.strokeStyle = '#FF8C00';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                    continue;
                 }
 
                 // Draw residue points
@@ -2406,7 +2491,13 @@ function is_prime_candidate(m, k, slice="half",
                     
                     if (mode === 'open-only' && !isOpen) continue;
 
-                    const theta = (2 * Math.PI * r) / m;
+                    // Check if we should show this r
+                    const isTracked = (r === trackR);
+                    if (!showAllR && !isTracked) continue;
+
+                    // Apply rotations
+                    const baseTheta = (2 * Math.PI * r) / m;
+                    const theta = baseTheta + globalRot + localRot + individualRot * (m - minMod);
                     const x = centerX + radius * Math.cos(theta);
                     const y = centerY - radius * Math.sin(theta);
 
@@ -2443,138 +2534,129 @@ function is_prime_candidate(m, k, slice="half",
                             color = getAngularHueColor(r, m);
                             break;
                         case 'multi-property':
-                            const inSlice = r <= Math.floor(m/2); // Example: half-circle
+                            const inSlice = r <= Math.floor(m/2);
                             color = getMultiPropertyColor(r, m, inSlice);
                             break;
                         default:
                             color = isOpen ? '#27ae60' : '#e74c3c';
                     }
 
-                    // Draw point - filled for most modes, outlined for blocked in binary mode
+                    // Highlight tracked residue
+                    const size = (highlightTracked && isTracked) ? pointSize * 2 : pointSize;
+                    if (highlightTracked && isTracked) {
+                        color = '#FFD700'; // Gold for tracked
+                    }
+
+                    // Draw point
                     const shouldFill = colorMode !== 'open-blocked' || isOpen;
                     if (shouldFill) {
                         ctx.fillStyle = color;
                         ctx.beginPath();
-                        ctx.arc(x, y, pointSize, 0, 2 * Math.PI);
+                        ctx.arc(x, y, size, 0, 2 * Math.PI);
                         ctx.fill();
+                        
+                        if (highlightTracked && isTracked) {
+                            ctx.strokeStyle = '#FF8C00';
+                            ctx.lineWidth = 2;
+                            ctx.stroke();
+                        }
                     } else {
                         ctx.strokeStyle = color;
-                        ctx.lineWidth = Math.max(1.5, pointSize * 0.5);
+                        ctx.lineWidth = Math.max(1.5, size * 0.5);
                         ctx.beginPath();
-                        ctx.arc(x, y, pointSize, 0, 2 * Math.PI);
+                        ctx.arc(x, y, size, 0, 2 * Math.PI);
                         ctx.stroke();
                     }
                 }
             }
 
-            // Draw legend
+            // Draw enhanced legend
             if (showLegend) {
                 const legendX = 30;
-                const legendY = height - 150;
-                const legendWidth = 280;
+                const legendY = height - Math.min(height * 0.4, 400);
+                const legendWidth = 300;
                 let legendHeight = 120;
 
-                // Adjust legend height based on color mode
+                // Calculate legend height based on content
                 if (colorMode.startsWith('gcd')) {
-                    legendHeight = Math.min(300, 80 + allGCDs.size * 25);
+                    legendHeight = Math.min(height * 0.35, 80 + allGCDs.size * 22);
                 }
 
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                ctx.fillStyle = darkBg ? 'rgba(40, 40, 40, 0.95)' : 'rgba(255, 255, 255, 0.95)';
                 ctx.fillRect(legendX, legendY, legendWidth, legendHeight);
                 ctx.strokeStyle = '#667eea';
                 ctx.lineWidth = 3;
                 ctx.strokeRect(legendX, legendY, legendWidth, legendHeight);
 
-                ctx.font = `${Math.max(12, width/200)}px serif`;
-                let yOffset = legendY + 25;
+                ctx.font = `bold ${Math.max(11, width/220)}px Arial`;
+                ctx.fillStyle = textColor;
+                let yOffset = legendY + 20;
+                
+                ctx.fillText(`Color Mode: ${colorMode}`, legendX + 10, yOffset);
+                yOffset += 25;
 
                 if (colorMode === 'open-blocked') {
+                    ctx.font = `${Math.max(10, width/240)}px Arial`;
                     ctx.fillStyle = '#27ae60';
                     ctx.beginPath();
                     ctx.arc(legendX + 15, yOffset, 5, 0, 2 * Math.PI);
                     ctx.fill();
-                    ctx.fillStyle = '#2c3e50';
-                    ctx.fillText('Open Channel (coprime)', legendX + 30, yOffset + 5);
+                    ctx.fillStyle = textColor;
+                    ctx.fillText('Open (coprime)', legendX + 28, yOffset + 4);
 
-                    yOffset += 30;
+                    yOffset += 22;
                     ctx.strokeStyle = '#e74c3c';
                     ctx.lineWidth = 2;
                     ctx.beginPath();
                     ctx.arc(legendX + 15, yOffset, 5, 0, 2 * Math.PI);
                     ctx.stroke();
-                    ctx.fillStyle = '#2c3e50';
-                    ctx.fillText('Blocked Channel', legendX + 30, yOffset + 5);
-
-                    yOffset += 30;
-                    ctx.strokeStyle = '#27ae60';
-                    ctx.lineWidth = 2;
-                    ctx.setLineDash([]);
-                    ctx.beginPath();
-                    ctx.moveTo(legendX + 10, yOffset);
-                    ctx.lineTo(legendX + 40, yOffset);
-                    ctx.stroke();
-                    ctx.fillText('Prime Ring', legendX + 50, yOffset + 5);
-
-                    yOffset += 25;
-                    ctx.strokeStyle = '#95a5a6';
-                    ctx.setLineDash([10, 5]);
-                    ctx.beginPath();
-                    ctx.moveTo(legendX + 10, yOffset);
-                    ctx.lineTo(legendX + 40, yOffset);
-                    ctx.stroke();
-                    ctx.setLineDash([]);
-                    ctx.fillText('Composite Ring', legendX + 50, yOffset + 5);
-
-                } else if (colorMode === 'gcd-local' || colorMode === 'gcd-global') {
-                    ctx.fillStyle = '#2c3e50';
-                    ctx.font = `bold ${Math.max(12, width/200)}px serif`;
-                    ctx.fillText('GCD Values:', legendX + 15, yOffset);
-                    yOffset += 25;
-                    ctx.font = `${Math.max(11, width/220)}px serif`;
-
-                    const sortedGCDs = Array.from(allGCDs).sort((a, b) => a - b).slice(0, 8);
-                    sortedGCDs.forEach(gcdVal => {
-                        const color = colorMode === 'gcd-local' ? 
-                                     getGCDColor(gcdVal, Math.max(...allGCDs)) : 
-                                     getGCDColorGlobal(gcdVal);
+                    ctx.fillStyle = textColor;
+                    ctx.fillText('Blocked', legendX + 28, yOffset + 4);
+                } else if (colorMode.includes('gcd')) {
+                    // Show all GCD values found
+                    ctx.font = `${Math.max(10, width/240)}px Arial`;
+                    const sortedGCDs = Array.from(allGCDs).sort((a,b) => a-b);
+                    sortedGCDs.forEach(g => {
+                        let color;
+                        if (colorMode === 'gcd-global') {
+                            color = getGCDColorGlobal(g);
+                        } else {
+                            color = getGCDColor(g, Math.max(...sortedGCDs));
+                        }
                         
                         ctx.fillStyle = color;
                         ctx.beginPath();
                         ctx.arc(legendX + 15, yOffset, 5, 0, 2 * Math.PI);
                         ctx.fill();
-                        ctx.fillStyle = '#2c3e50';
-                        ctx.fillText(`gcd = ${gcdVal}${gcdVal === 1 ? ' (coprime)' : ''}`, 
-                                    legendX + 30, yOffset + 5);
-                        yOffset += 25;
+                        ctx.fillStyle = textColor;
+                        ctx.fillText(`gcd = ${g}`, legendX + 28, yOffset + 4);
+                        yOffset += 20;
                     });
-                } else if (colorMode === 'prime-composite') {
-                    ctx.fillStyle = '#27ae60';
-                    ctx.beginPath();
-                    ctx.arc(legendX + 15, yOffset, 5, 0, 2 * Math.PI);
-                    ctx.fill();
-                    ctx.fillStyle = '#2c3e50';
-                    ctx.fillText('Prime Modulus', legendX + 30, yOffset + 5);
+                }
 
-                    yOffset += 30;
-                    ctx.fillStyle = '#e67e22';
+                // Add tracking info if enabled
+                if (highlightTracked) {
+                    yOffset += 5;
+                    ctx.fillStyle = '#FFD700';
                     ctx.beginPath();
-                    ctx.arc(legendX + 15, yOffset, 5, 0, 2 * Math.PI);
+                    ctx.arc(legendX + 15, yOffset, 6, 0, 2 * Math.PI);
                     ctx.fill();
-                    ctx.fillStyle = '#2c3e50';
-                    ctx.fillText('Composite Modulus', legendX + 30, yOffset + 5);
+                    ctx.strokeStyle = '#FF8C00';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.fillStyle = textColor;
+                    ctx.fillText(`Tracked: r=${trackR}`, legendX + 28, yOffset + 5);
                 }
             }
 
             // Title
-            ctx.fillStyle = '#2c3e50';
-            ctx.font = `bold ${Math.max(20, width/100)}px serif`;
+            ctx.fillStyle = textColor;
+            ctx.font = `bold ${Math.max(16, width/160)}px Arial`;
             ctx.textAlign = 'center';
-            const titleText = mode === 'fixed-r' ? `Fixed r=${fixedR}: Moduli ${minMod}-${maxMod}` :
-                             mode === 'fixed-m' ? `Fixed m=${fixedM}: All residues` :
-                             mode === 'primes-only' ? `Prime Moduli ${minMod}-${maxMod}` :
-                             `Concentric Rings: Moduli ${minMod}-${maxMod}`;
-            ctx.fillText(titleText, centerX, 40);
-            ctx.textAlign = 'left';
+            const title = invertRings ? 
+                         `Concentric Rings (Inverted): m ∈ [${minMod}, ${maxMod}]` :
+                         `Concentric Rings: m ∈ [${minMod}, ${maxMod}]`;
+            ctx.fillText(title, centerX, 35);
         }
 
         // Enhanced export function with resolution options
