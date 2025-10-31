@@ -482,6 +482,16 @@
             <h1>Nested Farey Channels & Fractional-Slice Coprimality Heuristic</h1>
             <div class="author">Wessen Getachew</div>
             <div class="date">October 2025</div>
+            
+
+<div style="text-align: center; margin-top: 12px; font-size: 0.9em;">
+                <span style="opacity: 0.8;">Explore more prime visualizations:</span>
+                <a href="https://wessengetachew.github.io/GCD/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">GCD Patterns</a>
+                <span style="opacity: 0.5;">|</span>
+                <a href="https://wessengetachew.github.io/Primes/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Prime Spirals</a>
+<span style="opacity: 0.5;">|</span>
+                <a href="https://wessengetachew.github.io/Ethiopian/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Epsilon Pi Calculator</a>
+            </div>
         </header>
 
         <div class="abstract">
