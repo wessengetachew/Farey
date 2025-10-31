@@ -483,13 +483,12 @@
             <div class="author">Wessen Getachew</div>
             <div class="date">October 2025</div>
             
-
-<div style="text-align: center; margin-top: 12px; font-size: 0.9em;">
+            <div style="text-align: center; margin-top: 12px; font-size: 0.9em;">
                 <span style="opacity: 0.8;">Explore more prime visualizations:</span>
                 <a href="https://wessengetachew.github.io/GCD/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">GCD Patterns</a>
                 <span style="opacity: 0.5;">|</span>
                 <a href="https://wessengetachew.github.io/Primes/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Prime Spirals</a>
-<span style="opacity: 0.5;">|</span>
+                <span style="opacity: 0.5;">|</span>
                 <a href="https://wessengetachew.github.io/Ethiopian/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Epsilon Pi Calculator</a>
             </div>
         </header>
@@ -1350,7 +1349,7 @@ function is_prime_candidate(m, k, slice="half",
             <ul style="margin-top: 10px;">
                 <li>\(f(x,y)\) is a norm form (quadratic, scaled quadratic, or cubic)</li>
                 <li>\(D\) is the field constant corresponding to \(\mathbb{Q}(\sqrt{D})\)</li>
-                <li>\(M = 30 \cdot 2^n\) is the concentric modulus with \(n \ge 0\)</li>
+                <li>\(M\) is the modulus defining the modular congruence relation</li>
             </ul>
         </div>
 
@@ -1402,33 +1401,33 @@ function is_prime_candidate(m, k, slice="half",
             \[
             f(x,y) = x^2 + y^2
             \]
-            The modular congruence with \(M = 30 \cdot 2^n\) becomes:
+            The modular congruence becomes:
             \[
-            x^2 + y^2 \equiv -1 \pmod{30 \cdot 2^n}
+            x^2 + y^2 \equiv -1 \pmod{M}
             \]
-            <p style="margin-top: 10px;">This captures integer solutions to the equation \(x^2 + y^2 + 1 = k \cdot M\) for integers \(k\), representing Gaussian primes and their arithmetic structure in the residue system modulo \(M\).</p>
+            <p style="margin-top: 10px;">This captures integer solutions to the equation \(x^2 + y^2 + 1 = k \cdot M\) for integers \(k\), representing Gaussian primes and their arithmetic structure in the residue system modulo \(M\) for any choice of modulus.</p>
         </div>
 
         <div class="subsection-title">10.5 Amplification Principle</div>
 
-        <p>As the modulus \(M = 30 \cdot 2^n\) increases concentrically, a remarkable amplification phenomenon emerges in the modular shell densities.</p>
+        <p>As the modulus \(M\) increases, a remarkable amplification phenomenon emerges in the modular shell densities for specific imaginary quadratic fields.</p>
 
         <div class="theorem">
             <span class="label">Theorem 10.5 (Modular Amplification Principle).</span>
-            <em>As \(n\) increases, the modulus \(M = 30 \cdot 2^n\) expands concentrically, and the modular sieve amplifies shell densities corresponding to each imaginary quadratic field. This produces persistent modular alignments and density resonances up to \(12\times\) the baseline density.</em>
+            <em>As the modulus \(M\) grows, the modular sieve amplifies shell densities corresponding to each imaginary quadratic field. For systematic sequences such as powers of 2, products of small primes, or other structured progressions, this produces persistent modular alignments and density resonances up to \(12\times\) the baseline density.</em>
             
             <p style="margin-top: 15px;"><strong>Mechanism:</strong></p>
             <ol style="margin-left: 20px; margin-top: 10px;">
-                <li><strong>Concentric Expansion:</strong> Each power \(2^n\) doubles the modular shell radius while preserving the base structure \(30\).</li>
+                <li><strong>Concentric Expansion:</strong> Increasing \(M\) expands the modular shell radius while interactions with prime divisors create structured patterns.</li>
                 <li><strong>Field Alignment:</strong> Solutions to \(f(x,y) \equiv D \pmod{M}\) form arithmetic progressions that align with the field's norm structure.</li>
-                <li><strong>Density Amplification:</strong> Higher shells exhibit enhanced density of norm representations, with amplification factors depending on the class group structure.</li>
+                <li><strong>Density Amplification:</strong> Larger moduli exhibit enhanced density of norm representations, with amplification factors depending on the class group structure and divisibility properties of \(M\).</li>
                 <li><strong>Persistence:</strong> The alignment persists across scales, creating stable modular patterns observable in concentric ring visualizations.</li>
             </ol>
         </div>
 
         <div class="remarks">
             <strong>Geometric Interpretation:</strong>
-            <p>In the concentric ring visualization with modulus \(M = 30 \cdot 2^n\), points satisfying \(f(x,y) \equiv D \pmod{M}\) form characteristic angular patterns. These patterns:</p>
+            <p>In the concentric ring visualization with modulus \(M\), points satisfying \(f(x,y) \equiv D \pmod{M}\) form characteristic angular patterns. These patterns:</p>
             <ul>
                 <li>Exhibit radial symmetry corresponding to the field's automorphism group</li>
                 <li>Show enhanced density in sectors aligned with fundamental units</li>
@@ -1445,13 +1444,13 @@ function is_prime_candidate(m, k, slice="half",
             <span class="label">Theorem 10.6 (Unified Modular Form Framework).</span>
             <em>For every imaginary quadratic field \(\mathbb{Q}(\sqrt{D})\) with \(D \in \{-1, -2, -3, -7, -11, -19, -43, -67, -163\}\), there exists at least one norm form \(f(x,y)\) among the six listed families such that:</em>
             \[
-            f(x,y) \equiv D \pmod{30 \cdot 2^n}
+            f(x,y) \equiv D \pmod{M}
             \]
-            <em>yields persistent and amplified modular shell density aligned with the field's arithmetic structure.</em>
+            <em>yields persistent and amplified modular shell density aligned with the field's arithmetic structure for appropriate choices of modulus \(M\).</em>
             
             <p style="margin-top: 15px;"><strong>Proof Sketch:</strong></p>
             <p style="margin-left: 20px; margin-top: 10px;">
-            Each Heegner field \(\mathbb{Q}(\sqrt{D})\) has a canonical norm form \(N(x + y\sqrt{D}) = x^2 - Dy^2\) or related variant. For class number 1 fields, every ideal is principal, ensuring that norm representations are uniformly distributed in residue classes. The modulus \(M = 30 \cdot 2^n\) is chosen such that:
+            Each Heegner field \(\mathbb{Q}(\sqrt{D})\) has a canonical norm form \(N(x + y\sqrt{D}) = x^2 - Dy^2\) or related variant. For class number 1 fields, every ideal is principal, ensuring that norm representations are uniformly distributed in residue classes. The modulus \(M\) can be chosen from any systematic sequence:
             </p>
             <ol style="margin-left: 40px; margin-top: 10px;">
                 <li>\(30 = 2 \cdot 3 \cdot 5\) captures small prime behavior</li>
@@ -1559,10 +1558,8 @@ function is_prime_candidate(m, k, slice="half",
                     </div>
 
                     <div class="control-group">
-                        <label for="heegnerPower">Power n (M=30·2^n):</label>
-                        <input type="range" id="heegnerPower" min="0" max="6" value="3" step="1" oninput="updateHeegnerPower()">
-                        <span id="heegnerPowerVal">3</span>
-                        <span style="margin-left: 5px; color: #666;">(M=<span id="heegnerModVal">240</span>)</span>
+                        <label for="heegnerMod">Modulus M:</label>
+                        <input type="number" id="heegnerMod" min="2" max="10000" value="240" step="1" oninput="drawHeegnerField()">
                     </div>
 
                     <div class="control-group">
@@ -1576,6 +1573,32 @@ function is_prime_candidate(m, k, slice="half",
                         <input type="range" id="heegnerPointSize" min="1" max="8" value="3" step="0.5" oninput="drawHeegnerField()">
                         <span id="heegnerPointSizeVal">3</span>px
                     </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;">
+                    <div class="control-group">
+                        <label for="heegnerDisplayMode">Display Mode:</label>
+                        <select id="heegnerDisplayMode" onchange="drawHeegnerField()">
+                            <option value="dots">Points Only</option>
+                            <option value="norm">Norm Values f(x,y)</option>
+                            <option value="coords">Coordinates (x,y)</option>
+                            <option value="x-values">X Values</option>
+                            <option value="y-values">Y Values</option>
+                            <option value="residue">Residue mod M</option>
+                            <option value="distance">Distance √(x²+y²)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group" id="heegnerLabelSizeGroup">
+                        <label for="heegnerLabelSize">Label Size:</label>
+                        <input type="range" id="heegnerLabelSize" min="6" max="20" value="10" step="1" oninput="updateHeegnerLabelSize()">
+                        <span id="heegnerLabelSizeVal">10</span>px
+                    </div>
+
+                    <label style="display: inline-flex; align-items: center;">
+                        <input type="checkbox" id="heegnerShowPoints" checked onchange="drawHeegnerField()">
+                        Show Points Behind Labels
+                    </label>
                 </div>
 
                 <div style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;">
@@ -1606,6 +1629,7 @@ function is_prime_candidate(m, k, slice="half",
                 <button onclick="drawHeegnerField()">Visualize</button>
                 <button class="success" onclick="exportHeegnerVisualization('4k')">📸 Export 4K</button>
                 <button class="success" onclick="exportHeegnerVisualization('2k')">📸 Export 2K</button>
+                <button onclick="exportHeegnerCSV()" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white;">📊 Export CSV</button>
                 <button class="secondary" onclick="compareAllFields()">🔬 Compare All 9 Fields</button>
             </div>
 
@@ -1616,6 +1640,7 @@ function is_prime_candidate(m, k, slice="half",
                 Points satisfying the congruence are displayed on concentric rings, 
                 revealing characteristic symmetries: 4-fold for ℚ(√-1), 6-fold for ℚ(√-3), etc.
                 Density amplification (up to 12×) visible as n increases.
+                Display modes allow viewing norm values, coordinates, or individual x/y values directly on the visualization.
             </div>
         </div>
 
@@ -1673,18 +1698,14 @@ function is_prime_candidate(m, k, slice="half",
 
         <div class="definition">
             <span class="label">Definition 11.2 (Modular Shell Equation).</span>
-            For a norm form \(f(x,y)\), field discriminant \(D\), and modulus
-            \[
-            M = 30 \cdot 2^n,
-            \]
-            the <strong>modular shell equation</strong> is:
+            For a norm form \(f(x,y)\), field discriminant \(D\), and modulus \(M\), the <strong>modular shell equation</strong> is:
             \[
             f(x,y) \equiv D \pmod{M}
             \]
             where \(f(x,y)\) is a quadratic, scaled quadratic, or cubic form as defined in Section 10.2.
         </div>
 
-        <p>Each equation \(f(x,y)\equiv D \pmod{M}\) defines a <strong>modular shell</strong>, analogous to a circular boundary in the Gauss problem, but now wrapped on the modular unit circle. As \(M\) doubles through increasing \(n\), the modular lattice expands concentrically, revealing structured amplification patterns tied to specific imaginary quadratic fields.</p>
+        <p>Each equation \(f(x,y)\equiv D \pmod{M}\) defines a <strong>modular shell</strong>, analogous to a circular boundary in the Gauss problem, but now wrapped on the modular unit circle. As \(M\) increases, the modular lattice expands, revealing structured patterns and amplification tied to specific imaginary quadratic fields.</p>
 
         <div class="subsection-title">11.2 Comparative Framework</div>
 
@@ -1713,7 +1734,7 @@ function is_prime_candidate(m, k, slice="half",
                     <tr style="background: #f8f9fa;">
                         <td style="padding: 10px; border: 1px solid #ddd; font-weight: 600;">Growth Variable</td>
                         <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">Radius \(r\)</td>
-                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">Modulus \(M = 30 \cdot 2^n\)</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">Modulus \(M\)</td>
                     </tr>
                     <tr>
                         <td style="padding: 10px; border: 1px solid #ddd; font-weight: 600;">Geometric Object</td>
@@ -1755,7 +1776,7 @@ function is_prime_candidate(m, k, slice="half",
 
         <div class="definition">
             <span class="label">Definition 11.3 (Modular Deviation).</span>
-            For modulus \(M = 30 \cdot 2^n\), field discriminant \(D\), and norm form \(f\), define:
+            For modulus \(M\), field discriminant \(D\), and norm form \(f\), define:
             \[
             \Delta(M,D,f) = N_M(D,f) - \frac{\varphi(M)^2}{M}
             \]
@@ -1826,7 +1847,7 @@ function is_prime_candidate(m, k, slice="half",
             <span class="label">Proposition 11.5 (Geometric Generalization).</span>
             <em>The modular framework generalizes Gauss's circle geometry from continuous Euclidean space to the modular domain by:</em>
             <ol style="margin-top: 10px; margin-left: 20px;">
-                <li>Replacing the real radius \(r \in \mathbb{R}^+\) with the arithmetic modulus \(M = 30 \cdot 2^n\)</li>
+                <li>Replacing the real radius \(r \in \mathbb{R}^+\) with the arithmetic modulus \(M \in \mathbb{Z}^+\)</li>
                 <li>Substituting the Euclidean norm \(x^2 + y^2\) with field-specific norm forms \(f(x,y)\)</li>
                 <li>Transforming the continuous circle into discrete modular shells</li>
                 <li>Converting irregular fluctuations into structured algebraic resonance</li>
@@ -1835,14 +1856,14 @@ function is_prime_candidate(m, k, slice="half",
 
         <div class="subsection-title">11.6 Empirical Amplification Data</div>
 
-        <p>Unlike the Gauss problem where \(E(r)\) oscillates irregularly, the modular deviation \(\Delta(M,D,f)\) exhibits systematic growth patterns:</p>
+        <p>Unlike the Gauss problem where \(E(r)\) oscillates irregularly, the modular deviation \(\Delta(M,D,f)\) can exhibit systematic growth patterns. The table below shows observed amplification for one example sequence:</p>
 
         <div style="overflow-x: auto; margin: 25px 0;">
             <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
                 <thead style="background: #27ae60; color: white;">
                     <tr>
-                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Power \(n\)</th>
-                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Modulus \(M = 30 \cdot 2^n\)</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Index n</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Example Modulus</th>
                         <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Gaussian (D=-1)</th>
                         <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Eisenstein (D=-3)</th>
                         <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Amplification Factor</th>
@@ -1902,7 +1923,7 @@ function is_prime_candidate(m, k, slice="half",
             </table>
         </div>
 
-        <p style="margin-top: 20px;"><em>Note: Percentages show density increase above baseline; amplification factor is the multiplier relative to \(n=0\). The systematic growth contrasts sharply with the irregular oscillations in \(E(r)\).</em></p>
+        <p style="margin-top: 20px;"><em>Note: This table shows empirical results for one specific example sequence (\(M = 30, 60, 120, 240, 480, 960, 1920\)). Percentages show density increase above baseline; amplification factor is the multiplier relative to the initial value. The amplification principle applies generally to many modulus sequences - explore using custom moduli to discover patterns for prime powers, arithmetic progressions, or other structured sequences.</em></p>
 
         <div class="subsection-title">11.7 Research Implications</div>
 
@@ -1917,7 +1938,7 @@ function is_prime_candidate(m, k, slice="half",
                 
                 <li><strong>Hybrid Approach:</strong> Can techniques from the Gauss Circle Problem (exponential sums, lattice point methods) be adapted to sharpen estimates of \(\Delta(M,D,f)\)?</li>
                 
-                <li><strong>Generalization:</strong> What happens when we replace \(M = 30 \cdot 2^n\) with other structured moduli like \(M = p^k\) for prime \(p\)?</li>
+                <li><strong>Generalization:</strong> What happens with different structured moduli sequences like \(M = p^k\) for prime \(p\), arithmetic progressions, geometric sequences, or products of small primes? How does amplification depend on the divisibility structure of \(M\)?</li>
             </ul>
         </div>
 
@@ -4146,17 +4167,19 @@ function is_prime_candidate(m, k, slice="half",
             return colors[D] || { base: '#3498db', accent: '#2980b9' };
         }
 
-        function updateHeegnerPower() {
-            const n = parseInt(document.getElementById('heegnerPower').value);
-            const M = 30 * Math.pow(2, n);
-            document.getElementById('heegnerPowerVal').textContent = n;
-            document.getElementById('heegnerModVal').textContent = M;
-            drawHeegnerField();
+        function getHeegnerModulus() {
+            return parseInt(document.getElementById('heegnerMod').value) || 240;
         }
 
         function updateHeegnerRange() {
             const range = parseInt(document.getElementById('heegnerRange').value);
             document.getElementById('heegnerRangeVal').textContent = range;
+            drawHeegnerField();
+        }
+
+        function updateHeegnerLabelSize() {
+            const size = parseInt(document.getElementById('heegnerLabelSize').value);
+            document.getElementById('heegnerLabelSizeVal').textContent = size;
             drawHeegnerField();
         }
 
@@ -4171,8 +4194,7 @@ function is_prime_candidate(m, k, slice="half",
             const centerY = height / 2;
             
             const D = document.getElementById('heegnerField').value;
-            const n = parseInt(document.getElementById('heegnerPower').value);
-            const M = 30 * Math.pow(2, n);
+            const M = getHeegnerModulus();  // Use flexible modulus getter
             const searchRange = parseInt(document.getElementById('heegnerRange').value);
             const pointSize = parseFloat(document.getElementById('heegnerPointSize').value || 3);
             
@@ -4180,6 +4202,9 @@ function is_prime_candidate(m, k, slice="half",
             const showSymmetry = document.getElementById('heegnerShowSymmetry').checked;
             const darkBg = document.getElementById('heegnerDarkBg').checked;
             const showDensity = document.getElementById('heegnerShowDensity').checked;
+            const displayMode = document.getElementById('heegnerDisplayMode').value;
+            const labelSize = parseInt(document.getElementById('heegnerLabelSize').value || 10);
+            const showPointsBehind = document.getElementById('heegnerShowPoints').checked;
             
             const normForm = getNormForm(D);
             const symmetryOrder = getSymmetryOrder(D);
@@ -4272,8 +4297,8 @@ function is_prime_candidate(m, k, slice="half",
             // Draw solution points
             solutions.forEach(sol => {
                 const radius = sol.distance * scale;
-                const x = centerX + radius * Math.cos(sol.angle);
-                const y = centerY - radius * Math.sin(sol.angle);
+                const px = centerX + radius * Math.cos(sol.angle);
+                const py = centerY - radius * Math.sin(sol.angle);
                 
                 // Color based on distance (gradient)
                 const intensity = Math.min(1, sol.distance / maxDist);
@@ -4282,17 +4307,70 @@ function is_prime_candidate(m, k, slice="half",
                            parseInt(D) === -2 ? 170 :
                            (Math.abs(parseInt(D)) * 137.5) % 360;
                 
-                ctx.fillStyle = `hsl(${hue}, ${70 + intensity * 20}%, ${50 - intensity * 20}%)`;
-                ctx.beginPath();
-                ctx.arc(x, y, pointSize, 0, 2 * Math.PI);
-                ctx.fill();
+                const pointColor = `hsl(${hue}, ${70 + intensity * 20}%, ${50 - intensity * 20}%)`;
                 
-                // Add subtle glow for emphasis
-                if (darkBg) {
-                    ctx.fillStyle = `rgba(255, 255, 255, 0.1)`;
+                // Draw point if in dots mode or if showing points behind labels
+                if (displayMode === 'dots' || showPointsBehind) {
+                    ctx.fillStyle = pointColor;
                     ctx.beginPath();
-                    ctx.arc(x, y, pointSize * 1.5, 0, 2 * Math.PI);
+                    ctx.arc(px, py, pointSize, 0, 2 * Math.PI);
                     ctx.fill();
+                    
+                    // Add subtle glow for emphasis
+                    if (darkBg) {
+                        ctx.fillStyle = `rgba(255, 255, 255, 0.1)`;
+                        ctx.beginPath();
+                        ctx.arc(px, py, pointSize * 1.5, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                }
+                
+                // Draw labels for other modes
+                if (displayMode !== 'dots') {
+                    let labelText = '';
+                    
+                    switch(displayMode) {
+                        case 'norm':
+                            labelText = sol.value.toString();
+                            break;
+                        case 'coords':
+                            labelText = `(${sol.x},${sol.y})`;
+                            break;
+                        case 'x-values':
+                            labelText = sol.x.toString();
+                            break;
+                        case 'y-values':
+                            labelText = sol.y.toString();
+                            break;
+                        case 'residue':
+                            labelText = ((sol.value % M) + M) % M;
+                            break;
+                        case 'distance':
+                            labelText = sol.distance.toFixed(2);
+                            break;
+                    }
+                    
+                    // Draw label background for readability
+                    ctx.font = `${labelSize}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const metrics = ctx.measureText(labelText);
+                    const textWidth = metrics.width;
+                    const textHeight = labelSize;
+                    const padding = 2;
+                    
+                    // Background rectangle
+                    ctx.fillStyle = darkBg ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.85)';
+                    ctx.fillRect(
+                        px - textWidth/2 - padding,
+                        py - textHeight/2 - padding,
+                        textWidth + 2*padding,
+                        textHeight + 2*padding
+                    );
+                    
+                    // Text
+                    ctx.fillStyle = darkBg ? '#fff' : '#000';
+                    ctx.fillText(labelText, px, py);
                 }
             });
             
@@ -4335,7 +4413,7 @@ function is_prime_candidate(m, k, slice="half",
                 statsDiv.innerHTML = `
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                         <div><strong>Field:</strong> ℚ(√${D})</div>
-                        <div><strong>Modulus M:</strong> ${M} = 30·2^${n}</div>
+                        <div><strong>Modulus M:</strong> ${M}</div>
                         <div><strong>Solutions Found:</strong> ${totalSolutions}</div>
                         <div><strong>Unique Rings:</strong> ${uniqueRings}</div>
                         <div><strong>Avg Ring Density:</strong> ${avgDensity.toFixed(1)}</div>
@@ -4374,8 +4452,8 @@ function is_prime_candidate(m, k, slice="half",
             // Export
             const link = document.createElement('a');
             const D = document.getElementById('heegnerField').value;
-            const n = document.getElementById('heegnerPower').value;
-            link.download = `heegner-field-D${D}-n${n}-${resolution}-${Date.now()}.png`;
+            const M = getHeegnerModulus();
+            link.download = `heegner-field-D${D}-M${M}-${resolution}-${Date.now()}.png`;
             link.href = originalCanvas.toDataURL('image/png');
             link.click();
             
@@ -4383,6 +4461,94 @@ function is_prime_candidate(m, k, slice="half",
             originalCanvas.width = origWidth;
             originalCanvas.height = origHeight;
             drawHeegnerField();
+        }
+
+        function exportHeegnerCSV() {
+            const D = document.getElementById('heegnerField').value;
+            const M = getHeegnerModulus();
+            const searchRange = parseInt(document.getElementById('heegnerRange').value);
+            
+            // Get field info
+            const fieldInfo = heegnerFields[D];
+            if (!fieldInfo) return;
+            
+            const { form, targetResidue } = fieldInfo;
+            
+            // Compute solutions
+            const solutions = [];
+            for (let x = -searchRange; x <= searchRange; x++) {
+                for (let y = -searchRange; y <= searchRange; y++) {
+                    const value = form(x, y);
+                    const residue = ((value % M) + M) % M;
+                    
+                    if (residue === targetResidue) {
+                        const distance = Math.sqrt(x*x + y*y);
+                        const angle = Math.atan2(y, x) * (180 / Math.PI); // Convert to degrees
+                        solutions.push({ x, y, value, residue, distance, angle });
+                    }
+                }
+            }
+            
+            // Sort by distance, then angle
+            solutions.sort((a, b) => {
+                if (Math.abs(a.distance - b.distance) < 0.001) {
+                    return a.angle - b.angle;
+                }
+                return a.distance - b.distance;
+            });
+            
+            // Create CSV content
+            let csv = 'x,y,f(x_y),residue,distance,angle_deg\n';
+            solutions.forEach(sol => {
+                csv += `${sol.x},${sol.y},${sol.value},${sol.residue},${sol.distance.toFixed(6)},${sol.angle.toFixed(2)}\n`;
+            });
+            
+            // Add metadata header
+            const metadata = `# Heegner Field Modular Form Solutions\n`;
+            const fieldName = {
+                '-1': 'Gaussian (Q(sqrt(-1)))',
+                '-2': 'Q(sqrt(-2))',
+                '-3': 'Eisenstein (Q(sqrt(-3)))',
+                '-7': 'Q(sqrt(-7))',
+                '-11': 'Q(sqrt(-11))',
+                '-19': 'Q(sqrt(-19))',
+                '-43': 'Q(sqrt(-43))',
+                '-67': 'Q(sqrt(-67))',
+                '-163': 'Ramanujan (Q(sqrt(-163)))'
+            }[D] || `Q(sqrt(${D}))`;
+            
+            const metaInfo = `# Field: ${fieldName}\n` +
+                           `# Discriminant D: ${D}\n` +
+                           `# Modulus M: ${M}\n` +
+                           `# Target Residue: ${targetResidue}\n` +
+                           `# Search Range: [-${searchRange}, ${searchRange}]\n` +
+                           `# Solutions Found: ${solutions.length}\n` +
+                           `# Export Date: ${new Date().toISOString()}\n` +
+                           `#\n`;
+            
+            const fullCSV = metadata + metaInfo + csv;
+            
+            // Download
+            const blob = new Blob([fullCSV], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `heegner-field-D${D}-M${M}-solutions-${Date.now()}.csv`;
+            link.click();
+            
+            // Show confirmation
+            const statsDiv = document.getElementById('heegnerStats');
+            if (statsDiv) {
+                const originalHTML = statsDiv.innerHTML;
+                statsDiv.innerHTML = `
+                    <div style="background: #27ae60; color: white; padding: 15px; border-radius: 8px; text-align: center;">
+                        ✅ <strong>CSV Exported Successfully!</strong><br>
+                        ${solutions.length} solutions saved to file
+                    </div>
+                `;
+                setTimeout(() => {
+                    statsDiv.innerHTML = originalHTML;
+                }, 3000);
+            }
         }
 
         function toggleHeegnerAnimation() {
@@ -4508,8 +4674,7 @@ function is_prime_candidate(m, k, slice="half",
                     const centerX = width / 2;
                     const centerY = height / 2;
                     
-                    const n = 3;  // Fixed power for comparison
-                    const M = 30 * Math.pow(2, n);
+                    const M = parseInt(document.getElementById('heegnerMod').value) || 240;
                     const searchRange = 20;  // Smaller for comparison
                     const normForm = getNormForm(D);
                     
