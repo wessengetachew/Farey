@@ -482,16 +482,6 @@
             <h1>Nested Farey Channels & Fractional-Slice Coprimality Heuristic</h1>
             <div class="author">Wessen Getachew</div>
             <div class="date">October 2025</div>
-            
-
-<div style="text-align: center; margin-top: 12px; font-size: 0.9em;">
-                <span style="opacity: 0.8;">Explore more prime visualizations:</span>
-                <a href="https://wessengetachew.github.io/GCD/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">GCD Patterns</a>
-                <span style="opacity: 0.5;">|</span>
-                <a href="https://wessengetachew.github.io/Primes/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Prime Spirals</a>
-<span style="opacity: 0.5;">|</span>
-                <a href="https://wessengetachew.github.io/Ethiopian/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Epsilon Pi Calculator</a>
-            </div>
         </header>
 
         <div class="abstract">
@@ -846,12 +836,14 @@ function is_prime_candidate(m, k, slice="half",
             <div class="controls" style="margin-top: 10px;">
                 <div class="control-group">
                     <label for="ringMode">Display Mode:</label>
-                    <select id="ringMode">
+                    <select id="ringMode" onchange="updateModeControls()">
                         <option value="all">All Residues</option>
                         <option value="open-only">Open Channels Only</option>
                         <option value="primes-only">Primes Only</option>
                         <option value="fixed-r">Fixed r (vary m)</option>
                         <option value="fixed-m">Fixed m (vary r)</option>
+                        <option value="multi-r">Multiple r values</option>
+                        <option value="multi-m">Multiple m values</option>
                     </select>
                 </div>
                 <div class="control-group" id="fixedRGroup" style="display: none;">
@@ -861,6 +853,26 @@ function is_prime_candidate(m, k, slice="half",
                 <div class="control-group" id="fixedMGroup" style="display: none;">
                     <label for="fixedMValue">m value:</label>
                     <input type="number" id="fixedMValue" value="12" min="2" max="200">
+                </div>
+                <div class="control-group" id="multiRGroup" style="display: none; flex-direction: column; align-items: flex-start; min-width: 300px;">
+                    <label style="margin-bottom: 5px;">Select r values:</label>
+                    <input type="text" id="multiRValues" placeholder="e.g. 1,2,3,5,7 or primes or composites" style="width: 100%; margin-bottom: 5px;">
+                    <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                        <button class="secondary" onclick="setMultiR('primes')" style="padding: 5px 10px; font-size: 0.9em;">Primes ≤20</button>
+                        <button class="secondary" onclick="setMultiR('composites')" style="padding: 5px 10px; font-size: 0.9em;">Composites ≤20</button>
+                        <button class="secondary" onclick="setMultiR('powers2')" style="padding: 5px 10px; font-size: 0.9em;">Powers of 2</button>
+                        <button class="secondary" onclick="setMultiR('powers3')" style="padding: 5px 10px; font-size: 0.9em;">Powers of 3</button>
+                    </div>
+                </div>
+                <div class="control-group" id="multiMGroup" style="display: none; flex-direction: column; align-items: flex-start; min-width: 300px;">
+                    <label style="margin-bottom: 5px;">Select m values:</label>
+                    <input type="text" id="multiMValues" placeholder="e.g. 12,15,20,30 or primes or composites" style="width: 100%; margin-bottom: 5px;">
+                    <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                        <button class="secondary" onclick="setMultiM('primes')" style="padding: 5px 10px; font-size: 0.9em;">Primes ≤30</button>
+                        <button class="secondary" onclick="setMultiM('composites')" style="padding: 5px 10px; font-size: 0.9em;">Composites ≤30</button>
+                        <button class="secondary" onclick="setMultiM('fibonacci')" style="padding: 5px 10px; font-size: 0.9em;">Fibonacci</button>
+                        <button class="secondary" onclick="setMultiM('highly-composite')" style="padding: 5px 10px; font-size: 0.9em;">Highly Composite</button>
+                    </div>
                 </div>
             </div>
 
@@ -1541,12 +1553,25 @@ function is_prime_candidate(m, k, slice="half",
             const gcdCounts = {};
             const primeFactorCounts = {};
             
+            // Parse multi values for statistics
+            let multiRValues = [];
+            let multiMValues = [];
+            if (mode === 'multi-r') {
+                const inputStr = document.getElementById('multiRValues')?.value || '';
+                multiRValues = parseMultiValues(inputStr);
+            }
+            if (mode === 'multi-m') {
+                const inputStr = document.getElementById('multiMValues')?.value || '';
+                multiMValues = parseMultiValues(inputStr);
+            }
+            
             for (let m = minMod; m <= maxMod; m++) {
                 if (mode === 'primes-only' && !isPrime(m)) continue;
                 if (mode === 'fixed-m') {
                     const fixedM = parseInt(document.getElementById('fixedMValue').value);
                     if (m !== fixedM) continue;
                 }
+                if (mode === 'multi-m' && !multiMValues.includes(m)) continue;
                 
                 if (isPrime(m)) primeRings++;
                 else compositeRings++;
@@ -1556,6 +1581,7 @@ function is_prime_candidate(m, k, slice="half",
                         const fixedR = parseInt(document.getElementById('fixedRValue').value);
                         if (r !== fixedR) continue;
                     }
+                    if (mode === 'multi-r' && !multiRValues.includes(r)) continue;
                     
                     const gcdVal = gcd(r, m);
                     const isOpen = gcdVal === 1;
@@ -1599,6 +1625,8 @@ function is_prime_candidate(m, k, slice="half",
                 mode === 'residue-class' ? `Residue mod k: ${residueK}` : null,
                 mode === 'fixed-r' ? `Fixed r: ${document.getElementById('fixedRValue').value}` : null,
                 mode === 'fixed-m' ? `Fixed m: ${document.getElementById('fixedMValue').value}` : null,
+                mode === 'multi-r' ? `Multiple r: ${document.getElementById('multiRValues').value}` : null,
+                mode === 'multi-m' ? `Multiple m: ${document.getElementById('multiMValues').value}` : null,
             ].filter(p => p !== null);
             
             params.forEach(param => {
@@ -1634,16 +1662,21 @@ function is_prime_candidate(m, k, slice="half",
             // GCD Distribution
             if (Object.keys(gcdCounts).length > 0) {
                 ctx.font = `bold ${fontSize * 1.1}px Arial`;
-                ctx.fillText('═══ GCD DISTRIBUTION ═══', x + padding, currentY);
+                ctx.fillText('═══ GCD DISTRIBUTION (ALL VALUES) ═══', x + padding, currentY);
                 currentY += lineHeight * 1.2;
                 
-                ctx.font = `${fontSize * 0.9}px Arial`;
-                const sortedGCDs = Object.keys(gcdCounts).map(Number).sort((a,b) => a-b).slice(0, 10);
-                sortedGCDs.forEach(gcdVal => {
+                ctx.font = `${fontSize * 0.85}px Arial`;
+                const sortedGCDs = Object.keys(gcdCounts).map(Number).sort((a,b) => a-b);
+                
+                // Calculate how many can fit
+                const maxGCDsToShow = Math.min(sortedGCDs.length, Math.floor((height - currentY) / (lineHeight * 0.85)) - 10);
+                const gcdsToShow = sortedGCDs.slice(0, maxGCDsToShow);
+                
+                gcdsToShow.forEach(gcdVal => {
                     const count = gcdCounts[gcdVal];
                     const percentage = (count/totalPoints*100).toFixed(1);
                     
-                    // Draw color sample
+                    // Draw color sample with enhanced brightness
                     let sampleColor;
                     switch(colorMode) {
                         case 'gcd-local':
@@ -1662,13 +1695,19 @@ function is_prime_candidate(m, k, slice="half",
                     
                     ctx.fillStyle = sampleColor;
                     ctx.beginPath();
-                    ctx.arc(x + padding + 8, currentY - 4, 6, 0, 2 * Math.PI);
+                    ctx.arc(x + padding + 8, currentY - 3, 5, 0, 2 * Math.PI);
                     ctx.fill();
                     
                     ctx.fillStyle = '#2c3e50';
                     ctx.fillText(`gcd=${gcdVal}: ${count} (${percentage}%)`, x + padding + 20, currentY);
-                    currentY += lineHeight * 0.9;
+                    currentY += lineHeight * 0.85;
                 });
+                
+                if (sortedGCDs.length > maxGCDsToShow) {
+                    ctx.fillStyle = '#666';
+                    ctx.fillText(`... and ${sortedGCDs.length - maxGCDsToShow} more GCD values`, x + padding, currentY);
+                    currentY += lineHeight;
+                }
             }
             
             currentY += lineHeight * 0.5;
@@ -2184,13 +2223,53 @@ function is_prime_candidate(m, k, slice="half",
         });
 
         // Show/hide fixed value inputs based on mode
-        document.getElementById('ringMode')?.addEventListener('change', function() {
+        function updateModeControls() {
+            const mode = document.getElementById('ringMode').value;
             const fixedRGroup = document.getElementById('fixedRGroup');
             const fixedMGroup = document.getElementById('fixedMGroup');
+            const multiRGroup = document.getElementById('multiRGroup');
+            const multiMGroup = document.getElementById('multiMGroup');
             
-            fixedRGroup.style.display = this.value === 'fixed-r' ? 'flex' : 'none';
-            fixedMGroup.style.display = this.value === 'fixed-m' ? 'flex' : 'none';
-        });
+            fixedRGroup.style.display = mode === 'fixed-r' ? 'flex' : 'none';
+            fixedMGroup.style.display = mode === 'fixed-m' ? 'flex' : 'none';
+            multiRGroup.style.display = mode === 'multi-r' ? 'flex' : 'none';
+            multiMGroup.style.display = mode === 'multi-m' ? 'flex' : 'none';
+        }
+        
+        document.getElementById('ringMode')?.addEventListener('change', updateModeControls);
+        
+        // Helper functions for multi-select presets
+        function setMultiR(preset) {
+            let values = [];
+            if (preset === 'primes') {
+                values = [2,3,5,7,11,13,17,19];
+            } else if (preset === 'composites') {
+                values = [4,6,8,9,10,12,14,15,16,18,20];
+            } else if (preset === 'powers2') {
+                values = [1,2,4,8,16,32,64];
+            } else if (preset === 'powers3') {
+                values = [1,3,9,27,81];
+            }
+            document.getElementById('multiRValues').value = values.join(',');
+        }
+        
+        function setMultiM(preset) {
+            let values = [];
+            if (preset === 'primes') {
+                values = [2,3,5,7,11,13,17,19,23,29];
+            } else if (preset === 'composites') {
+                values = [4,6,8,9,10,12,14,15,16,18,20,21,22,24,25,26,27,28,30];
+            } else if (preset === 'fibonacci') {
+                values = [1,2,3,5,8,13,21,34,55,89];
+            } else if (preset === 'highly-composite') {
+                values = [1,2,4,6,12,24,36,48,60,120];
+            }
+            document.getElementById('multiMValues').value = values.join(',');
+        }
+        
+        function parseMultiValues(inputStr) {
+            return inputStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n > 0);
+        }
 
         // GCD-based color palette
         const gcdColors = [
@@ -2216,53 +2295,82 @@ function is_prime_candidate(m, k, slice="half",
         }
 
         function getGCDColorGlobal(gcdValue) {
+            // Enhanced with brighter, more vibrant colors
             const globalColors = {
-                1: '#27ae60',  // Coprime
-                2: '#e74c3c',  // Even
-                3: '#3498db',  // Multiple of 3
-                4: '#f39c12',  // Multiple of 4
-                5: '#9b59b6',  // Multiple of 5
-                6: '#1abc9c',  // Multiple of 6
-                7: '#e67e22',  // Multiple of 7
-                8: '#34495e',  // Multiple of 8
-                9: '#16a085',  // Multiple of 9
-                10: '#d35400', // Multiple of 10
+                1: '#2ecc71',  // Bright green - Coprime
+                2: '#e74c3c',  // Red - Even
+                3: '#3498db',  // Blue - Multiple of 3
+                4: '#f39c12',  // Orange - Multiple of 4
+                5: '#9b59b6',  // Purple - Multiple of 5
+                6: '#1abc9c',  // Turquoise - Multiple of 6
+                7: '#e67e22',  // Dark orange - Multiple of 7
+                8: '#34495e',  // Dark blue-gray - Multiple of 8
+                9: '#16a085',  // Teal - Multiple of 9
+                10: '#d35400', // Dark red - Multiple of 10
+                11: '#27ae60', // Green - Multiple of 11
+                12: '#c0392b', // Crimson - Multiple of 12
+                13: '#8e44ad', // Dark purple - Multiple of 13
+                14: '#f1c40f', // Yellow - Multiple of 14
+                15: '#2980b9', // Medium blue - Multiple of 15
+                16: '#7f8c8d', // Gray - Multiple of 16
+                17: '#16a085', // Cyan - Multiple of 17
+                18: '#d35400', // Burnt orange - Multiple of 18
+                19: '#8e44ad', // Violet - Multiple of 19
+                20: '#c0392b', // Brick red - Multiple of 20
             };
+            
+            // For higher GCD values, generate based on prime factorization
+            if (gcdValue > 20) {
+                const spf = smallestPrimeFactor(gcdValue);
+                const hue = (spf * 37) % 360; // Spread hues based on prime
+                const sat = 65 + (gcdValue % 3) * 10; // Vary saturation
+                const light = 40 + (gcdValue % 4) * 10; // Vary brightness
+                return `hsl(${hue}, ${sat}%, ${light}%)`;
+            }
+            
             return globalColors[gcdValue] || '#95a5a6';
         }
 
-        // NEW: GCD Gradient coloring
+        // Enhanced GCD Gradient with better scaling
         function getGCDGradientColor(gcdValue, maxGCD) {
-            if (gcdValue === 1) return '#27ae60'; // Coprime - bright green
+            if (gcdValue === 1) return '#2ecc71'; // Bright coprime green
             
-            // Gradient from green to red based on gcd magnitude
+            // Enhanced gradient with better brightness scaling
             const intensity = gcdValue / maxGCD;
             const hue = 120 * (1 - intensity); // 120=green to 0=red
-            return `hsl(${hue}, 70%, 50%)`;
+            const sat = 75 + intensity * 15; // Increase saturation for higher GCD
+            const light = 55 - intensity * 15; // Decrease lightness for visibility
+            return `hsl(${hue}, ${sat}%, ${light}%)`;
         }
 
-        // NEW: Smallest prime factor coloring
+        // Enhanced smallest prime factor with cobalt scaling
         function getSmallestPrimeFactorColor(gcdValue) {
             if (gcdValue === 1) return '#ecf0f1'; // Near-white for coprime
             
             const spf = smallestPrimeFactor(gcdValue);
+            
+            // Enhanced with brighter, more distinct colors
             const primeColors = {
-                2: '#3498db',   // Blue
-                3: '#f1c40f',   // Yellow
-                5: '#e67e22',   // Orange
-                7: '#9b59b6',   // Purple
-                11: '#1abc9c',  // Turquoise
-                13: '#e74c3c',  // Red
-                17: '#16a085',  // Dark cyan
-                19: '#d35400',  // Dark orange
-                23: '#8e44ad',  // Dark purple
-                29: '#27ae60',  // Green
-                31: '#2c3e50',  // Dark blue
+                2: '#4A90E2',   // Bright cobalt blue
+                3: '#F5A623',   // Golden yellow
+                5: '#FF6B6B',   // Coral red
+                7: '#A05EB5',   // Lavender purple
+                11: '#50E3C2',  // Bright turquoise
+                13: '#E85D75',  // Rose red
+                17: '#4ECDC4',  // Teal cyan
+                19: '#FF8C42',  // Bright orange
+                23: '#9B59B6',  // Purple
+                29: '#2ECC71',  // Emerald green
+                31: '#3D5A80',  // Steel blue
+                37: '#16DB93',  // Mint green
+                41: '#FAC05E',  // Mellow yellow
+                43: '#EE6C4D',  // Burnt sienna
+                47: '#8B5CF6',  // Violet
             };
             return primeColors[spf] || '#95a5a6';
         }
 
-        // NEW: Local density gradient
+        // Enhanced local density with brighter gradient
         function getLocalDensityColor(r, m, windowSize = 5) {
             // Count coprime residues in window around r
             let coprimeCount = 0;
@@ -2276,28 +2384,33 @@ function is_prime_candidate(m, k, slice="half",
             }
             
             const density = coprimeCount / windowSize;
-            const hue = 120 * density; // Green gradient
-            const sat = 70;
-            const light = 30 + density * 40; // Darker to brighter
+            const hue = 200 + density * 60; // Cobalt to cyan range
+            const sat = 70 + density * 20; // Increase saturation with density
+            const light = 35 + density * 35; // Brighter with more density
             return `hsl(${hue}, ${sat}%, ${light}%)`;
         }
 
-        // NEW: Residue class mod k coloring
+        // Enhanced residue class coloring
         function getResidueClassColor(r, k) {
             const residue = r % k;
             const hue = (residue * 360) / k;
-            return `hsl(${hue}, 70%, 50%)`;
+            const sat = 75; // Higher saturation
+            const light = 50 + (residue % 2) * 10; // Slight brightness variation
+            return `hsl(${hue}, ${sat}%, ${light}%)`;
         }
 
-        // NEW: Farey denominator level coloring
+        // Enhanced Farey level with cobalt emphasis
         function getFareyLevelColor(r, m) {
             const g = gcd(r, m);
             const reducedDenom = m / g;
             
-            // Smaller denominators = brighter
+            // Cobalt blue gradient - smaller denominators = brighter cobalt
             const maxDenom = m;
-            const brightness = 100 - (reducedDenom / maxDenom) * 60;
-            return `hsl(200, 70%, ${brightness}%)`;
+            const ratio = reducedDenom / maxDenom;
+            const hue = 210; // Cobalt blue hue
+            const sat = 70 + (1 - ratio) * 25; // More saturated for smaller denominators
+            const light = 65 - ratio * 35; // Brighter for smaller denominators
+            return `hsl(${hue}, ${sat}%, ${light}%)`;
         }
 
         // NEW: Angular hue coloring
@@ -2379,6 +2492,18 @@ function is_prime_candidate(m, k, slice="half",
             const showAllR = document.getElementById('showAllR')?.checked !== false;
             const highlightTracked = document.getElementById('highlightTracked')?.checked !== false;
 
+            // Parse multi-values for multi-r and multi-m modes
+            let multiRValues = [];
+            let multiMValues = [];
+            if (mode === 'multi-r') {
+                const inputStr = document.getElementById('multiRValues')?.value || '';
+                multiRValues = parseMultiValues(inputStr);
+            }
+            if (mode === 'multi-m') {
+                const inputStr = document.getElementById('multiMValues')?.value || '';
+                multiMValues = parseMultiValues(inputStr);
+            }
+
             if (isNaN(minMod) || isNaN(maxMod) || minMod > maxMod) return;
 
             // Background
@@ -2424,9 +2549,11 @@ function is_prime_candidate(m, k, slice="half",
                 }
                 if (mode === 'primes-only' && !isPrime(m)) continue;
                 if (mode === 'fixed-m' && m !== fixedM) continue;
+                if (mode === 'multi-m' && !multiMValues.includes(m)) continue;
                 
                 for (let r = 1; r < m; r++) {
                     if (mode === 'fixed-r' && r !== fixedR) continue;
+                    if (mode === 'multi-r' && !multiRValues.includes(r)) continue;
                     allGCDs.add(gcd(r, m));
                 }
             }
@@ -2435,6 +2562,7 @@ function is_prime_candidate(m, k, slice="half",
             for (let m = minMod; m <= maxMod; m++) {
                 if (mode === 'primes-only' && !isPrime(m)) continue;
                 if (mode === 'fixed-m' && m !== fixedM) continue;
+                if (mode === 'multi-m' && !multiMValues.includes(m)) continue;
 
                 // Calculate radius - invert if needed
                 let radius;
@@ -2461,8 +2589,18 @@ function is_prime_candidate(m, k, slice="half",
                 if (showLabels) {
                     ctx.fillStyle = prime ? '#27ae60' : textColor;
                     ctx.font = `bold ${Math.max(10, Math.min(14, width/180))}px Arial`;
-                    const label = mode === 'fixed-r' ? `m=${m}, r=${fixedR}` : 
-                                 mode === 'fixed-m' ? `m=${fixedM}` : `m=${m}`;
+                    let label = '';
+                    if (mode === 'fixed-r') {
+                        label = `m=${m}, r=${fixedR}`;
+                    } else if (mode === 'fixed-m') {
+                        label = `m=${fixedM}`;
+                    } else if (mode === 'multi-r') {
+                        label = `m=${m}, r∈{${multiRValues.slice(0,3).join(',')}}${multiRValues.length > 3 ? '...' : ''}`;
+                    } else if (mode === 'multi-m') {
+                        label = `m=${m}`;
+                    } else {
+                        label = `m=${m}`;
+                    }
                     ctx.fillText(label, centerX + radius + 10, centerY);
                 }
 
@@ -2489,11 +2627,12 @@ function is_prime_candidate(m, k, slice="half",
                 }
 
                 // Draw residue points
-                const startR = (mode === 'fixed-m') ? 1 : (mode === 'fixed-r' ? fixedR : 1);
-                const endR = (mode === 'fixed-m') ? m - 1 : (mode === 'fixed-r' ? fixedR : m - 1);
+                const startR = (mode === 'fixed-m' || mode === 'multi-m') ? 1 : (mode === 'fixed-r' ? fixedR : 1);
+                const endR = (mode === 'fixed-m' || mode === 'multi-m') ? m - 1 : (mode === 'fixed-r' ? fixedR : m - 1);
 
                 for (let r = startR; r <= endR; r++) {
                     if (mode === 'fixed-r' && r !== fixedR) continue;
+                    if (mode === 'multi-r' && !multiRValues.includes(r)) continue;
                     if (r >= m) continue;
 
                     const gcdVal = gcd(r, m);
