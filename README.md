@@ -497,6 +497,113 @@
             <strong>Abstract.</strong> We introduce the <em>Nested Farey Channel Framework</em>, a geometric representation of modular arithmetic on the unit circle, and develop two complementary heuristics for primality analysis. The <em>Fractional-Slice Coprimality Heuristic</em> provides rapid probabilistic prime detection by sampling coprime residues within restricted circular arcs, while the <em>Chord Length Uniformity Heuristic</em> offers an independent geometric signature based on inter-residue spacing. Each modulus \(m\) maps to \(m\) equidistant points at angles \(2\pi r/m\). Prime moduli exhibit maximal channel openness and uniform chord distributions, while composites show blocked Farey channels and irregular spacing. Extensive empirical validation across n ∈ [3, 10,000] reveals separation increasing from 32.7% to 92.3%, demonstrating robust scalability and asymptotic optimality. We prove formal bounds, derive decision thresholds, and provide interactive demonstrations with publication-quality visualizations featuring 10 coloring schemes and 4K export capabilities.
         </div>
 
+        <div class="section-title">2. Euler's Theorem and the Riemann Hypothesis Connection</div>
+
+        <p><strong>Motivation:</strong> Before exploring the nested Farey channels, we establish the foundational connection between Euler's theorem on modular symmetry and the Riemann Hypothesis. This section visualizes how local GCD=1 structures combine to form the global analytic symmetry of the Riemann zeta function.</p>
+
+        <div class="theorem">
+            <span class="label">Theorem 2.1 (Euler's Theorem and GCD=1 Set).</span>
+            For integers \(a, n \in \mathbb{Z}^{+}\) such that \(\gcd(a,n)=1\),
+            \[
+            a^{\varphi(n)} \equiv 1 \pmod{n},
+            \]
+            where \(\varphi(n)\) is Euler's totient function. The set \(\Phi(n) = \{ r : \gcd(r,n)=1 \}\) forms a multiplicative group with \(|\Phi(n)| = \varphi(n)\).
+        </div>
+
+        <div class="subsection-title">2.1 Unit Circle Embedding</div>
+
+        <p>Each GCD=1 residue \(r \in \Phi(n)\) maps to the unit circle via:</p>
+        <p style="text-align: center;">
+        \[
+        z_r = e^{2\pi i \frac{r}{n}}
+        \]
+        </p>
+        <p>This creates a symmetric ring of \(\varphi(n)\) visible lattice points, with Euler's orbit closing after exactly \(\varphi(n)\) rotations.</p>
+
+        <div class="subsection-title">2.2 Interactive Visualization: Euler Orbits and Prime Rings</div>
+
+        <div class="canvas-container">
+            <canvas id="eulerRiemannCanvas" width="900" height="900"></canvas>
+        </div>
+
+        <div class="controls" style="margin-top: 15px;">
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                <div class="control-group">
+                    <label for="erMaxModulus">Max Modulus:</label>
+                    <input type="number" id="erMaxModulus" min="3" max="100" value="30" step="1" oninput="drawEulerRiemann()">
+                </div>
+                
+                <div class="control-group">
+                    <label for="erShowPrimesOnly">
+                        <input type="checkbox" id="erShowPrimesOnly" onchange="drawEulerRiemann()">
+                        Show Primes Only
+                    </label>
+                </div>
+                
+                <div class="control-group">
+                    <label for="erShowOrbits">
+                        <input type="checkbox" id="erShowOrbits" checked onchange="drawEulerRiemann()">
+                        Show Euler Orbits
+                    </label>
+                </div>
+                
+                <div class="control-group">
+                    <label for="erOrbitModulus">Orbit for M:</label>
+                    <input type="number" id="erOrbitModulus" min="2" max="30" value="7" step="1" oninput="drawEulerRiemann()">
+                </div>
+                
+                <div class="control-group">
+                    <label for="erOrbitBase">Base a:</label>
+                    <input type="number" id="erOrbitBase" min="2" max="20" value="3" step="1" oninput="drawEulerRiemann()">
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <button onclick="drawEulerRiemann()">Redraw</button>
+                <button onclick="animateEulerOrbit()">Animate Orbit</button>
+                <button onclick="stopEulerAnimation()">Stop</button>
+            </div>
+        </div>
+
+        <div id="eulerRiemannStats" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 0.9em;"></div>
+
+        <div class="subsection-title">2.3 Connection to Riemann Zeta Function</div>
+
+        <p>For each prime \(p\), the complete ring \(\Phi(p) = \{1,2,\dots,p-1\}\) contributes one factor to Euler's product:</p>
+        <p style="text-align: center;">
+        \[
+        \zeta(s) = \prod_{p \ \text{prime}} \frac{1}{1 - p^{-s}}
+        \]
+        </p>
+
+        <div class="theorem">
+            <span class="label">Proposition 2.2 (Critical Line as Harmonic Center).</span>
+            At \(\text{Re}(s) = \tfrac{1}{2}\), the rotations from all primes reach perfect equilibrium, forming the harmonic center of the infinite concentric GCD=1 system. The Riemann Hypothesis asserts all nontrivial zeros lie on this critical line:
+            \[
+            \boxed{\text{Re}(s) = \frac{1}{2}}
+            \]
+        </div>
+
+        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #667eea; margin: 20px 0;">
+        \[
+        \boxed{
+        \text{Euler's local modular symmetry} \quad \longleftrightarrow \quad
+        \text{Riemann's global analytic symmetry}
+        }
+        \]
+        </p>
+
+        <div class="remarks">
+            <strong>Visual Interpretation:</strong>
+            <ul>
+                <li><strong>Each ring</strong> represents a modulus \(M\) with radius proportional to \(M\)</li>
+                <li><strong>GCD=1 points</strong> appear as visible lattice points on each ring</li>
+                <li><strong>Prime rings</strong> are complete circles (all points except 0 are coprime)</li>
+                <li><strong>Euler orbits</strong> show the cyclic rotation returning to 1 after \(\varphi(M)\) steps</li>
+                <li><strong>Critical line</strong> corresponds to the balance point where all prime oscillations harmonize</li>
+            </ul>
+        </div>
+
         <div class="section-title">Part I: Nested Farey Channels Framework</div>
 
         <div class="definition">
@@ -5632,6 +5739,212 @@ function is_prime_candidate(m, k, slice="half",
             console.log('🖱️  Pan: Click and drag any canvas');
             console.log('🎨 Colors: Use theme dropdown or color pickers');
         });
+        
+        // ==================== EULER-RIEMANN VISUALIZATION ====================
+        
+        let eulerAnimationId = null;
+        let eulerOrbitStep = 0;
+
+        function eulerTotient(n) {
+            let count = 0;
+            for (let r = 1; r < n; r++) {
+                if (gcd(r, n) === 1) count++;
+            }
+            return count;
+        }
+
+        function drawEulerRiemann() {
+            const canvas = document.getElementById('eulerRiemannCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            const maxM = parseInt(document.getElementById('erMaxModulus').value) || 30;
+            const showPrimesOnly = document.getElementById('erShowPrimesOnly').checked;
+            const showOrbits = document.getElementById('erShowOrbits').checked;
+            const orbitM = parseInt(document.getElementById('erOrbitModulus').value) || 7;
+            const orbitBase = parseInt(document.getElementById('erOrbitBase').value) || 3;
+            
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, width, height);
+            
+            const maxRadius = Math.min(width, height) * 0.42;
+            const moduli = [];
+            for (let m = 2; m <= maxM; m++) {
+                if (!showPrimesOnly || isPrime(m)) moduli.push(m);
+            }
+            
+            let primeCount = 0;
+            let totalGCD1 = 0;
+            
+            moduli.forEach((m, idx) => {
+                const radius = (idx + 1) * (maxRadius / moduli.length);
+                const isPrimeM = isPrime(m);
+                if (isPrimeM) primeCount++;
+                
+                ctx.strokeStyle = isPrimeM ? 'rgba(100, 200, 255, 0.3)' : 'rgba(150, 150, 150, 0.15)';
+                ctx.lineWidth = isPrimeM ? 1.5 : 0.5;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.stroke();
+                
+                const phi = eulerTotient(m);
+                totalGCD1 += phi;
+                
+                for (let r = 0; r < m; r++) {
+                    if (gcd(r, m) === 1) {
+                        const angle = (2 * Math.PI * r) / m - Math.PI / 2;
+                        const x = centerX + radius * Math.cos(angle);
+                        const y = centerY + radius * Math.sin(angle);
+                        
+                        ctx.fillStyle = isPrimeM ? '#4ecdc4' : '#95a5a6';
+                        ctx.beginPath();
+                        ctx.arc(x, y, isPrimeM ? 2.5 : 1.5, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                }
+                
+                if (isPrimeM && m <= 23) {
+                    ctx.fillStyle = '#4ecdc4';
+                    ctx.font = '11px Arial';
+                    ctx.fillText(`p=${m}`, centerX + radius + 5, centerY);
+                }
+            });
+            
+            if (showOrbits && moduli.includes(orbitM) && gcd(orbitBase, orbitM) === 1) {
+                const mIdx = moduli.indexOf(orbitM);
+                const radius = (mIdx + 1) * (maxRadius / moduli.length);
+                const phi = eulerTotient(orbitM);
+                
+                let current = 1;
+                const orbitPoints = [];
+                
+                for (let k = 0; k < phi; k++) {
+                    const angle = (2 * Math.PI * current) / orbitM - Math.PI / 2;
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+                    orbitPoints.push({ x, y });
+                    current = (current * orbitBase) % orbitM;
+                }
+                
+                ctx.strokeStyle = 'rgba(255, 200, 0, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                orbitPoints.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.closePath();
+                ctx.stroke();
+                
+                orbitPoints.forEach((p, i) => {
+                    ctx.fillStyle = i === 0 ? '#ff3860' : '#ffdd57';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+            }
+            
+            ctx.fillStyle = '#ecf0f1';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Euler Orbits & Prime Rings: GCD=1 Structure', centerX, 30);
+            
+            const statsDiv = document.getElementById('eulerRiemannStats');
+            if (statsDiv) {
+                const avgPhi = moduli.length > 0 ? (totalGCD1 / moduli.length).toFixed(1) : 0;
+                statsDiv.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div><strong>Moduli shown:</strong> ${moduli.length}</div>
+                        <div><strong>Prime rings:</strong> ${primeCount}</div>
+                        <div><strong>Total GCD=1 points:</strong> ${totalGCD1}</div>
+                        <div><strong>Avg φ(M):</strong> ${avgPhi}</div>
+                        ${showOrbits ? `<div><strong>Orbit M=${orbitM}, a=${orbitBase}:</strong> φ(${orbitM})=${eulerTotient(orbitM)} steps</div>` : ''}
+                    </div>
+                `;
+            }
+        }
+
+        function animateEulerOrbit() {
+            stopEulerAnimation();
+            eulerOrbitStep = 0;
+            
+            const orbitM = parseInt(document.getElementById('erOrbitModulus').value) || 7;
+            const orbitBase = parseInt(document.getElementById('erOrbitBase').value) || 3;
+            
+            if (gcd(orbitBase, orbitM) !== 1) {
+                alert('Base a must be coprime to M!');
+                return;
+            }
+            
+            const phi = eulerTotient(orbitM);
+            
+            function animate() {
+                drawEulerRiemann();
+                
+                const canvas = document.getElementById('eulerRiemannCanvas');
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width;
+                const height = canvas.height;
+                const centerX = width / 2;
+                const centerY = height / 2;
+                
+                const maxM = parseInt(document.getElementById('erMaxModulus').value) || 30;
+                const showPrimesOnly = document.getElementById('erShowPrimesOnly').checked;
+                
+                const moduli = [];
+                for (let m = 2; m <= maxM; m++) {
+                    if (!showPrimesOnly || isPrime(m)) moduli.push(m);
+                }
+                
+                if (!moduli.includes(orbitM)) return;
+                
+                const maxRadius = Math.min(width, height) * 0.42;
+                const mIdx = moduli.indexOf(orbitM);
+                const radius = (mIdx + 1) * (maxRadius / moduli.length);
+                
+                let current = 1;
+                for (let k = 0; k < eulerOrbitStep; k++) {
+                    current = (current * orbitBase) % orbitM;
+                }
+                
+                const angle = (2 * Math.PI * current) / orbitM - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                ctx.fillStyle = '#ff3860';
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.fillStyle = '#ffdd57';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(`Step ${eulerOrbitStep + 1}/${phi}: r=${current}`, 20, height - 20);
+                
+                eulerOrbitStep = (eulerOrbitStep + 1) % phi;
+                eulerAnimationId = setTimeout(animate, 500);
+            }
+            
+            animate();
+        }
+
+        function stopEulerAnimation() {
+            if (eulerAnimationId) {
+                clearTimeout(eulerAnimationId);
+                eulerAnimationId = null;
+            }
+        }
+
+        setTimeout(() => {
+            if (document.getElementById('eulerRiemannCanvas')) {
+                drawEulerRiemann();
+            }
+        }, 100);
     </script>
 </body>
 </html>
