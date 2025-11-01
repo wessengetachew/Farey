@@ -1913,7 +1913,147 @@ function is_prime_candidate(m, k, slice="half",
 
         <p>This equivalence establishes that the modular sieve, the Dirichlet \(L\)-series, and the modular form expansions all operate over the same foundational structure: the set of GCD=1 residues mapped on the unit circle.</p>
 
-        <div class="subsection-title">References for Section 10.9</div>
+        <div class="subsection-title">10.10 Euler's Theorem, GCD=1 Modular Mapping, and Visual Symmetry of the Riemann Hypothesis</div>
+
+        <div class="theorem">
+            <span class="label">Theorem 10.8 (Euler's Theorem and GCD=1 Set).</span>
+            For integers \(a, n \in \mathbb{Z}^{+}\) such that \(\gcd(a,n)=1\),
+            \[
+            a^{\varphi(n)} \equiv 1 \pmod{n},
+            \]
+            where \(\varphi(n)\) is Euler's totient function — the count of integers in \(\{1,2,\dots,n\}\) that are coprime to \(n\).
+        </div>
+
+        <p>This means that the set of all residues coprime to \(n\),</p>
+        <p style="text-align: center;">
+        \[
+        \Phi(n) = \{ r \in \{1,2,\dots,n\} : \gcd(r,n)=1 \},
+        \]
+        </p>
+        <p>forms a multiplicative group modulo \(n\) with \(|\Phi(n)| = \varphi(n)\). Every element \(a \in \Phi(n)\) rotates through the full orbit of visible residues before returning to 1 after exactly \(\varphi(n)\) steps.</p>
+
+        <div class="subsection-title">Mapping GCD=1 Residues to the Unit Circle</div>
+
+        <p>Each residue \(r \in \Phi(n)\) can be mapped to the complex unit circle by the exponential map:</p>
+        <p style="text-align: center;">
+        \[
+        z_r = e^{2\pi i \frac{r}{n}}.
+        \]
+        </p>
+        <p>This embeds modular arithmetic into the complex plane, turning each residue into a point on the unit circle at angle \(2\pi r/n\). All GCD=1 residues appear as <em>visible lattice points</em> on this circle. Non-coprime residues are invisible (they fall on the same rays as smaller moduli).</p>
+
+        <p>Thus, for each modulus \(n\), we can visualize the "Euler orbit" as a symmetric ring of \(\varphi(n)\) points evenly spaced around the circle.</p>
+
+        <div class="subsection-title">Concentric Modular Arrangement</div>
+
+        <p>Let \(M\) vary through the natural numbers (or specifically through prime moduli). Each modulus generates its own unit circle of GCD=1 residues. To compare them, we place each circle at a different radius, such as</p>
+        <p style="text-align: center;">
+        \[
+        r_M = \log(M) \quad \text{or simply} \quad r_M = M,
+        \]
+        </p>
+        <p>and define the full modular structure as the concentric union:</p>
+        <p style="text-align: center;">
+        \[
+        \mathcal{R} = \bigcup_{M=1}^{\infty} 
+        \left\{ e^{2\pi i \frac{r}{M}} : \gcd(r,M)=1 \right\}.
+        \]
+        </p>
+
+        <div class="remarks">
+            <strong>Geometric Structure:</strong>
+            <p>This creates a two-dimensional modular field:</p>
+            <ul>
+                <li>Each ring corresponds to a modulus \(M\)</li>
+                <li>Each point on that ring represents a coprime residue \(r\)</li>
+                <li>Together, all rings represent the union of all modular GCD=1 structures — a visible geometry of the multiplicative integers</li>
+            </ul>
+        </div>
+
+        <div class="subsection-title">Euler's Rotation Orbits</div>
+
+        <p>For a fixed \(a\) with \(\gcd(a,n)=1\), the iterative map</p>
+        <p style="text-align: center;">
+        \[
+        r_{k+1} = a r_k \bmod n
+        \]
+        </p>
+        <p>generates a rotation through \(\Phi(n)\). Mapping each \(r_k\) onto the unit circle via \(e^{2\pi i r_k/n}\), we obtain a cyclic trajectory that closes after \(\varphi(n)\) rotations, returning exactly to 1.</p>
+
+        <div class="theorem">
+            <span class="label">Geometric Interpretation of Euler's Theorem.</span>
+            Each GCD=1 element defines a perfect periodic orbit in the modular space. The geometric meaning of Euler's theorem is that every coprime element traces a complete cycle on the unit circle that closes after exactly \(\varphi(n)\) steps.
+        </div>
+
+        <div class="subsection-title">From Local to Global: Prime Rings and \(\zeta(s)\)</div>
+
+        <p>For each <em>prime</em> modulus \(p\):</p>
+        <p style="text-align: center;">
+        \[
+        \Phi(p) = \{1,2,\dots,p-1\},
+        \]
+        </p>
+        <p>and thus \(\varphi(p)=p-1\). Every nonzero residue is coprime, forming a complete ring of symmetry.</p>
+
+        <p>When we consider all primes together, we obtain an infinite tower of perfectly symmetric GCD=1 circles — each prime defining a full rotation orbit. Their global product structure is encoded analytically in Euler's product for the Riemann zeta function:</p>
+        <p style="text-align: center;">
+        \[
+        \zeta(s) = \prod_{p \ \text{prime}} \frac{1}{1 - p^{-s}}.
+        \]
+        </p>
+
+        <div class="remarks">
+            <strong>Analytic-Geometric Bridge:</strong>
+            <p>This is the bridge between modular geometry and analytic number theory: each prime orbit corresponds to one factor in the infinite product. The local modular symmetry of each prime ring combines to form the global structure of the Riemann zeta function.</p>
+        </div>
+
+        <div class="subsection-title">Visual Connection to the Riemann Hypothesis</div>
+
+        <p>In the complex plane \(s = \sigma + it\):</p>
+        <ul style="margin-left: 20px;">
+            <li>The \(\text{Re}(s) = \sigma\) term controls the damping (how much each prime's rotation shrinks)</li>
+            <li>The \(\text{Im}(s) = t\) term controls the angular rotation \(p^{-it}\)</li>
+        </ul>
+
+        <p>At \(\sigma = \tfrac{1}{2}\), the rotations from all primes reach perfect equilibrium — not diverging, not collapsing — forming a global resonance line.</p>
+
+        <div class="theorem">
+            <span class="label">Proposition 10.8 (Critical Line as Harmonic Center).</span>
+            Geometrically, the critical line represents the midpoint balance of all modular GCD=1 rotations viewed simultaneously. It is the harmonic center of the infinite concentric GCD=1 system.
+        </div>
+
+        <p>The Riemann Hypothesis thus asserts that all nontrivial zero points of this collective modular interference lie exactly on that balance axis:</p>
+        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #667eea; margin: 20px 0;">
+        \[
+        \boxed{\text{Re}(s) = \frac{1}{2}}.
+        \]
+        </p>
+
+        <div class="subsection-title">Visualization Summary</div>
+
+        <div class="remarks">
+            <strong>Unified Geometric Picture:</strong>
+            <ul>
+                <li>For each modulus \(M\), map all \(r\) with \(\gcd(r,M)=1\) as \(e^{2\pi i r/M}\) on a circle</li>
+                <li>Stack these circles concentrically by increasing \(M\) or \(\log M\)</li>
+                <li>Color or connect each prime ring separately to reveal prime symmetry</li>
+                <li>Animate the rotation \(a^k \bmod M\) to show Euler's orbit closing in \(\varphi(M)\) steps</li>
+                <li>Overlay the complex phase \(p^{-it}\) to visualize the collective oscillation that defines \(\zeta(s)\)</li>
+            </ul>
+        </div>
+
+        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #667eea; margin: 20px 0;">
+        \[
+        \boxed{
+        \text{Euler's local modular symmetry} \quad \longleftrightarrow \quad
+        \text{Riemann's global analytic symmetry}
+        }
+        \]
+        </p>
+
+        <p>This full picture unifies the local GCD=1 structure with the global zeros of the Riemann zeta function, providing a geometric interpretation of one of mathematics' deepest conjectures.</p>
+
+        <div class="subsection-title">References for Sections 10.9-10.10</div>
 
         <ol style="margin-left: 40px; font-size: 0.95em; line-height: 1.8;">
             <li>P. G. L. Dirichlet, <em>Beweis des Satzes, dass jede unbegrenzte arithmetische Progression, deren erstes Glied und Differenz ganze Zahlen ohne gemeinschaftlichen Faktor sind, unendlich viele Primzahlen enthält</em>, Abh. Königl. Preuß. Akad. Wiss. (1837).</li>
