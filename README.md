@@ -6,6 +6,66 @@
     <title>Nested Farey Channels & Fractional-Slice Coprimality - Wessen Getachew</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
     <style>
+
+        
+        /* Force all text to be black on white backgrounds */
+        .paper-container,
+        .paper-container * {
+            color: #000000 !important;
+        }
+        
+        /* Override for specific colored elements that should stay colored */
+        .paper-container button,
+        .paper-container .button,
+        .paper-container input[type="button"],
+        .paper-container input[type="submit"] {
+            color: white !important;
+            background: #27ae60 !important;
+        }
+        
+        .paper-container button:hover {
+            background: #229954 !important;
+        }
+        
+        /* Canvas section titles */
+        h1, h2, h3, h4 {
+            color: #000000 !important;
+        }
+        
+        /* All labels and text elements */
+        label, p, span, div, strong, em {
+            color: #000000 !important;
+        }
+        
+        /* Control sections */
+        .controls,
+        .controls * {
+            color: #000000 !important;
+        }
+        
+        .controls button {
+            background: #3498db !important;
+            color: white !important;
+        }
+        
+        /* Specific button types */
+        button[onclick*="Play"],
+        button:contains("Play") {
+            background: #27ae60 !important;
+            color: white !important;
+        }
+        
+        button[onclick*="export"],
+        button[onclick*="Export"] {
+            background: #3498db !important;
+            color: white !important;
+        }
+        
+        button[onclick*="reset"],
+        button[onclick*="Reset"] {
+            background: #e74c3c !important;
+            color: white !important;
+        }
         * {
             margin: 0;
             padding: 0;
@@ -13,6 +73,7 @@
         }
 
         body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
             line-height: 1.6;
             color: #2c3e50;
@@ -21,6 +82,8 @@
         }
 
         .paper-container {
+            color: #000000;
+            background: white;
             max-width: 1100px;
             margin: 0 auto;
             background: white;
@@ -32,7 +95,7 @@
         header {
             text-align: center;
             margin-bottom: 50px;
-            border-bottom: 3px solid #667eea;
+            border-bottom: 3px solid #ffffff;
             padding-bottom: 30px;
         }
 
@@ -62,7 +125,7 @@
             color: #2c3e50;
             margin-top: 45px;
             margin-bottom: 20px;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 2px solid #ffffff;
             padding-bottom: 10px;
         }
 
@@ -74,7 +137,7 @@
             margin-bottom: 15px;
         }
 
-        p {
+        p { color: #000000;
             text-align: justify;
             margin-bottom: 15px;
             font-size: 1.05em;
@@ -141,7 +204,7 @@
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             padding: 35px;
             border-radius: 12px;
-            border: 2px solid #667eea;
+            border: 2px solid #ffffff;
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
 
@@ -164,7 +227,7 @@
             align-items: center;
         }
 
-        .control-group {
+        .control-group { color: #000000;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -191,7 +254,7 @@
 
         input[type="number"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #ffffff;
         }
 
         select {
@@ -204,7 +267,7 @@
 
         button {
             padding: 10px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
             color: white;
             border: none;
             border-radius: 6px;
@@ -267,7 +330,7 @@
             padding: 20px;
             background: white;
             border-radius: 8px;
-            border: 2px solid #667eea;
+            border: 2px solid #ffffff;
         }
 
         .stat-row {
@@ -287,7 +350,7 @@
         }
 
         .stat-value {
-            color: #667eea;
+            color: #ffffff;
             font-weight: 700;
         }
 
@@ -336,7 +399,7 @@
             padding: 30px;
             margin: 30px 0;
             border-radius: 8px;
-            border: 2px solid #667eea;
+            border: 2px solid #ffffff;
         }
 
         table {
@@ -352,7 +415,7 @@
         }
 
         th {
-            background: #667eea;
+            background: #ffffff;
             color: white;
             font-weight: 600;
         }
@@ -372,7 +435,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
             transition: width 0.3s;
             display: flex;
             align-items: center;
@@ -385,7 +448,7 @@
             margin-top: 20px;
             max-height: 400px;
             overflow-y: auto;
-            border: 2px solid #667eea;
+            border: 2px solid #ffffff;
             border-radius: 8px;
             background: white;
         }
@@ -457,7 +520,7 @@
                 padding: 30px 20px;
             }
 
-            h1 {
+            h1 { color: #000000;
                 font-size: 1.8em;
             }
 
@@ -470,13 +533,46 @@
                 flex-direction: column;
             }
 
-            .control-group {
+            .control-group { color: #000000;
                 width: 100%;
             }
         }
-    </style>
+    
+        button, .button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        
+        button:hover, .button:hover {
+            background: #2980b9;
+        }
+        
+        button.secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        button.secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .controls button {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .controls button:hover {
+            background: #229954;
+        }
+</style>
 </head>
 <body>
+<div>
     <div class="paper-container">
         <header>
             <h1>Nested Farey Channels & Fractional-Slice Coprimality Heuristic</h1>
@@ -559,30 +655,7 @@
             </div>
             
             
-            <div class="controls" style="margin-top: 15px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 8px; border: 2px solid rgba(102, 126, 234, 0.3);">
-                <strong style="color: #667eea;">🎨 Advanced Visualization:</strong>
-                
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
-                    <div class="control-group">
-                        <label for="erPointSize">Point Size:</label>
-                        <input type="range" id="erPointSize" min="1" max="8" value="2.5" step="0.5" oninput="drawEulerRiemann()">
-                        <span id="erPointSizeVal">2.5</span>px
-                    </div>
-                    
-                    <div class="control-group">
-                        <label for="erRingOpacity">Ring Opacity:</label>
-                        <input type="range" id="erRingOpacity" min="0" max="100" value="30" step="5" oninput="drawEulerRiemann()">
-                        <span id="erRingOpacityVal">30</span>%
-                    </div>
-                    
-                    <div class="control-group">
-                        <label for="erOrbitWidth">Orbit Width:</label>
-                        <input type="range" id="erOrbitWidth" min="1" max="5" value="2" step="0.5" oninput="drawEulerRiemann()">
-                        <span id="erOrbitWidthVal">2</span>px
-                    </div>
-                </div>
-                
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
+                            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
                     <div class="control-group">
                         <label>
                             <input type="checkbox" id="erShowLabels" onchange="drawEulerRiemann()">
@@ -669,7 +742,7 @@
             \]
         </div>
 
-        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #667eea; margin: 20px 0;">
+        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #ffffff; margin: 20px 0;">
         \[
         \boxed{
         \text{Euler's local modular symmetry} \quad \longleftrightarrow \quad
@@ -810,7 +883,7 @@
         </div>
 
         <div class="experimental-section">
-            <h3 style="color: #667eea; margin-bottom: 20px;">Fractional-Slice Coprimality Test</h3>
+            <h3 style="color: #000000; margin-bottom: 20px;">Fractional-Slice Coprimality Test</h3>
             
             <div class="controls" style="margin-bottom: 20px;">
                 <div class="control-group">
@@ -846,7 +919,7 @@
             </div>
 
             <div id="testHistory" style="display: none;">
-                <h4 style="color: #667eea; margin: 20px 0 10px 0;">Test History</h4>
+                <h4 style="color: #000000; margin: 20px 0 10px 0;">Test History</h4>
                 <div class="results-history" id="testHistoryList"></div>
             </div>
         </div>
@@ -891,7 +964,7 @@ function is_prime_candidate(m, k, slice="half",
         <div class="section-title">5. Experimental Evaluation</div>
 
         <div class="experimental-section">
-            <h3 style="color: #667eea; margin-bottom: 20px;">Large-Scale Empirical Testing</h3>
+            <h3 style="color: #000000; margin-bottom: 20px;">Large-Scale Empirical Testing</h3>
             
             <div class="controls" style="margin-bottom: 20px;">
                 <div class="control-group">
@@ -960,7 +1033,7 @@ function is_prime_candidate(m, k, slice="half",
         </ul>
 
         <div class="canvas-container">
-            <h3 style="color: #667eea; margin-bottom: 20px; text-align: center;">Concentric Rings: Nested Farey Structure</h3>
+            <h3 style="color: #000000; margin-bottom: 20px; text-align: center;">Concentric Rings: Nested Farey Structure</h3>
             <div style="text-align: center; margin-bottom: 15px;">
                 <span style="color: #666; font-weight: 600;">Resolution: </span>
                 <button class="mode-btn" onclick="setConcentricResolution(1920)">HD</button>
@@ -970,8 +1043,8 @@ function is_prime_candidate(m, k, slice="half",
             <canvas id="concentricCanvas" width="2560" height="2560" style="max-width: 100%; height: auto;"></canvas>
             
             <!-- ========== UNIVERSAL CONTROLS: ANIMATION, ZOOM, COLORS ========== -->
-            <div class="controls" style="margin-top: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; border-radius: 10px;">
-                <div style="color: white; font-weight: 600; margin-bottom: 10px; font-size: 1.1em;">🎬 Animation & View Controls</div>
+            <div class="controls" style="margin-top: 15px; background: #ffffff; padding: 15px; border-radius: 10px;">
+                <div style="color: black; font-weight: 600; margin-bottom: 10px; font-size: 1.1em;">🎬 Animation & View Controls</div>
                 
                 <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
                     <!-- Animation Controls -->
@@ -981,10 +1054,10 @@ function is_prime_candidate(m, k, slice="half",
                             ▶ Play
                         </button>
                         <div style="display: flex; align-items: center; gap: 5px;">
-                            <label style="color: white; font-size: 0.9em;">Speed:</label>
+                            <label style="color: black; font-size: 0.9em;">Speed:</label>
                             <input type="range" id="concentricAnimSpeed" min="0.1" max="5" value="1" step="0.1" 
                                    style="width: 100px;" oninput="setAnimationSpeed('concentricCanvas', this.value); document.getElementById('concentricSpeedVal').textContent = this.value + 'x'">
-                            <span id="concentricSpeedVal" style="color: white; font-size: 0.9em; min-width: 35px;">1x</span>
+                            <span id="concentricSpeedVal" style="color: black; font-size: 0.9em; min-width: 35px;">1x</span>
                         </div>
                         <div style="display: flex; gap: 5px;">
                             <button onclick="setAnimationDirection('concentricCanvas', 1)" 
@@ -1000,8 +1073,8 @@ function is_prime_candidate(m, k, slice="half",
                     
                     <!-- Zoom/Pan Controls -->
                     <div style="display: flex; gap: 10px; align-items: center; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
-                        <label style="color: white; font-weight: 600;">🔍 Zoom:</label>
-                        <span id="concentricCanvasZoomDisplay" style="color: white; font-weight: 600; min-width: 50px;">100%</span>
+                        <label style="color: black; font-weight: 600;">🔍 Zoom:</label>
+                        <span id="concentricCanvasZoomDisplay" style="color: black; font-weight: 600; min-width: 50px;">100%</span>
                         <button onclick="resetZoomPan('concentricCanvas')" 
                                 style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
                             Reset View
@@ -1009,28 +1082,6 @@ function is_prime_candidate(m, k, slice="half",
                         <span style="color: rgba(255,255,255,0.8); font-size: 0.85em;">
                             (Mouse wheel: zoom | Drag: pan)
                         </span>
-                    </div>
-                </div>
-            </div>
-            
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <label style="color: white; font-size: 0.9em;">GCD≠1:</label>
-                            <input type="color" id="blockedColorPicker" value="#e74c3c" 
-                                   onchange="setCustomColor('blocked', this.value)" 
-                                   style="width: 40px; height: 30px; border: 2px solid white; border-radius: 4px; cursor: pointer;">
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <label style="color: white; font-size: 0.9em;">Highlight:</label>
-                            <input type="color" id="highlightColorPicker" value="#FFD700" 
-                                   onchange="setCustomColor('highlight', this.value)" 
-                                   style="width: 40px; height: 30px; border: 2px solid white; border-radius: 4px; cursor: pointer;">
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <label style="color: white; font-size: 0.9em;">Background:</label>
-                            <input type="color" id="backgroundColorPicker" value="#ffffff" 
-                                   onchange="setCustomColor('background', this.value)" 
-                                   style="width: 40px; height: 30px; border: 2px solid white; border-radius: 4px; cursor: pointer;">
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1199,50 +1250,13 @@ function is_prime_candidate(m, k, slice="half",
             </div>
 
             
-            <div class="controls" style="margin-top: 15px;">
-                <strong style="color: #e91e63;">🎨 Color Customization</strong>
-                
-                <div style="margin-top: 10px; padding: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px;">
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
-                        <div class="control-group">
-                            <label for="concentricTheme">Themes:</label>
-                            <select id="concentricTheme" onchange="applyConcentricTheme()">
-                                <option value="default">Default</option>
-                                <option value="ocean">Ocean Blue</option>
-                                <option value="sunset">Sunset</option>
-                                <option value="forest">Forest</option>
-                                <option value="neon">Neon</option>
-                                <option value="pastel">Pastel</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.95); border-radius: 8px;">
-                        <div class="control-group">
-                            <label for="concentricGCD1Color">GCD=1:</label>
-                            <input type="color" id="concentricGCD1Color" value="#2ecc71">
-                        </div>
-                        <div class="control-group">
-                            <label for="concentricGCDNotColor">GCD≠1:</label>
-                            <input type="color" id="concentricGCDNotColor" value="#e74c3c">
-                        </div>
-                        <div class="control-group">
-                            <label for="concentricHighlightColor">Highlight:</label>
-                            <input type="color" id="concentricHighlightColor" value="#f39c12">
-                        </div>
-                        <div class="control-group">
-                            <label for="concentricBgColor">Background:</label>
-                            <input type="color" id="concentricBgColor" value="#000000">
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
 
             <div class="controls" style="margin-top: 15px;">
                 <strong style="color: #495057;">🔍 Zoom:</strong> Mouse wheel on any canvas
             </div>
 
-<div class="controls" style="margin-top: 15px;">
+            <div class="controls" style="margin-top: 15px;">
                 <strong style="color: #495057;">Visibility:</strong>
                 <label style="display: inline-flex; align-items: center; margin-left: 15px;">
                     <input type="checkbox" id="showRings" style="margin-right: 5px;">
@@ -1422,7 +1436,7 @@ function is_prime_candidate(m, k, slice="half",
         <p>Explore the Farey-Shell embedding in three dimensions, where the third axis represents different moduli or lifting stages. This visualization reveals the nested structure across multiple scales.</p>
 
         <div class="canvas-container">
-            <h3 style="color: #667eea; margin-bottom: 20px; text-align: center;">3D Farey-Shell Embedding: Modular Lattice Shells</h3>
+            <h3 style="color: #000000; margin-bottom: 20px; text-align: center;">3D Farey-Shell Embedding: Modular Lattice Shells</h3>
             
             <div style="text-align: center; margin-bottom: 15px;">
                 <span style="color: #666; font-weight: 600;">View Mode: </span>
@@ -1525,8 +1539,8 @@ function is_prime_candidate(m, k, slice="half",
             </ul>
         </div>
 
-        <div class="proposition" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
-            <span class="label" style="color: white;">Summary.</span>
+        <div class="proposition" style="background: #ffffff; color: white; border: none;">
+            <span class="label" style="color: black;">Summary.</span>
             Replacing \(30\cdot2^n\) by an arbitrary modulus \(M\) is straightforward: the nested Farey rings indexed by divisors \(m\mid M\) continue to represent modular residue directions, with coprime residues \(O_m\) giving visible angular channels. Shell persistence and lifting can be characterized equivalently by non-collapse of these open channels across sequences of moduli. The 3D visualization makes this geometric structure tangible and explorable.
         </div>
 
@@ -1558,7 +1572,7 @@ function is_prime_candidate(m, k, slice="half",
             </p>
             <table style="width: 100%; margin: 15px 0; border-collapse: collapse; background: white;">
                 <thead>
-                    <tr style="background: #667eea; color: white;">
+                    <tr style="background: #ffffff; color: white;">
                         <th style="padding: 10px; border: 1px solid #dee2e6;">Range</th>
                         <th style="padding: 10px; border: 1px solid #dee2e6;">Prime Avg CV</th>
                         <th style="padding: 10px; border: 1px solid #dee2e6;">Composite Avg CV</th>
@@ -1599,7 +1613,7 @@ function is_prime_candidate(m, k, slice="half",
                         <td style="padding: 8px; border: 1px solid #dee2e6; text-align: center;">n ≤ 10,000</td>
                         <td style="padding: 8px; border: 1px solid #dee2e6; text-align: center;">0.022</td>
                         <td style="padding: 8px; border: 1px solid #dee2e6; text-align: center;">0.292</td>
-                        <td style="padding: 8px; border: 1px solid #dee2e6; text-align: center; font-weight: bold; color: #667eea;">92.3%</td>
+                        <td style="padding: 8px; border: 1px solid #dee2e6; text-align: center; font-weight: bold; color: #000000;">92.3%</td>
                         <td style="padding: 8px; border: 1px solid #dee2e6; text-align: center;">p < 0.0001</td>
                     </tr>
                 </tbody>
@@ -1620,7 +1634,7 @@ function is_prime_candidate(m, k, slice="half",
         </div>
 
         <div class="canvas-container">
-            <h3 style="color: #667eea; margin-bottom: 20px; text-align: center;">Chord Length Analysis</h3>
+            <h3 style="color: #000000; margin-bottom: 20px; text-align: center;">Chord Length Analysis</h3>
             <canvas id="chordCanvas" width="800" height="400"></canvas>
             <div class="controls">
                 <div class="control-group">
@@ -1800,7 +1814,7 @@ function is_prime_candidate(m, k, slice="half",
 
         <div style="overflow-x: auto; margin: 25px 0;">
             <table style="width: 100%; border-collapse: collapse; font-size: 0.95em;">
-                <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <thead style="background: #ffffff; color: white;">
                     <tr>
                         <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Field \(\mathbb{Q}(\sqrt{D})\)</th>
                         <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">\(D\)</th>
@@ -2077,7 +2091,7 @@ function is_prime_candidate(m, k, slice="half",
             Hence, the GCD=1 lattice forms the geometric and arithmetic support of all Dirichlet characters, while the non-GCD=1 residues define their vanishing set.
         </div>
 
-        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #667eea; margin: 20px 0;">
+        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #ffffff; margin: 20px 0;">
         \[
         \boxed{
         \chi(a) =
@@ -2113,7 +2127,7 @@ function is_prime_candidate(m, k, slice="half",
 
         <p>Geometrically, this means the analytic space of modular forms is supported on the same coprime lattice \(\Phi(m)\) that defines the modular shell in the GCD framework. Dirichlet characters serve as harmonic lifts of the GCD=1 indicator to the complex plane, providing both the algebraic orthogonality and the geometric symmetry required for modular form invariance.</p>
 
-        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #667eea; margin: 20px 0;">
+        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #ffffff; margin: 20px 0;">
         \[
         \boxed{
         \text{GCD=1 support } \leftrightarrow \text{Dirichlet support of } \chi 
@@ -2234,7 +2248,7 @@ function is_prime_candidate(m, k, slice="half",
         </div>
 
         <p>The Riemann Hypothesis thus asserts that all nontrivial zero points of this collective modular interference lie exactly on that balance axis:</p>
-        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #667eea; margin: 20px 0;">
+        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #ffffff; margin: 20px 0;">
         \[
         \boxed{\text{Re}(s) = \frac{1}{2}}.
         \]
@@ -2253,7 +2267,7 @@ function is_prime_candidate(m, k, slice="half",
             </ul>
         </div>
 
-        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #667eea; margin: 20px 0;">
+        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #ffffff; margin: 20px 0;">
         \[
         \boxed{
         \text{Euler's local modular symmetry} \quad \longleftrightarrow \quad
@@ -2327,7 +2341,7 @@ function is_prime_candidate(m, k, slice="half",
 
         <div style="overflow-x: auto; margin: 30px 0;">
             <table style="width: 100%; border-collapse: collapse; font-size: 0.92em;">
-                <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <thead style="background: #ffffff; color: white;">
                     <tr>
                         <th style="padding: 12px; border: 1px solid #ddd; text-align: center; width: 25%;">Concept</th>
                         <th style="padding: 12px; border: 1px solid #ddd; text-align: center; width: 37.5%;">Gauss Circle Problem</th>
@@ -2573,7 +2587,7 @@ function is_prime_candidate(m, k, slice="half",
 
         <p>Further work includes: quantifying slice bias functions \(\beta_S(m)\), linking partial-channel openness to residue equidistribution, and integrating this fractional sampling into the modular sieve hierarchy for scalable prime detection.</p>
 
-        <div style="margin-top: 50px; padding-top: 30px; border-top: 3px solid #667eea; text-align: center; color: #7f8c8d;">
+        <div style="margin-top: 50px; padding-top: 30px; border-top: 3px solid #ffffff; text-align: center; color: #7f8c8d;">
             <p><em>Interactive paper by Wessen Getachew, October 2025</em></p>
             <p style="margin-top: 10px; font-size: 0.9em;">Full framework implementation with live algorithm demonstrations</p>
         </div>
@@ -3045,6 +3059,10 @@ function is_prime_candidate(m, k, slice="half",
             const m = parseInt(document.getElementById('modInput').value);
             if (isNaN(m) || m < 2) return;
 
+            // Define colors
+            const gcd1Color = '#2ecc71';
+            const gcdNotColor = '#e74c3c';
+
             ctx.clearRect(0, 0, width, height);
 
             // Draw circle
@@ -3055,7 +3073,7 @@ function is_prime_candidate(m, k, slice="half",
             ctx.stroke();
 
             // Draw origin
-            ctx.fillStyle = '#e74c3c';
+            ctx.fillStyle = gcdNotColor;
             ctx.beginPath();
             ctx.arc(centerX + radius, centerY, 10, 0, 2 * Math.PI);
             ctx.fill();
@@ -3264,7 +3282,7 @@ function is_prime_candidate(m, k, slice="half",
 
             resultDiv.innerHTML = `
                 <div class="stats-display" style="margin-top: 20px;">
-                    <h4 style="color: #667eea; margin-bottom: 10px;">Batch Test Results (10 runs)</h4>
+                    <h4 style="color: #000000; margin-bottom: 10px;">Batch Test Results (10 runs)</h4>
                     <div class="stat-row"><span class="stat-label">Modulus:</span><span class="stat-value">${m} (${prime ? 'Prime' : 'Composite'})</span></div>
                     <div class="stat-row"><span class="stat-label">Passes:</span><span class="stat-value">${passCount}/10</span></div>
                     <div class="stat-row"><span class="stat-label">Empirical Pass Rate:</span><span class="stat-value">${(passCount/10).toFixed(2)}</span></div>
@@ -3331,7 +3349,7 @@ function is_prime_candidate(m, k, slice="half",
 
                 const resultsDiv = document.getElementById('experimentResults');
                 resultsDiv.innerHTML = `
-                    <h4 style="color: #667eea; margin: 20px 0;">Experiment Results: Range [${start}, ${end}], k=${k}</h4>
+                    <h4 style="color: #000000; margin: 20px 0;">Experiment Results: Range [${start}, ${end}], k=${k}</h4>
                     <table>
                         <tr>
                             <th></th>
@@ -3773,7 +3791,7 @@ function is_prime_candidate(m, k, slice="half",
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div>
                             <strong>Std Deviation:</strong> ${stats.stdDev.toFixed(6)}<br>
-                            <strong style="color: #667eea;">Coefficient of Variation:</strong> ${stats.cv.toFixed(6)}<br>
+                            <strong style="color: #000000;">Coefficient of Variation:</strong> ${stats.cv.toFixed(6)}<br>
                             <strong>Gap Ratio (max/min):</strong> ${stats.gapRatio.toFixed(4)}<br>
                         </div>
                         <div>
@@ -3850,7 +3868,7 @@ function is_prime_candidate(m, k, slice="half",
             
             // Draw mean line
             const meanX = margin.left + ((stats.mean - stats.min) / (stats.max - stats.min)) * plotWidth;
-            ctx.strokeStyle = '#667eea';
+            ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = 2;
             ctx.setLineDash([5, 5]);
             ctx.beginPath();
@@ -3899,7 +3917,7 @@ function is_prime_candidate(m, k, slice="half",
             // Legend
             ctx.textAlign = 'left';
             ctx.font = '12px Arial';
-            ctx.fillStyle = '#667eea';
+            ctx.fillStyle = '#ffffff';
             ctx.fillText(`Mean = ${stats.mean.toFixed(4)}`, width - margin.right - 150, margin.top + 10);
             ctx.fillStyle = '#2c3e50';
             ctx.fillText(`CV = ${stats.cv.toFixed(4)}`, width - margin.right - 150, margin.top + 30);
@@ -3964,7 +3982,7 @@ function is_prime_candidate(m, k, slice="half",
                             </table>
                         </div>
                     </div>
-                    <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 4px; border-left: 4px solid #667eea;">
+                    <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 4px; border-left: 4px solid #ffffff;">
                         <strong>Statistical Separation:</strong> ${separation.toFixed(1)}%<br>
                         <strong>Conclusion:</strong> ${separation > 20 ? '✓ Significant distinction!' : '✗ Weak distinction'}<br>
                         <em>Primes exhibit ${avgCVPrime < avgCVComp ? 'lower' : 'higher'} coefficient of variation, 
@@ -4358,8 +4376,25 @@ function is_prime_candidate(m, k, slice="half",
             residueGroup.style.display = mode === 'residue-class' ? 'flex' : 'none';
         }
 
-        function drawConcentricRings() {
+        
+        // Helper function to determine if a color is dark
+        function isColorDark(hexColor) {
+            const rgb = parseInt(hexColor.substring(1), 16);
+            const r = (rgb >> 16) & 0xff;
+            const g = (rgb >> 8) & 0xff;
+            const b = (rgb >> 0) & 0xff;
+            const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+            return luminance < 128;
+        }
+        
+function drawConcentricRings() {
             const canvas = document.getElementById('concentricCanvas');
+            // Use default colors
+            const gcd1Color = '#2ecc71';
+            const gcdNotColor = '#e74c3c';
+            const highlightColor = '#f39c12';
+            const bgColor = '#000000';
+
             const ctx = canvas.getContext('2d');
             const width = canvas.width;
             const height = canvas.height;
@@ -4411,12 +4446,16 @@ function is_prime_candidate(m, k, slice="half",
 
             if (isNaN(minMod) || isNaN(maxMod) || minMod > maxMod) return;
 
-            // Background
-            ctx.fillStyle = darkBg ? '#000000' : '#ffffff';
+            // Get colors from color pickers
+
+            // Background - use color picker value
+            ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, width, height);
             
-            const textColor = darkBg ? '#ffffff' : '#2c3e50';
-            const gridColor = darkBg ? '#444444' : '#e0e0e0';
+            // Determine if background is dark for text/grid colors
+            const isDarkBg = isColorDark(bgColor);
+            const textColor = isDarkBg ? '#ffffff' : '#2c3e50';
+            const gridColor = isDarkBg ? '#444444' : '#e0e0e0';
 
             // Draw axes
             if (showAxes) {
@@ -4574,7 +4613,7 @@ function is_prime_candidate(m, k, slice="half",
                     
                     switch(colorMode) {
                         case 'open-blocked':
-                            color = isOpen ? (prime ? '#27ae60' : '#3498db') : '#e74c3c';
+                            color = isOpen ? gcd1Color : gcdNotColor;
                             break;
                         case 'gcd-gradient':
                             color = getGCDGradientColor(gcdVal, Math.max(...Array.from(allGCDs)));
@@ -4605,13 +4644,13 @@ function is_prime_candidate(m, k, slice="half",
                             color = getMultiPropertyColor(r, m, inSlice);
                             break;
                         default:
-                            color = isOpen ? '#27ae60' : '#e74c3c';
+                            color = isOpen ? gcd1Color : gcdNotColor;
                     }
 
                     // Highlight tracked residue
                     const size = (highlightTracked && isTracked) ? pointSize * 2 : pointSize;
                     if (highlightTracked && isTracked) {
-                        color = '#FFD700'; // Gold for tracked
+                        color = highlightColor; // Use highlight color picker
                     }
 
                     // Draw point
@@ -4738,7 +4777,7 @@ function is_prime_candidate(m, k, slice="half",
 
                 ctx.fillStyle = darkBg ? 'rgba(40, 40, 40, 0.95)' : 'rgba(255, 255, 255, 0.95)';
                 ctx.fillRect(legendX, legendY, legendWidth, legendHeight);
-                ctx.strokeStyle = '#667eea';
+                ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 3;
                 ctx.strokeRect(legendX, legendY, legendWidth, legendHeight);
 
@@ -4943,7 +4982,14 @@ function is_prime_candidate(m, k, slice="half",
             
             ctx.clearRect(0, 0, width, height);
             const blackBg = document.getElementById('concentricDarkBg')?.checked || false;
-            ctx.fillStyle = blackBg ? '#000000' : '#ffffff';
+            
+            // Get custom colors
+            const gcd1Color = document.getElementById('concentricGCD1Color')?.value || '#2ecc71';
+            const gcdNotColor = document.getElementById('concentricGCDNotColor')?.value || '#e74c3c';
+            const highlightColor = document.getElementById('concentricHighlightColor')?.value || '#f39c12';
+            const bgColor = document.getElementById('concentricBgColor')?.value || '#000000';
+
+            ctx.fillStyle = blackBg ? bgColor : '#ffffff';
             ctx.fillRect(0, 0, width, height);
             
             const M = parseInt(document.getElementById('baseModulus')?.value || 30);
@@ -5680,14 +5726,14 @@ function is_prime_candidate(m, k, slice="half",
                             gap: 20px;
                         }
                         .field-box {
-                            border: 2px solid #667eea;
+                            border: 2px solid #ffffff;
                             border-radius: 8px;
                             padding: 15px;
                             text-align: center;
                         }
                         .field-box h3 {
                             margin: 0 0 10px 0;
-                            color: #667eea;
+                            color: #ffffff;
                             font-size: 16px;
                         }
                         canvas {
@@ -5711,7 +5757,7 @@ function is_prime_candidate(m, k, slice="half",
                         <div class="grid">
                             ${fields.map(D => `
                                 <div class="field-box">
-                                    <h3>${fieldNames[D]}</h3>
+                                    <h3 style="color: #000000;">${fieldNames[D]}</h3 style="color: #000000;">
                                     <canvas id="canvas${D}" width="300" height="300"></canvas>
                                     <div class="info">D = ${D}</div>
                                 </div>
@@ -5873,7 +5919,8 @@ function is_prime_candidate(m, k, slice="half",
             
             // Use black background by default
             const blackBg = true;
-            ctx.fillStyle = blackBg ? '#000000' : '#ffffff';
+            const bgColor = '#000000';
+            ctx.fillStyle = blackBg ? bgColor : '#ffffff';
             ctx.fillRect(0, 0, width, height);
             
             const maxRadius = Math.min(width, height) * 0.42;
@@ -5890,8 +5937,7 @@ function is_prime_candidate(m, k, slice="half",
                 const isPrimeM = isPrime(m);
                 if (isPrimeM) primeCount++;
                 
-                const ringAlpha = isPrimeM ? ringOpacity * 1.5 : ringOpacity * 0.5;
-                ctx.strokeStyle = isPrimeM ? `rgba(100, 200, 255, ${ringAlpha})` : `rgba(150, 150, 150, ${ringAlpha})`;
+                ctx.strokeStyle = isPrimeM ? 'rgba(100, 200, 255, 0.3)' : 'rgba(150, 150, 150, 0.15)';
                 ctx.lineWidth = isPrimeM ? 1.5 : 0.5;
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
@@ -6051,72 +6097,7 @@ function is_prime_candidate(m, k, slice="half",
             }
         }, 100);
     
-        // Advanced visualization features
-        let erAutoRotationId = null;
-        let erRotationAngle = 0;
-        let erPulseId = null;
-        let erPulsePhase = 0;
-        
-        function getERColorScheme(m, isPrimeM, colorScheme) {
-            const hue = (m * 137.5) % 360; // Golden angle
-            
-            switch(colorScheme) {
-                case 'rainbow':
-                    return isPrimeM ? `hsl(${hue}, 80%, 60%)` : `hsl(${hue}, 40%, 40%)`;
-                case 'prime-glow':
-                    return isPrimeM ? '#ffdd57' : '#4ecdc4';
-                case 'golden':
-                    const golden = (m * 0.618033988749895) % 1;
-                    return isPrimeM ? `hsl(${golden * 60 + 30}, 100%, 60%)` : '#95a5a6';
-                case 'plasma':
-                    return isPrimeM ? `hsl(${(m * 7) % 360}, 100%, 50%)` : `hsl(${(m * 7 + 180) % 360}, 50%, 30%)`;
-                case 'ocean':
-                    return isPrimeM ? `hsl(${180 + (m * 5) % 60}, 70%, 50%)` : '#2c3e50';
-                case 'default':
-                default:
-                    return isPrimeM ? '#4ecdc4' : '#95a5a6';
-            }
-        }
-        
-        function updateAutoRotation() {
-            const speed = parseFloat(document.getElementById('erRotationSpeed')?.value || 0);
-            document.getElementById('erRotationSpeedVal').textContent = speed.toFixed(1);
-            
-            if (speed > 0 && !erAutoRotationId) {
-                function rotate() {
-                    erRotationAngle = (erRotationAngle + speed * 0.5) % 360;
-                    drawEulerRiemann();
-                    erAutoRotationId = requestAnimationFrame(rotate);
-                }
-                rotate();
-            } else if (speed === 0 && erAutoRotationId) {
-                cancelAnimationFrame(erAutoRotationId);
-                erAutoRotationId = null;
-                erRotationAngle = 0;
-                drawEulerRiemann();
-            }
-        }
-        
-        function togglePulseAnimation() {
-            const enabled = document.getElementById('erPulseAnimation')?.checked;
-            
-            if (enabled && !erPulseId) {
-                function pulse() {
-                    erPulsePhase = (erPulsePhase + 0.05) % (2 * Math.PI);
-                    drawEulerRiemann();
-                    erPulseId = requestAnimationFrame(pulse);
-                }
-                pulse();
-            } else if (!enabled && erPulseId) {
-                cancelAnimationFrame(erPulseId);
-                erPulseId = null;
-                erPulsePhase = 0;
-                drawEulerRiemann();
-            }
-        }
-        
-
-                // Euler-Riemann Export Functions
+                        // Euler-Riemann Export Functions
         
         function exportEulerRiemannImage(resolution) {
             const originalCanvas = document.getElementById('eulerRiemannCanvas');
@@ -6318,58 +6299,7 @@ function is_prime_candidate(m, k, slice="half",
         }
         
 
-        // Apply color themes for Section 6
-        function applyConcentricTheme() {
-            const theme = document.getElementById('concentricTheme').value;
-            
-            const themes = {
-                'default': {
-                    gcd1: '#2ecc71',
-                    gcdNot: '#e74c3c',
-                    highlight: '#f39c12',
-                    bg: '#000000'
-                },
-                'ocean': {
-                    gcd1: '#00d4ff',
-                    gcdNot: '#0077be',
-                    highlight: '#00ffaa',
-                    bg: '#001a33'
-                },
-                'sunset': {
-                    gcd1: '#ff6b6b',
-                    gcdNot: '#feca57',
-                    highlight: '#ff9ff3',
-                    bg: '#2d1b4e'
-                },
-                'forest': {
-                    gcd1: '#55efc4',
-                    gcdNot: '#00b894',
-                    highlight: '#fdcb6e',
-                    bg: '#1a3a1a'
-                },
-                'neon': {
-                    gcd1: '#00ff00',
-                    gcdNot: '#ff00ff',
-                    highlight: '#ffff00',
-                    bg: '#000000'
-                },
-                'pastel': {
-                    gcd1: '#a8e6cf',
-                    gcdNot: '#ffd3b6',
-                    highlight: '#ffaaa5',
-                    bg: '#f5f5f5'
-                }
-            };
-            
-            const selected = themes[theme];
-            if (selected) {
-                document.getElementById('concentricGCD1Color').value = selected.gcd1;
-                document.getElementById('concentricGCDNotColor').value = selected.gcdNot;
-                document.getElementById('concentricHighlightColor').value = selected.highlight;
-                document.getElementById('concentricBgColor').value = selected.bg;
-                drawConcentricRings();
-            }
-        }
+        
         
 </script>
 </body>
