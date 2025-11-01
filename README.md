@@ -558,11 +558,96 @@
                 </div>
             </div>
             
-            <div style="margin-top: 15px;">
+            
+            <div class="controls" style="margin-top: 15px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 8px; border: 2px solid rgba(102, 126, 234, 0.3);">
+                <strong style="color: #667eea;">🎨 Advanced Visualization:</strong>
+                
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
+                    <div class="control-group">
+                        <label for="erPointSize">Point Size:</label>
+                        <input type="range" id="erPointSize" min="1" max="8" value="2.5" step="0.5" oninput="drawEulerRiemann()">
+                        <span id="erPointSizeVal">2.5</span>px
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="erRingOpacity">Ring Opacity:</label>
+                        <input type="range" id="erRingOpacity" min="0" max="100" value="30" step="5" oninput="drawEulerRiemann()">
+                        <span id="erRingOpacityVal">30</span>%
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="erOrbitWidth">Orbit Width:</label>
+                        <input type="range" id="erOrbitWidth" min="1" max="5" value="2" step="0.5" oninput="drawEulerRiemann()">
+                        <span id="erOrbitWidthVal">2</span>px
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="erShowLabels" onchange="drawEulerRiemann()">
+                            Show Prime Labels
+                        </label>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="erShowConnections" checked onchange="drawEulerRiemann()">
+                            Show Orbit Connections
+                        </label>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="erPulseAnimation" onchange="togglePulseAnimation()">
+                            Pulse Effect
+                        </label>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="erShowDensity" onchange="drawEulerRiemann()">
+                            Density Gradient
+                        </label>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
+                    <div class="control-group">
+                        <label for="erColorScheme">Color Scheme:</label>
+                        <select id="erColorScheme" onchange="drawEulerRiemann()">
+                            <option value="default">Default (Cyan/Gray)</option>
+                            <option value="rainbow">Rainbow by Ring</option>
+                            <option value="prime-glow">Prime Glow</option>
+                            <option value="golden">Golden Ratio</option>
+                            <option value="plasma">Plasma</option>
+                            <option value="ocean">Ocean</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="erRotationSpeed">Auto-Rotate:</label>
+                        <input type="range" id="erRotationSpeed" min="0" max="5" value="0" step="0.1" oninput="updateAutoRotation()">
+                        <span id="erRotationSpeedVal">0</span>
+                    </div>
+                </div>
+            </div>
+            
+<div style="margin-top: 15px;">
                 <button onclick="drawEulerRiemann()">Redraw</button>
                 <button onclick="animateEulerOrbit()">Animate Orbit</button>
                 <button onclick="stopEulerAnimation()">Stop</button>
+            
+                <button onclick="exportEulerRiemannImage('4K')">Export 4K Image</button>
+                <button onclick="exportEulerRiemannImage('2K')">Export 2K</button>
+                <button onclick="exportEulerRiemannCSV()">Export CSV Data</button>
             </div>
+            
+            <div style="margin-top: 10px;">
+                <label style="display: inline-flex; align-items: center;">
+                    <input type="checkbox" id="erExportLegend" checked style="margin-right: 8px;">
+                    Include Legend in Export
+                </label></div>
         </div>
 
         <div id="eulerRiemannStats" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 0.9em;"></div>
@@ -928,37 +1013,6 @@ function is_prime_candidate(m, k, slice="half",
                 </div>
             </div>
             
-            <!-- Color Customization Panel -->
-            <div class="controls" style="margin-top: 10px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 15px; border-radius: 10px;">
-                <div style="color: white; font-weight: 600; margin-bottom: 10px; font-size: 1.1em;">🎨 Color Customization</div>
-                
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
-                    <!-- Color Presets -->
-                    <div style="display: flex; gap: 5px; align-items: center;">
-                        <label style="color: white; font-weight: 600;">Themes:</label>
-                        <select id="colorThemeSelect" onchange="applyColorTheme(this.value)" 
-                                style="padding: 6px 12px; border-radius: 6px; border: none;">
-                            <option value="default">Default</option>
-                            <option value="ocean">Ocean</option>
-                            <option value="sunset">Sunset</option>
-                            <option value="forest">Forest</option>
-                            <option value="galaxy">Galaxy</option>
-                            <option value="fire">Fire</option>
-                            <option value="ice">Ice</option>
-                            <option value="earth">Earth</option>
-                            <option value="neon">Neon</option>
-                            <option value="pastel">Pastel</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Custom Color Pickers -->
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <label style="color: white; font-size: 0.9em;">GCD=1:</label>
-                            <input type="color" id="coprimeColorPicker" value="#27ae60" 
-                                   onchange="setCustomColor('coprime', this.value)" 
-                                   style="width: 40px; height: 30px; border: 2px solid white; border-radius: 4px; cursor: pointer;">
-                        </div>
                         <div style="display: flex; align-items: center; gap: 5px;">
                             <label style="color: white; font-size: 0.9em;">GCD≠1:</label>
                             <input type="color" id="blockedColorPicker" value="#e74c3c" 
@@ -1144,7 +1198,51 @@ function is_prime_candidate(m, k, slice="half",
                 <div id="colorModeInfo" style="margin-top: 5px; font-size: 0.85em; color: #666; font-style: italic;"></div>
             </div>
 
+            
             <div class="controls" style="margin-top: 15px;">
+                <strong style="color: #e91e63;">🎨 Color Customization</strong>
+                
+                <div style="margin-top: 10px; padding: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px;">
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                        <div class="control-group">
+                            <label for="concentricTheme">Themes:</label>
+                            <select id="concentricTheme" onchange="applyConcentricTheme()">
+                                <option value="default">Default</option>
+                                <option value="ocean">Ocean Blue</option>
+                                <option value="sunset">Sunset</option>
+                                <option value="forest">Forest</option>
+                                <option value="neon">Neon</option>
+                                <option value="pastel">Pastel</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.95); border-radius: 8px;">
+                        <div class="control-group">
+                            <label for="concentricGCD1Color">GCD=1:</label>
+                            <input type="color" id="concentricGCD1Color" value="#2ecc71">
+                        </div>
+                        <div class="control-group">
+                            <label for="concentricGCDNotColor">GCD≠1:</label>
+                            <input type="color" id="concentricGCDNotColor" value="#e74c3c">
+                        </div>
+                        <div class="control-group">
+                            <label for="concentricHighlightColor">Highlight:</label>
+                            <input type="color" id="concentricHighlightColor" value="#f39c12">
+                        </div>
+                        <div class="control-group">
+                            <label for="concentricBgColor">Background:</label>
+                            <input type="color" id="concentricBgColor" value="#000000">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls" style="margin-top: 15px;">
+                <strong style="color: #495057;">🔍 Zoom:</strong> Mouse wheel on any canvas
+            </div>
+
+<div class="controls" style="margin-top: 15px;">
                 <strong style="color: #495057;">Visibility:</strong>
                 <label style="display: inline-flex; align-items: center; margin-left: 15px;">
                     <input type="checkbox" id="showRings" style="margin-right: 5px;">
@@ -5752,13 +5850,28 @@ function is_prime_candidate(m, k, slice="half",
             const centerX = width / 2;
             const centerY = height / 2;
             
-            const maxM = parseInt(document.getElementById('erMaxModulus').value) || 30;
+            
+            const maxM = parseInt(document.getElementById('erMaxModulus').value) || 101;
             const showPrimesOnly = document.getElementById('erShowPrimesOnly').checked;
             const showOrbits = document.getElementById('erShowOrbits').checked;
-            const orbitM = parseInt(document.getElementById('erOrbitModulus').value) || 7;
+            const orbitM = parseInt(document.getElementById('erOrbitModulus').value) || 101;
             const orbitBase = parseInt(document.getElementById('erOrbitBase').value) || 3;
             
-            // Use black background by default for this visualization
+            // Advanced options
+            const pointSize = parseFloat(document.getElementById('erPointSize')?.value || 2.5);
+            const ringOpacity = parseInt(document.getElementById('erRingOpacity')?.value || 30) / 100;
+            const orbitWidth = parseFloat(document.getElementById('erOrbitWidth')?.value || 2);
+            const showLabels = document.getElementById('erShowLabels')?.checked || false;
+            const showConnections = document.getElementById('erShowConnections')?.checked !== false;
+            const showDensity = document.getElementById('erShowDensity')?.checked || false;
+            const colorScheme = document.getElementById('erColorScheme')?.value || 'default';
+            
+            // Update displays
+            if (document.getElementById('erPointSizeVal')) document.getElementById('erPointSizeVal').textContent = pointSize;
+            if (document.getElementById('erRingOpacityVal')) document.getElementById('erRingOpacityVal').textContent = Math.round(ringOpacity * 100);
+            if (document.getElementById('erOrbitWidthVal')) document.getElementById('erOrbitWidthVal').textContent = orbitWidth;
+            
+            // Use black background by default
             const blackBg = true;
             ctx.fillStyle = blackBg ? '#000000' : '#ffffff';
             ctx.fillRect(0, 0, width, height);
@@ -5777,7 +5890,8 @@ function is_prime_candidate(m, k, slice="half",
                 const isPrimeM = isPrime(m);
                 if (isPrimeM) primeCount++;
                 
-                ctx.strokeStyle = isPrimeM ? 'rgba(100, 200, 255, 0.3)' : 'rgba(150, 150, 150, 0.15)';
+                const ringAlpha = isPrimeM ? ringOpacity * 1.5 : ringOpacity * 0.5;
+                ctx.strokeStyle = isPrimeM ? `rgba(100, 200, 255, ${ringAlpha})` : `rgba(150, 150, 150, ${ringAlpha})`;
                 ctx.lineWidth = isPrimeM ? 1.5 : 0.5;
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
@@ -5936,6 +6050,327 @@ function is_prime_candidate(m, k, slice="half",
                 drawEulerRiemann();
             }
         }, 100);
-    </script>
+    
+        // Advanced visualization features
+        let erAutoRotationId = null;
+        let erRotationAngle = 0;
+        let erPulseId = null;
+        let erPulsePhase = 0;
+        
+        function getERColorScheme(m, isPrimeM, colorScheme) {
+            const hue = (m * 137.5) % 360; // Golden angle
+            
+            switch(colorScheme) {
+                case 'rainbow':
+                    return isPrimeM ? `hsl(${hue}, 80%, 60%)` : `hsl(${hue}, 40%, 40%)`;
+                case 'prime-glow':
+                    return isPrimeM ? '#ffdd57' : '#4ecdc4';
+                case 'golden':
+                    const golden = (m * 0.618033988749895) % 1;
+                    return isPrimeM ? `hsl(${golden * 60 + 30}, 100%, 60%)` : '#95a5a6';
+                case 'plasma':
+                    return isPrimeM ? `hsl(${(m * 7) % 360}, 100%, 50%)` : `hsl(${(m * 7 + 180) % 360}, 50%, 30%)`;
+                case 'ocean':
+                    return isPrimeM ? `hsl(${180 + (m * 5) % 60}, 70%, 50%)` : '#2c3e50';
+                case 'default':
+                default:
+                    return isPrimeM ? '#4ecdc4' : '#95a5a6';
+            }
+        }
+        
+        function updateAutoRotation() {
+            const speed = parseFloat(document.getElementById('erRotationSpeed')?.value || 0);
+            document.getElementById('erRotationSpeedVal').textContent = speed.toFixed(1);
+            
+            if (speed > 0 && !erAutoRotationId) {
+                function rotate() {
+                    erRotationAngle = (erRotationAngle + speed * 0.5) % 360;
+                    drawEulerRiemann();
+                    erAutoRotationId = requestAnimationFrame(rotate);
+                }
+                rotate();
+            } else if (speed === 0 && erAutoRotationId) {
+                cancelAnimationFrame(erAutoRotationId);
+                erAutoRotationId = null;
+                erRotationAngle = 0;
+                drawEulerRiemann();
+            }
+        }
+        
+        function togglePulseAnimation() {
+            const enabled = document.getElementById('erPulseAnimation')?.checked;
+            
+            if (enabled && !erPulseId) {
+                function pulse() {
+                    erPulsePhase = (erPulsePhase + 0.05) % (2 * Math.PI);
+                    drawEulerRiemann();
+                    erPulseId = requestAnimationFrame(pulse);
+                }
+                pulse();
+            } else if (!enabled && erPulseId) {
+                cancelAnimationFrame(erPulseId);
+                erPulseId = null;
+                erPulsePhase = 0;
+                drawEulerRiemann();
+            }
+        }
+        
+
+                // Euler-Riemann Export Functions
+        
+        function exportEulerRiemannImage(resolution) {
+            const originalCanvas = document.getElementById('eulerRiemannCanvas');
+            if (!originalCanvas) return;
+            
+            const sizes = {
+                '2K': 2560,
+                '4K': 3840
+            };
+            const size = sizes[resolution] || 3840;
+            
+            // Save original size
+            const origWidth = originalCanvas.width;
+            const origHeight = originalCanvas.height;
+            
+            // Create high-res temporary canvas
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = size;
+            tempCanvas.height = size;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Temporarily resize original canvas
+            originalCanvas.width = size;
+            originalCanvas.height = size;
+            
+            // Redraw at high resolution
+            drawEulerRiemann();
+            
+            // Add legend if requested
+            const includeLegend = document.getElementById('erExportLegend')?.checked !== false;
+            if (includeLegend) {
+                addEulerRiemannLegendToCanvas(originalCanvas);
+            }
+            
+            // Export
+            const link = document.createElement('a');
+            const maxM = document.getElementById('erMaxModulus').value;
+            const orbitM = document.getElementById('erOrbitModulus').value;
+            const baseA = document.getElementById('erOrbitBase').value;
+            link.download = `euler-riemann-M${maxM}-orbit${orbitM}-a${baseA}-${resolution}-${Date.now()}.png`;
+            link.href = originalCanvas.toDataURL('image/png');
+            link.click();
+            
+            // Restore original size
+            originalCanvas.width = origWidth;
+            originalCanvas.height = origHeight;
+            drawEulerRiemann();
+        }
+        
+        function addEulerRiemannLegendToCanvas(canvas) {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            const maxM = document.getElementById('erMaxModulus').value;
+            const showPrimesOnly = document.getElementById('erShowPrimesOnly').checked;
+            const orbitM = document.getElementById('erOrbitModulus').value;
+            const baseA = document.getElementById('erOrbitBase').value;
+            const pointSize = document.getElementById('erPointSize')?.value || 2.5;
+            const ringOpacity = document.getElementById('erRingOpacity')?.value || 30;
+            const colorScheme = document.getElementById('erColorScheme')?.value || 'default';
+            
+            // Legend box
+            const legendX = width * 0.02;
+            const legendY = height * 0.7;
+            const legendWidth = width * 0.25;
+            const legendHeight = height * 0.25;
+            
+            // Background
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+            ctx.fillRect(legendX, legendY, legendWidth, legendHeight);
+            ctx.strokeStyle = '#4ecdc4';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(legendX, legendY, legendWidth, legendHeight);
+            
+            // Title
+            const fontSize = Math.floor(width / 50);
+            ctx.fillStyle = '#4ecdc4';
+            ctx.font = `bold ${fontSize}px Arial`;
+            ctx.textAlign = 'left';
+            ctx.fillText('Euler Orbits & Prime Rings', legendX + 10, legendY + fontSize + 10);
+            
+            // Parameters
+            const paramFontSize = Math.floor(fontSize * 0.7);
+            ctx.font = `${paramFontSize}px Arial`;
+            ctx.fillStyle = '#fff';
+            let y = legendY + fontSize * 2.5;
+            const lineHeight = paramFontSize * 1.5;
+            
+            const params = [
+                `Max Modulus: ${maxM}`,
+                `Primes Only: ${showPrimesOnly ? 'Yes' : 'No'}`,
+                `Orbit: M=${orbitM}, a=${baseA}`,
+                `φ(${orbitM}) = ${eulerTotient(parseInt(orbitM))} steps`,
+                `Point Size: ${pointSize}px`,
+                `Ring Opacity: ${ringOpacity}%`,
+                `Color: ${colorScheme}`,
+                `Generated: ${new Date().toLocaleDateString()}`
+            ];
+            
+            params.forEach(param => {
+                ctx.fillText(param, legendX + 10, y);
+                y += lineHeight;
+            });
+            
+            // Color indicators
+            ctx.fillStyle = '#4ecdc4';
+            ctx.beginPath();
+            ctx.arc(legendX + 15, y + 10, 8, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.fillText('Prime Rings', legendX + 30, y + 15);
+            
+            y += lineHeight;
+            ctx.fillStyle = '#95a5a6';
+            ctx.beginPath();
+            ctx.arc(legendX + 15, y + 10, 8, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.fillText('Composite Rings', legendX + 30, y + 15);
+        }
+        
+        function exportEulerRiemannCSV() {
+            const maxM = parseInt(document.getElementById('erMaxModulus').value) || 101;
+            const showPrimesOnly = document.getElementById('erShowPrimesOnly').checked;
+            const orbitM = parseInt(document.getElementById('erOrbitModulus').value) || 101;
+            const baseA = parseInt(document.getElementById('erOrbitBase').value) || 3;
+            
+            // Generate data
+            let csv = 'modulus,is_prime,phi_m,gcd1_count,point_angle_deg,point_x,point_y\n';
+            
+            const moduli = [];
+            for (let m = 2; m <= maxM; m++) {
+                if (!showPrimesOnly || isPrime(m)) moduli.push(m);
+            }
+            
+            moduli.forEach(m => {
+                const isPrimeM = isPrime(m);
+                const phi = eulerTotient(m);
+                let gcd1Count = 0;
+                
+                for (let r = 0; r < m; r++) {
+                    if (gcd(r, m) === 1) {
+                        gcd1Count++;
+                        const angle = (2 * Math.PI * r) / m - Math.PI / 2;
+                        const angleDeg = (angle * 180 / Math.PI).toFixed(2);
+                        const x = Math.cos(angle).toFixed(6);
+                        const y = Math.sin(angle).toFixed(6);
+                        
+                        csv += `${m},${isPrimeM},${phi},${gcd1Count},${angleDeg},${x},${y}
+`;
+                    }
+                }
+            });
+            
+            // Add metadata
+            const metadata = `# Euler Orbits & Prime Rings Export
+` +
+                           `# Max Modulus: ${maxM}
+` +
+                           `# Primes Only: ${showPrimesOnly}
+` +
+                           `# Orbit: M=${orbitM}, Base a=${baseA}
+` +
+                           `# Orbit Steps: φ(${orbitM}) = ${eulerTotient(orbitM)}
+` +
+                           `# Total Moduli: ${moduli.length}
+` +
+                           `# Prime Rings: ${moduli.filter(m => isPrime(m)).length}
+` +
+                           `# Generated: ${new Date().toISOString()}
+` +
+                           `#
+`;
+            
+            const fullCSV = metadata + csv;
+            
+            // Download
+            const blob = new Blob([fullCSV], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `euler-riemann-M${maxM}-orbit${orbitM}-${Date.now()}.csv`;
+            link.click();
+            
+            // Show confirmation
+            const statsDiv = document.getElementById('eulerRiemannStats');
+            if (statsDiv) {
+                const originalHTML = statsDiv.innerHTML;
+                statsDiv.innerHTML = `
+                    <div style="background: #27ae60; color: white; padding: 15px; border-radius: 8px; text-align: center;">
+                        ✅ <strong>CSV Exported!</strong><br>
+                        ${moduli.length} moduli with complete GCD=1 point data
+                    </div>
+                `;
+                setTimeout(() => {
+                    statsDiv.innerHTML = originalHTML;
+                }, 3000);
+            }
+        }
+        
+
+        // Apply color themes for Section 6
+        function applyConcentricTheme() {
+            const theme = document.getElementById('concentricTheme').value;
+            
+            const themes = {
+                'default': {
+                    gcd1: '#2ecc71',
+                    gcdNot: '#e74c3c',
+                    highlight: '#f39c12',
+                    bg: '#000000'
+                },
+                'ocean': {
+                    gcd1: '#00d4ff',
+                    gcdNot: '#0077be',
+                    highlight: '#00ffaa',
+                    bg: '#001a33'
+                },
+                'sunset': {
+                    gcd1: '#ff6b6b',
+                    gcdNot: '#feca57',
+                    highlight: '#ff9ff3',
+                    bg: '#2d1b4e'
+                },
+                'forest': {
+                    gcd1: '#55efc4',
+                    gcdNot: '#00b894',
+                    highlight: '#fdcb6e',
+                    bg: '#1a3a1a'
+                },
+                'neon': {
+                    gcd1: '#00ff00',
+                    gcdNot: '#ff00ff',
+                    highlight: '#ffff00',
+                    bg: '#000000'
+                },
+                'pastel': {
+                    gcd1: '#a8e6cf',
+                    gcdNot: '#ffd3b6',
+                    highlight: '#ffaaa5',
+                    bg: '#f5f5f5'
+                }
+            };
+            
+            const selected = themes[theme];
+            if (selected) {
+                document.getElementById('concentricGCD1Color').value = selected.gcd1;
+                document.getElementById('concentricGCDNotColor').value = selected.gcdNot;
+                document.getElementById('concentricHighlightColor').value = selected.highlight;
+                document.getElementById('concentricBgColor').value = selected.bg;
+                drawConcentricRings();
+            }
+        }
+        
+</script>
 </body>
 </html>
