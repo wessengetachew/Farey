@@ -777,6 +777,103 @@ function is_prime_candidate(m, k, slice="half",
             </div>
             <canvas id="concentricCanvas" width="2560" height="2560" style="max-width: 100%; height: auto;"></canvas>
             
+            <!-- ========== UNIVERSAL CONTROLS: ANIMATION, ZOOM, COLORS ========== -->
+            <div class="controls" style="margin-top: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; border-radius: 10px;">
+                <div style="color: white; font-weight: 600; margin-bottom: 10px; font-size: 1.1em;">🎬 Animation & View Controls</div>
+                
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                    <!-- Animation Controls -->
+                    <div style="display: flex; gap: 10px; align-items: center; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
+                        <button id="concentricCanvasPlayBtn" onclick="toggleAnimation('concentricCanvas')" 
+                                style="background: #27ae60; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            ▶ Play
+                        </button>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <label style="color: white; font-size: 0.9em;">Speed:</label>
+                            <input type="range" id="concentricAnimSpeed" min="0.1" max="5" value="1" step="0.1" 
+                                   style="width: 100px;" oninput="setAnimationSpeed('concentricCanvas', this.value); document.getElementById('concentricSpeedVal').textContent = this.value + 'x'">
+                            <span id="concentricSpeedVal" style="color: white; font-size: 0.9em; min-width: 35px;">1x</span>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <button onclick="setAnimationDirection('concentricCanvas', 1)" 
+                                    style="background: rgba(255,255,255,0.3); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                                ↻ Forward
+                            </button>
+                            <button onclick="setAnimationDirection('concentricCanvas', -1)" 
+                                    style="background: rgba(255,255,255,0.3); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                                ↺ Reverse
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Zoom/Pan Controls -->
+                    <div style="display: flex; gap: 10px; align-items: center; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
+                        <label style="color: white; font-weight: 600;">🔍 Zoom:</label>
+                        <span id="concentricCanvasZoomDisplay" style="color: white; font-weight: 600; min-width: 50px;">100%</span>
+                        <button onclick="resetZoomPan('concentricCanvas')" 
+                                style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                            Reset View
+                        </button>
+                        <span style="color: rgba(255,255,255,0.8); font-size: 0.85em;">
+                            (Mouse wheel: zoom | Drag: pan)
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Color Customization Panel -->
+            <div class="controls" style="margin-top: 10px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 15px; border-radius: 10px;">
+                <div style="color: white; font-weight: 600; margin-bottom: 10px; font-size: 1.1em;">🎨 Color Customization</div>
+                
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                    <!-- Color Presets -->
+                    <div style="display: flex; gap: 5px; align-items: center;">
+                        <label style="color: white; font-weight: 600;">Themes:</label>
+                        <select id="colorThemeSelect" onchange="applyColorTheme(this.value)" 
+                                style="padding: 6px 12px; border-radius: 6px; border: none;">
+                            <option value="default">Default</option>
+                            <option value="ocean">Ocean</option>
+                            <option value="sunset">Sunset</option>
+                            <option value="forest">Forest</option>
+                            <option value="galaxy">Galaxy</option>
+                            <option value="fire">Fire</option>
+                            <option value="ice">Ice</option>
+                            <option value="earth">Earth</option>
+                            <option value="neon">Neon</option>
+                            <option value="pastel">Pastel</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Custom Color Pickers -->
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <label style="color: white; font-size: 0.9em;">GCD=1:</label>
+                            <input type="color" id="coprimeColorPicker" value="#27ae60" 
+                                   onchange="setCustomColor('coprime', this.value)" 
+                                   style="width: 40px; height: 30px; border: 2px solid white; border-radius: 4px; cursor: pointer;">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <label style="color: white; font-size: 0.9em;">GCD≠1:</label>
+                            <input type="color" id="blockedColorPicker" value="#e74c3c" 
+                                   onchange="setCustomColor('blocked', this.value)" 
+                                   style="width: 40px; height: 30px; border: 2px solid white; border-radius: 4px; cursor: pointer;">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <label style="color: white; font-size: 0.9em;">Highlight:</label>
+                            <input type="color" id="highlightColorPicker" value="#FFD700" 
+                                   onchange="setCustomColor('highlight', this.value)" 
+                                   style="width: 40px; height: 30px; border: 2px solid white; border-radius: 4px; cursor: pointer;">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <label style="color: white; font-size: 0.9em;">Background:</label>
+                            <input type="color" id="backgroundColorPicker" value="#ffffff" 
+                                   onchange="setCustomColor('background', this.value)" 
+                                   style="width: 40px; height: 30px; border: 2px solid white; border-radius: 4px; cursor: pointer;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="controls">
                 <div class="control-group">
                     <label for="minMod">Min Modulus:</label>
@@ -806,27 +903,36 @@ function is_prime_candidate(m, k, slice="half",
             </div>
 
             <div class="controls" style="margin-top: 10px;">
-                <div class="control-group">
+                <div class="control-group" style="display: flex; align-items: center; gap: 10px;">
                     <label for="globalRotation">Global Rotation:</label>
-                    <input type="range" id="globalRotation" min="0" max="360" value="0" step="1" style="width: 150px;">
-                    <span id="globalRotationVal">0</span>°
+                    <input type="range" id="globalRotation" min="0" max="360" value="0" step="1" style="width: 150px;" oninput="updateGlobalRotationDisplay()">
+                    <input type="number" id="globalRotationDeg" min="0" max="360" value="0" step="1" style="width: 70px;" oninput="updateGlobalRotationFromInput()">
+                    <span>°</span>
                 </div>
-                <div class="control-group">
+                <div class="control-group" style="display: flex; align-items: center; gap: 10px;">
                     <label for="localRotation">Local Rotation:</label>
-                    <input type="range" id="localRotation" min="0" max="360" value="0" step="1" style="width: 150px;">
-                    <span id="localRotationVal">0</span>°
+                    <input type="range" id="localRotation" min="0" max="360" value="0" step="1" style="width: 150px;" oninput="updateLocalRotationDisplay()">
+                    <input type="number" id="localRotationDeg" min="0" max="360" value="0" step="1" style="width: 70px;" oninput="updateLocalRotationFromInput()">
+                    <span>°</span>
+                </div>
+                <div class="control-group" style="display: flex; align-items: center; gap: 10px;">
+                    <label for="individualRotation">Individual m Rotation:</label>
+                    <input type="range" id="individualRotation" min="0" max="360" value="0" step="1" style="width: 150px;" oninput="updateIndividualRotationDisplay()">
+                    <input type="number" id="individualRotationDeg" min="0" max="360" value="0" step="1" style="width: 70px;" oninput="updateIndividualRotationFromInput()">
+                    <span>°</span>
                 </div>
                 <div class="control-group">
-                    <label for="individualRotation">Individual m Rotation:</label>
-                    <input type="range" id="individualRotation" min="0" max="360" value="0" step="1" style="width: 150px;">
-                    <span id="individualRotationVal">0</span>°
+                    <label>
+                        <input type="checkbox" id="differentialSpeed">
+                        Differential Speed (inner faster for local, outer faster for global)
+                    </label>
                 </div>
             </div>
 
             <div class="controls" style="margin-top: 10px;">
-                <div class="control-group">
-                    <label for="trackResidue">Track r:</label>
-                    <input type="number" id="trackResidue" value="1" min="1" max="200">
+                <div class="control-group" style="flex: 2;">
+                    <label for="trackMultipleR">Track r values:</label>
+                    <input type="text" id="trackMultipleR" value="1" placeholder="e.g., 1,2,3,5 or primes or composites" style="width: 100%;">
                 </div>
                 <div class="control-group">
                     <label>
@@ -838,6 +944,29 @@ function is_prime_candidate(m, k, slice="half",
                     <label>
                         <input type="checkbox" id="highlightTracked" checked>
                         Highlight Tracked r
+                    </label>
+                </div>
+            </div>
+
+            <div class="controls" style="margin-top: 10px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 12px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                <div class="control-group">
+                    <label style="font-weight: 600; margin-right: 15px; color: #1e40af;">Dirichlet Characters Filter:</label>
+                </div>
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="showGCD1" checked onchange="drawConcentricRings()">
+                        Show GCD=1 (coprime residues - principal character χ₀)
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="showNonGCD1" checked onchange="drawConcentricRings()">
+                        Show GCD≠1 (non-coprime residues - blocked channels)
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label style="font-size: 0.85em; opacity: 0.7; font-style: italic;">
+                        Filter by gcd(r, m): Green=coprime (open Farey channels), Red=non-coprime (blocked)
                     </label>
                 </div>
             </div>
@@ -1545,15 +1674,15 @@ function is_prime_candidate(m, k, slice="half",
                     <div class="control-group">
                         <label for="heegnerField">Heegner Field:</label>
                         <select id="heegnerField" onchange="drawHeegnerField()">
-                            <option value="-1">ℚ(√-1): D=-1, x²+y²</option>
-                            <option value="-2">ℚ(√-2): D=-2, x²+2y²</option>
-                            <option value="-3">ℚ(√-3): D=-3, x²-xy+y²</option>
-                            <option value="-7">ℚ(√-7): D=-7, x²+7y²</option>
-                            <option value="-11">ℚ(√-11): D=-11, x²+11y²</option>
-                            <option value="-19">ℚ(√-19): D=-19, x²+19y²</option>
-                            <option value="-43">ℚ(√-43): D=-43, x²+43y²</option>
-                            <option value="-67">ℚ(√-67): D=-67, x²+67y²</option>
-                            <option value="-163">ℚ(√-163): D=-163, x²+163y²</option>
+                            <option value="-1">ℚ(√-1) [Gaussian]</option>
+                            <option value="-2">ℚ(√-2) [Eisenstein variant]</option>
+                            <option value="-3">ℚ(√-3) [Eisenstein]</option>
+                            <option value="-7">ℚ(√-7)</option>
+                            <option value="-11">ℚ(√-11)</option>
+                            <option value="-19">ℚ(√-19)</option>
+                            <option value="-43">ℚ(√-43)</option>
+                            <option value="-67">ℚ(√-67)</option>
+                            <option value="-163">ℚ(√-163) [largest]</option>
                         </select>
                     </div>
 
@@ -1564,8 +1693,17 @@ function is_prime_candidate(m, k, slice="half",
 
                     <div class="control-group">
                         <label for="heegnerRange">Search Range:</label>
-                        <input type="range" id="heegnerRange" min="10" max="100" value="30" step="5" oninput="updateHeegnerRange()">
-                        <span id="heegnerRangeVal">30</span>
+                        <input type="number" id="heegnerRange" min="10" max="500" value="30" step="5" 
+                               oninput="updateHeegnerRangeInput()" style="width: 80px;">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="heegnerRegionX">Region X:</label>
+                        <input type="number" id="heegnerRegionX" min="1" max="200" value="5" step="1" 
+                               oninput="drawHeegnerField()" style="width: 60px;" placeholder="±X">
+                        <span style="margin: 0 5px;">×</span>
+                        <input type="number" id="heegnerRegionY" min="1" max="200" value="5" step="1" 
+                               oninput="drawHeegnerField()" style="width: 60px;" placeholder="±Y">
                     </div>
 
                     <div class="control-group">
@@ -1659,6 +1797,131 @@ function is_prime_candidate(m, k, slice="half",
                 <li><strong>Visualization:</strong> Develop interactive 3D visualizations of norm form solutions on concentric shells for each Heegner field.</li>
             </ul>
         </div>
+
+        <div class="subsection-title">10.9 GCD=1 Lattice, Dirichlet Characters, and Modular Form Connection</div>
+
+        <p>Let \(m \in \mathbb{N}\) and consider the residue system</p>
+        <p style="text-align: center;">
+        \[
+        R_m = \{\, 0,1,2,\dots,m-1 \,\}.
+        \]
+        </p>
+        <p>Each residue \(r \in R_m\) defines a greatest common divisor \(\gcd(r,m)\) with the modulus \(m\). Define the reduced residue system</p>
+        <p style="text-align: center;">
+        \[
+        \Phi(m) = \{\, r \in R_m : \gcd(r,m) = 1 \,\},
+        \]
+        </p>
+        <p>which forms the multiplicative group \((\mathbb{Z}/m\mathbb{Z})^{\times}\). Geometrically, \(\Phi(m)\) represents all points on the unit circle that are <em>coprime</em> to \(m\) when mapped via the exponential embedding</p>
+        <p style="text-align: center;">
+        \[
+        r \longmapsto e^{2\pi i r/m}.
+        \]
+        </p>
+        <p>These are precisely the "visible" or <em>active</em> nodes in the modular lattice representation used in this work.</p>
+
+        <div class="definition">
+            <span class="label">Definition 10.8 (Dirichlet Character).</span>
+            A <em>Dirichlet character modulo \(m\)</em> is a completely multiplicative function
+            \[
+            \chi : \mathbb{Z} \to \mathbb{C}
+            \]
+            satisfying
+            \[
+            \chi(a+m) = \chi(a), \qquad 
+            \chi(ab) = \chi(a)\chi(b),
+            \]
+            and the <em>support-vanishing condition</em>
+            \[
+            \chi(a) = 0 \quad \text{if and only if} \quad \gcd(a,m) \ne 1.
+            \]
+        </div>
+
+        <p>This condition immediately partitions the modular ring into two disjoint regions:</p>
+        <p style="text-align: center;">
+        \[
+        \text{Support: } \{ a : \gcd(a,m)=1 \}, \quad
+        \text{Vanishing: } \{ a : \gcd(a,m)\ne1 \}.
+        \]
+        </p>
+
+        <div class="theorem">
+            <span class="label">Theorem 10.7 (GCD-Character Identity).</span>
+            Let \(\delta_{m}(a)\) denote the <em>GCD=1 indicator function</em>:
+            \[
+            \delta_{m}(a) =
+            \begin{cases}
+            1, & \text{if } \gcd(a,m) = 1,\\[4pt]
+            0, & \text{if } \gcd(a,m) \ne 1.
+            \end{cases}
+            \]
+            Then the support of every Dirichlet character modulo \(m\) coincides with the support of \(\delta_m(a)\):
+            \[
+            \operatorname{supp}(\chi) = \{\, a : \delta_m(a) = 1 \,\} = \Phi(m),
+            \]
+            and its vanishing domain coincides with the non-coprime residues:
+            \[
+            \operatorname{ker}(\chi) = \{\, a : \delta_m(a) = 0 \,\}.
+            \]
+            Hence, the GCD=1 lattice forms the geometric and arithmetic support of all Dirichlet characters, while the non-GCD=1 residues define their vanishing set.
+        </div>
+
+        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #667eea; margin: 20px 0;">
+        \[
+        \boxed{
+        \chi(a) =
+        \begin{cases}
+        e^{i\theta(a)}, & \text{if } \gcd(a,m)=1,\\[4pt]
+        0, & \text{if } \gcd(a,m)\ne1.
+        \end{cases}
+        }
+        \]
+        </p>
+
+        <div class="remarks">
+            <strong>Geometric Interpretation:</strong>
+            <p>In the modular visualization developed here, each coprime residue \(r \in \Phi(m)\) is mapped by \(e^{2\pi i r/m}\) to a distinct point on the unit circle. Dirichlet characters assign complex phases \(e^{i\theta_r}\) to these points, forming an orthogonal basis of multiplicative harmonic functions on the same modular circle. The principal character \(\chi_0\) corresponds exactly to the uniform weighting \(\chi_0(a) = \delta_m(a)\), while nontrivial characters introduce angular rotations and reflections across the same support. This identifies the lattice of GCD=1 residues as the underlying geometry upon which all Dirichlet characters—and by extension modular forms—are built.</p>
+        </div>
+
+        <div class="subsection-title">Connection to Modular Forms</div>
+
+        <p>A modular form of weight \(k\) and Dirichlet character \(\chi\) (nebentypus) is a holomorphic function</p>
+        <p style="text-align: center;">
+        \[
+        f(z) = \sum_{n=1}^{\infty} a_n \chi(n) q^n, \qquad q = e^{2\pi i z},
+        \]
+        </p>
+        <p>transforming under \(\Gamma_0(m)\) as</p>
+        <p style="text-align: center;">
+        \[
+        f\!\left( \frac{az+b}{cz+d} \right)
+        = \chi(d)(cz+d)^k f(z).
+        \]
+        </p>
+        <p>In this construction, the coefficients \(a_n\) are "weighted" by the same character \(\chi(n)\) that vanishes whenever \(\gcd(n,m)\ne1\). Thus, the Fourier expansion of \(f\) inherently inherits the same GCD=1 support structure: only the coprime indices \(n\) contribute to the modular sum.</p>
+
+        <p>Geometrically, this means the analytic space of modular forms is supported on the same coprime lattice \(\Phi(m)\) that defines the modular shell in the GCD framework. Dirichlet characters serve as harmonic lifts of the GCD=1 indicator to the complex plane, providing both the algebraic orthogonality and the geometric symmetry required for modular form invariance.</p>
+
+        <p style="text-align: center; padding: 20px; background: #f8f9fa; border-left: 4px solid #667eea; margin: 20px 0;">
+        \[
+        \boxed{
+        \text{GCD=1 support } \leftrightarrow \text{Dirichlet support of } \chi 
+        \leftrightarrow \text{active coefficients of } f(z).
+        }
+        \]
+        </p>
+
+        <p>This equivalence establishes that the modular sieve, the Dirichlet \(L\)-series, and the modular form expansions all operate over the same foundational structure: the set of GCD=1 residues mapped on the unit circle.</p>
+
+        <div class="subsection-title">References for Section 10.9</div>
+
+        <ol style="margin-left: 40px; font-size: 0.95em; line-height: 1.8;">
+            <li>P. G. L. Dirichlet, <em>Beweis des Satzes, dass jede unbegrenzte arithmetische Progression, deren erstes Glied und Differenz ganze Zahlen ohne gemeinschaftlichen Faktor sind, unendlich viele Primzahlen enthält</em>, Abh. Königl. Preuß. Akad. Wiss. (1837).</li>
+            <li>H. Davenport, <em>Multiplicative Number Theory</em>, Springer, 3rd ed. (revised by H. Montgomery), 2000.</li>
+            <li>H. Iwaniec and E. Kowalski, <em>Analytic Number Theory</em>, AMS Colloquium Publications, Vol. 53, 2004.</li>
+            <li>T. M. Apostol, <em>Introduction to Analytic Number Theory</em>, Springer, 1976.</li>
+            <li>W. Getachew, <em>Modular Lattice and GCD=1 Density Framework</em>, in preparation (2025).</li>
+        </ol>
 
         <div class="section-title">11. Relation to the Gauss Circle Problem</div>
 
@@ -1966,6 +2229,386 @@ function is_prime_candidate(m, k, slice="half",
     </div>
 
     <script>
+        // ==================== GLOBAL ANIMATION SYSTEM ====================
+        
+        const animationState = {
+            channelCanvas: { playing: false, speed: 1, direction: 1, animId: null },
+            concentricCanvas: { playing: false, speed: 1, direction: 1, animId: null },
+            testCanvas: { playing: false, speed: 1, direction: 1, animId: null },
+            farey3DCanvas: { playing: false, speed: 1, direction: 1, animId: null },
+            chordCanvas: { playing: false, speed: 1, direction: 1, animId: null },
+            heegnerCanvas: { playing: false, speed: 1, direction: 1, animId: null }
+        };
+        
+        function toggleAnimation(canvasId) {
+            const state = animationState[canvasId];
+            if (!state) return;
+            
+            state.playing = !state.playing;
+            const button = document.getElementById(`${canvasId}PlayBtn`);
+            if (button) {
+                button.textContent = state.playing ? '⏸ Pause' : '▶ Play';
+            }
+            
+            if (state.playing) {
+                startAnimation(canvasId);
+            } else {
+                stopAnimation(canvasId);
+            }
+        }
+        
+        function startAnimation(canvasId) {
+            const state = animationState[canvasId];
+            if (!state || state.animId) return;
+            
+            const animate = () => {
+                if (!state.playing) return;
+                
+                // Update rotation based on speed and direction
+                const rotationElement = document.getElementById('globalRotation') || 
+                                      document.getElementById(`${canvasId}Rotation`);
+                if (rotationElement) {
+                    const currentValue = parseFloat(rotationElement.value) || 0;
+                    const newValue = (currentValue + state.speed * state.direction) % 360;
+                    rotationElement.value = newValue < 0 ? newValue + 360 : newValue;
+                    
+                    // Update corresponding input
+                    const inputElement = document.getElementById('globalRotationDeg') ||
+                                       document.getElementById(`${canvasId}RotationDeg`);
+                    if (inputElement) {
+                        inputElement.value = Math.round(newValue);
+                    }
+                }
+                
+                // Trigger redraw
+                const drawFunctions = {
+                    'channelCanvas': typeof drawChannelRing !== 'undefined' ? drawChannelRing : null,
+                    'concentricCanvas': typeof drawConcentricRings !== 'undefined' ? drawConcentricRings : null,
+                    'testCanvas': typeof runFractionalTest !== 'undefined' ? runFractionalTest : null,
+                    'farey3DCanvas': typeof draw3DFarey !== 'undefined' ? draw3DFarey : null,
+                    'chordCanvas': typeof drawChordAnalysis !== 'undefined' ? drawChordAnalysis : null,
+                    'heegnerCanvas': typeof drawHeegner !== 'undefined' ? drawHeegner : null
+                };
+                
+                if (drawFunctions[canvasId] && drawFunctions[canvasId]) {
+                    drawFunctions[canvasId]();
+                }
+                
+                state.animId = requestAnimationFrame(animate);
+            };
+            
+            state.animId = requestAnimationFrame(animate);
+        }
+        
+        function stopAnimation(canvasId) {
+            const state = animationState[canvasId];
+            if (state && state.animId) {
+                cancelAnimationFrame(state.animId);
+                state.animId = null;
+            }
+        }
+        
+        function setAnimationSpeed(canvasId, speed) {
+            const state = animationState[canvasId];
+            if (state) {
+                state.speed = parseFloat(speed);
+            }
+        }
+        
+        function setAnimationDirection(canvasId, direction) {
+            const state = animationState[canvasId];
+            if (state) {
+                state.direction = direction;
+            }
+        }
+        
+        // ==================== GLOBAL ZOOM & PAN SYSTEM ====================
+        
+        const zoomPanState = {};
+        
+        function initZoomPan(canvasId) {
+            if (zoomPanState[canvasId]) return; // Already initialized
+            
+            zoomPanState[canvasId] = {
+                zoom: 1.0,
+                panX: 0,
+                panY: 0,
+                isDragging: false,
+                lastX: 0,
+                lastY: 0
+            };
+            
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            // Mouse wheel zoom
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const state = zoomPanState[canvasId];
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                state.zoom = Math.max(0.5, Math.min(5, state.zoom * delta));
+                
+                // Update zoom display if exists
+                const zoomDisplay = document.getElementById(`${canvasId}ZoomDisplay`);
+                if (zoomDisplay) {
+                    zoomDisplay.textContent = `${Math.round(state.zoom * 100)}%`;
+                }
+                
+                redrawCanvas(canvasId);
+            }, { passive: false });
+            
+            // Mouse drag pan
+            canvas.addEventListener('mousedown', (e) => {
+                const state = zoomPanState[canvasId];
+                state.isDragging = true;
+                state.lastX = e.offsetX;
+                state.lastY = e.offsetY;
+                canvas.style.cursor = 'grabbing';
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                const state = zoomPanState[canvasId];
+                if (!state.isDragging) return;
+                
+                const dx = e.offsetX - state.lastX;
+                const dy = e.offsetY - state.lastY;
+                
+                state.panX += dx;
+                state.panY += dy;
+                state.lastX = e.offsetX;
+                state.lastY = e.offsetY;
+                
+                redrawCanvas(canvasId);
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                const state = zoomPanState[canvasId];
+                state.isDragging = false;
+                canvas.style.cursor = 'grab';
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                const state = zoomPanState[canvasId];
+                state.isDragging = false;
+                canvas.style.cursor = 'default';
+            });
+            
+            // Set initial cursor
+            canvas.style.cursor = 'grab';
+        }
+        
+        function resetZoomPan(canvasId) {
+            const state = zoomPanState[canvasId];
+            if (state) {
+                state.zoom = 1.0;
+                state.panX = 0;
+                state.panY = 0;
+                
+                const zoomDisplay = document.getElementById(`${canvasId}ZoomDisplay`);
+                if (zoomDisplay) {
+                    zoomDisplay.textContent = '100%';
+                }
+                
+                redrawCanvas(canvasId);
+            }
+        }
+        
+        function applyZoomPan(ctx, canvasId) {
+            const state = zoomPanState[canvasId];
+            if (!state) return;
+            
+            const canvas = ctx.canvas;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            ctx.translate(centerX + state.panX, centerY + state.panY);
+            ctx.scale(state.zoom, state.zoom);
+            ctx.translate(-centerX, -centerY);
+        }
+        
+        function redrawCanvas(canvasId) {
+            const drawFunctions = {
+                'channelCanvas': typeof drawChannelRing !== 'undefined' ? drawChannelRing : null,
+                'concentricCanvas': typeof drawConcentricRings !== 'undefined' ? drawConcentricRings : null,
+                'testCanvas': typeof runFractionalTest !== 'undefined' ? runFractionalTest : null,
+                'farey3DCanvas': typeof draw3DFarey !== 'undefined' ? draw3DFarey : null,
+                'chordCanvas': typeof drawChordAnalysis !== 'undefined' ? drawChordAnalysis : null,
+                'heegnerCanvas': typeof drawHeegner !== 'undefined' ? drawHeegner : null
+            };
+            
+            if (drawFunctions[canvasId] && drawFunctions[canvasId]) {
+                drawFunctions[canvasId]();
+            }
+        }
+        
+        // ==================== GLOBAL COLOR CUSTOMIZATION ====================
+        
+        const colorThemes = {
+            default: {
+                coprime: '#27ae60',
+                blocked: '#e74c3c',
+                highlight: '#FFD700',
+                background: '#ffffff'
+            },
+            ocean: {
+                coprime: '#3498db',
+                blocked: '#2c3e50',
+                highlight: '#1abc9c',
+                background: '#ecf0f1'
+            },
+            sunset: {
+                coprime: '#e67e22',
+                blocked: '#c0392b',
+                highlight: '#f39c12',
+                background: '#ffeaa7'
+            },
+            forest: {
+                coprime: '#27ae60',
+                blocked: '#16a085',
+                highlight: '#f1c40f',
+                background: '#d5f4e6'
+            },
+            galaxy: {
+                coprime: '#9b59b6',
+                blocked: '#34495e',
+                highlight: '#f368e0',
+                background: '#2c2c54'
+            },
+            fire: {
+                coprime: '#e74c3c',
+                blocked: '#c0392b',
+                highlight: '#f39c12',
+                background: '#000000'
+            },
+            ice: {
+                coprime: '#74b9ff',
+                blocked: '#a29bfe',
+                highlight: '#ffffff',
+                background: '#dfe6e9'
+            },
+            earth: {
+                coprime: '#6c5ce7',
+                blocked: '#fdcb6e',
+                highlight: '#00b894',
+                background: '#ffeaa7'
+            },
+            neon: {
+                coprime: '#00ff00',
+                blocked: '#ff00ff',
+                highlight: '#00ffff',
+                background: '#000000'
+            },
+            pastel: {
+                coprime: '#ff7675',
+                blocked: '#74b9ff',
+                highlight: '#ffeaa7',
+                background: '#ffffff'
+            }
+        };
+        
+        let currentTheme = 'default';
+        let customColors = {...colorThemes.default};
+        
+        function applyColorTheme(themeName) {
+            if (colorThemes[themeName]) {
+                currentTheme = themeName;
+                customColors = {...colorThemes[themeName]};
+                
+                // Update color pickers
+                const pickers = ['coprime', 'blocked', 'highlight', 'background'];
+                pickers.forEach(type => {
+                    const picker = document.getElementById(`${type}ColorPicker`);
+                    if (picker) {
+                        picker.value = customColors[type];
+                    }
+                });
+                
+                // Redraw all visualizations
+                redrawAllCanvases();
+            }
+        }
+        
+        function setCustomColor(type, color) {
+            customColors[type] = color;
+            currentTheme = 'custom';
+            redrawAllCanvases();
+        }
+        
+        function getCustomColor(type) {
+            return customColors[type] || colorThemes.default[type];
+        }
+        
+        function redrawAllCanvases() {
+            if (typeof drawChannelRing === 'function') drawChannelRing();
+            if (typeof drawConcentricRings === 'function') drawConcentricRings();
+            if (typeof drawChordAnalysis === 'function') drawChordAnalysis();
+            if (typeof drawHeegner === 'function') drawHeegner();
+            if (typeof draw3DFarey === 'function') draw3DFarey();
+        }
+        
+        // ==================== ROTATION CONTROL FUNCTIONS ====================
+        
+        function updateGlobalRotationDisplay() {
+            const value = document.getElementById('globalRotation').value;
+            document.getElementById('globalRotationDeg').value = value;
+            drawConcentricRings();
+        }
+        
+        function updateGlobalRotationFromInput() {
+            const value = document.getElementById('globalRotationDeg').value;
+            document.getElementById('globalRotation').value = value;
+            drawConcentricRings();
+        }
+        
+        function updateLocalRotationDisplay() {
+            const value = document.getElementById('localRotation').value;
+            document.getElementById('localRotationDeg').value = value;
+            drawConcentricRings();
+        }
+        
+        function updateLocalRotationFromInput() {
+            const value = document.getElementById('localRotationDeg').value;
+            document.getElementById('localRotation').value = value;
+            drawConcentricRings();
+        }
+        
+        function updateIndividualRotationDisplay() {
+            const value = document.getElementById('individualRotation').value;
+            document.getElementById('individualRotationDeg').value = value;
+            drawConcentricRings();
+        }
+        
+        function updateIndividualRotationFromInput() {
+            const value = document.getElementById('individualRotationDeg').value;
+            document.getElementById('individualRotation').value = value;
+            drawConcentricRings();
+        }
+        
+        // Parse multiple r values from text input
+        function parseTrackMultipleR(inputStr) {
+            if (!inputStr || inputStr.trim() === '') return [1];
+            
+            const trimmed = inputStr.trim().toLowerCase();
+            
+            // Handle special keywords
+            if (trimmed === 'primes') {
+                return [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
+            } else if (trimmed === 'composites') {
+                return [4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 22, 24, 25, 26, 27, 28];
+            } else if (trimmed === 'powers2') {
+                return [1, 2, 4, 8, 16, 32, 64, 128];
+            } else if (trimmed === 'powers3') {
+                return [1, 3, 9, 27, 81];
+            }
+            
+            // Parse comma-separated numbers
+            const values = trimmed.split(',')
+                .map(s => parseInt(s.trim()))
+                .filter(n => !isNaN(n) && n >= 1);
+            
+            return values.length > 0 ? values : [1];
+        }
+        
         // ==================== UTILITY FUNCTIONS ====================
         
         function gcd(a, b) {
@@ -3374,7 +4017,15 @@ function is_prime_candidate(m, k, slice="half",
             const globalRot = parseFloat(document.getElementById('globalRotation')?.value || 0) * Math.PI / 180;
             const localRot = parseFloat(document.getElementById('localRotation')?.value || 0) * Math.PI / 180;
             const individualRot = parseFloat(document.getElementById('individualRotation')?.value || 0) * Math.PI / 180;
-            const trackR = parseInt(document.getElementById('trackResidue')?.value || 1);
+            const differentialSpeed = document.getElementById('differentialSpeed')?.checked || false;
+            
+            // Dirichlet character filters
+            const showGCD1 = document.getElementById('showGCD1')?.checked !== false;
+            const showNonGCD1 = document.getElementById('showNonGCD1')?.checked !== false;
+            
+            // Multiple r tracking
+            const trackMultipleRInput = document.getElementById('trackMultipleR')?.value || '1';
+            const trackedRValues = parseTrackMultipleR(trackMultipleRInput);
             const showAllR = document.getElementById('showAllR')?.checked !== false;
             const highlightTracked = document.getElementById('highlightTracked')?.checked !== false;
 
@@ -3496,7 +4147,7 @@ function is_prime_candidate(m, k, slice="half",
                     const x = centerX + radius * Math.cos(theta);
                     const y = centerY - radius * Math.sin(theta);
                     
-                    const isTracked = (1 === trackR);
+                    const isTracked = trackedRValues.includes(1);
                     const size = (highlightTracked && isTracked) ? pointSize * 2 : pointSize;
                     
                     ctx.fillStyle = (highlightTracked && isTracked) ? '#FFD700' : '#27ae60';
@@ -3524,15 +4175,28 @@ function is_prime_candidate(m, k, slice="half",
                     const gcdVal = gcd(r, m);
                     const isOpen = gcdVal === 1;
                     
+                    // Dirichlet character filtering
+                    if (isOpen && !showGCD1) continue;  // Skip coprime if GCD=1 is off
+                    if (!isOpen && !showNonGCD1) continue;  // Skip non-coprime if GCD≠1 is off
+                    
                     if (mode === 'open-only' && !isOpen) continue;
 
-                    // Check if we should show this r
-                    const isTracked = (r === trackR);
+                    // Check if we should show this r (multiple r values now supported)
+                    const isTracked = trackedRValues.includes(r);
                     if (!showAllR && !isTracked) continue;
 
-                    // Apply rotations
+                    // Apply rotations with differential speed
                     const baseTheta = (2 * Math.PI * r) / m;
-                    const theta = baseTheta + globalRot + localRot + individualRot * (m - minMod);
+                    let theta = baseTheta + globalRot + individualRot * (m - minMod);
+                    
+                    // Differential speed: inner faster for local, outer faster for global
+                    if (differentialSpeed) {
+                        const normalizedM = (m - minMod) / (maxMod - minMod || 1);
+                        theta += localRot * (1 - normalizedM); // Inner rings rotate more (inverted)
+                    } else {
+                        theta += localRot;
+                    }
+                    
                     const x = centerX + radius * Math.cos(theta);
                     const y = centerY - radius * Math.sin(theta);
 
@@ -3767,7 +4431,10 @@ function is_prime_candidate(m, k, slice="half",
                     ctx.lineWidth = 2;
                     ctx.stroke();
                     ctx.fillStyle = textColor;
-                    ctx.fillText(`Tracked: r=${trackR}`, legendX + 28, yOffset + 5);
+                    const trackedStr = trackedRValues.length <= 5 ? 
+                        trackedRValues.join(',') : 
+                        `${trackedRValues.slice(0,5).join(',')}...`;
+                    ctx.fillText(`Tracked: r=${trackedStr}`, legendX + 28, yOffset + 5);
                 }
             }
 
@@ -4176,6 +4843,11 @@ function is_prime_candidate(m, k, slice="half",
             document.getElementById('heegnerRangeVal').textContent = range;
             drawHeegnerField();
         }
+        
+        function updateHeegnerRangeInput() {
+            // For the new number input version
+            drawHeegnerField();
+        }
 
         function updateHeegnerLabelSize() {
             const size = parseInt(document.getElementById('heegnerLabelSize').value);
@@ -4195,7 +4867,23 @@ function is_prime_candidate(m, k, slice="half",
             
             const D = document.getElementById('heegnerField').value;
             const M = getHeegnerModulus();  // Use flexible modulus getter
-            const searchRange = parseInt(document.getElementById('heegnerRange').value);
+            
+            // Check if using region inputs or search range
+            const regionX = parseInt(document.getElementById('heegnerRegionX')?.value);
+            const regionY = parseInt(document.getElementById('heegnerRegionY')?.value);
+            let searchRangeX, searchRangeY;
+            
+            if (regionX && regionY) {
+                // Use region inputs
+                searchRangeX = regionX;
+                searchRangeY = regionY;
+            } else {
+                // Fall back to search range (square region)
+                const searchRange = parseInt(document.getElementById('heegnerRange')?.value || 30);
+                searchRangeX = searchRange;
+                searchRangeY = searchRange;
+            }
+            
             const pointSize = parseFloat(document.getElementById('heegnerPointSize').value || 3);
             
             const showRings = document.getElementById('heegnerShowRings').checked;
@@ -4218,8 +4906,8 @@ function is_prime_candidate(m, k, slice="half",
             const solutions = [];
             const targetResidue = (parseInt(D) % M + M) % M;
             
-            for (let x = -searchRange; x <= searchRange; x++) {
-                for (let y = -searchRange; y <= searchRange; y++) {
+            for (let x = -searchRangeX; x <= searchRangeX; x++) {
+                for (let y = -searchRangeY; y <= searchRangeY; y++) {
                     if (x === 0 && y === 0) continue;
                     
                     const value = normForm(x, y);
@@ -4733,6 +5421,37 @@ function is_prime_candidate(m, k, slice="half",
                 drawHeegnerField();
             }
         }, 100);
+        
+        // ==================== INITIALIZE ALL ZOOM/PAN ON PAGE LOAD ====================
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initializing universal controls for all visualizations...');
+            
+            // Initialize zoom/pan for all canvases
+            const canvasIds = [
+                'channelCanvas',
+                'concentricCanvas',
+                'testCanvas',
+                'farey3DCanvas',
+                'chordCanvas',
+                'heegnerCanvas'
+            ];
+            
+            canvasIds.forEach(canvasId => {
+                const canvas = document.getElementById(canvasId);
+                if (canvas) {
+                    initZoomPan(canvasId);
+                    console.log(`✅ Initialized ${canvasId}`);
+                } else {
+                    console.log(`⚠️  Canvas ${canvasId} not found`);
+                }
+            });
+            
+            console.log('✅ All universal controls initialized!');
+            console.log('🎬 Animation: Click Play buttons');
+            console.log('🔍 Zoom: Mouse wheel on any canvas');
+            console.log('🖱️  Pan: Click and drag any canvas');
+            console.log('🎨 Colors: Use theme dropdown or color pickers');
+        });
     </script>
 </body>
 </html>
