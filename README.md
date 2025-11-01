@@ -530,7 +530,7 @@
             <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
                 <div class="control-group">
                     <label for="erMaxModulus">Max Modulus:</label>
-                    <input type="number" id="erMaxModulus" min="3" max="100" value="30" step="1" oninput="drawEulerRiemann()">
+                    <input type="number" id="erMaxModulus" min="3" max="100" value="101" step="1" oninput="drawEulerRiemann()">
                 </div>
                 
                 <div class="control-group">
@@ -549,7 +549,7 @@
                 
                 <div class="control-group">
                     <label for="erOrbitModulus">Orbit for M:</label>
-                    <input type="number" id="erOrbitModulus" min="2" max="30" value="7" step="1" oninput="drawEulerRiemann()">
+                    <input type="number" id="erOrbitModulus" min="2" max="30" value="101" step="1" oninput="drawEulerRiemann()">
                 </div>
                 
                 <div class="control-group">
