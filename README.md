@@ -1003,7 +1003,7 @@ function is_prime_candidate(m, k, slice="half",
                 </div>
                 <div class="control-group">
                     <label>
-                        <input type="checkbox" id="concentricDarkBg">
+                        <input type="checkbox" id="concentricDarkBg" checked>
                         Black Background
                     </label>
                 </div>
@@ -1147,11 +1147,11 @@ function is_prime_candidate(m, k, slice="half",
             <div class="controls" style="margin-top: 15px;">
                 <strong style="color: #495057;">Visibility:</strong>
                 <label style="display: inline-flex; align-items: center; margin-left: 15px;">
-                    <input type="checkbox" id="showRings" checked style="margin-right: 5px;">
+                    <input type="checkbox" id="showRings" style="margin-right: 5px;">
                     Ring Lines
                 </label>
                 <label style="display: inline-flex; align-items: center; margin-left: 15px;">
-                    <input type="checkbox" id="showLabels" checked style="margin-right: 5px;">
+                    <input type="checkbox" id="showLabels" style="margin-right: 5px;">
                     Modulus Labels
                 </label>
                 <label style="display: inline-flex; align-items: center; margin-left: 15px;">
@@ -1795,7 +1795,7 @@ function is_prime_candidate(m, k, slice="half",
 
                     <div class="control-group">
                         <label for="heegnerMod">Modulus M:</label>
-                        <input type="number" id="heegnerMod" min="2" max="10000" value="240" step="1" oninput="drawHeegnerField()">
+                        <input type="number" id="heegnerMod" min="2" max="10000" value="7" step="1" oninput="drawHeegnerField()">
                     </div>
 
                     <div class="control-group">
@@ -1806,10 +1806,10 @@ function is_prime_candidate(m, k, slice="half",
                     
                     <div class="control-group">
                         <label for="heegnerRegionX">Region X:</label>
-                        <input type="number" id="heegnerRegionX" min="1" max="200" value="5" step="1" 
+                        <input type="number" id="heegnerRegionX" min="1" max="200" value="10" step="1" 
                                oninput="drawHeegnerField()" style="width: 60px;" placeholder="±X">
                         <span style="margin: 0 5px;">×</span>
-                        <input type="number" id="heegnerRegionY" min="1" max="200" value="5" step="1" 
+                        <input type="number" id="heegnerRegionY" min="1" max="200" value="10" step="1" 
                                oninput="drawHeegnerField()" style="width: 60px;" placeholder="±Y">
                     </div>
 
@@ -1839,6 +1839,12 @@ function is_prime_candidate(m, k, slice="half",
                         <input type="range" id="heegnerLabelSize" min="6" max="20" value="10" step="1" oninput="updateHeegnerLabelSize()">
                         <span id="heegnerLabelSizeVal">10</span>px
                     </div>
+                
+                <div class="control-group">
+                    <label for="heegnerHighlightCount">Highlight Points:</label>
+                    <input type="number" id="heegnerHighlightCount" min="0" max="20" value="5" step="1" 
+                           oninput="drawHeegnerField()" style="width: 60px;">
+                </div>
 
                     <label style="display: inline-flex; align-items: center;">
                         <input type="checkbox" id="heegnerShowPoints" checked onchange="drawHeegnerField()">
@@ -4261,6 +4267,8 @@ function is_prime_candidate(m, k, slice="half",
             const height = canvas.height;
             const centerX = width / 2;
             const centerY = height / 2;
+            const blackBg = document.getElementById('concentricDarkBg')?.checked || false;
+
 
             const minMod = parseInt(document.getElementById('minMod').value);
             const maxMod = parseInt(document.getElementById('maxMod').value);
@@ -4836,7 +4844,8 @@ function is_prime_candidate(m, k, slice="half",
             const height = canvas.height;
             
             ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = '#f8f9fa';
+            const blackBg = document.getElementById('concentricDarkBg')?.checked || false;
+            ctx.fillStyle = blackBg ? '#000000' : '#ffffff';
             ctx.fillRect(0, 0, width, height);
             
             const M = parseInt(document.getElementById('baseModulus')?.value || 30);
@@ -5096,6 +5105,20 @@ function is_prime_candidate(m, k, slice="half",
             return colors[D] || { base: '#3498db', accent: '#2980b9' };
         }
 
+        // Heegner fields data structure
+        const heegnerFields = {
+            '-1': { form: (x, y) => x*x + y*y, targetResidue: 4, symmetryOrder: 4 },
+            '-2': { form: (x, y) => x*x + 2*y*y, targetResidue: 2, symmetryOrder: 2 },
+            '-3': { form: (x, y) => x*x - x*y + y*y, targetResidue: 3, symmetryOrder: 6 },
+            '-7': { form: (x, y) => x*x + 7*y*y, targetResidue: 7, symmetryOrder: 1 },
+            '-11': { form: (x, y) => x*x + 11*y*y, targetResidue: 11, symmetryOrder: 1 },
+            '-19': { form: (x, y) => x*x + 19*y*y, targetResidue: 19, symmetryOrder: 1 },
+            '-43': { form: (x, y) => x*x + 43*y*y, targetResidue: 43, symmetryOrder: 1 },
+            '-67': { form: (x, y) => x*x + 67*y*y, targetResidue: 67, symmetryOrder: 1 },
+            '-163': { form: (x, y) => x*x + 163*y*y, targetResidue: 163, symmetryOrder: 1 }
+        };
+
+
         function getHeegnerModulus() {
             return parseInt(document.getElementById('heegnerMod').value) || 240;
         }
@@ -5128,82 +5151,68 @@ function is_prime_candidate(m, k, slice="half",
             const centerY = height / 2;
             
             const D = document.getElementById('heegnerField').value;
-            const M = getHeegnerModulus();  // Use flexible modulus getter
-            
-            // Check if using region inputs or search range
-            const regionX = parseInt(document.getElementById('heegnerRegionX')?.value);
-            const regionY = parseInt(document.getElementById('heegnerRegionY')?.value);
-            let searchRangeX, searchRangeY;
-            
-            if (regionX && regionY) {
-                // Use region inputs
-                searchRangeX = regionX;
-                searchRangeY = regionY;
-            } else {
-                // Fall back to search range (square region)
-                const searchRange = parseInt(document.getElementById('heegnerRange')?.value || 30);
-                searchRangeX = searchRange;
-                searchRangeY = searchRange;
-            }
-            
-            const pointSize = parseFloat(document.getElementById('heegnerPointSize').value || 3);
-            
+            const M = getHeegnerModulus();
+            const regionX = parseInt(document.getElementById('heegnerRegionX')?.value || 30);
+            const regionY = parseInt(document.getElementById('heegnerRegionY')?.value || 30);
+            const pointSize = parseFloat(document.getElementById('heegnerPointSize').value);
+            const displayMode = document.getElementById('heegnerDisplayMode').value;
+            const colorMode = document.getElementById('heegnerColorMode')?.value || 'field';
+            const showPrimesOnly = document.getElementById('heegnerShowPrimesOnly')?.checked || false;
+            const highlightCount = parseInt(document.getElementById('heegnerHighlightCount')?.value || 0);
+            const labelSize = parseInt(document.getElementById('heegnerLabelSize').value);
+            const showPoints = document.getElementById('heegnerShowPoints').checked;
             const showRings = document.getElementById('heegnerShowRings').checked;
             const showSymmetry = document.getElementById('heegnerShowSymmetry').checked;
             const darkBg = document.getElementById('heegnerDarkBg').checked;
             const showDensity = document.getElementById('heegnerShowDensity').checked;
-            const displayMode = document.getElementById('heegnerDisplayMode').value;
-            const labelSize = parseInt(document.getElementById('heegnerLabelSize').value || 10);
-            const showPointsBehind = document.getElementById('heegnerShowPoints').checked;
             
-            const normForm = getNormForm(D);
-            const symmetryOrder = getSymmetryOrder(D);
-            const colors = getFieldColor(D);
+            document.getElementById('heegnerPointSizeVal').textContent = pointSize;
+            document.getElementById('heegnerLabelSizeVal').textContent = labelSize;
             
-            // Background
-            ctx.fillStyle = darkBg ? '#1a1a1a' : 'white';
+            ctx.fillStyle = darkBg ? '#0a0a0a' : '#ffffff';
             ctx.fillRect(0, 0, width, height);
             
-            // Find all solutions to f(x,y) ≡ D (mod M)
-            const solutions = [];
+            const normForm = getNormForm(D);
             const targetResidue = (parseInt(D) % M + M) % M;
             
+            const searchRangeX = regionX;
+            const searchRangeY = regionY;
+            
+            const solutions = [];
             for (let x = -searchRangeX; x <= searchRangeX; x++) {
                 for (let y = -searchRangeY; y <= searchRangeY; y++) {
                     if (x === 0 && y === 0) continue;
-                    
                     const value = normForm(x, y);
                     const residue = ((value % M) + M) % M;
                     
                     if (residue === targetResidue) {
-                        // Map to angle and radius
-                        const angle = Math.atan2(y, x) + heegnerRotation;
                         const distance = Math.sqrt(x*x + y*y);
-                        solutions.push({ x, y, angle, distance, value });
+                        const angle = Math.atan2(y, x) + heegnerRotation;
+                        const isPrime = isPrimeNorm(Math.abs(value));
+                        
+                        if (!showPrimesOnly || isPrime) {
+                            solutions.push({ x, y, angle, distance, value, isPrime });
+                        }
                     }
                 }
             }
             
-            // Group by distance for ring visualization
             const rings = new Map();
             solutions.forEach(sol => {
-                const ringDist = Math.round(sol.distance * 2) / 2;  // Group by 0.5 increments
+                const ringDist = Math.round(sol.distance * 2) / 2;
                 if (!rings.has(ringDist)) rings.set(ringDist, []);
                 rings.get(ringDist).push(sol);
             });
             
-            // Calculate max radius for scaling
-            const maxDist = Math.max(...Array.from(rings.keys()));
+            const maxDist = solutions.length > 0 ? Math.max(...solutions.map(s => s.distance)) : 1;
             const scale = Math.min(width, height) * 0.4 / maxDist;
             
-            // Draw density heatmap if enabled
             if (showDensity && rings.size > 0) {
                 const sortedRings = Array.from(rings.entries()).sort((a, b) => a[0] - b[0]);
-                sortedRings.forEach(([dist, points], idx) => {
+                sortedRings.forEach(([dist, points]) => {
                     const radius = dist * scale;
                     const density = points.length / (2 * Math.PI * dist);
                     const opacity = Math.min(0.3, density * 0.1);
-                    
                     ctx.fillStyle = darkBg ? `rgba(100, 149, 237, ${opacity})` : `rgba(52, 152, 219, ${opacity})`;
                     ctx.beginPath();
                     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
@@ -5211,11 +5220,9 @@ function is_prime_candidate(m, k, slice="half",
                 });
             }
             
-            // Draw rings
             if (showRings) {
                 ctx.strokeStyle = darkBg ? '#555' : '#ddd';
                 ctx.lineWidth = 1;
-                
                 const sortedRings = Array.from(rings.keys()).sort((a, b) => a - b);
                 sortedRings.forEach(dist => {
                     const radius = dist * scale;
@@ -5225,112 +5232,83 @@ function is_prime_candidate(m, k, slice="half",
                 });
             }
             
-            // Draw symmetry lines
-            if (showSymmetry && symmetryOrder > 1) {
-                ctx.strokeStyle = darkBg ? '#777' : '#ccc';
-                ctx.lineWidth = 1;
-                ctx.setLineDash([5, 5]);
-                
-                for (let i = 0; i < symmetryOrder; i++) {
-                    const angle = (2 * Math.PI * i) / symmetryOrder;
-                    const x2 = centerX + Math.cos(angle) * width * 0.5;
-                    const y2 = centerY - Math.sin(angle) * height * 0.5;
-                    
-                    ctx.beginPath();
-                    ctx.moveTo(centerX, centerY);
-                    ctx.lineTo(x2, y2);
-                    ctx.stroke();
+            if (showSymmetry) {
+                const fieldInfo = heegnerFields[D];
+                if (fieldInfo && fieldInfo.symmetryOrder) {
+                    const symmetryOrder = fieldInfo.symmetryOrder;
+                    ctx.strokeStyle = darkBg ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
+                    ctx.lineWidth = 0.5;
+                    for (let i = 0; i < symmetryOrder; i++) {
+                        const angle = (2 * Math.PI * i) / symmetryOrder;
+                        const x = centerX + maxDist * scale * Math.cos(angle);
+                        const y = centerY + maxDist * scale * Math.sin(angle);
+                        ctx.beginPath();
+                        ctx.moveTo(centerX, centerY);
+                        ctx.lineTo(x, y);
+                        ctx.stroke();
+                    }
                 }
-                ctx.setLineDash([]);
             }
             
-            // Draw solution points
-            solutions.forEach(sol => {
-                const radius = sol.distance * scale;
-                const px = centerX + radius * Math.cos(sol.angle);
-                const py = centerY - radius * Math.sin(sol.angle);
+            const highlightedSolutions = highlightCount > 0 ? solutions.slice(0, highlightCount) : [];
+            
+            solutions.forEach((sol, idx) => {
+                const px = centerX + sol.distance * scale * Math.cos(sol.angle);
+                const py = centerY + sol.distance * scale * Math.sin(sol.angle);
                 
-                // Color based on distance (gradient)
-                const intensity = Math.min(1, sol.distance / maxDist);
-                const hue = parseInt(D) === -1 ? 210 :
-                           parseInt(D) === -3 ? 140 :
-                           parseInt(D) === -2 ? 170 :
-                           (Math.abs(parseInt(D)) * 137.5) % 360;
+                const isHighlighted = highlightedSolutions.includes(sol);
                 
-                const pointColor = `hsl(${hue}, ${70 + intensity * 20}%, ${50 - intensity * 20}%)`;
-                
-                // Draw point if in dots mode or if showing points behind labels
-                if (displayMode === 'dots' || showPointsBehind) {
-                    ctx.fillStyle = pointColor;
+                if (showPoints || displayMode === 'dots') {
+                    const color = getColorByMode(sol, colorMode, D, M);
+                    ctx.fillStyle = isHighlighted ? '#ff3860' : color;
                     ctx.beginPath();
-                    ctx.arc(px, py, pointSize, 0, 2 * Math.PI);
+                    ctx.arc(px, py, isHighlighted ? pointSize * 1.8 : pointSize, 0, 2 * Math.PI);
                     ctx.fill();
                     
-                    // Add subtle glow for emphasis
-                    if (darkBg) {
-                        ctx.fillStyle = `rgba(255, 255, 255, 0.1)`;
+                    if (isHighlighted) {
+                        ctx.strokeStyle = '#ffdd57';
+                        ctx.lineWidth = 2;
                         ctx.beginPath();
-                        ctx.arc(px, py, pointSize * 1.5, 0, 2 * Math.PI);
-                        ctx.fill();
+                        ctx.arc(px, py, pointSize * 2.5, 0, 2 * Math.PI);
+                        ctx.stroke();
                     }
                 }
                 
-                // Draw labels for other modes
                 if (displayMode !== 'dots') {
                     let labelText = '';
-                    
                     switch(displayMode) {
-                        case 'norm':
-                            labelText = sol.value.toString();
-                            break;
-                        case 'coords':
-                            labelText = `(${sol.x},${sol.y})`;
-                            break;
-                        case 'x-values':
-                            labelText = sol.x.toString();
-                            break;
-                        case 'y-values':
-                            labelText = sol.y.toString();
-                            break;
-                        case 'residue':
-                            labelText = ((sol.value % M) + M) % M;
-                            break;
-                        case 'distance':
-                            labelText = sol.distance.toFixed(2);
-                            break;
+                        case 'norm': labelText = `${sol.value}`; break;
+                        case 'coords': labelText = `(${sol.x},${sol.y})`; break;
+                        case 'x-values': labelText = `${sol.x}`; break;
+                        case 'y-values': labelText = `${sol.y}`; break;
+                        case 'residue': labelText = `${((sol.value % M) + M) % M}`; break;
+                        case 'distance': labelText = `${sol.distance.toFixed(1)}`; break;
                     }
                     
-                    // Draw label background for readability
-                    ctx.font = `${labelSize}px Arial`;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    const metrics = ctx.measureText(labelText);
-                    const textWidth = metrics.width;
-                    const textHeight = labelSize;
-                    const padding = 2;
-                    
-                    // Background rectangle
-                    ctx.fillStyle = darkBg ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.85)';
-                    ctx.fillRect(
-                        px - textWidth/2 - padding,
-                        py - textHeight/2 - padding,
-                        textWidth + 2*padding,
-                        textHeight + 2*padding
-                    );
-                    
-                    // Text
-                    ctx.fillStyle = darkBg ? '#fff' : '#000';
-                    ctx.fillText(labelText, px, py);
+                    if (labelText && (!showPrimesOnly || sol.isPrime) && (isHighlighted || solutions.length < 200)) {
+                        ctx.font = `${isHighlighted ? labelSize + 2 : labelSize}px Arial`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        const metrics = ctx.measureText(labelText);
+                        const textWidth = metrics.width;
+                        const textHeight = labelSize;
+                        const padding = 2;
+                        
+                        ctx.fillStyle = darkBg ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.85)';
+                        ctx.fillRect(px - textWidth/2 - padding, py - textHeight/2 - padding, 
+                                   textWidth + 2*padding, textHeight + 2*padding);
+                        
+                        ctx.fillStyle = isHighlighted ? '#ff3860' : (darkBg ? '#fff' : '#000');
+                        ctx.fillText(labelText, px, py);
+                    }
                 }
             });
             
-            // Draw center origin
             ctx.fillStyle = darkBg ? '#fff' : '#333';
             ctx.beginPath();
             ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
             ctx.fill();
             
-            // Draw title and info
             ctx.fillStyle = darkBg ? '#fff' : '#2c3e50';
             ctx.font = 'bold 18px Arial';
             ctx.textAlign = 'center';
@@ -5339,28 +5317,26 @@ function is_prime_candidate(m, k, slice="half",
                 '-1': 'ℚ(√-1) - Gaussian Integers',
                 '-2': 'ℚ(√-2)',
                 '-3': 'ℚ(√-3) - Eisenstein Integers',
-                '-7': 'ℚ(√-7)',
-                '-11': 'ℚ(√-11)',
-                '-19': 'ℚ(√-19)',
-                '-43': 'ℚ(√-43)',
-                '-67': 'ℚ(√-67)',
+                '-7': 'ℚ(√-7)', '-11': 'ℚ(√-11)', '-19': 'ℚ(√-19)',
+                '-43': 'ℚ(√-43)', '-67': 'ℚ(√-67)',
                 '-163': 'ℚ(√-163) - Ramanujan\'s Field'
             };
             
             ctx.fillText(fieldNames[D] || `ℚ(√${D})`, centerX, 30);
-            
             ctx.font = '14px Arial';
             ctx.fillText(`f(x,y) ≡ ${D} (mod ${M})`, centerX, 55);
             
-            // Update stats
             const statsDiv = document.getElementById('heegnerStats');
             if (statsDiv) {
                 const uniqueRings = rings.size;
                 const totalSolutions = solutions.length;
+                const primeSolutions = solutions.filter(s => s.isPrime).length;
                 const avgDensity = totalSolutions / (uniqueRings || 1);
-                const maxRingDensity = Math.max(...Array.from(rings.values()).map(r => r.length));
+                const maxRingDensity = rings.size > 0 ? Math.max(...Array.from(rings.values()).map(r => r.length)) : 0;
                 
-                // Display range info
+                const fieldInfo = heegnerFields[D];
+                const symmetryOrder = fieldInfo ? fieldInfo.symmetryOrder : 'N/A';
+                
                 const rangeDisplay = searchRangeX === searchRangeY 
                     ? `[-${searchRangeX}, ${searchRangeX}]`
                     : `X: [-${searchRangeX}, ${searchRangeX}], Y: [-${searchRangeY}, ${searchRangeY}]`;
@@ -5370,11 +5346,14 @@ function is_prime_candidate(m, k, slice="half",
                         <div><strong>Field:</strong> ℚ(√${D})</div>
                         <div><strong>Modulus M:</strong> ${M}</div>
                         <div><strong>Solutions Found:</strong> ${totalSolutions}</div>
+                        <div><strong>Prime Solutions:</strong> ${primeSolutions}</div>
                         <div><strong>Unique Rings:</strong> ${uniqueRings}</div>
                         <div><strong>Avg Ring Density:</strong> ${avgDensity.toFixed(1)}</div>
                         <div><strong>Max Ring Density:</strong> ${maxRingDensity}</div>
                         <div><strong>Symmetry Order:</strong> ${symmetryOrder}-fold</div>
                         <div><strong>Search Range:</strong> ${rangeDisplay}</div>
+                        <div><strong>Color Mode:</strong> ${colorMode}</div>
+                        ${highlightCount > 0 ? `<div><strong>Highlighted:</strong> ${Math.min(highlightCount, totalSolutions)} points</div>` : ''}
                     </div>
                 `;
             }
@@ -5418,114 +5397,124 @@ function is_prime_candidate(m, k, slice="half",
             drawHeegnerField();
         }
 
-        function exportHeegnerCSV() {
+
+        function isPrimeNorm(n) {
+            if (n < 2) return false;
+            if (n === 2) return true;
+            if (n % 2 === 0) return false;
+            for (let i = 3; i * i <= n; i += 2) {
+                if (n % i === 0) return false;
+            }
+            return true;
+        }
+        
+        function getColorByMode(solution, mode, D, M) {
+            const colors = getFieldColor(D);
+            
+            switch(mode) {
+                case 'prime':
+                    return isPrimeNorm(Math.abs(solution.value)) ? '#27ae60' : '#95a5a6';
+                case 'gap':
+                    const gap = Math.abs(solution.value) % (2 * parseInt(M));
+                    const hue = (gap * 360 / (2 * M)) % 360;
+                    return `hsl(${hue}, 70%, 50%)`;
+                case 'distance':
+                    const hue2 = (solution.distance * 30) % 360;
+                    return `hsl(${hue2}, 70%, 50%)`;
+                case 'residue':
+                    const residue = ((solution.value % M) + M) % M;
+                    const hue3 = (residue * 360 / M) % 360;
+                    return `hsl(${hue3}, 70%, 50%)`;
+                case 'field':
+                default:
+                    return colors.primary;
+            }
+        }
+        
+        function exportHeegnerDetailedCSV() {
             const D = document.getElementById('heegnerField').value;
             const M = getHeegnerModulus();
             
-            // Check if using region inputs or search range
             const regionX = parseInt(document.getElementById('heegnerRegionX')?.value);
             const regionY = parseInt(document.getElementById('heegnerRegionY')?.value);
             let searchRangeX, searchRangeY;
             
             if (regionX && regionY) {
-                // Use region inputs
                 searchRangeX = regionX;
                 searchRangeY = regionY;
             } else {
-                // Fall back to search range (square region)
                 const searchRange = parseInt(document.getElementById('heegnerRange')?.value || 30);
                 searchRangeX = searchRange;
                 searchRangeY = searchRange;
             }
             
-            // Get field info
-            const fieldInfo = heegnerFields[D];
-            if (!fieldInfo) return;
+            const normForm = getNormForm(D);
+            const targetResidue = (parseInt(D) % M + M) % M;
             
-            const { form, targetResidue } = fieldInfo;
-            
-            // Compute solutions
             const solutions = [];
             for (let x = -searchRangeX; x <= searchRangeX; x++) {
                 for (let y = -searchRangeY; y <= searchRangeY; y++) {
-                    const value = form(x, y);
+                    if (x === 0 && y === 0) continue;
+                    const value = normForm(x, y);
                     const residue = ((value % M) + M) % M;
                     
                     if (residue === targetResidue) {
                         const distance = Math.sqrt(x*x + y*y);
-                        const angle = Math.atan2(y, x) * (180 / Math.PI); // Convert to degrees
-                        solutions.push({ x, y, value, residue, distance, angle });
+                        const angle = Math.atan2(y, x) * (180 / Math.PI);
+                        const isPrime = isPrimeNorm(Math.abs(value));
+                        const gap = Math.abs(value) % (2 * M);
+                        solutions.push({ x, y, value, residue, distance, angle, isPrime, gap });
                     }
                 }
             }
             
-            // Sort by distance, then angle
             solutions.sort((a, b) => {
-                if (Math.abs(a.distance - b.distance) < 0.001) {
-                    return a.angle - b.angle;
-                }
+                if (Math.abs(a.distance - b.distance) < 0.001) return a.angle - b.angle;
                 return a.distance - b.distance;
             });
             
-            // Create CSV content
-            let csv = 'x,y,f(x_y),residue,distance,angle_deg\n';
+            let csv = 'x,y,f(x_y),residue,distance,angle_deg,is_prime,gap_2n,x_label,y_label,norm_label,dist_label\n';
             solutions.forEach(sol => {
-                csv += `${sol.x},${sol.y},${sol.value},${sol.residue},${sol.distance.toFixed(6)},${sol.angle.toFixed(2)}\n`;
+                const xLabel = `x=${sol.x}`;
+                const yLabel = `y=${sol.y}`;
+                const normLabel = `f=${sol.value}`;
+                const distLabel = `d=${sol.distance.toFixed(2)}`;
+                csv += `${sol.x},${sol.y},${sol.value},${sol.residue},${sol.distance.toFixed(6)},${sol.angle.toFixed(2)},${sol.isPrime},${sol.gap},"${xLabel}","${yLabel}","${normLabel}","${distLabel}"\n`;
             });
             
-            // Add metadata header
-            const metadata = `# Heegner Field Modular Form Solutions\n`;
             const fieldName = {
-                '-1': 'Gaussian (Q(sqrt(-1)))',
-                '-2': 'Q(sqrt(-2))',
-                '-3': 'Eisenstein (Q(sqrt(-3)))',
-                '-7': 'Q(sqrt(-7))',
-                '-11': 'Q(sqrt(-11))',
-                '-19': 'Q(sqrt(-19))',
-                '-43': 'Q(sqrt(-43))',
-                '-67': 'Q(sqrt(-67))',
-                '-163': 'Ramanujan (Q(sqrt(-163)))'
+                '-1': 'Gaussian', '-2': 'Q(sqrt(-2))', '-3': 'Eisenstein',
+                '-7': 'Q(sqrt(-7))', '-11': 'Q(sqrt(-11))', '-19': 'Q(sqrt(-19))',
+                '-43': 'Q(sqrt(-43))', '-67': 'Q(sqrt(-67))', '-163': 'Ramanujan'
             }[D] || `Q(sqrt(${D}))`;
             
-            // Display range info
             const rangeDisplay = searchRangeX === searchRangeY 
                 ? `[-${searchRangeX}, ${searchRangeX}]`
                 : `X: [-${searchRangeX}, ${searchRangeX}], Y: [-${searchRangeY}, ${searchRangeY}]`;
             
-            const metaInfo = `# Field: ${fieldName}\n` +
-                           `# Discriminant D: ${D}\n` +
-                           `# Modulus M: ${M}\n` +
-                           `# Target Residue: ${targetResidue}\n` +
-                           `# Search Range: ${rangeDisplay}\n` +
-                           `# Solutions Found: ${solutions.length}\n` +
-                           `# Export Date: ${new Date().toISOString()}\n` +
-                           `#\n`;
+            const metadata = `# Heegner Field Detailed Export
+` +
+                           `# Field: ${fieldName}
+` +
+                           `# D: ${D}, M: ${M}
+` +
+                           `# Range: ${rangeDisplay}
+` +
+                           `# Solutions: ${solutions.length}
+` +
+                           `# Prime Solutions: ${solutions.filter(s => s.isPrime).length}
+` +
+                           `# Date: ${new Date().toISOString()}
+#
+`;
             
-            const fullCSV = metadata + metaInfo + csv;
-            
-            // Download
-            const blob = new Blob([fullCSV], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob([metadata + csv], { type: 'text/csv' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `heegner-field-D${D}-M${M}-solutions-${Date.now()}.csv`;
+            link.download = `heegner-detailed-D${D}-M${M}-${Date.now()}.csv`;
             link.click();
-            
-            // Show confirmation
-            const statsDiv = document.getElementById('heegnerStats');
-            if (statsDiv) {
-                const originalHTML = statsDiv.innerHTML;
-                statsDiv.innerHTML = `
-                    <div style="background: #27ae60; color: white; padding: 15px; border-radius: 8px; text-align: center;">
-                        ✅ <strong>CSV Exported Successfully!</strong><br>
-                        ${solutions.length} solutions saved to file
-                    </div>
-                `;
-                setTimeout(() => {
-                    statsDiv.innerHTML = originalHTML;
-                }, 3000);
-            }
         }
-
+            
         function toggleHeegnerAnimation() {
             const animate = document.getElementById('heegnerAnimate').checked;
             
@@ -5769,7 +5758,9 @@ function is_prime_candidate(m, k, slice="half",
             const orbitM = parseInt(document.getElementById('erOrbitModulus').value) || 7;
             const orbitBase = parseInt(document.getElementById('erOrbitBase').value) || 3;
             
-            ctx.fillStyle = '#0a0a0a';
+            // Use black background by default for this visualization
+            const blackBg = true;
+            ctx.fillStyle = blackBg ? '#000000' : '#ffffff';
             ctx.fillRect(0, 0, width, height);
             
             const maxRadius = Math.min(width, height) * 0.42;
