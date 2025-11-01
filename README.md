@@ -73,11 +73,11 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
             line-height: 1.6;
             color: #2c3e50;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
         }
 
@@ -151,27 +151,27 @@
         }
 
         .definition {
-            background: linear-gradient(135deg, #e8f4f8 0%, #d4e7f0 100%);
+            /* background: linear-gradient(135deg, #e8f4f8 0%, #d4e7f0 100%);
             border-left: 5px solid #3498db;
         }
 
         .proposition, .theorem, .corollary {
-            background: linear-gradient(135deg, #f0f7ef 0%, #e1f0dd 100%);
+            /* background: linear-gradient(135deg, #f0f7ef 0%, #e1f0dd 100%);
             border-left: 5px solid #27ae60;
         }
 
         .lemma {
-            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            /* background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
             border-left: 5px solid #ff9800;
         }
 
         .algorithm {
-            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            /* background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
             border-left: 5px solid #9c27b0;
         }
 
         .proof {
-            background: linear-gradient(135deg, #fef5e7 0%, #fdebd0 100%);
+            /* background: linear-gradient(135deg, #fef5e7 0%, #fdebd0 100%);
             border-left: 5px solid #f39c12;
         }
 
@@ -201,7 +201,7 @@
 
         .canvas-container {
             margin: 30px 0;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            /* background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             padding: 35px;
             border-radius: 12px;
             border: 2px solid #ffffff;
@@ -284,15 +284,15 @@
         }
 
         button.secondary {
-            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            /* background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
         }
 
         button.success {
-            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            /* background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
         }
 
         button.danger {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            /* background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
         }
 
         .caption {
@@ -304,7 +304,7 @@
         }
 
         .abstract {
-            background: linear-gradient(135deg, #ecf0f1 0%, #d5dbdb 100%);
+            /* background: linear-gradient(135deg, #ecf0f1 0%, #d5dbdb 100%);
             padding: 30px;
             margin: 30px 0;
             border-radius: 8px;
@@ -314,7 +314,7 @@
         }
 
         .info-box {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+            /* background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
             border: 2px solid #ffc107;
             border-radius: 8px;
             padding: 20px;
@@ -435,7 +435,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
+            /* background: linear-gradient(90deg, #ffffff 0%, #ffffff 100%);
             transition: width 0.3s;
             display: flex;
             align-items: center;
@@ -569,7 +569,626 @@
         .controls button:hover {
             background: #229954;
         }
-</style>
+
+        .section-container {
+            background: white;
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .section-container h2,
+        .section-container h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+
+        
+        /* Modern Vibrant Web App Styling */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .paper-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        /* Colorful Section Headers */
+        .section-container {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            margin: 0;
+            padding: 30px;
+            border-bottom: 3px solid transparent;
+            border-image: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe) 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe);
+        }
+        
+        .section-container:nth-child(odd) {
+            background: linear-gradient(135deg, #fff 0%, #f0f4ff 100%);
+        }
+        
+        .section-container:nth-child(even) {
+            background: linear-gradient(135deg, #fff 0%, #fff5f8 100%);
+        }
+        
+        /* Vibrant Headers */
+        h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-align: center;
+            margin: 30px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #667eea !important;
+            font-size: 2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, #667eea, #764ba2) 1;
+            display: inline-block;
+        }
+        
+        h3 {
+            color: #764ba2 !important;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        
+        /* Colorful Controls */
+        .controls {
+            background: linear-gradient(135deg, #e0e7ff 0%, #fce7f3 100%) !important;
+            padding: 20px !important;
+            border-radius: 15px !important;
+            border: 2px solid rgba(102, 126, 234, 0.3) !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1) !important;
+            margin: 15px 0 !important;
+        }
+        
+        .control-group {
+            background: white !important;
+            padding: 12px !important;
+            margin: 8px 0 !important;
+            border-radius: 10px !important;
+            border-left: 4px solid #667eea !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+        }
+        
+        /* Vibrant Buttons */
+        button, .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            border: none !important;
+            padding: 12px 24px !important;
+            border-radius: 25px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        button:hover, .button:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
+        }
+        
+        button:active {
+            transform: translateY(0) !important;
+        }
+        
+        /* Different button colors for different actions */
+        button[onclick*="export"], button[onclick*="Export"] {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4) !important;
+        }
+        
+        button[onclick*="Play"], button[onclick*="play"] {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
+            box-shadow: 0 4px 15px rgba(67, 233, 123, 0.4) !important;
+        }
+        
+        button[onclick*="Stop"], button[onclick*="stop"] {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important;
+            box-shadow: 0 4px 15px rgba(250, 112, 154, 0.4) !important;
+        }
+        
+        button[onclick*="Reset"], button[onclick*="reset"] {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4) !important;
+        }
+        
+        /* Canvas Styling */
+        canvas {
+            border-radius: 15px !important;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15) !important;
+            border: 3px solid transparent !important;
+            background: white !important;
+        }
+        
+        /* Input Styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.6);
+            border: 3px solid #667eea;
+        }
+        
+        input[type="number"],
+        input[type="text"],
+        select {
+            border: 2px solid #e0e7ff !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            font-size: 1em !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+            outline: none !important;
+        }
+        
+        /* Checkbox Styling */
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        /* Labels */
+        label {
+            color: #2d3748 !important;
+            font-weight: 500 !important;
+            font-size: 0.95em !important;
+        }
+        
+        /* Info boxes */
+        .info-box {
+            background: linear-gradient(135deg, #e0e7ff 0%, #ffffff 100%);
+            border-left: 5px solid #667eea;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Accent colors for different sections */
+        .section-container:nth-child(1) h2 { color: #667eea !important; }
+        .section-container:nth-child(2) h2 { color: #764ba2 !important; }
+        .section-container:nth-child(3) h2 { color: #f093fb !important; }
+        .section-container:nth-child(4) h2 { color: #4facfe !important; }
+        .section-container:nth-child(5) h2 { color: #43e97b !important; }
+        .section-container:nth-child(6) h2 { color: #fa709a !important; }
+        .section-container:nth-child(7) h2 { color: #6366f1 !important; }
+        .section-container:nth-child(8) h2 { color: #8b5cf6 !important; }
+        .section-container:nth-child(9) h2 { color: #ec4899 !important; }
+        .section-container:nth-child(10) h2 { color: #f59e0b !important; }
+
+        
+        
+        
+        
+        /* Elegant Individual Section Cards Design */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+            background-size: 200% 200%;
+            animation: gradient 15s ease infinite;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .paper-container {
+            background: transparent !important;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+        
+        /* Individual Section Cards - Each is its own elegant card */
+        .section-container {
+            background: white !important;
+            max-width: 1100px;
+            margin: 30px auto !important;
+            padding: 40px !important;
+            border-radius: 20px !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 
+                        0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+            position: relative;
+            overflow: visible !important;
+            border: none !important;
+            transform: translateY(0);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        
+        .section-container:hover {
+            transform: translateY(-8px) !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25),
+                        0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        /* Colorful accent bar on left side of each card */
+        .section-container::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 20px 0 0 20px;
+        }
+        
+        /* Different accent colors for each section */
+        .section-container:nth-child(1)::before { background: linear-gradient(180deg, #667eea, #764ba2); }
+        .section-container:nth-child(2)::before { background: linear-gradient(180deg, #f093fb, #f5576c); }
+        .section-container:nth-child(3)::before { background: linear-gradient(180deg, #4facfe, #00f2fe); }
+        .section-container:nth-child(4)::before { background: linear-gradient(180deg, #43e97b, #38f9d7); }
+        .section-container:nth-child(5)::before { background: linear-gradient(180deg, #fa709a, #fee140); }
+        .section-container:nth-child(6)::before { background: linear-gradient(180deg, #30cfd0, #330867); }
+        .section-container:nth-child(7)::before { background: linear-gradient(180deg, #a8edea, #fed6e3); }
+        .section-container:nth-child(8)::before { background: linear-gradient(180deg, #ff9a9e, #fecfef); }
+        .section-container:nth-child(9)::before { background: linear-gradient(180deg, #ffecd2, #fcb69f); }
+        .section-container:nth-child(10)::before { background: linear-gradient(180deg, #ff6e7f, #bfe9ff); }
+        
+        /* Beautiful Headers with gradient text */
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            font-weight: 800;
+            margin: 40px 0 60px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient 3s linear infinite;
+            letter-spacing: -1px;
+        }
+        
+        h2 {
+            color: #2d3748 !important;
+            font-size: 2.2em !important;
+            font-weight: 700 !important;
+            margin: 0 0 30px 0 !important;
+            padding: 0 0 15px 0 !important;
+            border-bottom: 3px solid !important;
+            border-image: linear-gradient(90deg, #667eea, transparent) 1 !important;
+            display: block !important;
+        }
+        
+        h3 {
+            color: #4a5568 !important;
+            font-size: 1.5em !important;
+            font-weight: 600 !important;
+            margin: 25px 0 15px 0 !important;
+        }
+        
+        /* Canvas - centered and prominent */
+        canvas {
+            display: block !important;
+            margin: 30px auto !important;
+            max-width: 100% !important;
+            border-radius: 15px !important;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+            background: #000 !important;
+            border: none !important;
+        }
+        
+        /* Controls - organized and clean */
+        .controls {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%) !important;
+            padding: 25px !important;
+            border-radius: 12px !important;
+            margin: 20px 0 !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+        }
+        
+        .control-group {
+            background: white !important;
+            padding: 15px !important;
+            margin: 10px 0 !important;
+            border-radius: 8px !important;
+            border-left: 3px solid #667eea !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .control-group:hover {
+            transform: translateX(3px) !important;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15) !important;
+        }
+        
+        /* Stats and info boxes */
+        #eulerRiemannStats,
+        #channelStats {
+            background: linear-gradient(135deg, #e0e7ff 0%, #fce7f3 100%) !important;
+            padding: 20px !important;
+            border-radius: 12px !important;
+            margin: 20px 0 !important;
+            border: 2px solid rgba(102, 126, 234, 0.2) !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1) !important;
+        }
+        
+        /* Paragraphs and text */
+        p {
+            color: #4a5568 !important;
+            line-height: 1.8 !important;
+            margin: 15px 0 !important;
+            font-size: 1.05em !important;
+        }
+        
+        /* Lists */
+        ul, ol {
+            color: #4a5568 !important;
+            line-height: 1.8 !important;
+            margin: 15px 0 !important;
+            padding-left: 30px !important;
+        }
+        
+        li {
+            margin: 8px 0 !important;
+        }
+        
+        /* Beautiful gradient buttons */
+        button, .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            border: none !important;
+            padding: 14px 28px !important;
+            border-radius: 12px !important;
+            font-weight: 600 !important;
+            font-size: 1em !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            margin: 5px !important;
+        }
+        
+        button:hover {
+            transform: translateY(-3px) scale(1.02) !important;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5) !important;
+        }
+        
+        button:active {
+            transform: translateY(-1px) !important;
+        }
+        
+        /* Different button colors */
+        button[onclick*="export"], button[onclick*="Export"] {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4) !important;
+        }
+        
+        button[onclick*="Play"], button[onclick*="play"] {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
+            box-shadow: 0 4px 15px rgba(67, 233, 123, 0.4) !important;
+        }
+        
+        button[onclick*="Stop"], button[onclick*="Animate"], button.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4) !important;
+        }
+        
+        /* Input styling */
+        input[type="number"],
+        input[type="text"],
+        select {
+            border: 2px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            padding: 10px 15px !important;
+            font-size: 1em !important;
+            transition: all 0.3s ease !important;
+            background: white !important;
+        }
+        
+        input:focus, select:focus {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+            outline: none !important;
+        }
+        
+        /* Checkboxes */
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        /* Labels */
+        label {
+            color: #2d3748 !important;
+            font-weight: 500 !important;
+            font-size: 1em !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Spacing and layout improvements */
+        .section-container > * {
+            max-width: 100%;
+        }
+        
+        /* Remove the old border-image that was causing issues */
+        .section-container {
+            border-image: none !important;
+        }
+
+        /* Animations and Effects */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+            background-size: 200% 200%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        .section-container {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .section-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        canvas {
+            transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+        }
+        
+        canvas:hover {
+            transform: scale(1.01) !important;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2) !important;
+        }
+        
+        button {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        /* Glowing effect on inputs */
+        input:focus, select:focus {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+        
+        /* Tooltip effects */
+        [title]:hover {
+            position: relative;
+        }
+        
+        /* Card hover effects */
+        .control-group:hover {
+            transform: translateX(5px);
+            border-left-width: 6px !important;
+            transition: all 0.3s ease;
+        }
+        
+        /* Shimmer effect for headers */
+        h1 {
+            position: relative;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #667eea 75%, #764ba2 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient 3s linear infinite;
+        }
+        
+        /* Loading pulse for canvases */
+        @keyframes canvasPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        canvas[id]:empty {
+            animation: canvasPulse 2s ease-in-out infinite;
+        }
+
+        </style>
 </head>
 <body>
 <div>
@@ -1160,7 +1779,7 @@ function is_prime_candidate(m, k, slice="half",
                 </div>
             </div>
 
-            <div class="controls" style="margin-top: 10px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 12px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+            <div class="controls" style="margin-top: 10px; /* background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 12px; border-radius: 8px; border-left: 4px solid #3b82f6;">
                 <div class="control-group">
                     <label style="font-weight: 600; margin-right: 15px; color: #1e40af;">Dirichlet Characters Filter:</label>
                 </div>
@@ -1992,7 +2611,7 @@ function is_prime_candidate(m, k, slice="half",
                 <button onclick="drawHeegnerField()">Visualize</button>
                 <button class="success" onclick="exportHeegnerVisualization('4k')">📸 Export 4K</button>
                 <button class="success" onclick="exportHeegnerVisualization('2k')">📸 Export 2K</button>
-                <button onclick="exportHeegnerCSV()" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white;">📊 Export CSV</button>
+                <button onclick="exportHeegnerCSV()" style="/* background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white;">📊 Export CSV</button>
                 <button class="secondary" onclick="compareAllFields()">🔬 Compare All 9 Fields</button>
             </div>
 
@@ -5705,7 +6324,7 @@ function drawConcentricRings() {
                     <style>
                         body {
                             font-family: Arial, sans-serif;
-                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                             padding: 20px;
                             margin: 0;
                         }
@@ -5952,14 +6571,26 @@ function drawConcentricRings() {
                         const x = centerX + radius * Math.cos(angle);
                         const y = centerY + radius * Math.sin(angle);
                         
-                        ctx.fillStyle = isPrimeM ? '#4ecdc4' : '#95a5a6';
+                        // Color based on density gradient if enabled
+                        let pointColor;
+                        if (showDensity) {
+                            // Color by density - more points = brighter
+                            const density = phi / m; // Fraction of coprime points
+                            const hue = 200 - (density * 150); // Blue to green
+                            pointColor = `hsl(${hue}, 80%, 60%)`;
+                        } else {
+                            pointColor = isPrimeM ? '#4ecdc4' : '#95a5a6';
+                        }
+                        
+                        ctx.fillStyle = pointColor;
                         ctx.beginPath();
-                        ctx.arc(x, y, isPrimeM ? 2.5 : 1.5, 0, 2 * Math.PI);
+                        ctx.arc(x, y, isPrimeM ? pointSize : pointSize * 0.6, 0, 2 * Math.PI);
                         ctx.fill();
                     }
                 }
                 
-                if (isPrimeM && m <= 23) {
+                // Show prime labels if enabled
+                if (showLabels && isPrimeM && m <= 23) {
                     ctx.fillStyle = '#4ecdc4';
                     ctx.font = '11px Arial';
                     ctx.fillText(`p=${m}`, centerX + radius + 5, centerY);
@@ -5982,15 +6613,18 @@ function drawConcentricRings() {
                     current = (current * orbitBase) % orbitM;
                 }
                 
-                ctx.strokeStyle = 'rgba(255, 200, 0, 0.6)';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                orbitPoints.forEach((p, i) => {
-                    if (i === 0) ctx.moveTo(p.x, p.y);
-                    else ctx.lineTo(p.x, p.y);
-                });
-                ctx.closePath();
-                ctx.stroke();
+                // Show connections if enabled
+                if (showConnections) {
+                    ctx.strokeStyle = 'rgba(255, 200, 0, 0.6)';
+                    ctx.lineWidth = orbitWidth;
+                    ctx.beginPath();
+                    orbitPoints.forEach((p, i) => {
+                        if (i === 0) ctx.moveTo(p.x, p.y);
+                        else ctx.lineTo(p.x, p.y);
+                    });
+                    ctx.closePath();
+                    ctx.stroke();
+                }
                 
                 orbitPoints.forEach((p, i) => {
                     ctx.fillStyle = i === 0 ? '#ff3860' : '#ffdd57';
@@ -6301,6 +6935,22 @@ function drawConcentricRings() {
 
         
         
-</script>
+
+        
+        // Toggle pulse animation for Euler-Riemann
+        function togglePulseAnimation() {
+            const checkbox = document.getElementById('erPulseAnimation');
+            const canvas = document.getElementById('eulerRiemannCanvas');
+            
+            if (checkbox && checkbox.checked) {
+                // Add pulse animation
+                canvas.style.animation = 'canvasPulse 2s ease-in-out infinite';
+            } else {
+                // Remove pulse animation
+                canvas.style.animation = 'none';
+            }
+        }
+
+    </script>
 </body>
 </html>
