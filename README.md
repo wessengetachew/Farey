@@ -2264,19 +2264,34 @@ function is_prime_candidate(m, k, slice="half",
             const animate = () => {
                 if (!state.playing) return;
                 
-                // Update rotation based on speed and direction
-                const rotationElement = document.getElementById('globalRotation') || 
-                                      document.getElementById(`${canvasId}Rotation`);
-                if (rotationElement) {
-                    const currentValue = parseFloat(rotationElement.value) || 0;
-                    const newValue = (currentValue + state.speed * state.direction) % 360;
-                    rotationElement.value = newValue < 0 ? newValue + 360 : newValue;
+                // For concentric rings, update Individual m Rotation (not Global)
+                if (canvasId === 'concentricCanvas') {
+                    const individualRotation = document.getElementById('individualRotation');
+                    const individualRotationDeg = document.getElementById('individualRotationDeg');
                     
-                    // Update corresponding input
-                    const inputElement = document.getElementById('globalRotationDeg') ||
-                                       document.getElementById(`${canvasId}RotationDeg`);
-                    if (inputElement) {
-                        inputElement.value = Math.round(newValue);
+                    if (individualRotation && individualRotationDeg) {
+                        const currentValue = parseFloat(individualRotation.value) || 0;
+                        const newValue = (currentValue + state.speed * state.direction) % 360;
+                        const normalizedValue = newValue < 0 ? newValue + 360 : newValue;
+                        
+                        individualRotation.value = normalizedValue;
+                        individualRotationDeg.value = Math.round(normalizedValue);
+                    }
+                } else {
+                    // For other canvases, use their specific rotation controls
+                    const rotationElement = document.getElementById('globalRotation') || 
+                                          document.getElementById(`${canvasId}Rotation`);
+                    if (rotationElement) {
+                        const currentValue = parseFloat(rotationElement.value) || 0;
+                        const newValue = (currentValue + state.speed * state.direction) % 360;
+                        rotationElement.value = newValue < 0 ? newValue + 360 : newValue;
+                        
+                        // Update corresponding input
+                        const inputElement = document.getElementById('globalRotationDeg') ||
+                                           document.getElementById(`${canvasId}RotationDeg`);
+                        if (inputElement) {
+                            inputElement.value = Math.round(newValue);
+                        }
                     }
                 }
                 
@@ -5098,6 +5113,11 @@ function is_prime_candidate(m, k, slice="half",
                 const avgDensity = totalSolutions / (uniqueRings || 1);
                 const maxRingDensity = Math.max(...Array.from(rings.values()).map(r => r.length));
                 
+                // Display range info
+                const rangeDisplay = searchRangeX === searchRangeY 
+                    ? `[-${searchRangeX}, ${searchRangeX}]`
+                    : `X: [-${searchRangeX}, ${searchRangeX}], Y: [-${searchRangeY}, ${searchRangeY}]`;
+                
                 statsDiv.innerHTML = `
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                         <div><strong>Field:</strong> ℚ(√${D})</div>
@@ -5107,7 +5127,7 @@ function is_prime_candidate(m, k, slice="half",
                         <div><strong>Avg Ring Density:</strong> ${avgDensity.toFixed(1)}</div>
                         <div><strong>Max Ring Density:</strong> ${maxRingDensity}</div>
                         <div><strong>Symmetry Order:</strong> ${symmetryOrder}-fold</div>
-                        <div><strong>Search Range:</strong> [-${searchRange}, ${searchRange}]</div>
+                        <div><strong>Search Range:</strong> ${rangeDisplay}</div>
                     </div>
                 `;
             }
@@ -5154,7 +5174,22 @@ function is_prime_candidate(m, k, slice="half",
         function exportHeegnerCSV() {
             const D = document.getElementById('heegnerField').value;
             const M = getHeegnerModulus();
-            const searchRange = parseInt(document.getElementById('heegnerRange').value);
+            
+            // Check if using region inputs or search range
+            const regionX = parseInt(document.getElementById('heegnerRegionX')?.value);
+            const regionY = parseInt(document.getElementById('heegnerRegionY')?.value);
+            let searchRangeX, searchRangeY;
+            
+            if (regionX && regionY) {
+                // Use region inputs
+                searchRangeX = regionX;
+                searchRangeY = regionY;
+            } else {
+                // Fall back to search range (square region)
+                const searchRange = parseInt(document.getElementById('heegnerRange')?.value || 30);
+                searchRangeX = searchRange;
+                searchRangeY = searchRange;
+            }
             
             // Get field info
             const fieldInfo = heegnerFields[D];
@@ -5164,8 +5199,8 @@ function is_prime_candidate(m, k, slice="half",
             
             // Compute solutions
             const solutions = [];
-            for (let x = -searchRange; x <= searchRange; x++) {
-                for (let y = -searchRange; y <= searchRange; y++) {
+            for (let x = -searchRangeX; x <= searchRangeX; x++) {
+                for (let y = -searchRangeY; y <= searchRangeY; y++) {
                     const value = form(x, y);
                     const residue = ((value % M) + M) % M;
                     
@@ -5205,11 +5240,16 @@ function is_prime_candidate(m, k, slice="half",
                 '-163': 'Ramanujan (Q(sqrt(-163)))'
             }[D] || `Q(sqrt(${D}))`;
             
+            // Display range info
+            const rangeDisplay = searchRangeX === searchRangeY 
+                ? `[-${searchRangeX}, ${searchRangeX}]`
+                : `X: [-${searchRangeX}, ${searchRangeX}], Y: [-${searchRangeY}, ${searchRangeY}]`;
+            
             const metaInfo = `# Field: ${fieldName}\n` +
                            `# Discriminant D: ${D}\n` +
                            `# Modulus M: ${M}\n` +
                            `# Target Residue: ${targetResidue}\n` +
-                           `# Search Range: [-${searchRange}, ${searchRange}]\n` +
+                           `# Search Range: ${rangeDisplay}\n` +
                            `# Solutions Found: ${solutions.length}\n` +
                            `# Export Date: ${new Date().toISOString()}\n` +
                            `#\n`;
