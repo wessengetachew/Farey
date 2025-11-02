@@ -2232,6 +2232,19 @@ function is_prime_candidate(m, k, slice="half",
             <canvas id="farey3DCanvas" width="800" height="800" style="max-width: 100%; height: auto; border: 1px solid #ddd;"></canvas>
             
             <div class="controls">
+                
+                <div class="control-group">
+                    <label for="farey3DColorScheme">Color Scheme:</label>
+                    <select id="farey3DColorScheme" onchange="draw3DFareyShell()">
+                        <option value="default">Default (Green)</option>
+                        <option value="rainbow">Rainbow (Each r)</option>
+                        <option value="prime-composite">Prime vs Composite</option>
+                        <option value="gradient">Gradient by value</option>
+                        <option value="alternating">Alternating colors</option>
+                        <option value="hue-cycle">Hue cycle</option>
+                    </select>
+                </div>
+                
                 <div class="control-group">
                     <label for="baseModulus">Base Modulus M:</label>
                     <input type="number" id="baseModulus" value="30" min="2" max="120">
@@ -5394,9 +5407,17 @@ function drawConcentricRings() {
                     let color;
                     const residueK = parseInt(document.getElementById('residueK')?.value || 3);
                     
+                    // Get gcdColorScheme if tracking GCD=1
+                    const gcdColorScheme = document.getElementById('gcdColorScheme')?.value || 'default';
+                    
                     switch(colorMode) {
                         case 'open-blocked':
-                            color = isOpen ? gcd1Color : gcdNotColor;
+                            // Use color scheme for GCD=1 values
+                            if (isOpen && gcdColorScheme !== 'default') {
+                                color = getColorForR(r, m, isPrimeNumber(r), gcdColorScheme);
+                            } else {
+                                color = isOpen ? gcd1Color : gcdNotColor;
+                            }
                             break;
                         case 'gcd-gradient':
                             color = getGCDGradientColor(gcdVal, Math.max(...Array.from(allGCDs)));
@@ -5771,6 +5792,9 @@ function drawConcentricRings() {
             const gcdNotColor = document.getElementById('concentricGCDNotColor')?.value || '#e74c3c';
             const highlightColor = document.getElementById('concentricHighlightColor')?.value || '#f39c12';
             const bgColor = document.getElementById('concentricBgColor')?.value || '#000000';
+            
+            // Get color scheme
+            const colorScheme = document.getElementById('farey3DColorScheme')?.value || 'default';
 
             ctx.fillStyle = blackBg ? bgColor : '#ffffff';
             ctx.fillRect(0, 0, width, height);
@@ -5810,11 +5834,19 @@ function drawConcentricRings() {
                         
                         const proj = project3D(x, y, z, rotX, rotY, rotZ, 150, centerX, centerY);
                         
+                        // Determine color based on scheme
+                        let pointColor;
+                        if (isOpen && colorScheme !== 'default') {
+                            pointColor = getColorForR(r, m, isPrimeNumber(r), colorScheme);
+                        } else {
+                            pointColor = isOpen ? '#27ae60' : '#e74c3c';
+                        }
+                        
                         points.push({
                             x: proj.x,
                             y: proj.y,
                             z: proj.z,
-                            color: isOpen ? '#27ae60' : '#e74c3c',
+                            color: pointColor,
                             size: isOpen ? 4 : 2,
                             m: m,
                             r: r,
@@ -6640,6 +6672,123 @@ function drawConcentricRings() {
 
         
         
+        
+        
+        /* ============================================
+           COMPREHENSIVE TEXT COLOR SYSTEM - FIXED
+           ============================================ */
+        
+        /* MAIN CONTENT TEXT - WHITE/LIGHT GRAY */
+        body, p, div, span, li, td, th {
+            color: #cbd5e1 !important;
+        }
+        
+        /* HEADERS - BRIGHT BLUE */
+        h1 {
+            color: #93c5fd !important;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #667eea 75%, #764ba2 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        h2, h3, h4, h5, h6 {
+            color: #93c5fd !important;
+        }
+        
+        .section-title {
+            color: #60a5fa !important;
+        }
+        
+        .subsection-title {
+            color: #93c5fd !important;
+        }
+        
+        /* SECTION NUMBERS - WHITE ON BLUE */
+        .section-number {
+            color: #ffffff !important;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+        
+        /* SPECIAL CONTENT BLOCKS */
+        .abstract, .theorem {
+            background: rgba(59, 130, 246, 0.1) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+        }
+        
+        .abstract *, .theorem * {
+            color: #cbd5e1 !important;
+        }
+        
+        .abstract strong, .theorem strong,
+        .abstract .label, .theorem .label {
+            color: #60a5fa !important;
+        }
+        
+        /* LINKS */
+        a {
+            color: #60a5fa !important;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            color: #93c5fd !important;
+        }
+        
+        /* CONTROLS - WHITE TEXT */
+        .controls, .controls *,
+        .control-group, .control-group * {
+            color: #ffffff !important;
+        }
+        
+        label {
+            color: #ffffff !important;
+        }
+        
+        /* INPUTS */
+        input[type="number"],
+        input[type="text"],
+        input[type="range"],
+        select,
+        textarea,
+        button {
+            color: #ffffff !important;
+        }
+        
+        /* STATS BOXES - WHITE TEXT */
+        #eulerRiemannStats,
+        #eulerRiemannStats *,
+        #channelStats,
+        #channelStats *,
+        #gcdInfo,
+        #gcdInfo *,
+        #gcdValuesList,
+        #gcdValuesList * {
+            color: #ffffff !important;
+        }
+        
+        /* AUTHOR INFO */
+        .author, .date {
+            color: #94a3b8 !important;
+        }
+        
+        /* EMPHASIS */
+        strong, b {
+            color: #e2e8f0 !important;
+            font-weight: 600;
+        }
+        
+        em, i {
+            color: #cbd5e1 !important;
+        }
+        
+        /* CODE */
+        code, pre {
+            color: #e2e8f0 !important;
+            background: rgba(15, 23, 42, 0.5) !important;
+        }
+
         </style>
                 </head>
                 <body>
@@ -6846,13 +6995,16 @@ function drawConcentricRings() {
                         const x = centerX + radius * Math.cos(angle);
                         const y = centerY + radius * Math.sin(angle);
                         
-                        // Color based on density gradient if enabled
+                        // Color based on scheme
                         let pointColor;
                         if (showDensity) {
                             // Color by density - more points = brighter
                             const density = phi / m; // Fraction of coprime points
                             const hue = 200 - (density * 150); // Blue to green
                             pointColor = `hsl(${hue}, 80%, 60%)`;
+                        } else if (colorScheme && colorScheme !== 'default') {
+                            // Use color scheme helper
+                            pointColor = getColorForR(r, m, isPrimeNumber(r), colorScheme);
                         } else {
                             pointColor = isPrimeM ? '#4ecdc4' : '#95a5a6';
                         }
