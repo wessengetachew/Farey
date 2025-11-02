@@ -1300,6 +1300,11 @@
         </style>
 </head>
 <body>
+<button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+    <span id="themeIcon">☀️</span>
+    <span id="themeText">Light Mode</span>
+</button>
+
 <div>
     <div class="paper-container">
         <header>
@@ -1321,7 +1326,7 @@
             <strong>Abstract.</strong> We introduce the <em>Nested Farey Channel Framework</em>, a geometric representation of modular arithmetic on the unit circle, and develop two complementary heuristics for primality analysis. The <em>Fractional-Slice Coprimality Heuristic</em> provides rapid probabilistic prime detection by sampling coprime residues within restricted circular arcs, while the <em>Chord Length Uniformity Heuristic</em> offers an independent geometric signature based on inter-residue spacing. Each modulus \(m\) maps to \(m\) equidistant points at angles \(2\pi r/m\). Prime moduli exhibit maximal channel openness and uniform chord distributions, while composites show blocked Farey channels and irregular spacing. Extensive empirical validation across n ∈ [3, 10,000] reveals separation increasing from 32.7% to 92.3%, demonstrating robust scalability and asymptotic optimality. We prove formal bounds, derive decision thresholds, and provide interactive demonstrations with publication-quality visualizations featuring 10 coloring schemes and 4K export capabilities.
         </div>
 
-        <div class="section-title">2. Euler's Theorem and the Riemann Hypothesis Connection</div>
+        <div class="section-title"><span class="section-number">1</span> Euler's Theorem and the Riemann Hypothesis Connection</div>
 
         <p><strong>Motivation:</strong> Before exploring the nested Farey channels, we establish the foundational connection between Euler's theorem on modular symmetry and the Riemann Hypothesis. This section visualizes how local GCD=1 structures combine to form the global analytic symmetry of the Riemann zeta function.</p>
 
@@ -1611,7 +1616,7 @@
         </div>
 
         <div class="experimental-section">
-            <h3 style="color: #000000; margin-bottom: 20px;">Fractional-Slice Coprimality Test</h3>
+        <h3 style="color: #60a5fa; margin-bottom: 20px; font-size: 2em; font-weight: 600;"><span class="section-number">2</span> Fractional-Slice Coprimality Test</h3>
             
             <div class="controls" style="margin-bottom: 20px;">
                 <div class="control-group">
@@ -1692,7 +1697,7 @@ function is_prime_candidate(m, k, slice="half",
         <div class="section-title">5. Experimental Evaluation</div>
 
         <div class="experimental-section">
-            <h3 style="color: #000000; margin-bottom: 20px;">Large-Scale Empirical Testing</h3>
+        <h3 style="color: #60a5fa; margin-bottom: 20px; font-size: 2em; font-weight: 600;"><span class="section-number">3</span> Large-Scale Empirical Testing</h3>
             
             <div class="controls" style="margin-bottom: 20px;">
                 <div class="control-group">
@@ -1761,7 +1766,7 @@ function is_prime_candidate(m, k, slice="half",
         </ul>
 
         <div class="canvas-container">
-            <h3 style="color: #000000; margin-bottom: 20px; text-align: center;">Concentric Rings: Nested Farey Structure</h3>
+        <h3 style="color: #60a5fa; margin-bottom: 30px; font-size: 2em; font-weight: 600; text-align: center; padding: 20px 0; border-bottom: 3px solid rgba(59, 130, 246, 0.5);"><span class="section-number">4</span> Concentric Rings: Nested Farey Channels</h3>
             <div style="text-align: center; margin-bottom: 15px;">
                 <span style="color: #666; font-weight: 600;">Resolution: </span>
                 <button class="mode-btn" onclick="setConcentricResolution(1920)">HD</button>
@@ -1908,7 +1913,20 @@ function is_prime_candidate(m, k, slice="half",
                             <input type="checkbox" id="trackGCD1" onchange="drawConcentricRings()">
                             Show GCD=1 only
                         </label>
-                    </div>
+                    
+                
+                <div class="control-group" style="flex: 1; min-width: 200px;">
+                    <label for="gcdColorScheme">Color Scheme:</label>
+                    <select id="gcdColorScheme" onchange="drawConcentricRings()" style="width: 100%;">
+                        <option value="default">Default (Green)</option>
+                        <option value="rainbow">Rainbow (Each r unique)</option>
+                        <option value="prime-composite">Prime vs Composite</option>
+                        <option value="gradient">Gradient by value</option>
+                        <option value="alternating">Alternating colors</option>
+                        <option value="hue-cycle">Hue cycle</option>
+                    </select>
+                </div>
+                </div>
                     
                     <div class="control-group">
                         <label>
@@ -2210,7 +2228,7 @@ function is_prime_candidate(m, k, slice="half",
         <p>Explore the Farey-Shell embedding in three dimensions, where the third axis represents different moduli or lifting stages. This visualization reveals the nested structure across multiple scales.</p>
 
         <div class="canvas-container">
-            <h3 style="color: #000000; margin-bottom: 20px; text-align: center;">3D Farey-Shell Embedding: Modular Lattice Shells</h3>
+        <h3 style="color: #60a5fa; margin-bottom: 30px; font-size: 2em; font-weight: 600; text-align: center; padding: 20px 0; border-bottom: 3px solid rgba(59, 130, 246, 0.5);"><span class="section-number">5</span> 3D Farey-Shell Embedding: Moduli as Nested Spheres</h3>
             
             <div style="text-align: center; margin-bottom: 15px;">
                 <span style="color: #666; font-weight: 600;">View Mode: </span>
@@ -2408,7 +2426,7 @@ function is_prime_candidate(m, k, slice="half",
         </div>
 
         <div class="canvas-container">
-            <h3 style="color: #000000; margin-bottom: 20px; text-align: center;">Chord Length Analysis</h3>
+        <h3 style="color: #60a5fa; margin-bottom: 30px; font-size: 2em; font-weight: 600; text-align: center; padding: 20px 0; border-bottom: 3px solid rgba(59, 130, 246, 0.5);"><span class="section-number">6</span> Chord Length Analysis</h3>
             <canvas id="chordCanvas" width="800" height="400"></canvas>
             <div class="controls">
                 <div class="control-group">
@@ -6556,6 +6574,311 @@ function drawConcentricRings() {
             z-index: 0;
         }
 
+        
+        
+        /* Section Numbering and Headers */
+        .section-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-right: 15px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .section-title {
+            display: block;
+            font-size: 2.4em;
+            font-weight: 700;
+            color: #60a5fa;
+            margin: 25px 0 30px 0;
+            padding: 0 0 20px 0;
+            border-bottom: 3px solid rgba(59, 130, 246, 0.5);
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Add visual separator between sections */
+        .section-container + .section-container {
+            margin-top: 60px !important;
+        }
+        
+        .section-container::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
+        }
+
+        
+        
+        
+        /* Dark Mode Toggle Button - FIXED */
+        .theme-toggle {
+            position: fixed !important;
+            top: 20px !important;
+            right: 20px !important;
+            z-index: 9999 !important;
+            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+            color: white !important;
+            border: 2px solid rgba(96, 165, 250, 0.3) !important;
+            padding: 12px 20px !important;
+            border-radius: 25px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4) !important;
+            transition: all 0.3s ease !important;
+            font-size: 0.9em !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+        }
+
+        
+        
+        
+        /* Enhanced Light Mode - Very Obvious Changes */
+        body.light-mode {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
+            color: #000000 !important;
+        }
+        
+        body.light-mode .paper-container {
+            background: #ffffff !important;
+        }
+        
+        body.light-mode .section-container {
+            background: #ffffff !important;
+            border: 2px solid #3b82f6 !important;
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2) !important;
+        }
+        
+        body.light-mode h1 {
+            color: #1e40af !important;
+            background: none !important;
+            -webkit-text-fill-color: #1e40af !important;
+            text-shadow: none !important;
+        }
+        
+        body.light-mode h2,
+        body.light-mode h3,
+        body.light-mode .section-title,
+        body.light-mode .subsection-title {
+            color: #2563eb !important;
+            text-shadow: none !important;
+        }
+        
+        body.light-mode p,
+        body.light-mode div:not(.section-number):not(.theme-toggle),
+        body.light-mode span:not(#themeIcon):not(#themeText),
+        body.light-mode label,
+        body.light-mode strong,
+        body.light-mode li {
+            color: #000000 !important;
+        }
+        
+        body.light-mode .controls {
+            background: #f0f9ff !important;
+            border: 1px solid #3b82f6 !important;
+        }
+        
+        body.light-mode .control-group {
+            background: #ffffff !important;
+            border-left: 3px solid #3b82f6 !important;
+        }
+        
+        body.light-mode input[type="number"],
+        body.light-mode input[type="text"],
+        body.light-mode select,
+        body.light-mode textarea {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border: 2px solid #3b82f6 !important;
+        }
+        
+        body.light-mode button:not(.theme-toggle) {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: #ffffff !important;
+        }
+        
+        body.light-mode #eulerRiemannStats,
+        body.light-mode #channelStats,
+        body.light-mode #gcdInfo {
+            background: #dbeafe !important;
+            border: 2px solid #3b82f6 !important;
+            color: #000000 !important;
+        }
+        
+        body.light-mode #gcdValuesList,
+        body.light-mode #gcdValuesList strong,
+        body.light-mode #gcdValuesList div {
+            color: #000000 !important;
+        }
+        
+        body.light-mode .abstract,
+        body.light-mode .theorem {
+            background: #f0f9ff !important;
+            border: 2px solid #3b82f6 !important;
+            color: #000000 !important;
+        }
+        
+        body.light-mode canvas {
+            border: 2px solid #3b82f6 !important;
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2) !important;
+        }
+        
+        /* Make sure section numbers stay visible */
+        body.light-mode .section-number {
+            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+            color: #ffffff !important;
+        }
+        
+        /* Links */
+        body.light-mode a {
+            color: #2563eb !important;
+        }
+        
+        body.light-mode a:hover {
+            color: #1e40af !important;
+        }
+
+        /* Scrollbar for light mode */
+        body.light-mode::-webkit-scrollbar-track {
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        body.light-mode::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #3b82f6, #2563eb);
+        }
+
+        
+        
+        /* TEXT COLOR RULES - FIXED */
+        
+        /* All text BLACK by default (outside controls) */
+        body, p, div, span, h1, h2, h3, h4, h5, h6, 
+        strong, em, li, ul, ol, td, th, a, label {
+            color: #000000 !important;
+        }
+        
+        /* Headers and titles - keep blue for visibility */
+        h1, h2, h3, .section-title, .subsection-title {
+            color: #3b82f6 !important;
+        }
+        
+        /* Section number badges - white text on blue */
+        .section-number {
+            color: #ffffff !important;
+        }
+        
+        /* ALL CONTROL TEXT WHITE */
+        .controls, .controls *, 
+        .control-group, .control-group *,
+        .controls label, .controls span, .controls div,
+        .control-group label, .control-group span, .control-group div {
+            color: #ffffff !important;
+        }
+        
+        /* Input fields - white text */
+        input[type="number"],
+        input[type="text"],
+        input[type="range"],
+        select,
+        textarea {
+            color: #ffffff !important;
+            background: rgba(15, 23, 42, 0.8) !important;
+        }
+        
+        /* Button text - white */
+        button, .button {
+            color: #ffffff !important;
+        }
+        
+        /* Stats and info boxes - white text */
+        #eulerRiemannStats, #eulerRiemannStats *,
+        #channelStats, #channelStats *,
+        #gcdInfo, #gcdInfo *,
+        #gcdValuesList, #gcdValuesList * {
+            color: #ffffff !important;
+        }
+        
+        /* Canvas labels stay white */
+        canvas + div,
+        .canvas-container div {
+            color: #ffffff !important;
+        }
+        
+        /* Theme toggle button - white text */
+        .theme-toggle, .theme-toggle * {
+            color: #ffffff !important;
+        }
+        
+        /* Abstract and theorem - black text */
+        .abstract, .abstract *,
+        .theorem, .theorem * {
+            color: #000000 !important;
+        }
+        
+        /* Links - blue */
+        a, a:visited {
+            color: #3b82f6 !important;
+        }
+        
+        a:hover {
+            color: #2563eb !important;
+        }
+        
+        /* LIGHT MODE OVERRIDES */
+        body.light-mode {
+            color: #000000 !important;
+        }
+        
+        body.light-mode h1,
+        body.light-mode h2,
+        body.light-mode h3,
+        body.light-mode .section-title,
+        body.light-mode .subsection-title {
+            color: #2563eb !important;
+        }
+        
+        body.light-mode p,
+        body.light-mode div:not(.controls):not(.control-group):not(.section-number):not(.theme-toggle),
+        body.light-mode span:not(.controls span):not(.control-group span):not(#themeIcon):not(#themeText),
+        body.light-mode strong,
+        body.light-mode li {
+            color: #000000 !important;
+        }
+        
+        /* Controls stay white text in light mode too */
+        body.light-mode .controls,
+        body.light-mode .controls *,
+        body.light-mode .control-group,
+        body.light-mode .control-group * {
+            color: #ffffff !important;
+        }
+        
+        body.light-mode input[type="number"],
+        body.light-mode input[type="text"],
+        body.light-mode select {
+            color: #000000 !important;
+            background: #ffffff !important;
+        }
+        
+        body.light-mode #eulerRiemannStats,
+        body.light-mode #eulerRiemannStats *,
+        body.light-mode #channelStats,
+        body.light-mode #channelStats *,
+        body.light-mode #gcdInfo,
+        body.light-mode #gcdInfo * {
+            color: #000000 !important;
+        }
+
         </style>
                 </head>
                 <body>
@@ -7227,6 +7550,16 @@ function drawConcentricRings() {
             `;
             
             phiValue.textContent = phi;
+
+            // Show color scheme info
+            const colorScheme = document.getElementById('gcdColorScheme')?.value || 'default';
+            if (colorScheme !== 'default') {
+                valuesList.innerHTML += `
+                <div style="margin-top: 8px; font-size: 0.9em; color: #93c5fd;">
+                    🎨 Color scheme: ${colorScheme.replace('-', ' ')}
+                </div>
+                `;
+            }
             
             // Redraw with new tracking
             drawConcentricRings();
@@ -7238,6 +7571,132 @@ function drawConcentricRings() {
             if (modulus && document.getElementById('gcdInfo').style.display === 'block') {
                 updateGCDTracking();
             }
+        }
+
+    
+        
+        // Theme Toggle Functionality with debugging
+        function toggleTheme() {
+            console.log('Toggle theme clicked!');
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            console.log('Current classes:', body.className);
+            body.classList.toggle('light-mode');
+            console.log('After toggle:', body.className);
+            
+            if (body.classList.contains('light-mode')) {
+                console.log('Switching to light mode');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                console.log('Switching to dark mode');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        
+        // Load saved theme on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('themeIcon').textContent = '🌙';
+                document.getElementById('themeText').textContent = 'Dark Mode';
+            }
+        });
+
+    
+        // Theme Toggle Functionality - FIXED
+        function toggleTheme() {
+            console.log('Toggle theme clicked!');
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (!body || !themeIcon || !themeText) {
+                console.error('Elements not found');
+                return;
+            }
+            
+            body.classList.toggle('light-mode');
+            console.log('Classes after toggle:', body.className);
+            
+            if (body.classList.contains('light-mode')) {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark Mode';
+                localStorage.setItem('theme', 'light');
+                console.log('Switched to LIGHT mode');
+            } else {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+                localStorage.setItem('theme', 'dark');
+                console.log('Switched to DARK mode');
+            }
+        }
+        
+        // Load saved theme preference
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, checking saved theme');
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                const icon = document.getElementById('themeIcon');
+                const text = document.getElementById('themeText');
+                if (icon) icon.textContent = '🌙';
+                if (text) text.textContent = 'Dark Mode';
+                console.log('Loaded LIGHT theme from storage');
+            }
+        });
+
+    
+        
+        // Color scheme functions for GCD tracking
+        function getColorForR(r, totalR, isPrime, colorScheme) {
+            switch(colorScheme) {
+                case 'rainbow':
+                    // Each r gets unique color from rainbow
+                    const hue = (r / totalR) * 360;
+                    return `hsl(${hue}, 80%, 60%)`;
+                
+                case 'prime-composite':
+                    // Prime = blue, Composite = orange
+                    return isPrime ? '#3b82f6' : '#f97316';
+                
+                case 'gradient':
+                    // Gradient from blue to purple based on value
+                    const ratio = r / totalR;
+                    const hue2 = 240 - (ratio * 60); // 240 (blue) to 180 (cyan)
+                    return `hsl(${hue2}, 70%, 55%)`;
+                
+                case 'alternating':
+                    // Alternate between blue and cyan
+                    return r % 2 === 0 ? '#3b82f6' : '#06b6d4';
+                
+                case 'hue-cycle':
+                    // Smooth hue cycle
+                    const hue3 = (r * 137.5) % 360; // Golden angle
+                    return `hsl(${hue3}, 75%, 58%)`;
+                
+                case 'default':
+                default:
+                    // Default green
+                    return '#10b981';
+            }
+        }
+        
+        // Check if number is prime (helper for color schemes)
+        function isPrimeNumber(n) {
+            if (n < 2) return false;
+            if (n === 2) return true;
+            if (n % 2 === 0) return false;
+            for (let i = 3; i * i <= n; i += 2) {
+                if (n % i === 0) return false;
+            }
+            return true;
         }
 
     </script>
