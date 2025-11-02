@@ -570,65 +570,60 @@
             background: #229954;
         }
 
+        
+        
+        /* Clear Bordered Sections - Each section has its own frame */
+        
         .section-container {
-            background: white;
-            padding: 30px;
-            margin: 20px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: white !important;
+            max-width: 1100px;
+            margin: 50px auto !important;
+            padding: 40px !important;
+            border-radius: 20px !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 
+                        0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+            position: relative;
+            overflow: visible !important;
+            border: 3px solid #e2e8f0 !important;
+            transform: translateY(0);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         
-        .section-container h2,
-        .section-container h3 {
-            color: #2c3e50;
-            margin-top: 0;
+        .section-container:hover {
+            transform: translateY(-8px) !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25),
+                        0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+            border-color: #cbd5e0 !important;
         }
 
         
-        /* Modern Vibrant Web App Styling */
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
         
-        .paper-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 0;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        /* Colorful Section Headers */
-        .section-container {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            margin: 0;
-            padding: 30px;
-            border-bottom: 3px solid transparent;
-            border-image: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe) 1;
-            position: relative;
-            overflow: hidden;
-        }
-        
+        /* Remove the old accent bar since we have borders now */
+        /* More prominent colorful accent bars */
         .section-container::before {
+            content: '';
+            position: absolute;
+            left: -3px;
+            top: -3px;
+            bottom: -3px;
+            width: 8px;
+            border-radius: 20px 0 0 20px;
+        }
+        
+        
+        /* Add a subtle inner glow to enhance the border */
+        .section-container::after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe);
+            bottom: 0;
+            border-radius: 18px;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px rgba(102, 126, 234, 0.05);
         }
-        
-        .section-container:nth-child(odd) {
-            background: linear-gradient(135deg, #fff 0%, #f0f4ff 100%);
-        }
-        
-        .section-container:nth-child(even) {
-            background: linear-gradient(135deg, #fff 0%, #fff5f8 100%);
-        }
+
         
         /* Vibrant Headers */
         h1 {
@@ -814,13 +809,20 @@
         
         
         
-        /* Elegant Individual Section Cards Design */
+        
+        
+        /* 3Blue1Brown Mathematical Aesthetic */
+        
+        /* Signature dark blue background */
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
-            background-size: 200% 200%;
-            animation: gradient 15s ease infinite;
+            background: #0b0e1b !important;
+            background-image: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                            radial-gradient(circle at 80% 80%, rgba(96, 165, 250, 0.08) 0%, transparent 50%) !important;
+            font-family: 'CMU Serif', 'Computer Modern', 'Latin Modern Roman', Georgia, serif;
+            color: #e0e7ff;
             padding: 40px 20px;
             min-height: 100vh;
+            animation: none !important;
         }
         
         .paper-container {
@@ -829,241 +831,348 @@
             margin: 0 auto;
             padding: 0 !important;
             box-shadow: none !important;
-            border-radius: 0 !important;
         }
         
-        /* Individual Section Cards - Each is its own elegant card */
+        /* Individual section cards - dark theme */
         .section-container {
-            background: white !important;
+            background: linear-gradient(135deg, #1a2332 0%, #15192b 100%) !important;
             max-width: 1100px;
-            margin: 30px auto !important;
-            padding: 40px !important;
-            border-radius: 20px !important;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 
-                        0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+            margin: 50px auto !important;
+            padding: 45px !important;
+            border-radius: 16px !important;
+            border: 2px solid rgba(59, 130, 246, 0.3) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                        0 0 0 1px rgba(59, 130, 246, 0.1),
+                        inset 0 1px 0 rgba(59, 130, 246, 0.1) !important;
             position: relative;
             overflow: visible !important;
-            border: none !important;
-            transform: translateY(0);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition: all 0.4s ease !important;
         }
         
         .section-container:hover {
-            transform: translateY(-8px) !important;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25),
-                        0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+            transform: translateY(-4px) !important;
+            border-color: rgba(96, 165, 250, 0.5) !important;
+            box-shadow: 0 12px 48px rgba(59, 130, 246, 0.15),
+                        0 0 0 1px rgba(59, 130, 246, 0.2) !important;
         }
         
-        /* Colorful accent bar on left side of each card */
+        /* 3B1B signature blue accent bar */
         .section-container::before {
             content: '';
             position: absolute;
             left: 0;
             top: 0;
             bottom: 0;
-            width: 6px;
-            background: linear-gradient(180deg, #667eea, #764ba2);
-            border-radius: 20px 0 0 20px;
+            width: 5px;
+            background: linear-gradient(180deg, #3b82f6, #60a5fa, #93c5fd);
+            border-radius: 16px 0 0 16px;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
         }
         
-        /* Different accent colors for each section */
-        .section-container:nth-child(1)::before { background: linear-gradient(180deg, #667eea, #764ba2); }
-        .section-container:nth-child(2)::before { background: linear-gradient(180deg, #f093fb, #f5576c); }
-        .section-container:nth-child(3)::before { background: linear-gradient(180deg, #4facfe, #00f2fe); }
-        .section-container:nth-child(4)::before { background: linear-gradient(180deg, #43e97b, #38f9d7); }
-        .section-container:nth-child(5)::before { background: linear-gradient(180deg, #fa709a, #fee140); }
-        .section-container:nth-child(6)::before { background: linear-gradient(180deg, #30cfd0, #330867); }
-        .section-container:nth-child(7)::before { background: linear-gradient(180deg, #a8edea, #fed6e3); }
-        .section-container:nth-child(8)::before { background: linear-gradient(180deg, #ff9a9e, #fecfef); }
-        .section-container:nth-child(9)::before { background: linear-gradient(180deg, #ffecd2, #fcb69f); }
-        .section-container:nth-child(10)::before { background: linear-gradient(180deg, #ff6e7f, #bfe9ff); }
+        /* Remove the decorative circle */
+        .section-container::after {
+            display: none;
+        }
         
-        /* Beautiful Headers with gradient text */
+        /* Beautiful mathematical typography */
         h1 {
             text-align: center;
-            font-size: 3em;
-            font-weight: 800;
-            margin: 40px 0 60px 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient 3s linear infinite;
-            letter-spacing: -1px;
+            font-size: 3.2em;
+            font-weight: 300;
+            margin: 50px 0 70px 0;
+            color: #e0e7ff;
+            font-family: 'CMU Serif', 'Computer Modern', Georgia, serif;
+            letter-spacing: 1px;
+            text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
         }
         
         h2 {
-            color: #2d3748 !important;
-            font-size: 2.2em !important;
-            font-weight: 700 !important;
+            color: #60a5fa !important;
+            font-size: 2.4em !important;
+            font-weight: 400 !important;
             margin: 0 0 30px 0 !important;
-            padding: 0 0 15px 0 !important;
-            border-bottom: 3px solid !important;
-            border-image: linear-gradient(90deg, #667eea, transparent) 1 !important;
-            display: block !important;
+            padding: 0 0 20px 0 !important;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.3) !important;
+            font-family: 'CMU Serif', 'Computer Modern', Georgia, serif;
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
         }
         
         h3 {
-            color: #4a5568 !important;
-            font-size: 1.5em !important;
-            font-weight: 600 !important;
+            color: #93c5fd !important;
+            font-size: 1.6em !important;
+            font-weight: 400 !important;
             margin: 25px 0 15px 0 !important;
+            font-family: 'CMU Serif', 'Computer Modern', Georgia, serif;
         }
         
-        /* Canvas - centered and prominent */
+        /* Canvas - prominent display */
         canvas {
             display: block !important;
-            margin: 30px auto !important;
+            margin: 35px auto !important;
             max-width: 100% !important;
-            border-radius: 15px !important;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+            border-radius: 12px !important;
+            border: 2px solid rgba(59, 130, 246, 0.3) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                        0 0 40px rgba(59, 130, 246, 0.15) !important;
             background: #000 !important;
-            border: none !important;
         }
         
-        /* Controls - organized and clean */
+        /* Clean controls */
         .controls {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%) !important;
+            background: rgba(26, 35, 50, 0.6) !important;
+            backdrop-filter: blur(10px) !important;
             padding: 25px !important;
             border-radius: 12px !important;
-            margin: 20px 0 !important;
-            border: 1px solid #e2e8f0 !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+            margin: 25px 0 !important;
+            border: 1px solid rgba(59, 130, 246, 0.2) !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
         }
         
         .control-group {
-            background: white !important;
-            padding: 15px !important;
-            margin: 10px 0 !important;
+            background: rgba(21, 25, 43, 0.8) !important;
+            padding: 16px !important;
+            margin: 12px 0 !important;
             border-radius: 8px !important;
-            border-left: 3px solid #667eea !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+            border-left: 3px solid #3b82f6 !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
             transition: all 0.3s ease !important;
         }
         
         .control-group:hover {
-            transform: translateX(3px) !important;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15) !important;
+            transform: translateX(4px) !important;
+            border-left-color: #60a5fa !important;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2) !important;
         }
         
-        /* Stats and info boxes */
+        /* Stats boxes */
         #eulerRiemannStats,
         #channelStats {
-            background: linear-gradient(135deg, #e0e7ff 0%, #fce7f3 100%) !important;
+            background: rgba(59, 130, 246, 0.1) !important;
             padding: 20px !important;
             border-radius: 12px !important;
-            margin: 20px 0 !important;
-            border: 2px solid rgba(102, 126, 234, 0.2) !important;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1) !important;
+            margin: 25px 0 !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+            color: #e0e7ff !important;
         }
         
-        /* Paragraphs and text */
-        p {
-            color: #4a5568 !important;
+        /* Text styling */
+        p, div, span {
+            color: #cbd5e1 !important;
             line-height: 1.8 !important;
-            margin: 15px 0 !important;
             font-size: 1.05em !important;
         }
         
-        /* Lists */
-        ul, ol {
-            color: #4a5568 !important;
-            line-height: 1.8 !important;
-            margin: 15px 0 !important;
-            padding-left: 30px !important;
-        }
-        
-        li {
-            margin: 8px 0 !important;
-        }
-        
-        /* Beautiful gradient buttons */
-        button, .button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-            color: white !important;
-            border: none !important;
-            padding: 14px 28px !important;
-            border-radius: 12px !important;
+        strong {
+            color: #e0e7ff !important;
             font-weight: 600 !important;
+        }
+        
+        /* Labels */
+        label {
+            color: #cbd5e1 !important;
+            font-weight: 400 !important;
             font-size: 1em !important;
+        }
+        
+        /* 3B1B style buttons - signature blue */
+        button, .button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: white !important;
+            border: 1px solid rgba(96, 165, 250, 0.3) !important;
+            padding: 14px 28px !important;
+            border-radius: 10px !important;
+            font-weight: 500 !important;
+            font-size: 0.95em !important;
             cursor: pointer !important;
             transition: all 0.3s ease !important;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.5px !important;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+            text-transform: none !important;
+            letter-spacing: 0.3px !important;
             margin: 5px !important;
         }
         
         button:hover {
-            transform: translateY(-3px) scale(1.02) !important;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5) !important;
+            transform: translateY(-2px) !important;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%) !important;
+            box-shadow: 0 6px 24px rgba(59, 130, 246, 0.4),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
         }
         
         button:active {
-            transform: translateY(-1px) !important;
+            transform: translateY(0) !important;
         }
         
-        /* Different button colors */
+        /* Different button types - still blue themed */
         button[onclick*="export"], button[onclick*="Export"] {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4) !important;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important;
+            box-shadow: 0 4px 16px rgba(14, 165, 233, 0.3) !important;
         }
         
         button[onclick*="Play"], button[onclick*="play"] {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
-            box-shadow: 0 4px 15px rgba(67, 233, 123, 0.4) !important;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3) !important;
         }
         
-        button[onclick*="Stop"], button[onclick*="Animate"], button.secondary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
-            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4) !important;
+        button[onclick*="Stop"], button.secondary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3) !important;
         }
         
         /* Input styling */
         input[type="number"],
         input[type="text"],
         select {
-            border: 2px solid #e2e8f0 !important;
+            background: rgba(15, 23, 42, 0.8) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
             border-radius: 8px !important;
             padding: 10px 15px !important;
-            font-size: 1em !important;
+            font-size: 0.95em !important;
+            color: #e0e7ff !important;
             transition: all 0.3s ease !important;
-            background: white !important;
         }
         
         input:focus, select:focus {
-            border-color: #667eea !important;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
             outline: none !important;
+            background: rgba(15, 23, 42, 1) !important;
         }
         
-        /* Checkboxes */
+        /* Range sliders - blue theme */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(59, 130, 246, 0.3);
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5),
+                        0 0 0 4px rgba(59, 130, 246, 0.2);
+            border: 2px solid #1e293b;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #60a5fa;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.6),
+                        0 0 0 6px rgba(59, 130, 246, 0.3);
+        }
+        
+        
+        
+        /* Better visible checkboxes for dark theme */
         input[type="checkbox"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
             width: 20px;
             height: 20px;
+            border: 2px solid #3b82f6;
+            border-radius: 4px;
+            background: rgba(15, 23, 42, 0.8);
             cursor: pointer;
-            accent-color: #667eea;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            margin-right: 10px;
         }
         
-        /* Labels */
+        input[type="checkbox"]:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #60a5fa;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        }
+        
+        input[type="checkbox"]:checked {
+            background: #3b82f6;
+            border-color: #60a5fa;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        
+        input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        input[type="checkbox"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Make label clickable and visible */
         label {
-            color: #2d3748 !important;
-            font-weight: 500 !important;
-            font-size: 1em !important;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            color: #cbd5e1 !important;
+            font-weight: 400 !important;
+            font-size: 1.05em !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            cursor: pointer !important;
+            user-select: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
         }
         
-        /* Spacing and layout improvements */
-        .section-container > * {
-            max-width: 100%;
+        label:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #e0e7ff !important;
+        }
+
+        /* Color picker inputs */
+        input[type="color"] {
+            background: rgba(15, 23, 42, 0.8) !important;
+            border: 2px solid rgba(59, 130, 246, 0.3) !important;
+            border-radius: 6px !important;
+            cursor: pointer;
         }
         
-        /* Remove the old border-image that was causing issues */
-        .section-container {
-            border-image: none !important;
+        /* Remove alternating backgrounds */
+        .section-container:nth-child(odd),
+        .section-container:nth-child(even) {
+            background: linear-gradient(135deg, #1a2332 0%, #15192b 100%) !important;
+        }
+        
+        /* Selection color */
+        ::selection {
+            background: rgba(59, 130, 246, 0.3);
+            color: #e0e7ff;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+            background: #0b0e1b;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #3b82f6, #2563eb);
+            border-radius: 10px;
+            border: 2px solid #0b0e1b;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #60a5fa, #3b82f6);
         }
 
         /* Animations and Effects */
@@ -1776,6 +1885,52 @@ function is_prime_candidate(m, k, slice="half",
                         <input type="checkbox" id="highlightTracked" checked>
                         Highlight Tracked r
                     </label>
+                </div>
+            </div>
+
+            <div class="controls" style="margin-top: 10px; background: rgba(59, 130, 246, 0.08); padding: 15px; border-radius: 12px; border: 2px solid rgba(59, 130, 246, 0.3);">
+                <h3 style="margin: 0 0 15px 0; font-size: 1.1em; color: #60a5fa;">Track GCD=1 Values (Coprime Residues)</h3>
+                
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+                    <div class="control-group" style="flex: 1; min-width: 150px;">
+                        <label for="gcdModulus">Modulus n:</label>
+                        <input type="number" id="gcdModulus" value="30" min="2" max="200" style="width: 100%;">
+                    </div>
+                    
+                    <div class="control-group">
+                        <button onclick="updateGCDTracking()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;">
+                            Track GCD(r,n)=1
+                        </button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="trackGCD1" onchange="drawConcentricRings()">
+                            Show GCD=1 only
+                        </label>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="trackNonGCD1" onchange="drawConcentricRings()">
+                            Show non-GCD=1
+                        </label>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="enableWrapAround" checked onchange="drawConcentricRings()">
+                            Enable wrap-around
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="gcdInfo" style="margin-top: 15px; padding: 12px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border-left: 4px solid #10b981; display: none;">
+                    <strong style="color: #10b981;">Tracked values:</strong>
+                    <div id="gcdValuesList" style="color: #cbd5e1; margin-top: 5px; font-family: 'Courier New', monospace;"></div>
+                    <div style="margin-top: 8px; font-size: 0.9em; color: #93c5fd;">
+                        φ(n) = <span id="eulerPhiValue">-</span> coprime values
+                    </div>
                 </div>
             </div>
 
@@ -6365,7 +6520,43 @@ function drawConcentricRings() {
                             color: #666;
                             margin-top: 10px;
                         }
-                    </style>
+                    
+        
+        /* Extra visual separation - alternating subtle tints */
+        .section-container:nth-child(odd) {
+            background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%) !important;
+        }
+        
+        .section-container:nth-child(even) {
+            background: linear-gradient(135deg, #ffffff 0%, #fffbfa 100%) !important;
+        }
+        
+        /* Add a subtle inner shadow for more depth */
+        .section-container {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                        0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        /* Make borders more visible on hover */
+        .section-container:hover {
+            border-color: #a0aec0 !important;
+        }
+        
+        /* Add section numbers as decorative elements */
+        .section-container::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.08);
+            z-index: 0;
+        }
+
+        </style>
                 </head>
                 <body>
                     <div class="container">
@@ -6376,7 +6567,7 @@ function drawConcentricRings() {
                         <div class="grid">
                             ${fields.map(D => `
                                 <div class="field-box">
-                                    <h3 style="color: #000000;">${fieldNames[D]}</h3 style="color: #000000;">
+                                    <h3 style="color: #000000;">${fieldNames[D]}</h3>
                                     <canvas id="canvas${D}" width="300" height="300"></canvas>
                                     <div class="info">D = ${D}</div>
                                 </div>
@@ -6948,6 +7139,104 @@ function drawConcentricRings() {
             } else {
                 // Remove pulse animation
                 canvas.style.animation = 'none';
+            }
+        }
+
+    
+        
+        // Initialize visualizations on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            // Draw Euler-Riemann visualization
+            if (document.getElementById('eulerRiemannCanvas')) {
+                drawEulerRiemann();
+            }
+            
+            // Draw other initial visualizations
+            if (document.getElementById('channelCanvas')) {
+                const modInput = document.getElementById('modInput');
+                if (modInput && modInput.value) {
+                    drawChannelRing();
+                }
+            }
+            
+            if (document.getElementById('concentricCanvas')) {
+                drawConcentricRings();
+            }
+            
+            console.log('Visualizations initialized');
+        });
+
+    
+        
+        // Track GCD=1 values function
+        function updateGCDTracking() {
+            const modulus = parseInt(document.getElementById('gcdModulus').value) || 30;
+            const enableWrap = document.getElementById('enableWrapAround').checked;
+            
+            // Calculate all coprime values (GCD=1)
+            const gcd1Values = [];
+            const nonGcd1Values = [];
+            
+            for (let r = 1; r < modulus; r++) {
+                if (gcd(r, modulus) === 1) {
+                    gcd1Values.push(r);
+                } else {
+                    nonGcd1Values.push(r);
+                }
+            }
+            
+            // Add wrap-around value if enabled
+            if (enableWrap && gcd1Values.length > 0) {
+                // The next coprime after modulus
+                let nextCoprime = modulus + 1;
+                while (nextCoprime < modulus * 2 && gcd(nextCoprime, modulus) !== 1) {
+                    nextCoprime++;
+                }
+                if (gcd(nextCoprime, modulus) === 1) {
+                    gcd1Values.push(nextCoprime);
+                }
+            }
+            
+            // Update the trackMultipleR input with GCD=1 values
+            document.getElementById('trackMultipleR').value = gcd1Values.join(',');
+            
+            // Check the appropriate tracking options
+            document.getElementById('trackGCD1').checked = true;
+            document.getElementById('trackNonGCD1').checked = false;
+            
+            // Show info panel
+            const infoPanel = document.getElementById('gcdInfo');
+            const valuesList = document.getElementById('gcdValuesList');
+            const phiValue = document.getElementById('eulerPhiValue');
+            
+            infoPanel.style.display = 'block';
+            
+            // Format the values list
+            const phi = eulerTotient(modulus);
+            valuesList.innerHTML = `
+                <div style="margin-bottom: 8px;">
+                    <strong>GCD(r, ${modulus}) = 1:</strong> 
+                    r ∈ {${gcd1Values.map(v => v > modulus ? `<span style="color: #10b981;">${v}</span>` : v).join(', ')}}
+                </div>
+                ${nonGcd1Values.length > 0 ? `
+                <div style="opacity: 0.7; font-size: 0.9em;">
+                    <strong>GCD(r, ${modulus}) ≠ 1:</strong> 
+                    r ∈ {${nonGcd1Values.join(', ')}}
+                </div>
+                ` : ''}
+            `;
+            
+            phiValue.textContent = phi;
+            
+            // Redraw with new tracking
+            drawConcentricRings();
+        }
+        
+        // Update tracking when wrap-around changes
+        function updateWrapAroundTracking() {
+            const modulus = parseInt(document.getElementById('gcdModulus').value);
+            if (modulus && document.getElementById('gcdInfo').style.display === 'block') {
+                updateGCDTracking();
             }
         }
 
