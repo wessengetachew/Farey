@@ -226,7 +226,71 @@
         #gcdInfo * {
             color: #212121 !important;
         }
-    </style>
+    
+        
+        /* Table of Contents */
+        .table-of-contents {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%) !important;
+            border: 2px solid #2196f3 !important;
+            border-radius: 12px !important;
+            padding: 30px !important;
+            margin: 40px 0 !important;
+            box-shadow: 0 4px 16px rgba(33, 150, 243, 0.2) !important;
+        }
+        
+        .toc-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+            gap: 15px !important;
+            margin-top: 20px !important;
+        }
+        
+        .toc-item {
+            display: flex !important;
+            align-items: center !important;
+            background: #ffffff !important;
+            padding: 15px 20px !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            border-left: 4px solid #2196f3 !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+        }
+        
+        .toc-item:hover {
+            transform: translateX(5px) !important;
+            box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3) !important;
+            border-left-color: #1565c0 !important;
+            background: #f5f9ff !important;
+        }
+        
+        .toc-number {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 35px !important;
+            height: 35px !important;
+            background: linear-gradient(135deg, #2196f3, #1976d2) !important;
+            color: #ffffff !important;
+            border-radius: 50% !important;
+            font-weight: 700 !important;
+            font-size: 1.1em !important;
+            margin-right: 15px !important;
+            flex-shrink: 0 !important;
+        }
+        
+        .toc-title {
+            color: #424242 !important;
+            font-size: 1.05em !important;
+            font-weight: 500 !important;
+            line-height: 1.4 !important;
+        }
+        
+        .toc-item:hover .toc-title {
+            color: #1565c0 !important;
+        }
+
+        </style>
 </head>
 <body>
 
@@ -251,7 +315,66 @@
             <strong>Abstract.</strong> We introduce the <em>Nested Farey Channel Framework</em>, a geometric representation of modular arithmetic on the unit circle, and develop two complementary heuristics for primality analysis. The <em>Fractional-Slice Coprimality Heuristic</em> provides rapid probabilistic prime detection by sampling coprime residues within restricted circular arcs, while the <em>Chord Length Uniformity Heuristic</em> offers an independent geometric signature based on inter-residue spacing. Each modulus \(m\) maps to \(m\) equidistant points at angles \(2\pi r/m\). Prime moduli exhibit maximal channel openness and uniform chord distributions, while composites show blocked Farey channels and irregular spacing. Extensive empirical validation across n ∈ [3, 10,000] reveals separation increasing from 32.7% to 92.3%, demonstrating robust scalability and asymptotic optimality. We prove formal bounds, derive decision thresholds, and provide interactive demonstrations with publication-quality visualizations featuring 10 coloring schemes and 4K export capabilities.
         </div>
 
-        <div class="section-title"><span class="section-number">1</span> Euler's Theorem and the Riemann Hypothesis Connection</div>
+
+        
+        <!-- Table of Contents -->
+        <div class="table-of-contents">
+            <h2 style="text-align: center; color: #1565c0; margin-bottom: 20px;">📋 Table of Contents</h2>
+            <div class="toc-grid">
+                <a href="#section-1" class="toc-item">
+                    <span class="toc-number">1</span>
+                    <span class="toc-title">Euler's Theorem & RH Connection</span>
+                </a>
+                <a href="#section-2" class="toc-item">
+                    <span class="toc-number">2</span>
+                    <span class="toc-title">Nested Farey Channels Framework</span>
+                </a>
+                <a href="#section-3" class="toc-item">
+                    <span class="toc-number">3</span>
+                    <span class="toc-title">Fractional-Slice Coprimality Heuristic</span>
+                </a>
+                <a href="#section-4" class="toc-item">
+                    <span class="toc-number">4</span>
+                    <span class="toc-title">Interactive Algorithm Demonstration</span>
+                </a>
+                <a href="#section-5" class="toc-item">
+                    <span class="toc-number">5</span>
+                    <span class="toc-title">Algorithmic Formulation</span>
+                </a>
+                <a href="#section-6" class="toc-item">
+                    <span class="toc-number">6</span>
+                    <span class="toc-title">Experimental Evaluation</span>
+                </a>
+                <a href="#section-7" class="toc-item">
+                    <span class="toc-number">7</span>
+                    <span class="toc-title">Geometric Interpretation & Concentric Rings</span>
+                </a>
+                <a href="#section-8" class="toc-item">
+                    <span class="toc-number">8</span>
+                    <span class="toc-title">Farey–Shell Embedding</span>
+                </a>
+                <a href="#section-9" class="toc-item">
+                    <span class="toc-number">9</span>
+                    <span class="toc-title">Chord Length Uniformity Analysis</span>
+                </a>
+                <a href="#section-10" class="toc-item">
+                    <span class="toc-number">10</span>
+                    <span class="toc-title">Failure Modes and Limitations</span>
+                </a>
+                <a href="#section-11" class="toc-item">
+                    <span class="toc-number">11</span>
+                    <span class="toc-title">Modular Form Framework</span>
+                </a>
+                <a href="#section-12" class="toc-item">
+                    <span class="toc-number">12</span>
+                    <span class="toc-title">Relation to Gauss Circle Problem</span>
+                </a>
+            </div>
+        </div>
+
+
+
+        <div class="section-title" id="section-1"><span class="section-number">1</span> Euler's Theorem and the Riemann Hypothesis Connection</div>
 
         <p><strong>Motivation:</strong> Before exploring the nested Farey channels, we establish the foundational connection between Euler's theorem on modular symmetry and the Riemann Hypothesis. This section visualizes how local GCD=1 structures combine to form the global analytic symmetry of the Riemann zeta function.</p>
 
@@ -420,7 +543,7 @@
             </ul>
         </div>
 
-        <div class="section-title">Part I: Nested Farey Channels Framework</div>
+        <div class="section-title" id="section-2">Part I: Nested Farey Channels Framework</div>
 
         <div class="definition">
             <span class="label">Definition 1.1 (Channel Rings).</span>
@@ -463,7 +586,7 @@
             <div class="caption">Figure 1: Channel ring visualization showing open (green) and blocked (red) channels</div>
         </div>
 
-        <div class="section-title">Part II: Fractional-Slice Coprimality Heuristic</div>
+        <div class="section-title" id="section-3">Part II: Fractional-Slice Coprimality Heuristic</div>
 
         <div class="subsection-title">2.1 Heuristic Definition</div>
 
@@ -534,14 +657,14 @@
             <em>since \(\gcd(r,m)=\gcd(m-r,m)\). Hence the half-circle is a neutral choice that avoids residue bias.</em>
         </div>
 
-        <div class="section-title">3. Interactive Algorithm Demonstration</div>
+        <div class="section-title" id="section-4">3. Interactive Algorithm Demonstration</div>
 
         <div class="info-box">
             <strong>Test the Heuristic:</strong> Enter a modulus, choose sampling parameters, and watch the fractional-slice algorithm in action. The visualization shows which residues are tested and whether they pass the coprimality check.
         </div>
 
         <div class="experimental-section">
-        <h3 style="color: #60a5fa; margin-bottom: 20px; font-size: 2em; font-weight: 600;"><span class="section-number">2</span> Fractional-Slice Coprimality Test</h3>
+        <h3 id="section-2" style="color: #60a5fa; margin-bottom: 30px; font-size: 2em; font-weight: 600;"><span class="section-number">2</span> Fractional-Slice Coprimality Test</h3>
             
             <div class="controls" style="margin-bottom: 20px;">
                 <div class="control-group">
@@ -582,7 +705,7 @@
             </div>
         </div>
 
-        <div class="section-title">4. Algorithmic Formulation</div>
+        <div class="section-title" id="section-5">4. Algorithmic Formulation</div>
 
         <div class="algorithm">
             <span class="label">Algorithm 4.1 (Deterministic + Randomized Hybrid Filter).</span>
@@ -619,10 +742,10 @@ function is_prime_candidate(m, k, slice="half",
         \]
         </p>
 
-        <div class="section-title">5. Experimental Evaluation</div>
+        <div class="section-title" id="section-6">5. Experimental Evaluation</div>
 
         <div class="experimental-section">
-        <h3 style="color: #60a5fa; margin-bottom: 20px; font-size: 2em; font-weight: 600;"><span class="section-number">3</span> Large-Scale Empirical Testing</h3>
+        <h3 id="section-3" style="color: #60a5fa; margin-bottom: 30px; font-size: 2em; font-weight: 600;"><span class="section-number">3</span> Large-Scale Empirical Testing</h3>
             
             <div class="controls" style="margin-bottom: 20px;">
                 <div class="control-group">
@@ -647,7 +770,7 @@ function is_prime_candidate(m, k, slice="half",
             <div id="experimentResults"></div>
         </div>
 
-        <div class="section-title">6. Geometric Interpretation and Concentric Rings</div>
+        <div class="section-title" id="section-7">6. Geometric Interpretation and Concentric Rings</div>
 
         <p>The fractional-slice heuristic can be visualized in two complementary ways: on the unit circle, and as a 2D plane of concentric rings.</p>
 
@@ -691,7 +814,7 @@ function is_prime_candidate(m, k, slice="half",
         </ul>
 
         <div class="canvas-container">
-        <h3 style="color: #60a5fa; margin-bottom: 30px; font-size: 2em; font-weight: 600; text-align: center; padding: 20px 0; border-bottom: 3px solid rgba(59, 130, 246, 0.5);"><span class="section-number">4</span> Concentric Rings: Nested Farey Channels</h3>
+        <h3 id="section-4" style="color: #60a5fa; margin-bottom: 30px; font-size: 2em; font-weight: 600; text-align: center; padding: 20px 0; border-bottom: 3px solid rgba(59, 130, 246, 0.5);"><span class="section-number">4</span> Concentric Rings: Nested Farey Channels</h3>
             <div style="text-align: center; margin-bottom: 15px;">
                 <span style="color: #666; font-weight: 600;">Resolution: </span>
                 <button class="mode-btn" onclick="setConcentricResolution(1920)">HD</button>
@@ -1071,7 +1194,7 @@ function is_prime_candidate(m, k, slice="half",
             <em>This representation underlies the fractional-slice heuristic and provides visual intuition for why primes maintain maximal channel openness, even when sampling only a fraction of the residues.</em>
         </div>
 
-        <div class="section-title">7. Farey–Shell Embedding for an Arbitrary Modulus</div>
+        <div class="section-title" id="section-8">7. Farey–Shell Embedding for an Arbitrary Modulus</div>
 
         <p>We now extend the nested Farey channel framework to work with <em>any</em> modulus \(M\in\mathbb{Z}_{\ge 2}\), not just special forms like \(30\cdot 2^n\). This generalization reveals the deep connection between modular lattice shells and angular Farey structure.</p>
 
@@ -1153,7 +1276,7 @@ function is_prime_candidate(m, k, slice="half",
         <p>Explore the Farey-Shell embedding in three dimensions, where the third axis represents different moduli or lifting stages. This visualization reveals the nested structure across multiple scales.</p>
 
         <div class="canvas-container">
-        <h3 style="color: #60a5fa; margin-bottom: 30px; font-size: 2em; font-weight: 600; text-align: center; padding: 20px 0; border-bottom: 3px solid rgba(59, 130, 246, 0.5);"><span class="section-number">5</span> 3D Farey-Shell Embedding: Moduli as Nested Spheres</h3>
+        <h3 id="section-5" style="color: #60a5fa; margin-bottom: 30px; font-size: 2em; font-weight: 600; text-align: center; padding: 20px 0; border-bottom: 3px solid rgba(59, 130, 246, 0.5);"><span class="section-number">5</span> 3D Farey-Shell Embedding: Moduli as Nested Spheres</h3>
             
             <div style="text-align: center; margin-bottom: 15px;">
                 <span style="color: #666; font-weight: 600;">View Mode: </span>
@@ -1274,7 +1397,7 @@ function is_prime_candidate(m, k, slice="half",
             Replacing \(30\cdot2^n\) by an arbitrary modulus \(M\) is straightforward: the nested Farey rings indexed by divisors \(m\mid M\) continue to represent modular residue directions, with coprime residues \(O_m\) giving visible angular channels. Shell persistence and lifting can be characterized equivalently by non-collapse of these open channels across sequences of moduli. The 3D visualization makes this geometric structure tangible and explorable.
         </div>
 
-        <div class="section-title">8. Chord Length Uniformity Analysis</div>
+        <div class="section-title" id="section-9">8. Chord Length Uniformity Analysis</div>
 
         <p>Beyond fractional-slice sampling, we can analyze the <strong>geometric uniformity</strong> of coprime residues by measuring chord lengths between consecutive points on the unit circle. This provides an independent geometric signature for primality.</p>
 
@@ -1364,7 +1487,7 @@ function is_prime_candidate(m, k, slice="half",
         </div>
 
         <div class="canvas-container">
-        <h3 style="color: #60a5fa; margin-bottom: 30px; font-size: 2em; font-weight: 600; text-align: center; padding: 20px 0; border-bottom: 3px solid rgba(59, 130, 246, 0.5);"><span class="section-number">6</span> Chord Length Analysis</h3>
+        <h3 id="section-6" style="color: #60a5fa; margin-bottom: 30px; font-size: 2em; font-weight: 600; text-align: center; padding: 20px 0; border-bottom: 3px solid rgba(59, 130, 246, 0.5);"><span class="section-number">6</span> Chord Length Analysis</h3>
             <canvas id="chordCanvas" width="800" height="400"></canvas>
             <div class="controls">
                 <div class="control-group">
@@ -1401,7 +1524,7 @@ function is_prime_candidate(m, k, slice="half",
             </pre>
         </div>
 
-        <div class="section-title">9. Failure Modes and Limitations</div>
+        <div class="section-title" id="section-10">9. Failure Modes and Limitations</div>
 
         <ul>
             <li><strong>Semiprime leakage:</strong> Composites with large prime factors can pass the test.</li>
@@ -1411,7 +1534,7 @@ function is_prime_candidate(m, k, slice="half",
 
         <p>The heuristic is therefore best used as a rapid <em>prefilter</em> prior to a deterministic or probabilistic primality test (e.g., Miller–Rabin).</p>
 
-        <div class="section-title">10. Modular Form Framework for the 9 Imaginary Quadratic Fields</div>
+        <div class="section-title" id="section-11">10. Modular Form Framework for the 9 Imaginary Quadratic Fields</div>
 
         <div class="subsection-title">10.1 Framework Definition</div>
 
@@ -2018,7 +2141,7 @@ function is_prime_candidate(m, k, slice="half",
             <li>W. Getachew, <em>Modular Lattice and GCD=1 Density Framework</em>, in preparation (2025).</li>
         </ol>
 
-        <div class="section-title">11. Relation to the Gauss Circle Problem</div>
+        <div class="section-title" id="section-12">11. Relation to the Gauss Circle Problem</div>
 
         <p>The classical <strong>Gauss Circle Problem</strong> asks: how many integer lattice points lie inside a circle of radius \(r\) centered at the origin? This centuries-old problem connects geometry with number theory through the fundamental question of discrete lattice distributions.</p>
 
