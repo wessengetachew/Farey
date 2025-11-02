@@ -572,9 +572,7 @@
 
         
         
-        /* Clear Bordered Sections - Each section has its own frame */
-        
-        .section-container {
+                .section-container {
             background: white !important;
             max-width: 1100px;
             margin: 50px auto !important;
@@ -811,9 +809,7 @@
         
         
         
-        /* 3Blue1Brown Mathematical Aesthetic */
-        
-        /* Signature dark blue background */
+                /* Signature dark blue background */
         body {
             background: #0b0e1b !important;
             background-image: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
@@ -1300,10 +1296,6 @@
         </style>
 </head>
 <body>
-<button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
-    <span id="themeIcon">☀️</span>
-    <span id="themeText">Light Mode</span>
-</button>
 
 <div>
     <div class="paper-container">
@@ -5194,7 +5186,6 @@ function drawConcentricRings() {
             const centerY = height / 2;
             const blackBg = document.getElementById('concentricDarkBg')?.checked || false;
 
-
             const minMod = parseInt(document.getElementById('minMod').value);
             const maxMod = parseInt(document.getElementById('maxMod').value);
             const mode = document.getElementById('ringMode').value;
@@ -6054,7 +6045,6 @@ function drawConcentricRings() {
             '-163': { form: (x, y) => x*x + 163*y*y, targetResidue: 163, symmetryOrder: 1 }
         };
 
-
         function getHeegnerModulus() {
             return parseInt(document.getElementById('heegnerMod').value) || 240;
         }
@@ -6332,7 +6322,6 @@ function drawConcentricRings() {
             originalCanvas.height = origHeight;
             drawHeegnerField();
         }
-
 
         function isPrimeNorm(n) {
             if (n < 2) return false;
@@ -6620,7 +6609,6 @@ function drawConcentricRings() {
         
         
         /* Dark Mode Toggle Button - FIXED */
-        .theme-toggle {
             position: fixed !important;
             top: 20px !important;
             right: 20px !important;
@@ -6643,242 +6631,15 @@ function drawConcentricRings() {
         
         
         
-        /* Enhanced Light Mode - Very Obvious Changes */
-        body.light-mode {
-            background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
-            color: #000000 !important;
-        }
-        
-        body.light-mode .paper-container {
-            background: #ffffff !important;
-        }
-        
-        body.light-mode .section-container {
-            background: #ffffff !important;
-            border: 2px solid #3b82f6 !important;
-            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2) !important;
-        }
-        
-        body.light-mode h1 {
-            color: #1e40af !important;
-            background: none !important;
-            -webkit-text-fill-color: #1e40af !important;
-            text-shadow: none !important;
-        }
-        
-        body.light-mode h2,
-        body.light-mode h3,
-        body.light-mode .section-title,
-        body.light-mode .subsection-title {
-            color: #2563eb !important;
-            text-shadow: none !important;
-        }
-        
-        body.light-mode p,
-        body.light-mode div:not(.section-number):not(.theme-toggle),
-        body.light-mode span:not(#themeIcon):not(#themeText),
-        body.light-mode label,
-        body.light-mode strong,
-        body.light-mode li {
-            color: #000000 !important;
-        }
-        
-        body.light-mode .controls {
-            background: #f0f9ff !important;
-            border: 1px solid #3b82f6 !important;
-        }
-        
-        body.light-mode .control-group {
-            background: #ffffff !important;
-            border-left: 3px solid #3b82f6 !important;
-        }
-        
-        body.light-mode input[type="number"],
-        body.light-mode input[type="text"],
-        body.light-mode select,
-        body.light-mode textarea {
-            background: #ffffff !important;
-            color: #000000 !important;
-            border: 2px solid #3b82f6 !important;
-        }
-        
-        body.light-mode button:not(.theme-toggle) {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-            color: #ffffff !important;
-        }
-        
-        body.light-mode #eulerRiemannStats,
-        body.light-mode #channelStats,
-        body.light-mode #gcdInfo {
-            background: #dbeafe !important;
-            border: 2px solid #3b82f6 !important;
-            color: #000000 !important;
-        }
-        
-        body.light-mode #gcdValuesList,
-        body.light-mode #gcdValuesList strong,
-        body.light-mode #gcdValuesList div {
-            color: #000000 !important;
-        }
-        
-        body.light-mode .abstract,
-        body.light-mode .theorem {
-            background: #f0f9ff !important;
-            border: 2px solid #3b82f6 !important;
-            color: #000000 !important;
-        }
-        
-        body.light-mode canvas {
-            border: 2px solid #3b82f6 !important;
-            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2) !important;
-        }
-        
-        /* Make sure section numbers stay visible */
-        body.light-mode .section-number {
-            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
-            color: #ffffff !important;
-        }
-        
-        /* Links */
-        body.light-mode a {
-            color: #2563eb !important;
-        }
-        
-        body.light-mode a:hover {
-            color: #1e40af !important;
-        }
-
-        /* Scrollbar for light mode */
-        body.light-mode::-webkit-scrollbar-track {
+                        /* Scrollbar for light mode */
             background: rgba(59, 130, 246, 0.05);
         }
         
-        body.light-mode::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, #3b82f6, #2563eb);
         }
 
         
         
-        /* TEXT COLOR RULES - FIXED */
-        
-        /* All text BLACK by default (outside controls) */
-        body, p, div, span, h1, h2, h3, h4, h5, h6, 
-        strong, em, li, ul, ol, td, th, a, label {
-            color: #000000 !important;
-        }
-        
-        /* Headers and titles - keep blue for visibility */
-        h1, h2, h3, .section-title, .subsection-title {
-            color: #3b82f6 !important;
-        }
-        
-        /* Section number badges - white text on blue */
-        .section-number {
-            color: #ffffff !important;
-        }
-        
-        /* ALL CONTROL TEXT WHITE */
-        .controls, .controls *, 
-        .control-group, .control-group *,
-        .controls label, .controls span, .controls div,
-        .control-group label, .control-group span, .control-group div {
-            color: #ffffff !important;
-        }
-        
-        /* Input fields - white text */
-        input[type="number"],
-        input[type="text"],
-        input[type="range"],
-        select,
-        textarea {
-            color: #ffffff !important;
-            background: rgba(15, 23, 42, 0.8) !important;
-        }
-        
-        /* Button text - white */
-        button, .button {
-            color: #ffffff !important;
-        }
-        
-        /* Stats and info boxes - white text */
-        #eulerRiemannStats, #eulerRiemannStats *,
-        #channelStats, #channelStats *,
-        #gcdInfo, #gcdInfo *,
-        #gcdValuesList, #gcdValuesList * {
-            color: #ffffff !important;
-        }
-        
-        /* Canvas labels stay white */
-        canvas + div,
-        .canvas-container div {
-            color: #ffffff !important;
-        }
-        
-        /* Theme toggle button - white text */
-        .theme-toggle, .theme-toggle * {
-            color: #ffffff !important;
-        }
-        
-        /* Abstract and theorem - black text */
-        .abstract, .abstract *,
-        .theorem, .theorem * {
-            color: #000000 !important;
-        }
-        
-        /* Links - blue */
-        a, a:visited {
-            color: #3b82f6 !important;
-        }
-        
-        a:hover {
-            color: #2563eb !important;
-        }
-        
-        /* LIGHT MODE OVERRIDES */
-        body.light-mode {
-            color: #000000 !important;
-        }
-        
-        body.light-mode h1,
-        body.light-mode h2,
-        body.light-mode h3,
-        body.light-mode .section-title,
-        body.light-mode .subsection-title {
-            color: #2563eb !important;
-        }
-        
-        body.light-mode p,
-        body.light-mode div:not(.controls):not(.control-group):not(.section-number):not(.theme-toggle),
-        body.light-mode span:not(.controls span):not(.control-group span):not(#themeIcon):not(#themeText),
-        body.light-mode strong,
-        body.light-mode li {
-            color: #000000 !important;
-        }
-        
-        /* Controls stay white text in light mode too */
-        body.light-mode .controls,
-        body.light-mode .controls *,
-        body.light-mode .control-group,
-        body.light-mode .control-group * {
-            color: #ffffff !important;
-        }
-        
-        body.light-mode input[type="number"],
-        body.light-mode input[type="text"],
-        body.light-mode select {
-            color: #000000 !important;
-            background: #ffffff !important;
-        }
-        
-        body.light-mode #eulerRiemannStats,
-        body.light-mode #eulerRiemannStats *,
-        body.light-mode #channelStats,
-        body.light-mode #channelStats *,
-        body.light-mode #gcdInfo,
-        body.light-mode #gcdInfo * {
-            color: #000000 !important;
-        }
-
         </style>
                 </head>
                 <body>
@@ -7575,77 +7336,21 @@ function drawConcentricRings() {
 
     
         
-        // Theme Toggle Functionality with debugging
-        function toggleTheme() {
-            console.log('Toggle theme clicked!');
-            const body = document.body;
-            const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-            
-            console.log('Current classes:', body.className);
-            body.classList.toggle('light-mode');
-            console.log('After toggle:', body.className);
-            
-            if (body.classList.contains('light-mode')) {
-                console.log('Switching to light mode');
-                themeIcon.textContent = '🌙';
-                themeText.textContent = 'Dark Mode';
-                localStorage.setItem('theme', 'light');
-            } else {
-                console.log('Switching to dark mode');
-                themeIcon.textContent = '☀️';
-                themeText.textContent = 'Light Mode';
-                localStorage.setItem('theme', 'dark');
-            }
-        }
         
         // Load saved theme on page load
         window.addEventListener('DOMContentLoaded', function() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-                document.getElementById('themeIcon').textContent = '🌙';
-                document.getElementById('themeText').textContent = 'Dark Mode';
             }
         });
 
     
-        // Theme Toggle Functionality - FIXED
-        function toggleTheme() {
-            console.log('Toggle theme clicked!');
-            const body = document.body;
-            const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-            
-            if (!body || !themeIcon || !themeText) {
-                console.error('Elements not found');
-                return;
-            }
-            
-            body.classList.toggle('light-mode');
-            console.log('Classes after toggle:', body.className);
-            
-            if (body.classList.contains('light-mode')) {
-                themeIcon.textContent = '🌙';
-                themeText.textContent = 'Dark Mode';
-                localStorage.setItem('theme', 'light');
-                console.log('Switched to LIGHT mode');
-            } else {
-                themeIcon.textContent = '☀️';
-                themeText.textContent = 'Light Mode';
-                localStorage.setItem('theme', 'dark');
-                console.log('Switched to DARK mode');
-            }
-        }
         
         // Load saved theme preference
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Page loaded, checking saved theme');
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-                const icon = document.getElementById('themeIcon');
-                const text = document.getElementById('themeText');
                 if (icon) icon.textContent = '🌙';
                 if (text) text.textContent = 'Dark Mode';
                 console.log('Loaded LIGHT theme from storage');
