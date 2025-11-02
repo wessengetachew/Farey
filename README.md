@@ -311,8 +311,14 @@
             </div>
         </header>
 
-        <div class="abstract">
-            <strong>Abstract.</strong> We introduce the <em>Nested Farey Channel Framework</em>, a geometric representation of modular arithmetic on the unit circle, and develop two complementary heuristics for primality analysis. The <em>Fractional-Slice Coprimality Heuristic</em> provides rapid probabilistic prime detection by sampling coprime residues within restricted circular arcs, while the <em>Chord Length Uniformity Heuristic</em> offers an independent geometric signature based on inter-residue spacing. Each modulus \(m\) maps to \(m\) equidistant points at angles \(2\pi r/m\). Prime moduli exhibit maximal channel openness and uniform chord distributions, while composites show blocked Farey channels and irregular spacing. Extensive empirical validation across n ∈ [3, 10,000] reveals separation increasing from 32.7% to 92.3%, demonstrating robust scalability and asymptotic optimality. We prove formal bounds, derive decision thresholds, and provide interactive demonstrations with publication-quality visualizations featuring 10 coloring schemes and 4K export capabilities.
+                <div class="abstract">
+            <strong>Abstract.</strong> We present a comprehensive framework for analyzing coprimality and prime detection through geometric representations on the unit circle. This work introduces the <em>Nested Farey Channel Framework</em>, which maps modular arithmetic structures to visual patterns, revealing deep connections between Euler's theorem, the Riemann zeta function, and prime distribution.
+            
+            <p style="margin-top: 15px;">The <em>Fractional-Slice Coprimality Heuristic</em> provides rapid probabilistic prime detection by sampling coprime residues within restricted circular arcs, achieving separation rates increasing from 32.7% to 92.3% across n ∈ [3, 10,000]. The complementary <em>Chord Length Uniformity Heuristic</em> offers an independent geometric signature based on inter-residue spacing patterns.</p>
+            
+            <p style="margin-top: 15px;">We develop multiple visualization paradigms: interactive 2D concentric rings showing GCD=1 structures with customizable color schemes (rainbow, prime vs composite, gradient, and golden angle distributions), 3D Farey-shell embeddings revealing nested spherical lattices, and dynamic chord length analyses. Each modulus m maps to m equidistant points at angles 2πr/m, where prime moduli exhibit maximal channel openness and uniform chord distributions, while composites show blocked Farey channels and irregular spacing.</p>
+            
+            <p style="margin-top: 15px;">The framework includes formal bounds, decision thresholds, and extensive empirical validation with interactive demonstrations featuring 10+ coloring schemes and high-resolution export capabilities. We establish connections to modular forms through the 9 imaginary quadratic fields with class number one, explore the relationship to the Gauss circle problem, and analyze failure modes to understand the method's limitations. All results are supported by publication-quality visualizations combining mathematical rigor with aesthetic clarity.</p>
         </div>
 
 
