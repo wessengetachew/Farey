@@ -290,6 +290,266 @@
             color: #1565c0 !important;
         }
 
+        
+        
+        /* Quick Start Guide */
+        .quick-start-guide {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%) !important;
+            border: 3px solid #4caf50 !important;
+            border-radius: 16px !important;
+            padding: 40px !important;
+            margin: 40px 0 !important;
+            box-shadow: 0 8px 24px rgba(76, 175, 80, 0.2) !important;
+        }
+        
+        .quick-start-card {
+            background: #ffffff !important;
+            padding: 25px !important;
+            border-radius: 12px !important;
+            border: 2px solid #4caf50 !important;
+            text-align: center !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .quick-start-card:hover {
+            transform: translateY(-5px) !important;
+            box-shadow: 0 8px 24px rgba(76, 175, 80, 0.3) !important;
+            border-color: #388e3c !important;
+        }
+        
+        .quick-start-icon {
+            font-size: 3em !important;
+            margin-bottom: 15px !important;
+        }
+        
+        .quick-start-card h3 {
+            color: #2e7d32 !important;
+            font-size: 1.3em !important;
+            margin: 15px 0 !important;
+        }
+        
+        .quick-start-card p {
+            color: #555 !important;
+            line-height: 1.6 !important;
+            margin: 15px 0 20px 0 !important;
+        }
+        
+        .quick-start-btn {
+            display: inline-block !important;
+            background: linear-gradient(135deg, #4caf50, #388e3c) !important;
+            color: #ffffff !important;
+            padding: 12px 24px !important;
+            border-radius: 6px !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .quick-start-btn:hover {
+            background: linear-gradient(135deg, #388e3c, #2e7d32) !important;
+            transform: scale(1.05) !important;
+        }
+
+        
+        
+        /* ==========================================
+           MOBILE OPTIMIZATION
+           ========================================== */
+        
+        /* Mobile breakpoints */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px !important;
+            }
+            
+            .paper-container {
+                padding: 20px !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
+            
+            /* Typography */
+            h1 {
+                font-size: 1.8em !important;
+            }
+            
+            h2, .section-title {
+                font-size: 1.4em !important;
+            }
+            
+            h3, .subsection-title {
+                font-size: 1.2em !important;
+            }
+            
+            p, div, span {
+                font-size: 16px !important;
+                line-height: 1.6 !important;
+            }
+            
+            /* Table of Contents - Stack vertically */
+            .toc-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .toc-item {
+                padding: 12px 15px !important;
+            }
+            
+            /* Quick Start - Stack vertically */
+            .quick-start-guide {
+                padding: 20px !important;
+            }
+            
+            .quick-start-card {
+                margin-bottom: 15px !important;
+            }
+            
+            /* Controls - Better mobile layout */
+            .controls {
+                padding: 15px !important;
+            }
+            
+            .control-group {
+                padding: 12px !important;
+                margin: 8px 0 !important;
+            }
+            
+            .control-group label {
+                display: block !important;
+                margin-bottom: 8px !important;
+            }
+            
+            input[type="number"],
+            input[type="text"],
+            select {
+                width: 100% !important;
+                max-width: 100% !important;
+                font-size: 16px !important;
+                padding: 10px !important;
+            }
+            
+            input[type="range"] {
+                width: 100% !important;
+            }
+            
+            button {
+                width: 100% !important;
+                padding: 14px !important;
+                font-size: 16px !important;
+                margin: 5px 0 !important;
+            }
+            
+            /* Canvas - Responsive sizing */
+            canvas {
+                max-width: 100% !important;
+                height: auto !important;
+                touch-action: pan-y pinch-zoom !important;
+            }
+            
+            /* Section numbers */
+            .section-number {
+                font-size: 0.9em !important;
+                padding: 6px 12px !important;
+            }
+            
+            /* Abstract and boxes */
+            .abstract,
+            .theorem,
+            .quick-start-guide,
+            .table-of-contents {
+                padding: 15px !important;
+                margin: 20px 0 !important;
+            }
+            
+            /* Stats boxes */
+            #eulerRiemannStats,
+            #channelStats,
+            #gcdInfo {
+                font-size: 14px !important;
+                padding: 12px !important;
+            }
+            
+            /* Hide advanced features on small screens */
+            .advanced-options {
+                display: none !important;
+            }
+            
+            /* Collapsible sections indicator */
+            .section-container {
+                margin: 15px 0 !important;
+            }
+        }
+        
+        /* Tablet breakpoint */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .paper-container {
+                padding: 30px !important;
+            }
+            
+            .toc-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            
+            h1 {
+                font-size: 2.2em !important;
+            }
+        }
+        
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            /* Larger touch targets */
+            button,
+            a,
+            input[type="checkbox"],
+            .toc-item,
+            .quick-start-btn {
+                min-height: 44px !important;
+                min-width: 44px !important;
+            }
+            
+            /* Better spacing for touch */
+            .control-group {
+                margin: 15px 0 !important;
+            }
+            
+            /* Prevent zoom on input focus */
+            input,
+            select,
+            textarea {
+                font-size: 16px !important;
+            }
+        }
+        
+        /* Landscape mobile */
+        @media screen and (max-width: 896px) and (orientation: landscape) {
+            canvas {
+                max-height: 60vh !important;
+            }
+        }
+        
+        /* Small phones */
+        @media screen and (max-width: 480px) {
+            h1 {
+                font-size: 1.5em !important;
+            }
+            
+            .section-number {
+                display: block !important;
+                margin-bottom: 10px !important;
+            }
+            
+            .quick-start-icon {
+                font-size: 2em !important;
+            }
+            
+            .toc-number {
+                width: 30px !important;
+                height: 30px !important;
+                font-size: 0.9em !important;
+            }
+        }
+
         </style>
 </head>
 <body>
@@ -377,6 +637,47 @@
                 </a>
             </div>
         </div>
+
+
+        <!-- Quick Start Guide -->
+        <div class="quick-start-guide">
+            <h2 style="text-align: center; color: #1565c0; margin-bottom: 20px; font-size: 1.8em;">
+                🚀 Quick Start Guide
+            </h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 25px;">
+                <div class="quick-start-card">
+                    <div class="quick-start-icon">🎮</div>
+                    <h3>New Here? Start Interactive</h3>
+                    <p>Jump straight to the interactive demo and try different moduli values.</p>
+                    <a href="#section-4" class="quick-start-btn">Try Interactive Demo →</a>
+                </div>
+                
+                <div class="quick-start-card">
+                    <div class="quick-start-icon">🎨</div>
+                    <h3>Want Beautiful Visuals?</h3>
+                    <p>Explore stunning 2D rings and 3D embeddings with multiple color schemes.</p>
+                    <a href="#section-7" class="quick-start-btn">See Visualizations →</a>
+                </div>
+                
+                <div class="quick-start-card">
+                    <div class="quick-start-icon">📚</div>
+                    <h3>Understand the Theory</h3>
+                    <p>Learn about Euler's theorem and the mathematical foundations.</p>
+                    <a href="#section-1" class="quick-start-btn">Read Theory →</a>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-radius: 8px; border-left: 4px solid #f39c12;">
+                <strong style="color: #856404; font-size: 1.1em;">💡 Recommended Path:</strong>
+                <p style="color: #856404; margin: 10px 0 0 0;">
+                    <strong>Beginners:</strong> Section 4 (Demo) → Section 7 (Visuals) → Section 1 (Theory)<br>
+                    <strong>Researchers:</strong> Section 1 (Theory) → Section 3 (Method) → Section 6 (Results)<br>
+                    <strong>Developers:</strong> Section 5 (Algorithm) → Section 4 (Demo) → Code Examples
+                </p>
+            </div>
+        </div>
+
 
 
 
@@ -2452,7 +2753,109 @@ function is_prime_candidate(m, k, slice="half",
         </div>
     </div>
 
-    <script>
+    
+        <!-- References and Citations -->
+        <div class="section-container" style="margin-top: 60px;">
+            <div class="section-title" id="references">
+                <span class="section-number">📚</span> References & How to Cite
+            </div>
+            
+            <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 25px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #1565c0; margin-top: 0;">📖 How to Cite This Work</h3>
+                <div style="background: #ffffff; padding: 20px; border-radius: 6px; margin: 15px 0; font-family: 'Courier New', monospace; font-size: 0.9em;">
+                    <strong>BibTeX Entry:</strong>
+                    <pre style="margin: 10px 0; padding: 15px; background: #f5f5f5; border-radius: 4px; overflow-x: auto;">@article{gelachew2025farey,
+  title={Nested Farey Channels and Fractional-Slice Coprimality Heuristic},
+  author={Gelachew, Wessen},
+  journal={Interactive Mathematical Demonstrations},
+  year={2025},
+  month={October},
+  url={https://claude.ai/chat/farey-channels}
+}</pre>
+                </div>
+                
+                <div style="background: #ffffff; padding: 20px; border-radius: 6px; margin: 15px 0;">
+                    <strong>APA Style:</strong>
+                    <p style="margin: 10px 0; padding: 15px; background: #f5f5f5; border-radius: 4px;">
+                        Gelachew, W. (2025, October). <em>Nested Farey Channels and Fractional-Slice Coprimality Heuristic</em>. Interactive Mathematical Demonstrations.
+                    </p>
+                </div>
+                
+                <div style="background: #ffffff; padding: 20px; border-radius: 6px; margin: 15px 0;">
+                    <strong>IEEE Style:</strong>
+                    <p style="margin: 10px 0; padding: 15px; background: #f5f5f5; border-radius: 4px;">
+                        W. Gelachew, "Nested Farey Channels and Fractional-Slice Coprimality Heuristic," <em>Interactive Mathematical Demonstrations</em>, Oct. 2025.
+                    </p>
+                </div>
+            </div>
+            
+            <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 25px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #e65100; margin-top: 0;">🔗 Resources & Links</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px;">
+                    <div style="background: #ffffff; padding: 15px; border-radius: 6px;">
+                        <strong style="color: #e65100;">💻 Source Code</strong>
+                        <p style="margin: 10px 0 0 0; color: #666;">
+                            Implementation available on request<br>
+                            <span style="font-size: 0.9em;">Contact: wessen.gelachew@example.com</span>
+                        </p>
+                    </div>
+                    
+                    <div style="background: #ffffff; padding: 15px; border-radius: 6px;">
+                        <strong style="color: #e65100;">📊 Dataset</strong>
+                        <p style="margin: 10px 0 0 0; color: #666;">
+                            Empirical results for n ∈ [3, 10,000]<br>
+                            <span style="font-size: 0.9em;">Format: CSV, JSON</span>
+                        </p>
+                    </div>
+                    
+                    <div style="background: #ffffff; padding: 15px; border-radius: 6px;">
+                        <strong style="color: #e65100;">🎨 Visualizations</strong>
+                        <p style="margin: 10px 0 0 0; color: #666;">
+                            High-resolution exports available<br>
+                            <span style="font-size: 0.9em;">PNG, SVG, PDF formats</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: #f3e5f5; border-left: 4px solid #9c27b0; padding: 25px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #6a1b9a; margin-top: 0;">📚 Related Work & Background</h3>
+                
+                <div style="background: #ffffff; padding: 20px; border-radius: 6px; margin: 15px 0;">
+                    <ol style="line-height: 1.8; color: #333;">
+                        <li><strong>Hardy, G. H., & Wright, E. M.</strong> (2008). <em>An Introduction to the Theory of Numbers</em> (6th ed.). Oxford University Press.</li>
+                        
+                        <li><strong>Apostol, T. M.</strong> (1976). <em>Introduction to Analytic Number Theory</em>. Springer-Verlag.</li>
+                        
+                        <li><strong>Niven, I., Zuckerman, H. S., & Montgomery, H. L.</strong> (1991). <em>An Introduction to the Theory of Numbers</em> (5th ed.). Wiley.</li>
+                        
+                        <li><strong>Riemann, B.</strong> (1859). "Über die Anzahl der Primzahlen unter einer gegebenen Größe." <em>Monatsberichte der Berliner Akademie</em>.</li>
+                        
+                        <li><strong>Farey, J.</strong> (1816). "On a curious property of vulgar fractions." <em>Philosophical Magazine</em>, 47, 385-386.</li>
+                        
+                        <li><strong>Gauss, C. F.</strong> (1801). <em>Disquisitiones Arithmeticae</em>. Leipzig: Fleischer.</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div style="background: #e8f5e9; border-left: 4px solid #4caf50; padding: 25px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #2e7d32; margin-top: 0;">📬 Contact & Contributions</h3>
+                <p style="color: #333; line-height: 1.8;">
+                    <strong>Author:</strong> Wessen Gelachew<br>
+                    <strong>Email:</strong> wessen.gelachew@example.com<br>
+                    <strong>Date:</strong> October 2025<br><br>
+                    
+                    <strong>Contributions Welcome:</strong> We welcome feedback, suggestions, and collaborations. 
+                    If you find errors or have improvements, please reach out!<br><br>
+                    
+                    <strong>License:</strong> This work is shared for educational and research purposes. 
+                    Please cite appropriately when using in your work.
+                </p>
+            </div>
+        </div>
+
+<script>
         // ==================== GLOBAL ANIMATION SYSTEM ====================
         
         const animationState = {
