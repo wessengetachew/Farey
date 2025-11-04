@@ -7847,7 +7847,8 @@ function drawConcentricRings() {
         applyZoom();
         drawVisualization();
     }
-})();
+})(); 
+    </script>
     </script>
 </body>
 </html>
