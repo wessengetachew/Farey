@@ -2761,9 +2761,9 @@ function is_prime_candidate(m, k, slice="half",
                 <h3 style="color: #1565c0; margin-top: 0;"> How to Cite This Work</h3>
                 <div style="background: #ffffff; padding: 20px; border-radius: 6px; margin: 15px 0; font-family: 'Courier New', monospace; font-size: 0.9em;">
                     <strong>BibTeX Entry:</strong>
-                    <pre style="margin: 10px 0; padding: 15px; background: #f5f5f5; border-radius: 4px; overflow-x: auto;">@article{gelachew2025farey,
+                    <pre style="margin: 10px 0; padding: 15px; background: #f5f5f5; border-radius: 4px; overflow-x: auto;">@article{Wessen Getachew 2025farey,
   title={Nested Farey Channels and Fractional-Slice Coprimality Heuristic},
-  author={Gelachew, Wessen},
+  author={Getachew, Wessen},
   journal={Interactive Mathematical Demonstrations},
   year={2025},
   month={October/November},
@@ -2774,14 +2774,14 @@ function is_prime_candidate(m, k, slice="half",
                 <div style="background: #ffffff; padding: 20px; border-radius: 6px; margin: 15px 0;">
                     <strong>APA Style:</strong>
                     <p style="margin: 10px 0; padding: 15px; background: #f5f5f5; border-radius: 4px;">
-                        Gelachew, W. (2025, October). <em>Nested Farey Channels and Fractional-Slice Coprimality Heuristic</em>. Interactive Mathematical Demonstrations.
+                        Getachew, Wessen. (2025, October). <em>Nested Farey Channels and Fractional-Slice Coprimality Heuristic</em>. Interactive Mathematical Demonstrations.
                     </p>
                 </div>
                 
                 <div style="background: #ffffff; padding: 20px; border-radius: 6px; margin: 15px 0;">
                     <strong>IEEE Style:</strong>
                     <p style="margin: 10px 0; padding: 15px; background: #f5f5f5; border-radius: 4px;">
-                        W. Gelachew, "Nested Farey Channels and Fractional-Slice Coprimality Heuristic," <em>Interactive Mathematical Demonstrations</em>, Oct. 2025.
+                        Wessen. Getachew, "Nested Farey Channels and Fractional-Slice Coprimality Heuristic," <em>Interactive Mathematical Demonstrations</em>, Oct. 2025.
                     </p>
                 </div>
             </div>
@@ -2794,7 +2794,7 @@ function is_prime_candidate(m, k, slice="half",
                         <strong style="color: #e65100;"> Source Code</strong>
                         <p style="margin: 10px 0 0 0; color: #666;">
                             Implementation available on request<br>
-                            <span style="font-size: 0.9em;">Contact: GelachewWessen@gmail.com</span>
+                            <span style="font-size: 0.9em;">Contact: GetachewWessen@gmail.com</span>
                         </p>
                     </div>
                     
