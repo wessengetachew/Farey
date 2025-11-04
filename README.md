@@ -2766,7 +2766,7 @@ function is_prime_candidate(m, k, slice="half",
   author={Gelachew, Wessen},
   journal={Interactive Mathematical Demonstrations},
   year={2025},
-  month={October},
+  month={October/November},
   
 }</pre>
                 </div>
@@ -2794,7 +2794,7 @@ function is_prime_candidate(m, k, slice="half",
                         <strong style="color: #e65100;"> Source Code</strong>
                         <p style="margin: 10px 0 0 0; color: #666;">
                             Implementation available on request<br>
-                            <span style="font-size: 0.9em;">Contact: gelachewwessen@gmail.com</span>
+                            <span style="font-size: 0.9em;">Contact: GelachewWessen@gmail.com</span>
                         </p>
                     </div>
                     
@@ -2840,7 +2840,7 @@ function is_prime_candidate(m, k, slice="half",
                 <h3 style="color: #2e7d32; margin-top: 0;"> Contact & Contributions</h3>
                 <p style="color: #333; line-height: 1.8;">
                     <strong>Author:</strong> Wessen Gelachew<br>
-                    <strong>Email:</strong> Getachewwessen@gmail.com.com<br>
+                    <strong>Email:</strong> GetachewWessen@gmail.com<br>
                     <strong>Date:</strong> October/November 2025<br><br>
                     
                     <strong>Contributions Welcome:</strong> We welcome feedback, suggestions, and collaborations. 
