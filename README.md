@@ -7170,7 +7170,684 @@ function drawConcentricRings() {
             }
             return true;
         }
+/* Euler-Maclaurin Visualization Styles */
+.em-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 20px 0;
+}
 
+.em-content {
+    flex: 1;
+    min-width: 300px;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.em-visualization {
+    flex: 1;
+    min-width: 300px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.em-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+    padding: 15px;
+    background: #f1f8ff;
+    border-radius: 8px;
+}
+
+.em-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.em-export-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.em-zoom-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.em-zoom-display {
+    font-weight: bold;
+    min-width: 80px;
+}
+
+.em-canvas {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fdfdfd;
+    cursor: crosshair;
+}
+
+.em-figure-caption {
+    font-style: italic;
+    text-align: center;
+    margin-top: 10px;
+    color: #555;
+}
+
+.em-boxed {
+    border: 2px solid #3498db;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 8px;
+    background-color: #e8f4fc;
+}
+
+.em-table-container {
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+.em-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.em-table th, .em-table td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.em-table th {
+    background-color: #f2f2f2;
+}
+
+@media (max-width: 768px) {
+    .em-container {
+        flex-direction: column;
+    }
+}
+
+<section id="euler-maclaurin-section">
+    <h1>Euler–Maclaurin Bridge and Modular Density Continuation</h1>
+    
+    <div class="em-container">
+        <div class="em-content">
+            <section>
+                <p>The Euler–Maclaurin summation formula provides a classical bridge between discrete summation and continuous integration:</p>
+                <p>\[
+                \sum_{n=a}^{b} f(n)
+                = \int_a^b f(x)\,dx
+                + \frac{f(a)+f(b)}{2}
+                + \sum_{n=1}^{\infty} \frac{B_{2n}}{(2n)!}
+                \left(f^{(2n-1)}(b) - f^{(2n-1)}(a)\right),
+                \]</p>
+                <p>where \(B_{2n}\) denote the Bernoulli numbers. This identity expresses how a discrete arithmetic sum may be represented as a continuous integral plus a hierarchy of boundary corrections determined by higher derivatives of \(f\).</p>
+            </section>
+            
+            <section>
+                <h2>Discrete–Continuous Duality</h2>
+                <p>The structure of the Euler–Maclaurin expansion mirrors the dual architecture of the Modular Pair Combinatorics framework. In both settings, discrete structures (sums or modular residues) admit continuous or asymptotic analogues (integrals or density functions), while a corrective hierarchy refines the transition between the two realms.</p>
+                <p>\[
+                \text{Discrete sum } \sum f(n)
+                \;\longleftrightarrow\;
+                \text{Continuous measure } \int f(x)\,dx
+                \]</p>
+                <p>In Euler–Maclaurin, the corrective hierarchy appears as Bernoulli-number-weighted derivative terms. In the modular setting, the corrective structure arises from the doubling sequence of valid residue transitions:</p>
+                <p>\[
+                T(M) = 3 \times 2^n, \qquad M = 30 \times 2^n,
+                \]</p>
+                <p>where each modular lift introduces new combinatorial corrections analogous to higher-order curvature terms in Euler–Maclaurin.</p>
+            </section>
+            
+            <section>
+                <h2>Modular–Analytic Correspondence</h2>
+                <p>The following correspondence illustrates the parallelism between analytic and modular formulations:</p>
+                <div class="em-table-container">
+                    <table class="em-table">
+                        <tr>
+                            <th>Euler–Maclaurin term</th>
+                            <th>Modular analogue</th>
+                        </tr>
+                        <tr>
+                            <td>\(\displaystyle \sum_{n=a}^{b} f(n)\)</td>
+                            <td>\(\displaystyle \sum_{r \in \Phi(M)} f(r)\)</td>
+                        </tr>
+                        <tr>
+                            <td>\(\displaystyle \int_a^b f(x)\,dx\)</td>
+                            <td>Coprime density integral over modular ring</td>
+                        </tr>
+                        <tr>
+                            <td>\(\displaystyle \frac{f(a)+f(b)}{2}\)</td>
+                            <td>Boundary residues under modular wraparound</td>
+                        </tr>
+                        <tr>
+                            <td>\(\displaystyle \frac{B_{2n}}{(2n)!}\big(f^{(2n-1)}(b)-f^{(2n-1)}(a)\big)\)</td>
+                            <td>Modular correction from new residue transitions at level \(n\)</td>
+                        </tr>
+                    </table>
+                </div>
+                <p>Thus, the Modular Pair Combinatorics framework may be interpreted as a <em>discrete–modular continuation</em> of the Euler–Maclaurin bridge: where Bernoulli corrections are replaced by residue transition symmetries, and derivative curvature is replaced by combinatorial expansion through modular doubling.</p>
+            </section>
+        </div>
+        
+        <div class="em-visualization">
+            <h2>Interactive Visualization: Analytic vs. Modular Curvature Convergence</h2>
+            
+            <div class="em-controls">
+                <div class="em-control-group">
+                    <label for="em-decayRate">Decay Rate:</label>
+                    <input type="range" id="em-decayRate" min="0.1" max="0.5" step="0.05" value="0.3">
+                    <span id="em-decayValue">0.3</span>
+                </div>
+                
+                <div class="em-control-group">
+                    <label for="em-oscillationFreq">Oscillation Frequency:</label>
+                    <input type="range" id="em-oscillationFreq" min="1" max="4" step="0.1" value="2">
+                    <span id="em-freqValue">2.0</span>
+                </div>
+                
+                <div class="em-control-group">
+                    <label for="em-modularLevels">Modular Levels:</label>
+                    <input type="range" id="em-modularLevels" min="3" max="15" step="1" value="6">
+                    <span id="em-levelsValue">6</span>
+                </div>
+            </div>
+
+            <div class="em-zoom-controls">
+                <button id="em-zoomIn">Zoom In</button>
+                <button id="em-zoomOut">Zoom Out</button>
+                <button id="em-resetZoom">Reset Zoom</button>
+                <span class="em-zoom-display">Zoom: <span id="em-zoomLevel">1.00</span>x</span>
+                <span style="margin-left: 20px;">Pan: Click and drag</span>
+            </div>
+
+            <div class="em-export-buttons">
+                <button id="em-export4kBtn">Export as 4K Image</button>
+                <button id="em-exportCsvBtn">Export Data as CSV</button>
+                <button id="em-exportTxtBtn">Export Data as TXT</button>
+            </div>
+            
+            <canvas id="em-visualizationCanvas" class="em-canvas"></canvas>
+            <p class="em-figure-caption">Comparison between the analytic and modular curvature correction series. The blue curve represents the Euler–Maclaurin oscillatory corrections governed by Bernoulli numbers \(B_{2n}\), which decay exponentially toward the mean integral value. The red discrete steps represent the modular residue oscillations induced by the Getachew Doubling Transition Law, whose amplitude halves with each modular lift \(M_n = 30 \times 2^n\). Both sequences converge toward a common density equilibrium, demonstrating the shared curvature-balancing nature of analytic and modular corrections.</p>
+            
+            <div id="em-coordinates" style="margin-top: 10px; font-size: 0.9rem; color: #555;"></div>
+        </div>
+    </div>
+</section>
+// Euler-Maclaurin Visualization Module
+(function() {
+    'use strict';
+    
+    // Wait for DOM to be fully loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initEulerMaclaurin);
+    } else {
+        initEulerMaclaurin();
+    }
+    
+    function initEulerMaclaurin() {
+        const canvas = document.getElementById('em-visualizationCanvas');
+        if (!canvas) {
+            console.warn('Euler-Maclaurin canvas element not found');
+            return;
+        }
+        
+        const ctx = canvas.getContext('2d');
+        const decayRateSlider = document.getElementById('em-decayRate');
+        const oscillationFreqSlider = document.getElementById('em-oscillationFreq');
+        const modularLevelsSlider = document.getElementById('em-modularLevels');
+        const export4kBtn = document.getElementById('em-export4kBtn');
+        const exportCsvBtn = document.getElementById('em-exportCsvBtn');
+        const exportTxtBtn = document.getElementById('em-exportTxtBtn');
+        const zoomInBtn = document.getElementById('em-zoomIn');
+        const zoomOutBtn = document.getElementById('em-zoomOut');
+        const resetZoomBtn = document.getElementById('em-resetZoom');
+        const zoomLevelDisplay = document.getElementById('em-zoomLevel');
+        const decayValue = document.getElementById('em-decayValue');
+        const freqValue = document.getElementById('em-freqValue');
+        const levelsValue = document.getElementById('em-levelsValue');
+        const coordinatesDisplay = document.getElementById('em-coordinates');
+        
+        // View state
+        let viewState = {
+            zoom: 1.0,
+            offsetX: 0,
+            offsetY: 0,
+            isDragging: false,
+            lastMouseX: 0,
+            lastMouseY: 0
+        };
+        
+        // Default data ranges
+        const defaultXMin = -0.5;
+        const defaultXMax = 7.2;
+        const defaultYMin = -1.2;
+        const defaultYMax = 2.2;
+        
+        // Current data ranges (affected by zoom/pan)
+        let currentXMin = defaultXMin;
+        let currentXMax = defaultXMax;
+        let currentYMin = defaultYMin;
+        let currentYMax = defaultYMax;
+        
+        // Set canvas size
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 400;
+            drawVisualization();
+        }
+        
+        // Initial resize
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Update slider value displays and redraw
+        function updateDecay() {
+            decayValue.textContent = decayRateSlider.value;
+            drawVisualization();
+        }
+        
+        function updateFreq() {
+            freqValue.textContent = oscillationFreqSlider.value;
+            drawVisualization();
+        }
+        
+        function updateLevels() {
+            levelsValue.textContent = modularLevelsSlider.value;
+            drawVisualization();
+        }
+        
+        // Add event listeners
+        decayRateSlider.addEventListener('input', updateDecay);
+        oscillationFreqSlider.addEventListener('input', updateFreq);
+        modularLevelsSlider.addEventListener('input', updateLevels);
+        
+        // Zoom and pan controls
+        zoomInBtn.addEventListener('click', function() {
+            viewState.zoom *= 1.5;
+            updateZoomDisplay();
+            applyZoom();
+            drawVisualization();
+        });
+        
+        zoomOutBtn.addEventListener('click', function() {
+            viewState.zoom /= 1.5;
+            updateZoomDisplay();
+            applyZoom();
+            drawVisualization();
+        });
+        
+        resetZoomBtn.addEventListener('click', function() {
+            viewState.zoom = 1.0;
+            viewState.offsetX = 0;
+            viewState.offsetY = 0;
+            updateZoomDisplay();
+            applyZoom();
+            drawVisualization();
+        });
+        
+        function updateZoomDisplay() {
+            zoomLevelDisplay.textContent = viewState.zoom.toFixed(2);
+        }
+        
+        function applyZoom() {
+            const centerX = (defaultXMin + defaultXMax) / 2;
+            const centerY = (defaultYMin + defaultYMax) / 2;
+            const rangeX = (defaultXMax - defaultXMin) / viewState.zoom;
+            const rangeY = (defaultYMax - defaultYMin) / viewState.zoom;
+            
+            currentXMin = centerX - rangeX / 2 + viewState.offsetX;
+            currentXMax = centerX + rangeX / 2 + viewState.offsetX;
+            currentYMin = centerY - rangeY / 2 + viewState.offsetY;
+            currentYMax = centerY + rangeY / 2 + viewState.offsetY;
+        }
+        
+        // Mouse events for panning
+        canvas.addEventListener('mousedown', function(event) {
+            viewState.isDragging = true;
+            viewState.lastMouseX = event.clientX;
+            viewState.lastMouseY = event.clientY;
+            canvas.style.cursor = 'grabbing';
+        });
+        
+        canvas.addEventListener('mousemove', function(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // Convert to data coordinates
+            const dataX = (x / canvas.width) * (currentXMax - currentXMin) + currentXMin;
+            const dataY = currentYMax - (y / canvas.height) * (currentYMax - currentYMin);
+            
+            if (coordinatesDisplay) {
+                coordinatesDisplay.textContent = `Data coordinates: x = ${dataX.toFixed(2)}, y = ${dataY.toFixed(2)}`;
+            }
+            
+            if (viewState.isDragging) {
+                const deltaX = event.clientX - viewState.lastMouseX;
+                const deltaY = event.clientY - viewState.lastMouseY;
+                
+                // Convert pixel delta to data delta
+                const dataDeltaX = (deltaX / canvas.width) * (currentXMax - currentXMin);
+                const dataDeltaY = (deltaY / canvas.height) * (currentYMax - currentYMin);
+                
+                viewState.offsetX -= dataDeltaX;
+                viewState.offsetY += dataDeltaY;
+                
+                viewState.lastMouseX = event.clientX;
+                viewState.lastMouseY = event.clientY;
+                
+                applyZoom();
+                drawVisualization();
+            }
+        });
+        
+        canvas.addEventListener('mouseup', function() {
+            viewState.isDragging = false;
+            canvas.style.cursor = 'crosshair';
+        });
+        
+        canvas.addEventListener('mouseleave', function() {
+            viewState.isDragging = false;
+            canvas.style.cursor = 'crosshair';
+        });
+        
+        // Export functions
+        export4kBtn.addEventListener('click', function() {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 3840;
+            tempCanvas.height = 2160;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            drawOnCanvas(tempCtx, tempCanvas.width, tempCanvas.height);
+            
+            const dataURL = tempCanvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = 'euler-maclaurin-modular-visualization-4k.png';
+            link.href = dataURL;
+            link.click();
+        });
+        
+        function generateData() {
+            const decayRate = parseFloat(decayRateSlider.value);
+            const oscillationFreq = parseFloat(oscillationFreqSlider.value);
+            const modularLevels = parseInt(modularLevelsSlider.value);
+            
+            const data = {
+                parameters: {
+                    decayRate: decayRate,
+                    oscillationFreq: oscillationFreq,
+                    modularLevels: modularLevels,
+                    zoom: viewState.zoom,
+                    viewport: {
+                        xMin: currentXMin,
+                        xMax: currentXMax,
+                        yMin: currentYMin,
+                        yMax: currentYMax
+                    }
+                },
+                analyticCurve: [],
+                modularSteps: []
+            };
+            
+            // Generate analytic curve points
+            const steps = 500;
+            for (let i = 0; i <= steps; i++) {
+                const x = currentXMin + (i / steps) * (currentXMax - currentXMin);
+                const y = 1.5 * Math.exp(-decayRate * x) * Math.sin(oscillationFreq * x);
+                data.analyticCurve.push({ x: x, y: y });
+            }
+            
+            // Generate modular step points
+            for (let i = 0; i <= modularLevels; i++) {
+                const x1 = i;
+                const x2 = i + 1;
+                const y1 = 1.2 * Math.exp(-decayRate * x1) * Math.sin(oscillationFreq * x1);
+                
+                if (x1 >= currentXMin && x1 <= currentXMax) {
+                    data.modularSteps.push({
+                        level: i,
+                        x_start: x1,
+                        x_end: x2,
+                        y: y1,
+                        type: 'step'
+                    });
+                }
+                
+                if (x2 >= currentXMin && x2 <= currentXMax) {
+                    data.modularSteps.push({
+                        level: i,
+                        x: x2,
+                        y: y1,
+                        type: 'endpoint'
+                    });
+                }
+            }
+            
+            return data;
+        }
+        
+        function exportAsCsv() {
+            const data = generateData();
+            let csvContent = "Parameter,Value\n";
+            
+            // Add parameters
+            csvContent += `Decay Rate,${data.parameters.decayRate}\n`;
+            csvContent += `Oscillation Frequency,${data.parameters.oscillationFreq}\n`;
+            csvContent += `Modular Levels,${data.parameters.modularLevels}\n`;
+            csvContent += `Zoom Level,${data.parameters.zoom}\n`;
+            csvContent += `Viewport X Min,${data.parameters.viewport.xMin}\n`;
+            csvContent += `Viewport X Max,${data.parameters.viewport.xMax}\n`;
+            csvContent += `Viewport Y Min,${data.parameters.viewport.yMin}\n`;
+            csvContent += `Viewport Y Max,${data.parameters.viewport.yMax}\n\n`;
+            
+            // Add analytic curve data
+            csvContent += "Analytic Curve Data\n";
+            csvContent += "X,Y\n";
+            data.analyticCurve.forEach(point => {
+                csvContent += `${point.x},${point.y}\n`;
+            });
+            
+            csvContent += "\nModular Steps Data\n";
+            csvContent += "Level,Type,X_Start,X_End,Y\n";
+            data.modularSteps.forEach(step => {
+                if (step.type === 'step') {
+                    csvContent += `${step.level},${step.type},${step.x_start},${step.x_end},${step.y}\n`;
+                } else {
+                    csvContent += `${step.level},${step.type},${step.x},,${step.y}\n`;
+                }
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = 'euler-maclaurin-data.csv';
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function exportAsTxt() {
+            const data = generateData();
+            let txtContent = "Euler-Maclaurin and Modular Density Data Export\n";
+            txtContent += "=================================================\n\n";
+            
+            // Add parameters
+            txtContent += "PARAMETERS:\n";
+            txtContent += `Decay Rate: ${data.parameters.decayRate}\n`;
+            txtContent += `Oscillation Frequency: ${data.parameters.oscillationFreq}\n`;
+            txtContent += `Modular Levels: ${data.parameters.modularLevels}\n`;
+            txtContent += `Zoom Level: ${data.parameters.zoom}\n`;
+            txtContent += `Viewport: X[${data.parameters.viewport.xMin.toFixed(2)}, ${data.parameters.viewport.xMax.toFixed(2)}], Y[${data.parameters.viewport.yMin.toFixed(2)}, ${data.parameters.viewport.yMax.toFixed(2)}]\n\n`;
+            
+            // Add analytic curve data
+            txtContent += "ANALYTIC CURVE DATA (Euler-Maclaurin):\n";
+            txtContent += "X\tY\n";
+            data.analyticCurve.forEach(point => {
+                txtContent += `${point.x.toFixed(4)}\t${point.y.toFixed(4)}\n`;
+            });
+            
+            txtContent += "\nMODULAR STEPS DATA (Residue Doubling):\n";
+            txtContent += "Level\tType\tX_Start\tX_End\tY\n";
+            data.modularSteps.forEach(step => {
+                if (step.type === 'step') {
+                    txtContent += `${step.level}\t${step.type}\t${step.x_start.toFixed(2)}\t${step.x_end.toFixed(2)}\t${step.y.toFixed(4)}\n`;
+                } else {
+                    txtContent += `${step.level}\t${step.type}\t${step.x.toFixed(2)}\t\t${step.y.toFixed(4)}\n`;
+                }
+            });
+            
+            const blob = new Blob([txtContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = 'euler-maclaurin-data.txt';
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        exportCsvBtn.addEventListener('click', exportAsCsv);
+        exportTxtBtn.addEventListener('click', exportAsTxt);
+        
+        // Main drawing function
+        function drawVisualization() {
+            drawOnCanvas(ctx, canvas.width, canvas.height);
+        }
+        
+        function drawOnCanvas(context, width, height) {
+            // Clear canvas
+            context.clearRect(0, 0, width, height);
+            
+            // Get parameter values
+            const decayRate = parseFloat(decayRateSlider.value);
+            const oscillationFreq = parseFloat(oscillationFreqSlider.value);
+            const modularLevels = parseInt(modularLevelsSlider.value);
+            
+            // Helper functions to convert between data and canvas coordinates
+            function toCanvasX(x) {
+                return ((x - currentXMin) / (currentXMax - currentXMin)) * width;
+            }
+            
+            function toCanvasY(y) {
+                return height - ((y - currentYMin) / (currentYMax - currentYMin)) * height;
+            }
+            
+            // Draw axes
+            context.beginPath();
+            context.moveTo(toCanvasX(currentXMin), toCanvasY(0));
+            context.lineTo(toCanvasX(currentXMax), toCanvasY(0));
+            context.moveTo(toCanvasX(0), toCanvasY(currentYMin));
+            context.lineTo(toCanvasX(0), toCanvasY(currentYMax));
+            context.strokeStyle = '#000';
+            context.lineWidth = 1;
+            context.stroke();
+            
+            // Draw density limit (dashed gray line)
+            context.beginPath();
+            context.setLineDash([5, 3]);
+            context.moveTo(toCanvasX(currentXMin), toCanvasY(0));
+            context.lineTo(toCanvasX(currentXMax), toCanvasY(0));
+            context.strokeStyle = 'gray';
+            context.lineWidth = 1;
+            context.stroke();
+            context.setLineDash([]);
+            
+            // Draw Euler-Maclaurin curve (blue smooth curve)
+            context.beginPath();
+            context.strokeStyle = 'blue';
+            context.lineWidth = 2;
+            
+            const steps = 500;
+            let firstPoint = true;
+            for (let i = 0; i <= steps; i++) {
+                const x = currentXMin + (i / steps) * (currentXMax - currentXMin);
+                const y = 1.5 * Math.exp(-decayRate * x) * Math.sin(oscillationFreq * x);
+                
+                if (firstPoint) {
+                    context.moveTo(toCanvasX(x), toCanvasY(y));
+                    firstPoint = false;
+                } else {
+                    context.lineTo(toCanvasX(x), toCanvasY(y));
+                }
+            }
+            context.stroke();
+            
+            // Draw modular steps (red discrete steps)
+            context.strokeStyle = 'red';
+            context.lineWidth = 3;
+            context.fillStyle = 'rgba(255, 0, 0, 0.7)';
+            
+            for (let i = 0; i <= modularLevels; i++) {
+                const x1 = i;
+                const x2 = i + 1;
+                const y1 = 1.2 * Math.exp(-decayRate * x1) * Math.sin(oscillationFreq * x1);
+                
+                // Only draw if within current view
+                if (x1 >= currentXMin && x2 <= currentXMax) {
+                    // Draw horizontal segment
+                    context.beginPath();
+                    context.moveTo(toCanvasX(x1), toCanvasY(y1));
+                    context.lineTo(toCanvasX(x2), toCanvasY(y1));
+                    context.stroke();
+                    
+                    // Draw dot at the end of the segment
+                    context.beginPath();
+                    context.arc(toCanvasX(x2), toCanvasY(y1), 4, 0, Math.PI * 2);
+                    context.fill();
+                }
+            }
+            
+            // Add labels (only if they fit in the current view)
+            if (5.9 >= currentXMin && 5.9 <= currentXMax && 0.9 >= currentYMin && 0.9 <= currentYMax) {
+                context.fillStyle = 'blue';
+                context.font = '14px Arial';
+                context.fillText('Analytic curvature (Bernoulli)', toCanvasX(5.9), toCanvasY(0.9));
+            }
+            
+            if (4.8 >= currentXMin && 4.8 <= currentXMax && -0.8 >= currentYMin && -0.8 <= currentYMax) {
+                context.fillStyle = 'red';
+                context.font = '14px Arial';
+                context.fillText('Modular curvature (Residue Doubling)', toCanvasX(4.8), toCanvasY(-0.8));
+            }
+            
+            if (7.0 >= currentXMin && 7.0 <= currentXMax && 0.25 >= currentYMin && 0.25 <= currentYMax) {
+                context.fillStyle = 'gray';
+                context.font = '14px Arial';
+                context.fillText('Density Limit', toCanvasX(7.0), toCanvasY(0.25));
+            }
+            
+            // Add axis labels
+            context.fillStyle = '#000';
+            context.fillText('x', toCanvasX(currentXMax) - 10, toCanvasY(0) - 10);
+            context.fillText('Amplitude', toCanvasX(0) + 10, toCanvasY(currentYMax) + 15);
+            
+            // Add viewport info
+            context.fillStyle = '#666';
+            context.font = '12px Arial';
+            context.fillText(`View: X[${currentXMin.toFixed(2)}, ${currentXMax.toFixed(2)}] Y[${currentYMin.toFixed(2)}, ${currentYMax.toFixed(2)}]`, 10, 20);
+        }
+        
+        // Initial setup
+        updateZoomDisplay();
+        applyZoom();
+        drawVisualization();
+    }
+})();
     </script>
 </body>
 </html>
