@@ -585,7 +585,7 @@
         
         <!-- Table of Contents -->
         <div class="table-of-contents">
-            <h2 style="text-align: center; color: #1565c0; margin-bottom: 20px;">📋 Table of Contents</h2>
+            <h2 style="text-align: center; color: #1565c0; margin-bottom: 20px;"> Table of Contents</h2>
             <div class="toc-grid">
                 <a href="#section-1" class="toc-item">
                     <span class="toc-number">1</span>
@@ -642,26 +642,26 @@
         <!-- Quick Start Guide -->
         <div class="quick-start-guide">
             <h2 style="text-align: center; color: #1565c0; margin-bottom: 20px; font-size: 1.8em;">
-                🚀 Quick Start Guide
+                 Quick Start Guide
             </h2>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 25px;">
                 <div class="quick-start-card">
-                    <div class="quick-start-icon">🎮</div>
+                    <div class="quick-start-icon"></div>
                     <h3>New Here? Start Interactive</h3>
                     <p>Jump straight to the interactive demo and try different moduli values.</p>
                     <a href="#section-4" class="quick-start-btn">Try Interactive Demo →</a>
                 </div>
                 
                 <div class="quick-start-card">
-                    <div class="quick-start-icon">🎨</div>
+                    <div class="quick-start-icon"></div>
                     <h3>Want Beautiful Visuals?</h3>
                     <p>Explore stunning 2D rings and 3D embeddings with multiple color schemes.</p>
                     <a href="#section-7" class="quick-start-btn">See Visualizations →</a>
                 </div>
                 
                 <div class="quick-start-card">
-                    <div class="quick-start-icon">📚</div>
+                    <div class="quick-start-icon"></div>
                     <h3>Understand the Theory</h3>
                     <p>Learn about Euler's theorem and the mathematical foundations.</p>
                     <a href="#section-1" class="quick-start-btn">Read Theory →</a>
@@ -669,7 +669,7 @@
             </div>
             
             <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-radius: 8px; border-left: 4px solid #f39c12;">
-                <strong style="color: #856404; font-size: 1.1em;">💡 Recommended Path:</strong>
+                <strong style="color: #856404; font-size: 1.1em;"> Recommended Path:</strong>
                 <p style="color: #856404; margin: 10px 0 0 0;">
                     <strong>Beginners:</strong> Section 4 (Demo) → Section 7 (Visuals) → Section 1 (Theory)<br>
                     <strong>Researchers:</strong> Section 1 (Theory) → Section 3 (Method) → Section 6 (Results)<br>
@@ -1000,10 +1000,10 @@
             <div id="batchResults"></div>
 
             <div class="export-buttons">
-                <button class="secondary" onclick="exportTestScreenshot()">📸 Export Screenshot</button>
-                <button class="secondary" onclick="exportTestData('json')">📄 Export JSON</button>
-                <button class="secondary" onclick="exportTestData('csv')">📊 Export CSV</button>
-                <button class="secondary" onclick="clearTestHistory()">🗑️ Clear History</button>
+                <button class="secondary" onclick="exportTestScreenshot()"> Export Screenshot</button>
+                <button class="secondary" onclick="exportTestData('json')"> Export JSON</button>
+                <button class="secondary" onclick="exportTestData('csv')"> Export CSV</button>
+                <button class="secondary" onclick="clearTestHistory()"> Clear History</button>
             </div>
 
             <div id="testHistory" style="display: none;">
@@ -1132,7 +1132,7 @@ function is_prime_candidate(m, k, slice="half",
             
             <!-- ========== UNIVERSAL CONTROLS: ANIMATION, ZOOM, COLORS ========== -->
             <div class="controls" style="margin-top: 15px; background: #ffffff; padding: 15px; border-radius: 10px;">
-                <div style="color: black; font-weight: 600; margin-bottom: 10px; font-size: 1.1em;">🎬 Animation & View Controls</div>
+                <div style="color: black; font-weight: 600; margin-bottom: 10px; font-size: 1.1em;">Animation & View Controls</div>
                 
                 <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
                     <!-- Animation Controls -->
@@ -1161,7 +1161,7 @@ function is_prime_candidate(m, k, slice="half",
                     
                     <!-- Zoom/Pan Controls -->
                     <div style="display: flex; gap: 10px; align-items: center; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px;">
-                        <label style="color: black; font-weight: 600;">🔍 Zoom:</label>
+                        <label style="color: black; font-weight: 600;"> Zoom:</label>
                         <span id="concentricCanvasZoomDisplay" style="color: black; font-weight: 600; min-width: 50px;">100%</span>
                         <button onclick="resetZoomPan('concentricCanvas')" 
                                 style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
@@ -1400,7 +1400,7 @@ function is_prime_candidate(m, k, slice="half",
             
 
             <div class="controls" style="margin-top: 15px;">
-                <strong style="color: #495057;">🔍 Zoom:</strong> Mouse wheel on any canvas
+                <strong style="color: #495057;"> Zoom:</strong> Mouse wheel on any canvas
             </div>
 
             <div class="controls" style="margin-top: 15px;">
@@ -1473,9 +1473,9 @@ function is_prime_candidate(m, k, slice="half",
 
             <div class="controls" style="margin-top: 15px;">
                 <button onclick="drawConcentricRings()">Visualize</button>
-                <button class="success" onclick="exportConcentricWithLegend('4k')">📸 Export 4K + Legend</button>
-                <button class="success" onclick="exportConcentricWithLegend('2k')">📸 Export 2K + Legend</button>
-                <button class="secondary" onclick="exportConcentricView()">📸 Simple Export</button>
+                <button class="success" onclick="exportConcentricWithLegend('4k')"> Export 4K + Legend</button>
+                <button class="success" onclick="exportConcentricWithLegend('2k')"> Export 2K + Legend</button>
+                <button class="secondary" onclick="exportConcentricView()"> Simple Export</button>
             </div>
             
             <div class="stats-display" id="concentricStats" style="margin-top: 20px;"></div>
@@ -1670,7 +1670,7 @@ function is_prime_candidate(m, k, slice="half",
 
             <div class="controls" style="margin-top: 15px;">
                 <button onclick="draw3DFareyShell()">Visualize 3D</button>
-                <button class="success" onclick="export3DView()">📸 Export View</button>
+                <button class="success" onclick="export3DView()"> Export View</button>
                 <button class="secondary" onclick="reset3DView()">↻ Reset View</button>
             </div>
             
@@ -2150,10 +2150,10 @@ function is_prime_candidate(m, k, slice="half",
 
             <div class="controls" style="margin-top: 15px;">
                 <button onclick="drawHeegnerField()">Visualize</button>
-                <button class="success" onclick="exportHeegnerVisualization('4k')">📸 Export 4K</button>
-                <button class="success" onclick="exportHeegnerVisualization('2k')">📸 Export 2K</button>
-                <button onclick="exportHeegnerCSV()" style="/* background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white;">📊 Export CSV</button>
-                <button class="secondary" onclick="compareAllFields()">🔬 Compare All 9 Fields</button>
+                <button class="success" onclick="exportHeegnerVisualization('4k')">Export 4K</button>
+                <button class="success" onclick="exportHeegnerVisualization('2k')"> Export 2K</button>
+                <button onclick="exportHeegnerCSV()" style="/* background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white;"> Export CSV</button>
+                <button class="secondary" onclick="compareAllFields()"> Compare All 9 Fields</button>
             </div>
 
             <div class="stats-display" id="heegnerStats" style="margin-top: 20px;"></div>
@@ -2162,7 +2162,6 @@ function is_prime_candidate(m, k, slice="half",
                 Figure 10.1: Modular form solutions f(x,y) ≡ D (mod M) for Heegner fields. 
                 Points satisfying the congruence are displayed on concentric rings, 
                 revealing characteristic symmetries: 4-fold for ℚ(√-1), 6-fold for ℚ(√-3), etc.
-                Density amplification (up to 12×) visible as n increases.
                 Display modes allow viewing norm values, coordinates, or individual x/y values directly on the visualization.
             </div>
         </div>
@@ -2720,8 +2719,6 @@ function is_prime_candidate(m, k, slice="half",
             <ul>
                 <li><strong>Asymptotic Behavior:</strong> Can we establish bounds analogous to \(E(r) = O(r^{\theta})\) for the modular deviation \(\Delta(M,D,f)\)? Is there a relationship between the growth rate and the class number?</li>
                 
-                <li><strong>Universal Constants:</strong> Does the 12× amplification represent a theoretical maximum, or can higher amplifications occur for larger discriminants or different norm forms?</li>
-                
                 <li><strong>Connection to L-functions:</strong> How do the modular deviations relate to special values of Dirichlet L-functions \(L(s, \chi_D)\) associated with the fields \(\mathbb{Q}(\sqrt{D})\)?</li>
                 
                 <li><strong>Hybrid Approach:</strong> Can techniques from the Gauss Circle Problem (exponential sums, lattice point methods) be adapted to sharpen estimates of \(\Delta(M,D,f)\)?</li>
@@ -2757,11 +2754,11 @@ function is_prime_candidate(m, k, slice="half",
         <!-- References and Citations -->
         <div class="section-container" style="margin-top: 60px;">
             <div class="section-title" id="references">
-                <span class="section-number">📚</span> References & How to Cite
+                <span class="section-number"></span> References & How to Cite
             </div>
             
             <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 25px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="color: #1565c0; margin-top: 0;">📖 How to Cite This Work</h3>
+                <h3 style="color: #1565c0; margin-top: 0;"> How to Cite This Work</h3>
                 <div style="background: #ffffff; padding: 20px; border-radius: 6px; margin: 15px 0; font-family: 'Courier New', monospace; font-size: 0.9em;">
                     <strong>BibTeX Entry:</strong>
                     <pre style="margin: 10px 0; padding: 15px; background: #f5f5f5; border-radius: 4px; overflow-x: auto;">@article{gelachew2025farey,
@@ -2770,7 +2767,7 @@ function is_prime_candidate(m, k, slice="half",
   journal={Interactive Mathematical Demonstrations},
   year={2025},
   month={October},
-  url={https://claude.ai/chat/farey-channels}
+  
 }</pre>
                 </div>
                 
@@ -2790,19 +2787,19 @@ function is_prime_candidate(m, k, slice="half",
             </div>
             
             <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 25px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="color: #e65100; margin-top: 0;">🔗 Resources & Links</h3>
+                <h3 style="color: #e65100; margin-top: 0;"> Resources & Links</h3>
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px;">
                     <div style="background: #ffffff; padding: 15px; border-radius: 6px;">
-                        <strong style="color: #e65100;">💻 Source Code</strong>
+                        <strong style="color: #e65100;"> Source Code</strong>
                         <p style="margin: 10px 0 0 0; color: #666;">
                             Implementation available on request<br>
-                            <span style="font-size: 0.9em;">Contact: wessen.gelachew@example.com</span>
+                            <span style="font-size: 0.9em;">Contact: gelachewwessen@gmail.com</span>
                         </p>
                     </div>
                     
                     <div style="background: #ffffff; padding: 15px; border-radius: 6px;">
-                        <strong style="color: #e65100;">📊 Dataset</strong>
+                        <strong style="color: #e65100;"> Dataset</strong>
                         <p style="margin: 10px 0 0 0; color: #666;">
                             Empirical results for n ∈ [3, 10,000]<br>
                             <span style="font-size: 0.9em;">Format: CSV, JSON</span>
@@ -2810,7 +2807,7 @@ function is_prime_candidate(m, k, slice="half",
                     </div>
                     
                     <div style="background: #ffffff; padding: 15px; border-radius: 6px;">
-                        <strong style="color: #e65100;">🎨 Visualizations</strong>
+                        <strong style="color: #e65100;"> Visualizations</strong>
                         <p style="margin: 10px 0 0 0; color: #666;">
                             High-resolution exports available<br>
                             <span style="font-size: 0.9em;">PNG, SVG, PDF formats</span>
@@ -2820,7 +2817,7 @@ function is_prime_candidate(m, k, slice="half",
             </div>
             
             <div style="background: #f3e5f5; border-left: 4px solid #9c27b0; padding: 25px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="color: #6a1b9a; margin-top: 0;">📚 Related Work & Background</h3>
+                <h3 style="color: #6a1b9a; margin-top: 0;">Related Work & Background</h3>
                 
                 <div style="background: #ffffff; padding: 20px; border-radius: 6px; margin: 15px 0;">
                     <ol style="line-height: 1.8; color: #333;">
@@ -2840,11 +2837,11 @@ function is_prime_candidate(m, k, slice="half",
             </div>
             
             <div style="background: #e8f5e9; border-left: 4px solid #4caf50; padding: 25px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="color: #2e7d32; margin-top: 0;">📬 Contact & Contributions</h3>
+                <h3 style="color: #2e7d32; margin-top: 0;"> Contact & Contributions</h3>
                 <p style="color: #333; line-height: 1.8;">
                     <strong>Author:</strong> Wessen Gelachew<br>
-                    <strong>Email:</strong> wessen.gelachew@example.com<br>
-                    <strong>Date:</strong> October 2025<br><br>
+                    <strong>Email:</strong> Getachewwessen@gmail.com.com<br>
+                    <strong>Date:</strong> October/November 2025<br><br>
                     
                     <strong>Contributions Welcome:</strong> We welcome feedback, suggestions, and collaborations. 
                     If you find errors or have improvements, please reach out!<br><br>
@@ -6505,7 +6502,7 @@ function drawConcentricRings() {
         
         // ==================== INITIALIZE ALL ZOOM/PAN ON PAGE LOAD ====================
         window.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 Initializing universal controls for all visualizations...');
+            console.log(' Initializing universal controls for all visualizations...');
             
             // Initialize zoom/pan for all canvases
             const canvasIds = [
@@ -6521,17 +6518,17 @@ function drawConcentricRings() {
                 const canvas = document.getElementById(canvasId);
                 if (canvas) {
                     initZoomPan(canvasId);
-                    console.log(`✅ Initialized ${canvasId}`);
+                    console.log(` Initialized ${canvasId}`);
                 } else {
-                    console.log(`⚠️  Canvas ${canvasId} not found`);
+                    console.log(`  Canvas ${canvasId} not found`);
                 }
             });
             
-            console.log('✅ All universal controls initialized!');
-            console.log('🎬 Animation: Click Play buttons');
-            console.log('🔍 Zoom: Mouse wheel on any canvas');
-            console.log('🖱️  Pan: Click and drag any canvas');
-            console.log('🎨 Colors: Use theme dropdown or color pickers');
+            console.log(' All universal controls initialized!');
+            console.log('Animation: Click Play buttons');
+            console.log('Zoom: Mouse wheel on any canvas');
+            console.log(' Pan: Click and drag any canvas');
+            console.log('Colors: Use theme dropdown or color pickers');
         });
         
         // ==================== EULER-RIEMANN VISUALIZATION ====================
