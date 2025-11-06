@@ -1168,7 +1168,15 @@
             // Initialize evenness theorem charts
             initializeEvennessCharts();
         });
+    </script>
+</body>
+</html>
+<html lang="en">
+<head>
     
+
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nested Farey Channels & Fractional-Slice Coprimality - Wessen Getachew</title>
@@ -8132,7 +8140,7 @@ function drawConcentricRings() {
                 const originalHTML = statsDiv.innerHTML;
                 statsDiv.innerHTML = `
                     <div style="background: #27ae60; color: white; padding: 15px; border-radius: 8px; text-align: center;">
-                         <strong>CSV Exported!</strong><br>
+                        ✅ <strong>CSV Exported!</strong><br>
                         ${moduli.length} moduli with complete GCD=1 point data
                     </div>
                 `;
@@ -8252,7 +8260,7 @@ function drawConcentricRings() {
             if (colorScheme !== 'default') {
                 valuesList.innerHTML += `
                 <div style="margin-top: 8px; font-size: 0.9em; color: #93c5fd;">
-                     Color scheme: ${colorScheme.replace('-', ' ')}
+                    🎨 Color scheme: ${colorScheme.replace('-', ' ')}
                 </div>
                 `;
             }
@@ -8286,7 +8294,7 @@ function drawConcentricRings() {
             console.log('Page loaded, checking saved theme');
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'light') {
-                if (icon) icon.textContent = '';
+                if (icon) icon.textContent = '🌙';
                 if (text) text.textContent = 'Dark Mode';
                 console.log('Loaded LIGHT theme from storage');
             }
