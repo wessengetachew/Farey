@@ -8350,7 +8350,7 @@ function drawConcentricRings() {
     </script>
 </body>
 </html>
-<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9306,6 +9306,3008 @@ function drawConcentricRings() {
             } catch (e) {
                 // Audio might not be supported
             }
+        }
+    </script>
+</body>
+</html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Möbius Sum Distribution Visualizer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.18.0/plotly.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        function exportChartSVG() {
+            console.log('Exporting charts as SVG...');
+            if (!computedData.N) {
+                alert('Please generate visualization first!');
+                return;
+            }
+
+            const canvases = ['spectrumChart', 'majorChart', 'histogramChart'];
+            
+            let exportCount = 0;
+            
+            canvases.forEach((canvasId, index) => {
+                const canvas = document.getElementById(canvasId);
+                const container = canvas?.closest('.chart-container');
+                
+                if (canvas && container && container.style.display !== 'none') {
+                    setTimeout(() => {
+                        try {
+                            // Get the chart instance
+                            const chart = charts[canvasId.replace('Chart', '')];
+                            if (!chart) return;
+                            
+                            // Create SVG from canvas
+                            const ctx = canvas.getContext('2d');
+                            const svgString = canvasToSVG(canvas, chart);
+                            
+                            const blob = new Blob([svgString], { type: 'image/svg+xml' });
+                            const url = URL.createObjectURL(blob);
+                            
+                            const link = document.createElement('a');
+                            link.download = `${canvasId}_N${computedData.N}_${new Date().toISOString().split('T')[0]}.svg`;
+                            link.href = url;
+                            link.click();
+                            
+                            URL.revokeObjectURL(url);
+                            exportCount++;
+                            console.log(`Exported ${canvasId} as SVG`);
+                        } catch (error) {
+                            console.error(`Failed to export ${canvasId} as SVG:`, error);
+                        }
+                    }, index * 300);
+                }
+            });
+            
+            if (exportCount === 0) {
+                setTimeout(() => {
+                    alert('No visible charts to export. Please generate visualizations first.');
+                }, 100);
+            }
+        }
+
+        // Simple Canvas to SVG converter
+        function canvasToSVG(canvas, chart) {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            let svgContent = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+    <rect width="100%" height="100%" fill="white"/>
+    <image href="${canvas.toDataURL()}" width="${width}" height="${height}"/>
+</svg>`;
+            
+            return svgContent;
+        }
+
+        function exportChartJPEG() {
+            console.log('Exporting charts as JPEG...');
+            if (!computedData.N) {
+                alert('Please generate visualization first!');
+                return;
+            }
+
+            const canvases = ['spectrumChart', 'majorChart', 'histogramChart', 'polarChart'];
+            const plotlyDivs = ['heatmapPlot', 'surface3dPlot', 'waterfallPlot'];
+            
+            let exportCount = 0;
+            
+            // Export Canvas charts as JPEG
+            canvases.forEach((canvasId, index) => {
+                const canvas = document.getElementById(canvasId);
+                const container = canvas?.closest('.chart-container');
+                
+                if (canvas && container && container.style.display !== 'none') {
+                    setTimeout(() => {
+                        try {
+                            // Create white background
+                            const tempCanvas = document.createElement('canvas');
+                            const tempCtx = tempCanvas.getContext('2d');
+                            tempCanvas.width = canvas.width;
+                            tempCanvas.height = canvas.height;
+                            
+                            // Fill with white background
+                            tempCtx.fillStyle = '#FFFFFF';
+                            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                            
+                            // Draw original canvas on top
+                            tempCtx.drawImage(canvas, 0, 0);
+                            
+                            const link = document.createElement('a');
+                            link.download = `${canvasId}_N${computedData.N}_${new Date().toISOString().split('T')[0]}.jpeg`;
+                            link.href = tempCanvas.toDataURL('image/jpeg', 0.9);
+                            link.click();
+                            
+                            exportCount++;
+                            console.log(`Exported ${canvasId} as JPEG`);
+                        } catch (error) {
+                            console.error(`Failed to export ${canvasId}:`, error);
+                        }
+                    }, index * 500);
+                }
+            });
+
+            // Export Plotly charts as JPEG
+            plotlyDivs.forEach((divId, index) => {
+                const div = document.getElementById(divId);
+                const container = div?.closest('.chart-container');
+                
+                if (div && container && container.style.display !== 'none') {
+                    setTimeout(() => {
+                        try {
+                            Plotly.toImage(div, {
+                                format: 'jpeg',
+                                width: 1200,
+                                height: 800,
+                                quality: 0.9
+                            }).then(function(url) {
+                                const link = document.createElement('a');
+                                link.download = `${divId}_N${computedData.N}_${new Date().toISOString().split('T')[0]}.jpeg`;
+                                link.href = url;
+                                link.click();
+                                
+                                exportCount++;
+                                console.log(`Exported ${divId} as JPEG`);
+                            }).catch(function(error) {
+                                console.error(`Failed to export ${divId}:`, error);
+                            });
+                        } catch (error) {
+                            console.error(`Failed to export ${divId}:`, error);
+                        }
+                    }, (canvases.length + index) * 500);
+                }
+            });
+            
+            if (exportCount === 0) {
+                setTimeout(() => {
+                    alert('No visible charts to export. Please generate visualizations first.');
+                }, 100);
+            }
+        }
+
+        // Advanced Visualization Functions
+        async function createHeatMap(alphas, values, majorData, majorLabels) {
+            // Create 2D grid for heat map
+            const gridSize = Math.ceil(Math.sqrt(alphas.length));
+            const zData = [];
+            
+            for (let i = 0; i < gridSize; i++) {
+                const row = [];
+                for (let j = 0; j < gridSize; j++) {
+                    const idx = i * gridSize + j;
+                    row.push(idx < values.length ? values[idx] : 0);
+                }
+                zData.push(row);
+            }
+
+            const data = [{
+                z: zData,
+                type: 'heatmap',
+                colorscale: [
+                    [0, '#440154'],
+                    [0.2, '#31688e'],
+                    [0.4, '#35b779'],
+                    [0.6, '#fde725'],
+                    [1, '#ff6b6b']
+                ],
+                showscale: true,
+                colorbar: {
+                    title: '|S(N,α)|',
+                    titleside: 'right'
+                }
+            }];
+
+            const layout = {
+                title: 'Möbius Sum Magnitude Heat Map',
+                xaxis: { title: 'α Index' },
+                yaxis: { title: 'α Index' },
+                font: { family: 'Segoe UI' }
+            };
+
+            Plotly.newPlot('heatmapPlot', data, layout, {responsive: true});
+        }
+
+        async function create3DSurface(alphas, values, sqrtN) {
+            // Create 3D surface data
+            const gridSize = Math.ceil(Math.sqrt(alphas.length));
+            const zData = [];
+            const xData = [];
+            const yData = [];
+            
+            for (let i = 0; i < gridSize; i++) {
+                const zRow = [];
+                const xRow = [];
+                const yRow = [];
+                for (let j = 0; j < gridSize; j++) {
+                    const idx = i * gridSize + j;
+                    zRow.push(idx < values.length ? values[idx] : 0);
+                    xRow.push(idx < alphas.length ? alphas[idx] : 0);
+                    yRow.push(i / gridSize);
+                }
+                zData.push(zRow);
+                xData.push(xRow);
+                yData.push(yRow);
+            }
+
+            const surfaceData = [{
+                x: xData,
+                y: yData,
+                z: zData,
+                type: 'surface',
+                colorscale: 'Viridis',
+                showscale: true,
+                colorbar: {
+                    title: '|S(N,α)|',
+                    titleside: 'right'
+                }
+            }];
+
+            // Add √N reference plane
+            const refPlane = [{
+                x: 0, 1], [0, 1,
+                y: 0, 0], [1, 1,
+                z: sqrtN, sqrtN], [sqrtN, sqrtN,
+                type: 'surface',
+                opacity: 0.3,
+                colorscale: 0, 'red'], [1, 'red',
+                showscale: false,
+                name: '√N Reference'
+            }];
+
+            const layout = {
+                title: '3D Möbius Sum Surface',
+                scene: {
+                    xaxis: { title: 'α' },
+                    yaxis: { title: 'Secondary Dimension' },
+                    zaxis: { title: '|S(N,α)|' },
+                    camera: {
+                        eye: { x: 1.5, y: 1.5, z: 1.5 }
+                    }
+                },
+                font: { family: 'Segoe UI' }
+            };
+
+            Plotly.newPlot('surface3dPlot', [...surfaceData, ...refPlane], layout, {responsive: true});
+        }
+
+        function createPolarChart(alphas, values, sqrtN) {
+            const ctx = document.getElementById('polarChart').getContext('2d');
+            
+            if (charts.polar) charts.polar.destroy();
+            
+            // Convert to polar coordinates
+            const polarData = alphas.map((alpha, i) => ({
+                x: values[i] * Math.cos(2 * Math.PI * alpha),
+                y: values[i] * Math.sin(2 * Math.PI * alpha)
+            }));
+
+            charts.polar = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Möbius Sums (Polar)',
+                        data: polarData,
+                        backgroundColor: 'rgba(102, 126, 234, 0.6)',
+                        borderColor: 'rgb(102, 126, 234)',
+                        pointRadius: 3
+                    }, {
+                        label: '√N Circle',
+                        data: Array.from({length: 360}, (_, i) => ({
+                            x: sqrtN * Math.cos(i * Math.PI / 180),
+                            y: sqrtN * Math.sin(i * Math.PI / 180)
+                        })),
+                        backgroundColor: 'rgba(231, 76, 60, 0.3)',
+                        borderColor: 'rgb(231, 76, 60)',
+                        pointRadius: 1,
+                        showLine: true,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { 
+                            type: 'linear',
+                            position: 'center',
+                            title: { display: true, text: 'Real Component' }
+                        },
+                        y: { 
+                            type: 'linear',
+                            position: 'center',
+                            title: { display: true, text: 'Imaginary Component' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true }
+                    }
+                }
+            });
+        }
+
+        async function createWaterfallPlot(alphas, values) {
+            // Create waterfall/ridgeline plot
+            const numRidges = 10;
+            const ridgeSize = Math.floor(alphas.length / numRidges);
+            const traces = [];
+
+            for (let i = 0; i < numRidges; i++) {
+                const start = i * ridgeSize;
+                const end = Math.min(start + ridgeSize, alphas.length);
+                const ridgeAlphas = alphas.slice(start, end);
+                const ridgeValues = values.slice(start, end);
+
+                traces.push({
+                    x: ridgeAlphas,
+                    y: ridgeValues.map(v => v + i * 2), // Offset each ridge
+                    type: 'scatter',
+                    mode: 'lines',
+                    fill: 'tonexty',
+                    fillcolor: `rgba(${102 + i * 15}, ${126 + i * 10}, ${234 - i * 10}, 0.6)`,
+                    line: { color: `rgb(${102 + i * 15}, ${126 + i * 10}, ${234 - i * 10})` },
+                    name: `Ridge ${i + 1}`,
+                    showlegend: false
+                });
+            }
+
+            const layout = {
+                title: 'Waterfall Analysis of Möbius Sums',
+                xaxis: { title: 'α' },
+                yaxis: { title: '|S(N,α)| + Offset' },
+                font: { family: 'Segoe UI' }
+            };
+
+            Plotly.newPlot('waterfallPlot', traces, layout, {responsive: true});
+        }
+
+        // Export functions
+        function downloadCSV(data, filename) {
+            const blob = new Blob([data], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        function downloadJSON(data, filename) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        function exportMobiusData() {
+            console.log('Exporting Möbius data...');
+            if (!computedData.mu) {
+                alert('Please generate visualization first!');
+                return;
+            }
+
+            let csv = 'n,mobius_value,is_square_free\n';
+            for (let n = 1; n <= computedData.N; n++) {
+                const isSquareFree = computedData.mu[n] !== 0;
+                csv += `${n},${computedData.mu[n]},${isSquareFree}\n`;
+            }
+
+            downloadCSV(csv, `mobius_values_N${computedData.N}_${new Date().toISOString().split('T')[0]}.csv`);
+            console.log('Möbius CSV download initiated');
+        }
+
+        function exportSpectrumData() {
+            console.log('Exporting spectrum data...');
+            if (!computedData.spectrumData) {
+                alert('Please generate visualization first!');
+                return;
+            }
+
+            let csv = 'alpha,sum_magnitude,alpha_decimal\n';
+            for (let i = 0; i < computedData.alphaValues.length; i++) {
+                csv += `${computedData.alphaValues[i]},${computedData.spectrumData[i]},${computedData.alphaValues[i].toFixed(8)}\n`;
+            }
+
+            downloadCSV(csv, `spectrum_data_N${computedData.N}_${new Date().toISOString().split('T')[0]}.csv`);
+            console.log('Spectrum CSV download initiated');
+        }
+
+        function exportMajorArcs() {
+            console.log('Exporting major arcs data...');
+            if (!computedData.majorData) {
+                alert('Please generate visualization first!');
+                return;
+            }
+
+            let csv = 'rational_alpha,sum_magnitude,numerator,denominator\n';
+            for (let i = 0; i < computedData.majorLabels.length; i++) {
+                const [num, den] = computedData.majorLabels[i].split('/').map(Number);
+                csv += `${computedData.majorLabels[i]},${computedData.majorData[i]},${num},${den}\n`;
+            }
+
+            downloadCSV(csv, `major_arcs_N${computedData.N}_${new Date().toISOString().split('T')[0]}.csv`);
+            console.log('Major arcs CSV download initiated');
+        }
+
+        function exportStatistics() {
+            if (!computedData.N) {
+                alert('Please generate visualization first!');
+                return;
+            }
+
+            const stats = {
+                metadata: {
+                    generated_by: "Wessen Getachew",
+                    twitter: "@7DView",
+                    timestamp: computedData.timestamp,
+                    tool: "Enhanced Möbius Distribution Explorer"
+                },
+                parameters: {
+                    N: computedData.N,
+                    sqrt_N: computedData.sqrtN,
+                    resolution: computedData.alphaValues.length
+                },
+                mobius_statistics: {
+                    positive_values: computedData.muStats.positive,
+                    negative_values: computedData.muStats.negative,
+                    zero_values: computedData.muStats.zero,
+                    square_free_density: ((computedData.muStats.positive + computedData.muStats.negative) / computedData.N * 100)
+                },
+                extremal_analysis: {
+                    maximum_sum_magnitude: computedData.maxSum,
+                    optimal_alpha: computedData.bestAlpha,
+                    deviation_ratio: computedData.ratio,
+                    riemann_hypothesis_status: computedData.ratio < 2 ? "Good" : computedData.ratio < 5 ? "High" : "Very High"
+                },
+                spectrum_summary: {
+                    mean_magnitude: computedData.spectrumData.reduce((a, b) => a + b, 0) / computedData.spectrumData.length,
+                    median_magnitude: computedData.spectrumData.sort((a, b) => a - b)[Math.floor(computedData.spectrumData.length / 2)],
+                    std_deviation: Math.sqrt(computedData.spectrumData.reduce((sum, val) => {
+                        const mean = computedData.spectrumData.reduce((a, b) => a + b, 0) / computedData.spectrumData.length;
+                        return sum + Math.pow(val - mean, 2);
+                    }, 0) / computedData.spectrumData.length)
+                }
+            };
+
+            downloadJSON(stats, `mobius_statistics_N${computedData.N}_${new Date().toISOString().split('T')[0]}.json`);
+        }
+
+        function exportFullReport() {
+            if (!computedData.N) {
+                alert('Please generate visualization first!');
+                return;
+            }
+
+            const report = `# Möbius Sum Distribution Analysis Report
+Generated by: Wessen Getachew (@7DView)
+Date: ${new Date().toLocaleString()}
+Tool: Enhanced Möbius Distribution Explorer
+
+## Parameters
+- N (Upper Limit): ${computedData.N.toLocaleString()}
+- √N (Theoretical Bound): ${computedData.sqrtN.toFixed(4)}
+- Grid Resolution: ${computedData.alphaValues.length} points
+
+## Möbius Function Statistics
+- Positive μ(n): ${computedData.muStats.positive.toLocaleString()}
+- Negative μ(n): ${computedData.muStats.negative.toLocaleString()}
+- Zero μ(n): ${computedData.muStats.zero.toLocaleString()}
+- Square-free Density: ${((computedData.muStats.positive + computedData.muStats.negative) / computedData.N * 100).toFixed(2)}%
+
+## Extremal Analysis
+- Maximum |S(N,α)|: ${computedData.maxSum.toFixed(6)}
+- Optimal α: ${computedData.bestAlpha.toFixed(8)}
+- Deviation Ratio (Max/√N): ${computedData.ratio.toFixed(4)}
+- RH Status: ${computedData.ratio < 2 ? 'Good (< 2√N)' : computedData.ratio < 5 ? 'High (< 5√N)' : 'Very High (≥ 5√N)'}
+
+## Theoretical Context
+The Möbius exponential sum S(N,α) = Σ_{n≤N} μ(n) e^{2πi n α} provides insights into:
+- Distribution of square-free integers
+- Connections to the Riemann Hypothesis
+- Deviations from expected random behavior
+
+Large values of |S(N,α)| suggest non-random patterns in the distribution of μ(n).
+The Riemann Hypothesis predicts bounds related to √N for these sums.
+
+---
+Analysis completed at: ${new Date().toISOString()}
+`;
+
+            const blob = new Blob([report], { type: 'text/markdown' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `mobius_analysis_report_N${computedData.N}_${new Date().toISOString().split('T')[0]}.md`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        function exportChartImages() {
+            if (!charts.spectrum) {
+                alert('Please generate visualization first!');
+                return;
+            }
+
+            // Export spectrum chart
+            const spectrumCanvas = document.getElementById('spectrumChart');
+            const spectrumLink = document.createElement('a');
+            spectrumLink.download = `spectrum_chart_N${computedData.N}_${new Date().toISOString().split('T')[0]}.png`;
+            spectrumLink.href = spectrumCanvas.toDataURL();
+            spectrumLink.click();
+
+            // Export major arcs chart
+            setTimeout(() => {
+                const majorCanvas = document.getElementById('majorChart');
+                const majorLink = document.createElement('a');
+                majorLink.download = `major_arcs_chart_N${computedData.N}_${new Date().toISOString().split('T')[0]}.png`;
+                majorLink.href = majorCanvas.toDataURL();
+                majorLink.click();
+            }, 500);
+
+            // Export histogram
+            setTimeout(() => {
+                const histCanvas = document.getElementById('histogramChart');
+                const histLink = document.createElement('a');
+                histLink.download = `histogram_chart_N${computedData.N}_${new Date().toISOString().split('T')[0]}.png`;
+                histLink.href = histCanvas.toDataURL();
+                histLink.click();
+            }, 1000);
+        }
+        
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: white;
+            animation: gradientShift 15s ease infinite;
+            background-size: 300% 300%;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+            color: #2c3e50;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        h1 { 
+            text-align: center; 
+            margin-bottom: 15px;
+            font-size: 3em;
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.3em;
+            color: #6c757d;
+            margin-bottom: 40px;
+            font-style: italic;
+            line-height: 1.6;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            border-radius: 20px;
+            border: 3px solid rgba(102, 126, 234, 0.1);
+            box-shadow: inset 0 4px 20px rgba(0,0,0,0.05);
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label { 
+            font-weight: 700; 
+            margin-bottom: 10px; 
+            color: #2c3e50;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        input, select, button {
+            padding: 15px;
+            border: 3px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+        }
+        
+        input:focus, select:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 25px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 16px;
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5a6fd8, #6a4190);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            border: 2px solid #f1f3f4;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+        }
+        
+        .chart-container h3 {
+            margin: 0 0 25px 0;
+            color: #2c3e50;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: 700;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 380px;
+        }
+        
+        .comparison-chart {
+            grid-column: 1 / -1;
+            height: 500px;
+        }
+        
+        .advanced-chart {
+            grid-column: 1 / -1;
+            height: 600px;
+        }
+        
+        .advanced-chart .chart-wrapper {
+            height: 500px;
+        }
+        
+        .three-d-container {
+            width: 100%;
+            height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(145deg, white, #f8f9fa);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+            border-left: 6px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .stat-card h4 {
+            margin: 0 0 20px 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+        
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: 900;
+            color: #667eea;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+        
+        .progress {
+            width: 100%;
+            height: 12px;
+            background: #e9ecef;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+        }
+        
+        .math {
+            font-style: italic;
+            color: #8e44ad;
+            font-family: 'Times New Roman', serif;
+            font-weight: 600;
+        }
+        
+        .rh-indicator {
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            text-align: center;
+            margin: 15px 0;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .rh-good { 
+            background: linear-gradient(135deg, #d4edda, #c3e6cb); 
+            color: #155724; 
+            border: 2px solid #28a745;
+        }
+        
+        .rh-high { 
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7); 
+            color: #856404; 
+            border: 2px solid #ffc107;
+        }
+        
+        .rh-very-high { 
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb); 
+            color: #721c24; 
+            border: 2px solid #dc3545;
+        }
+        
+        .theory-info {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 25px;
+            border-radius: 16px;
+            margin: 30px 0;
+            border-left: 6px solid #2196f3;
+            font-size: 0.95em;
+            line-height: 1.7;
+        }
+        
+        .export-controls {
+            background: linear-gradient(145deg, #e8f5e8, #d4edda);
+            padding: 25px;
+            border-radius: 16px;
+            margin: 30px 0;
+            border: 3px solid #28a745;
+            display: none;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .export-controls.show {
+            display: block !important;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .export-controls h4 {
+            color: #155724;
+            font-weight: 700;
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+        
+        .export-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+        
+        .author-credit {
+            text-align: center; 
+            margin-bottom: 20px; 
+            font-size: 0.9em; 
+            color: #6c757d;
+        }
+        
+        .author-credit a {
+            color: #667eea; 
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .author-credit a:hover {
+            text-decoration: underline;
+        }
+        
+        .donation-section {
+            background: linear-gradient(145deg, #fff3cd, #ffeaa7);
+            border: 3px solid #ffc107;
+            border-radius: 16px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .donation-section h4 {
+            color: #856404;
+            font-weight: 700;
+            margin: 0 0 20px 0;
+            font-size: 1.3em;
+        }
+        
+        .donation-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .donation-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .paypal-btn {
+            background: linear-gradient(135deg, #0070ba, #003087);
+            color: white;
+        }
+        
+        .paypal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 112, 186, 0.4);
+            background: linear-gradient(135deg, #005ea6, #002970);
+        }
+        
+        .bitcoin-btn {
+            background: linear-gradient(135deg, #f7931a, #e08916);
+            color: white;
+        }
+        
+        .bitcoin-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(247, 147, 26, 0.4);
+            background: linear-gradient(135deg, #e08916, #cc7914);
+        }
+        
+        .btc-address {
+            background: rgba(0,0,0,0.05);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            word-break: break-all;
+            margin-top: 10px;
+            color: #333;
+        }
+        
+        .donation-message {
+            color: #856404;
+            font-style: italic;
+            margin-top: 15px;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌌 Enhanced Möbius Distribution Explorer</h1>
+        <p class="subtitle">
+            Deep visualization of <span class="math">S(N, α) = Σ<sub>n≤N</sub> μ(n) e<sup>2πi n α</sup></span> 
+            for Riemann Hypothesis analysis
+        </p>
+        <div style="text-align: center; margin-bottom: 20px; font-size: 0.9em; color: #6c757d;">
+            Created by <strong>Wessen Getachew</strong> | Follow on Twitter: <a href="https://twitter.com/7DView" target="_blank" style="color: #667eea; text-decoration: none;">@7DView</a>
+        </div>
+        
+        <div class="donation-section">
+            <h4>💝 Support Mathematical Research</h4>
+            <p style="margin-bottom: 20px; color: #856404;">If this tool has helped your research or studies, consider supporting continued development!</p>
+            <div class="donation-buttons">
+                <a href="https://www.paypal.com/donate/?hosted_button_id=YOUR_BUTTON_ID&business=getachewwessen%40gmail.com&currency_code=USD" 
+                   target="_blank" class="donation-btn paypal-btn">
+                    💳 Donate via PayPal
+                </a>
+                <button onclick="showBitcoinAddress()" class="donation-btn bitcoin-btn">
+                    ₿ Donate Bitcoin
+                </button>
+            </div>
+            <div id="btcAddress" style="display: none;">
+                <div class="btc-address">
+                    bc1qtsuj9x372slcgead3tlnrpw0r6tu7y7y0xwuk4
+                </div>
+                <button onclick="copyBtcAddress()" style="margin-top: 10px; padding: 8px 16px; background: #f7931a; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    📋 Copy Address
+                </button>
+            </div>
+            <div class="donation-message">
+                Your support enables advanced mathematical visualization tools and open-source research!
+            </div>
+        </div>
+        
+        <div class="theory-info">
+            <h4>🧮 What This Tool Does</h4>
+            <p><strong>Möbius Function μ(n):</strong> A number theory function where μ(n) = 1 if n is square-free with an even number of prime factors, μ(n) = -1 if n is square-free with an odd number of prime factors, and μ(n) = 0 if n has a squared prime factor.</p>
+            
+            <p><strong>Exponential Sum S(N,α):</strong> We compute S(N,α) = Σ<sub>n≤N</sub> μ(n) e<sup>2πi n α</sup> for different values of α. This measures how the Möbius function behaves when combined with oscillatory exponential terms.</p>
+            
+            <p><strong>Riemann Hypothesis Connection:</strong> The RH predicts that |S(N,α)| should typically be bounded by √N. Large deviations from this bound suggest interesting mathematical phenomena and potential connections to the distribution of prime numbers.</p>
+            
+            <p><strong>Major Arcs:</strong> These are rational values α = a/q where the exponential sum often achieves its largest values due to resonance effects in the oscillatory terms.</p>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="N">🔢 N (Upper Limit)</label>
+                <input type="number" id="N" value="300" min="50" max="3000" step="50">
+            </div>
+            
+            <div class="control-group">
+                <label for="resolution">📊 Grid Resolution</label>
+                <select id="resolution">
+                    <option value="64">64 points (fast)</option>
+                    <option value="128">128 points</option>
+                    <option value="256" selected>256 points</option>
+                    <option value="512">512 points</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="vizType">🎨 Visualization Type</label>
+                <select id="vizType">
+                    <option value="standard">Standard Charts</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="majorQ">🎯 Major Arc Q₀</label>
+                <input type="number" id="majorQ" value="25" min="8" max="100">
+            </div>
+                <button onclick="generateVisualization()" id="generateBtn">
+                    🚀 Launch Mathematical Exploration
+                </button>
+                <div class="progress" id="progress" style="display: none;">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-grid" id="chartGrid" style="display: none;">
+            <!-- Standard Charts Only -->
+            <div class="chart-container" id="spectrumContainer">
+                <h3>🌊 Complete Spectrum Analysis</h3>
+                <p style="font-size: 0.9em; color: #6c757d; margin-bottom: 15px; line-height: 1.6;">
+                    <strong>What it shows:</strong> This chart displays |S(N,α)| for all α values from 0 to 1, revealing the complete oscillatory behavior of the Möbius exponential sum. Peaks indicate where the Möbius function has strong resonance with the exponential terms e^(2πi n α). 
+                    <br><br>
+                    <strong>Mathematical significance:</strong> The red dashed line shows the √N theoretical bound predicted by the Riemann Hypothesis. Values exceeding this bound suggest deviations from expected random behavior and may indicate deep arithmetic structures in the distribution of square-free numbers.
+                </p>
+                <div class="chart-wrapper">
+                    <canvas id="spectrumChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-container" id="majorContainer">
+                <h3>🎯 Major Arc Resonances</h3>
+                <p style="font-size: 0.9em; color: #6c757d; margin-bottom: 15px; line-height: 1.6;">
+                    <strong>What it shows:</strong> This bar chart displays |S(N,α)| specifically for rational values α = a/q where gcd(a,q) = 1. These "major arcs" often produce the largest sum magnitudes due to arithmetic resonances between the Möbius function and the periodic structure of rational points.
+                    <br><br>
+                    <strong>Why it matters:</strong> Major arcs reveal how the distribution of square-free integers interacts with rational approximations. Large values here suggest strong correlations between the Möbius function and Diophantine properties, providing insights into both analytic number theory and the fine structure of arithmetic functions.
+                </p>
+                <div class="chart-wrapper">
+                    <canvas id="majorChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-container comparison-chart" id="histogramContainer">
+                <h3>📈 Statistical Distribution Analysis</h3>
+                <p style="font-size: 0.9em; color: #6c757d; margin-bottom: 15px; line-height: 1.6;">
+                    <strong>What it shows:</strong> This histogram reveals the frequency distribution of |S(N,α)| values across all α, showing how often different magnitudes occur. It tests whether the Möbius exponential sums follow expected random patterns or exhibit systematic deviations.
+                    <br><br>
+                    <strong>Statistical interpretation:</strong> A roughly normal or exponential distribution suggests random-like behavior consistent with theoretical predictions. Heavy tails or unusual clustering may indicate non-random structures, potentially related to deep conjectures about L-functions and the distribution of primes. The shape provides crucial evidence for or against various hypotheses in analytic number theory.
+                </p>
+                <div class="chart-wrapper">
+                    <canvas id="histogramChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+
+            <div class="stat-card">
+                <h4>📊 Computational Parameters</h4>
+                <div class="stat-value" id="statN">-</div>
+                <div class="stat-label">N (Upper limit)</div>
+                <div class="stat-value" id="statSqrtN">-</div>
+                <div class="stat-label">√N (RH theoretical bound)</div>
+            </div>
+            
+            <div class="stat-card">
+                <h4>🔢 Möbius Function Stats</h4>
+                <div class="stat-value" id="statNonZero">-</div>
+                <div class="stat-label">Non-zero μ(n) count</div>
+                <div class="stat-value" id="statDensity">-</div>
+                <div class="stat-label">Square-free density (%)</div>
+            </div>
+            
+            <div class="stat-card">
+                <h4>⚡ Extremal Values</h4>
+                <div class="stat-value" id="statMaxSum">-</div>
+                <div class="stat-label">Maximum |S(N,α)|</div>
+                <div class="stat-value" id="statMaxAlpha">-</div>
+                <div class="stat-label">Optimal α coordinate</div>
+            </div>
+            
+            <div class="stat-card">
+                <h4>🧬 RH Compliance Test</h4>
+                <div class="stat-value" id="statRatio">-</div>
+                <div class="stat-label">Max/√N Deviation Ratio</div>
+                <div class="rh-indicator" id="rhStatus">Computing analysis...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let charts = {};
+        let computedData = {}; // Store all computed data for export
+
+        // Möbius function sieve
+        function mobiusSieve(N) {
+            const mu = new Int8Array(N + 1);
+            const lp = new Int32Array(N + 1);
+            mu[1] = 1;
+            const primes = [];
+            
+            for (let x = 2; x <= N; x++) {
+                if (lp[x] === 0) {
+                    lp[x] = x;
+                    primes.push(x);
+                    mu[x] = -1;
+                }
+                
+                for (const p of primes) {
+                    const y = p * x;
+                    if (y > N) break;
+                    lp[y] = p;
+                    if (x % p === 0) {
+                        mu[y] = 0;
+                        break;
+                    } else {
+                        mu[y] = -mu[x];
+                    }
+                }
+            }
+            return mu;
+        }
+
+        // Compute Möbius exponential sum
+        function computeSum(mu, alpha) {
+            const N = mu.length - 1;
+            let totalReal = 0.0;
+            let totalImag = 0.0;
+            
+            for (let n = 1; n <= N; n++) {
+                if (mu[n] !== 0) {
+                    totalReal += mu[n] * Math.cos(2 * Math.PI * alpha * n);
+                    totalImag += mu[n] * Math.sin(2 * Math.PI * alpha * n);
+                }
+            }
+            
+            return Math.sqrt(totalReal * totalReal + totalImag * totalImag);
+        }
+
+        // GCD function
+        function gcd(a, b) {
+            while (b !== 0) {
+                const temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        function updateProgress(percent, status = '') {
+            document.getElementById('progressBar').style.width = percent + '%';
+            if (status) {
+                document.getElementById('generateBtn').innerHTML = status;
+            }
+        }
+
+        async function generateVisualization() {
+            const N = parseInt(document.getElementById('N').value);
+            const resolution = parseInt(document.getElementById('resolution').value);
+            const Q0 = parseInt(document.getElementById('majorQ').value);
+            const vizType = document.getElementById('vizType').value;
+            
+            const generateBtn = document.getElementById('generateBtn');
+            const progress = document.getElementById('progress');
+            
+            generateBtn.disabled = true;
+            progress.style.display = 'block';
+            updateProgress(0, '🔧 Initializing computation...');
+
+            try {
+                // Generate Möbius function
+                updateProgress(5, '🧮 Computing Möbius function...');
+                const mu = mobiusSieve(N);
+                const sqrtN = Math.sqrt(N);
+
+                // Compute statistics
+                const muStats = { positive: 0, negative: 0, zero: 0 };
+                for (let i = 1; i <= N; i++) {
+                    if (mu[i] > 0) muStats.positive++;
+                    else if (mu[i] < 0) muStats.negative++;
+                    else muStats.zero++;
+                }
+
+                updateProgress(10, '🌊 Analyzing spectrum...');
+
+                // Full spectrum computation
+                const spectrumData = [];
+                const alphaValues = [];
+                let maxSum = 0;
+                let bestAlpha = 0;
+
+                for (let j = 0; j < resolution; j++) {
+                    const alpha = j / resolution;
+                    const sumValue = computeSum(mu, alpha);
+                    spectrumData.push(sumValue);
+                    alphaValues.push(alpha);
+                    
+                    if (sumValue > maxSum) {
+                        maxSum = sumValue;
+                        bestAlpha = alpha;
+                    }
+                    
+                    if (j % 20 === 0) {
+                        updateProgress(10 + (j / resolution) * 40, '🌊 Analyzing spectrum...');
+                        await new Promise(resolve => setTimeout(resolve, 1));
+                    }
+                }
+
+                updateProgress(50, '🎯 Computing major arcs...');
+
+                // Major arcs computation
+                const majorData = [];
+                const majorLabels = [];
+                let majorMax = 0;
+                let bestRational = "";
+
+                for (let q = 1; q <= Q0; q++) {
+                    for (let a = 1; a <= q; a++) {
+                        if (gcd(a, q) === 1) {
+                            const alpha = a / q;
+                            const sumValue = computeSum(mu, alpha);
+                            majorData.push(sumValue);
+                            majorLabels.push(`${a}/${q}`);
+                            
+                            if (sumValue > majorMax) {
+                                majorMax = sumValue;
+                                bestRational = `${a}/${q}`;
+                            }
+                        }
+                    }
+                }
+
+                updateProgress(75, '📊 Creating distributions...');
+
+                // Create histogram data
+                const histogramBins = 20;
+                const maxVal = Math.max(...spectrumData);
+                const binSize = maxVal / histogramBins;
+                const histogram = new Array(histogramBins).fill(0);
+                const histogramLabels = [];
+
+                for (let i = 0; i < histogramBins; i++) {
+                    histogramLabels.push(`${(i * binSize).toFixed(1)}-${((i + 1) * binSize).toFixed(1)}`);
+                }
+
+                spectrumData.forEach(value => {
+                    const binIndex = Math.min(Math.floor(value / binSize), histogramBins - 1);
+                    histogram[binIndex]++;
+                });
+
+                updateProgress(85, '📈 Updating statistics...');
+
+                // Update statistics
+                const ratio = maxSum / sqrtN;
+                document.getElementById('statN').textContent = N.toLocaleString();
+                document.getElementById('statSqrtN').textContent = sqrtN.toFixed(2);
+                document.getElementById('statNonZero').textContent = 
+                    `${muStats.positive + muStats.negative}`;
+                document.getElementById('statDensity').textContent = 
+                    `${((muStats.positive + muStats.negative)/N * 100).toFixed(1)}`;
+                document.getElementById('statMaxSum').textContent = maxSum.toFixed(4);
+                document.getElementById('statMaxAlpha').textContent = bestAlpha.toFixed(6);
+                document.getElementById('statRatio').textContent = ratio.toFixed(4);
+
+                // RH status
+                const rhStatus = document.getElementById('rhStatus');
+                if (ratio < 2) {
+                    rhStatus.textContent = '✅ Good (< 2√N)';
+                    rhStatus.className = 'rh-indicator rh-good';
+                } else if (ratio < 5) {
+                    rhStatus.textContent = '⚠️ High (< 5√N)';
+                    rhStatus.className = 'rh-indicator rh-high';
+                } else {
+                    rhStatus.textContent = '❌ Very High (≥ 5√N)';
+                    rhStatus.className = 'rh-indicator rh-very-high';
+                }
+
+                updateProgress(85, '🎨 Creating visualizations...');
+
+                // Show/hide charts based on visualization type
+                showVisualizationType(vizType);
+
+                // Create charts based on type
+                createSpectrumChart(alphaValues, spectrumData, sqrtN);
+                createMajorChart(majorLabels.slice(0, 50), majorData.slice(0, 50), sqrtN);
+                createHistogramChart(histogramLabels, histogram);
+
+                updateProgress(100, '✅ Analysis Complete');
+
+                // Store computed data for export
+                computedData = {
+                    N: N,
+                    sqrtN: sqrtN,
+                    mu: mu,
+                    muStats: muStats,
+                    spectrumData: spectrumData,
+                    alphaValues: alphaValues,
+                    majorData: majorData,
+                    majorLabels: majorLabels,
+                    maxSum: maxSum,
+                    bestAlpha: bestAlpha,
+                    ratio: ratio,
+                    histogram: histogram,
+                    histogramLabels: histogramLabels,
+                    timestamp: new Date().toISOString()
+                };
+
+                // Show results with export controls
+                console.log('Showing results...');
+                document.getElementById('chartGrid').style.display = 'grid';
+                document.getElementById('statsGrid').style.display = 'grid';
+                
+                // Show export controls automatically after generation
+                const exportControls = document.getElementById('exportControls');
+                console.log('Export controls element:', exportControls);
+                if (exportControls) {
+                    exportControls.style.display = 'block';
+                    exportControls.classList.add('show');
+                    console.log('Export controls should now be visible');
+                } else {
+                    console.error('Export controls element not found!');
+                }
+                
+                // Scroll to results
+                document.getElementById('chartGrid').scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                alert('Error during computation: ' + error.message);
+                console.error(error);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '🚀 Launch Mathematical Exploration';
+                setTimeout(() => {
+                    progress.style.display = 'none';
+                    updateProgress(0);
+                }, 1000);
+            }
+        }
+
+        function createSpectrumChart(alphas, values, sqrtN) {
+            const ctx = document.getElementById('spectrumChart').getContext('2d');
+            
+            if (charts.spectrum) charts.spectrum.destroy();
+            
+            charts.spectrum = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: alphas.map(a => a.toFixed(3)),
+                    datasets: [{
+                        label: '|S(N,α)|',
+                        data: values,
+                        borderColor: 'rgb(102, 126, 234)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1,
+                        pointRadius: 0
+                    }, {
+                        label: '√N baseline',
+                        data: new Array(values.length).fill(sqrtN),
+                        borderColor: 'rgb(231, 76, 60)',
+                        borderWidth: 3,
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: '|S(N,α)|' }
+                        },
+                        x: {
+                            title: { display: true, text: 'α' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true }
+                    }
+                }
+            });
+        }
+
+        // Show/hide visualization containers based on type
+        function showVisualizationType(type) {
+            // Only show standard charts
+            document.getElementById('spectrumContainer').style.display = 'block';
+            document.getElementById('majorContainer').style.display = 'block';
+            document.getElementById('histogramContainer').style.display = 'block';
+        }
+
+        function createMajorChart(labels, values, sqrtN) {
+            const ctx = document.getElementById('majorChart').getContext('2d');
+            
+            if (charts.major) charts.major.destroy();
+            
+            charts.major = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '|S(N,a/q)|',
+                        data: values,
+                        backgroundColor: 'rgba(118, 75, 162, 0.8)',
+                        borderColor: 'rgb(118, 75, 162)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: '|S(N,α)|' }
+                        },
+                        x: {
+                            title: { display: true, text: 'α = a/q' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function createHistogramChart(labels, counts) {
+            const ctx = document.getElementById('histogramChart').getContext('2d');
+            
+            if (charts.histogram) charts.histogram.destroy();
+            
+            charts.histogram = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Frequency',
+                        data: counts,
+                        backgroundColor: 'rgba(26, 188, 156, 0.8)',
+                        borderColor: 'rgb(26, 188, 156)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Count' }
+                        },
+                        x: {
+                            title: { display: true, text: '|S(N,α)| Range' }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribution of |S(N,α)| Values'
+                        },
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Enhanced Möbius Sum Distribution Visualizer initialized');
+        });
+
+        // Donation functions
+        function showBitcoinAddress() {
+            const btcDiv = document.getElementById('btcAddress');
+            btcDiv.style.display = btcDiv.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function copyBtcAddress() {
+            const address = 'bc1qtsuj9x372slcgead3tlnrpw0r6tu7y7y0xwuk4';
+            navigator.clipboard.writeText(address).then(function() {
+                alert('Bitcoin address copied to clipboard!');
+            }).catch(function() {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = address;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Bitcoin address copied to clipboard!');
+            });
+        }
+
+        // Toggle export controls visibility
+        function toggleExportControls() {
+            const exportControls = document.getElementById('exportControls');
+            if (exportControls.style.display === 'none' || !exportControls.style.display) {
+                exportControls.style.display = 'block';
+                exportControls.classList.add('show');
+                console.log('Export controls shown manually');
+            } else {
+                exportControls.style.display = 'none';
+                exportControls.classList.remove('show');
+                console.log('Export controls hidden manually');
+            }
+        }
+    </script>
+</body>
+</html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getachew Modular Twin Transition Framework</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --accent: #dc2626;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border: #475569;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .author {
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 25px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab-button:hover {
+            border-color: var(--primary);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+
+        .theorem {
+            border-left: 4px solid var(--primary);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+        }
+
+        .definition {
+            border-left: 4px solid var(--secondary);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(124, 58, 237, 0.05) 100%);
+        }
+
+        .example {
+            border-left: 4px solid var(--success);
+            background: linear-gradient(135deg, rgba(22, 163, 74, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%);
+        }
+
+        .formula {
+            background: var(--bg-secondary);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .interactive-section {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid var(--primary);
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .input-group input, .input-group select {
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .result {
+            background: var(--bg-primary);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            font-family: 'Courier New', monospace;
+        }
+
+        .success { color: var(--success); }
+        .warning { color: var(--warning); }
+        .error { color: var(--accent); }
+
+        .visualization {
+            background: var(--bg-primary);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .residue-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            gap: 5px;
+            margin: 20px 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .residue-cell {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .residue-cell.coprime {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .residue-cell.transition {
+            background: var(--success);
+            border-color: var(--success);
+            animation: pulse 1s infinite;
+        }
+
+        .residue-cell.forbidden {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .transition-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .transition-pair {
+            background: var(--success);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .mathematical-notation {
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, var(--warning) 0%, var(--accent) 100%);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .residue-grid {
+                grid-template-columns: repeat(auto-fit, minmax(35px, 1fr));
+            }
+            
+            .residue-cell {
+                width: 35px;
+                height: 35px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Getachew Modular Twin Transition Framework</h1>
+            <div class="subtitle">Interactive Mathematical Explorer</div>
+            <div class="author">By Wessen Getachew | Independent Researcher</div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-button active" onclick="showTab('theorems')">Theorems</button>
+            <button class="tab-button" onclick="showTab('calculator')">Interactive Calculator</button>
+            <button class="tab-button" onclick="showTab('visualizer')">Visualizer</button>
+            <button class="tab-button" onclick="showTab('examples')">Worked Examples</button>
+            <button class="tab-button" onclick="showTab('generalizations')">Generalizations</button>
+        </div>
+
+        <div id="theorems" class="tab-content active">
+            <div class="card theorem">
+                <h2>🔢 Getachew Modular Twin Transition Lift Theorem</h2>
+                <p><strong>Theorem:</strong> Let <span class="mathematical-notation">M = 30·2ⁿ</span> and <span class="mathematical-notation">M' = 2M = 30·2ⁿ⁺¹</span>. If <span class="mathematical-notation">(r, r+2)</span> is a twin residue transition modulo <span class="mathematical-notation">M</span>, then <span class="mathematical-notation">(r, r+2)</span> is also a twin residue transition modulo <span class="mathematical-notation">M'</span>.</p>
+                
+                <div class="formula">
+                    Every valid transition at level n <strong>persists</strong> to level n+1
+                </div>
+                
+                <p><strong>Key Insight:</strong> The dyadic expansion preserves all existing twin transitions while potentially introducing new ones.</p>
+            </div>
+
+            <div class="card theorem">
+                <h2>🔢 Getachew Prime Modulus Transition Law</h2>
+                <p><strong>Theorem:</strong> Let <span class="mathematical-notation">p > 2</span> be prime. The number of twin residue transitions modulo <span class="mathematical-notation">p</span> equals:</p>
+                
+                <div class="formula">
+                    T(p) = p - 2
+                </div>
+                
+                <p><strong>Proof Sketch:</strong> All nonzero residues except <span class="mathematical-notation">p-2</span> serve as valid starting points for twin transitions.</p>
+            </div>
+
+            <div class="card definition">
+                <h2>📋 Key Definitions</h2>
+                <ul>
+                    <li><strong>Reduced Residue System Φ(M):</strong> {r ∈ {0,1,...,M-1} : gcd(r,M) = 1}</li>
+                    <li><strong>Twin Residue Transition:</strong> Ordered pair (r, r+2) with r, r+2 ∈ Φ(M)</li>
+                    <li><strong>Dyadic Family:</strong> M_n = 30·2ⁿ with φ(M_n) = 8·2ⁿ</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="calculator" class="tab-content">
+            <div class="interactive-section">
+                <h2>🧮 Twin Transition Calculator</h2>
+                
+                <div class="input-group">
+                    <label>Modulus Type:</label>
+                    <select id="modulus-type">
+                        <option value="dyadic">Dyadic (30·2ⁿ)</option>
+                        <option value="prime">Prime</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                    
+                    <label>Value (n for dyadic, p for prime, M for custom):</label>
+                    <input type="number" id="modulus-value" value="0" min="0">
+                    
+                    <button class="btn btn-primary" onclick="calculateTransitions()">Calculate</button>
+                </div>
+
+                <div id="calculation-results" class="result" style="display: none;"></div>
+            </div>
+
+            <div class="interactive-section">
+                <h2>🎯 Gap-g Transition Calculator</h2>
+                
+                <div class="input-group">
+                    <label>Modulus M:</label>
+                    <input type="number" id="gap-modulus" value="30" min="1">
+                    
+                    <label>Gap g (even):</label>
+                    <input type="number" id="gap-value" value="2" min="2" step="2">
+                    
+                    <button class="btn btn-primary" onclick="calculateGapTransitions()">Calculate Gap-g Transitions</button>
+                </div>
+
+                <div id="gap-results" class="result" style="display: none;"></div>
+            </div>
+        </div>
+
+        <div id="visualizer" class="tab-content">
+            <div class="interactive-section">
+                <h2>👁️ Residue System Visualizer</h2>
+                
+                <div class="input-group">
+                    <label>Modulus:</label>
+                    <input type="number" id="vis-modulus" value="30" min="3" max="120">
+                    
+                    <label>Gap:</label>
+                    <input type="number" id="vis-gap" value="2" min="1" max="20">
+                    
+                    <button class="btn btn-primary" onclick="visualizeResidues()">Visualize</button>
+                </div>
+
+                <div class="visualization">
+                    <div id="residue-display"></div>
+                    <div id="transition-display"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="examples" class="tab-content">
+            <div class="interactive-section">
+                <h2>📊 Dyadic Lift Explorer</h2>
+                <p>Explore how twin transitions lift from M to 2M in the dyadic family</p>
+                
+                <div class="input-group">
+                    <label>Base Modulus M:</label>
+                    <select id="lift-base-type">
+                        <option value="30">30 (base case)</option>
+                        <option value="60">60 = 30·2¹</option>
+                        <option value="120">120 = 30·2²</option>
+                        <option value="240">240 = 30·2³</option>
+                        <option value="480">480 = 30·2⁴</option>
+                        <option value="custom">Custom M</option>
+                    </select>
+                    
+                    <input type="number" id="lift-custom-base" placeholder="Custom M" style="display: none;" min="1">
+                    
+                    <button class="btn btn-primary" onclick="runLiftExample()">Explore Dyadic Lift</button>
+                </div>
+
+                <div id="lift-results" class="result" style="display: none;"></div>
+            </div>
+
+            <div class="interactive-section">
+                <h2>🎲 Prime Modulus Explorer</h2>
+                <p>Verify the Prime Modulus Transition Law: T(p) = p - 2</p>
+                
+                <div class="input-group">
+                    <label>Prime p:</label>
+                    <input type="number" id="prime-input" value="5" min="3">
+                    
+                    <label>OR select preset:</label>
+                    <select id="prime-preset">
+                        <option value="">Choose prime...</option>
+                        <option value="5">5</option>
+                        <option value="7">7</option>
+                        <option value="11">11</option>
+                        <option value="13">13</option>
+                        <option value="17">17</option>
+                        <option value="23">23</option>
+                        <option value="29">29</option>
+                        <option value="37">37</option>
+                        <option value="41">41</option>
+                        <option value="43">43</option>
+                        <option value="307">307</option>
+                    </select>
+                    
+                    <button class="btn btn-primary" onclick="runPrimeExample()">Analyze Prime</button>
+                </div>
+
+                <div id="prime-results" class="result" style="display: none;"></div>
+            </div>
+
+            <div class="interactive-section">
+                <h2>🔍 Custom Transition Explorer</h2>
+                <p>Explore twin transitions for any modulus and compare with theoretical predictions</p>
+                
+                <div class="input-group">
+                    <label>Modulus M:</label>
+                    <input type="number" id="custom-modulus" value="210" min="3">
+                    
+                    <label>Gap g:</label>
+                    <input type="number" id="custom-gap" value="2" min="1">
+                    
+                    <label>Show details:</label>
+                    <input type="checkbox" id="show-details" checked>
+                    
+                    <button class="btn btn-primary" onclick="runCustomExample()">Analyze Custom Case</button>
+                </div>
+
+                <div id="custom-results" class="result" style="display: none;"></div>
+            </div>
+
+            <div class="interactive-section">
+                <h2>⚡ Batch Analysis</h2>
+                <p>Compare transition counts across multiple moduli</p>
+                
+                <div class="input-group">
+                    <label>Analysis Type:</label>
+                    <select id="batch-type">
+                        <option value="dyadic">Dyadic sequence (30·2ⁿ)</option>
+                        <option value="primes">Prime sequence</option>
+                        <option value="custom">Custom sequence</option>
+                    </select>
+                    
+                    <label>Range/Values:</label>
+                    <input type="text" id="batch-range" placeholder="e.g., 0,1,2,3,4 or 5,7,11,13,17" value="0,1,2,3,4">
+                    
+                    <button class="btn btn-primary" onclick="runBatchAnalysis()">Run Batch Analysis</button>
+                </div>
+
+                <div id="batch-results" class="result" style="display: none;"></div>
+            </div>
+        </div>
+
+        <div id="generalizations" class="tab-content">
+            <div class="card theorem">
+                <h2>🌟 Hardy-Getachew Modular Goldbach-Tuple Correspondence</h2>
+                <p>For even-offset tuples H ⊂ 2ℤ and modulus M = 30·2ⁿ:</p>
+                
+                <div class="formula">
+                    T_H(M) = φ(M) · ∏_{p|M, p odd} (1 - |S_p(H)|/(p-1))
+                </div>
+                
+                <p>Where S_p(H) = {-h mod p : h ∈ H} ∩ Φ(p)</p>
+            </div>
+
+            <div class="interactive-section">
+                <h2>🔬 k-Tuple Explorer</h2>
+                
+                <div class="input-group">
+                    <label>Tuple Type:</label>
+                    <select id="tuple-type">
+                        <option value="twin">Twin (0,2)</option>
+                        <option value="triplet">Triplet (0,2,6)</option>
+                        <option value="quadruplet">Quadruplet (0,2,6,8)</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                    
+                    <label>Custom offsets (comma-separated, even only):</label>
+                    <input type="text" id="custom-offsets" placeholder="0,2,6" disabled>
+                    
+                    <label>Modulus:</label>
+                    <input type="number" id="tuple-modulus" value="30" min="1">
+                    
+                    <button class="btn btn-primary" onclick="calculateTuple()">Calculate k-Tuple</button>
+                </div>
+
+                <div id="tuple-results" class="result" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab management
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Mathematical utilities
+        function gcd(a, b) {
+            while (b !== 0) {
+                let temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        function eulerPhi(n) {
+            let result = n;
+            for (let p = 2; p * p <= n; p++) {
+                if (n % p === 0) {
+                    while (n % p === 0) n /= p;
+                    result -= result / p;
+                }
+            }
+            if (n > 1) result -= result / n;
+            return Math.floor(result);
+        }
+
+        function getReducedResidueSystem(m) {
+            const residues = [];
+            for (let r = 1; r < m; r++) {
+                if (gcd(r, m) === 1) {
+                    residues.push(r);
+                }
+            }
+            return residues;
+        }
+
+        function getTwinTransitions(m) {
+            const phi_m = getReducedResidueSystem(m);
+            const transitions = [];
+            
+            for (const r of phi_m) {
+                const r_plus_2 = (r + 2) % m;
+                if (phi_m.includes(r_plus_2)) {
+                    transitions.push([r, r_plus_2]);
+                }
+            }
+            return transitions;
+        }
+
+        function getGapTransitions(m, gap) {
+            const phi_m = getReducedResidueSystem(m);
+            const transitions = [];
+            
+            for (const r of phi_m) {
+                const r_plus_gap = (r + gap) % m;
+                if (phi_m.includes(r_plus_gap)) {
+                    transitions.push([r, r_plus_gap]);
+                }
+            }
+            return transitions;
+        }
+
+        function isPrime(n) {
+            if (n < 2) return false;
+            for (let i = 2; i * i <= n; i++) {
+                if (n % i === 0) return false;
+            }
+            return true;
+        }
+
+        // Calculator functions
+        function calculateTransitions() {
+            const type = document.getElementById('modulus-type').value;
+            const value = parseInt(document.getElementById('modulus-value').value);
+            const resultsDiv = document.getElementById('calculation-results');
+            
+            let modulus;
+            let result = '';
+            
+            if (type === 'dyadic') {
+                modulus = 30 * Math.pow(2, value);
+                result += `<h3>Dyadic Modulus: M_${value} = 30·2^${value} = ${modulus}</h3>`;
+                result += `<p>φ(${modulus}) = 8·2^${value} = ${8 * Math.pow(2, value)}</p>`;
+            } else if (type === 'prime') {
+                if (!isPrime(value)) {
+                    result = `<p class="error">Error: ${value} is not prime!</p>`;
+                    resultsDiv.innerHTML = result;
+                    resultsDiv.style.display = 'block';
+                    return;
+                }
+                modulus = value;
+                result += `<h3>Prime Modulus: p = ${modulus}</h3>`;
+                result += `<p>T(${modulus}) = ${modulus} - 2 = ${modulus - 2}</p>`;
+            } else {
+                modulus = value;
+                result += `<h3>Custom Modulus: M = ${modulus}</h3>`;
+                result += `<p>φ(${modulus}) = ${eulerPhi(modulus)}</p>`;
+            }
+            
+            const transitions = getTwinTransitions(modulus);
+            result += `<p class="success">Number of twin transitions: <strong>${transitions.length}</strong></p>`;
+            
+            if (transitions.length > 0 && transitions.length <= 20) {
+                result += `<p>Transitions: `;
+                result += transitions.map(t => `(${t[0]},${t[1]})`).join(', ');
+                result += `</p>`;
+            }
+            
+            resultsDiv.innerHTML = result;
+            resultsDiv.style.display = 'block';
+        }
+
+        function calculateGapTransitions() {
+            const modulus = parseInt(document.getElementById('gap-modulus').value);
+            const gap = parseInt(document.getElementById('gap-value').value);
+            const resultsDiv = document.getElementById('gap-results');
+            
+            if (gap % 2 !== 0) {
+                resultsDiv.innerHTML = `<p class="error">Gap must be even!</p>`;
+                resultsDiv.style.display = 'block';
+                return;
+            }
+            
+            const transitions = getGapTransitions(modulus, gap);
+            
+            let result = `<h3>Gap-${gap} Transitions for M = ${modulus}</h3>`;
+            result += `<p>φ(${modulus}) = ${eulerPhi(modulus)}</p>`;
+            result += `<p class="success">Number of gap-${gap} transitions: <strong>${transitions.length}</strong></p>`;
+            
+            if (transitions.length > 0 && transitions.length <= 20) {
+                result += `<div class="transition-list">`;
+                result += transitions.map(t => `<span class="transition-pair">(${t[0]},${t[1]})</span>`).join('');
+                result += `</div>`;
+            }
+            
+            resultsDiv.innerHTML = result;
+            resultsDiv.style.display = 'block';
+        }
+
+        // Visualizer functions
+        function visualizeResidues() {
+            const modulus = parseInt(document.getElementById('vis-modulus').value);
+            const gap = parseInt(document.getElementById('vis-gap').value);
+            const displayDiv = document.getElementById('residue-display');
+            const transitionDiv = document.getElementById('transition-display');
+            
+            const phi_m = getReducedResidueSystem(modulus);
+            const transitions = getGapTransitions(modulus, gap);
+            const transitionStarts = new Set(transitions.map(t => t[0]));
+            
+            let html = `<h3>Φ(${modulus}) - Reduced Residue System</h3>`;
+            html += `<div class="residue-grid">`;
+            
+            for (let i = 0; i < modulus && i < 60; i++) { // Limit display for performance
+                const isCoprime = phi_m.includes(i);
+                const isTransition = transitionStarts.has(i);
+                let className = 'residue-cell';
+                
+                if (isTransition) {
+                    className += ' transition';
+                } else if (isCoprime) {
+                    className += ' coprime';
+                }
+                
+                html += `<div class="${className}">${i}</div>`;
+            }
+            
+            if (modulus > 60) {
+                html += `<div class="residue-cell" style="border: none; background: none;">...</div>`;
+            }
+            
+            html += `</div>`;
+            displayDiv.innerHTML = html;
+            
+            let transitionHtml = `<h4>Gap-${gap} Transitions (${transitions.length} total)</h4>`;
+            if (transitions.length <= 15) {
+                transitionHtml += `<div class="transition-list">`;
+                transitionHtml += transitions.map(t => `<span class="transition-pair">(${t[0]},${t[1]})</span>`).join('');
+                transitionHtml += `</div>`;
+            } else {
+                transitionHtml += `<p>Too many transitions to display (${transitions.length} total)</p>`;
+            }
+            
+            transitionDiv.innerHTML = transitionHtml;
+        }
+
+        // Enhanced example functions with user input
+        function runLiftExample() {
+            const baseType = document.getElementById('lift-base-type').value;
+            const customBase = document.getElementById('lift-custom-base').value;
+            const resultsDiv = document.getElementById('lift-results');
+            
+            let baseModulus;
+            if (baseType === 'custom') {
+                baseModulus = parseInt(customBase);
+                if (!baseModulus || baseModulus < 1) {
+                    resultsDiv.innerHTML = `<p class="error">Please enter a valid custom modulus!</p>`;
+                    resultsDiv.style.display = 'block';
+                    return;
+                }
+            } else {
+                baseModulus = parseInt(baseType);
+            }
+            
+            const liftModulus = 2 * baseModulus;
+            
+            // Calculate transitions for both moduli
+            const baseTransitions = getTwinTransitions(baseModulus);
+            const liftTransitions = getTwinTransitions(liftModulus);
+            const basePhi = getReducedResidueSystem(baseModulus);
+            const liftPhi = getReducedResidueSystem(liftModulus);
+            
+            // Check which base transitions persist
+            const persistingTransitions = [];
+            const baseTransitionSet = new Set(baseTransitions.map(t => `${t[0]},${t[1]}`));
+            
+            for (const transition of baseTransitions) {
+                const [r, r_plus_2] = transition;
+                // Check if both residues are still coprime in the lift
+                if (liftPhi.includes(r) && liftPhi.includes(r_plus_2)) {
+                    persistingTransitions.push(transition);
+                }
+            }
+            
+            // Find new transitions in the lift
+            const newTransitions = liftTransitions.filter(t => 
+                !baseTransitionSet.has(`${t[0]},${t[1]}`)
+            );
+            
+            let result = `<h3>Dyadic Lift Analysis: M = ${baseModulus} → M' = ${liftModulus}</h3>`;
+            
+            // Base modulus analysis
+            result += `<h4>Base Modulus M = ${baseModulus}:</h4>`;
+            result += `<p>Φ(${baseModulus}) = {${basePhi.slice(0, 20).join(', ')}${basePhi.length > 20 ? '...' : ''}}</p>`;
+            result += `<p>φ(${baseModulus}) = ${basePhi.length}</p>`;
+            result += `<p>Twin transitions: ${baseTransitions.length}</p>`;
+            
+            if (baseTransitions.length <= 15) {
+                result += `<div class="transition-list">`;
+                result += baseTransitions.map(t => `<span class="transition-pair">(${t[0]},${t[1]})</span>`).join('');
+                result += `</div>`;
+            }
+            
+            // Lift modulus analysis
+            result += `<h4>Lift Modulus M' = ${liftModulus}:</h4>`;
+            result += `<p>φ(${liftModulus}) = ${liftPhi.length}</p>`;
+            result += `<p>Twin transitions: ${liftTransitions.length}</p>`;
+            
+            // Persistence analysis
+            result += `<h4>Lift Persistence Analysis:</h4>`;
+            result += `<p class="success">Persisting transitions: <strong>${persistingTransitions.length}/${baseTransitions.length}</strong></p>`;
+            
+            if (persistingTransitions.length === baseTransitions.length) {
+                result += `<p class="success">✓ ALL base transitions persist! (Theorem verified)</p>`;
+            } else {
+                result += `<p class="error">✗ Some transitions do not persist (unexpected!)</p>`;
+            }
+            
+            if (newTransitions.length > 0) {
+                result += `<p class="warning">New transitions at lift level: <strong>${newTransitions.length}</strong></p>`;
+                if (newTransitions.length <= 10) {
+                    result += `<div class="transition-list">`;
+                    result += newTransitions.map(t => `<span class="transition-pair" style="background: var(--warning);">(${t[0]},${t[1]})</span>`).join('');
+                    result += `</div>`;
+                }
+            }
+            
+            // Theoretical verification for dyadic family
+            if (baseModulus % 30 === 0 && (baseModulus / 30 & (baseModulus / 30 - 1)) === 0) {
+                const n = Math.log2(baseModulus / 30);
+                result += `<h4>Dyadic Family Verification:</h4>`;
+                result += `<p>M = 30·2^${n}, M' = 30·2^${n+1}</p>`;
+                result += `<p>φ(M) = 8·2^${n} = ${8 * Math.pow(2, n)} ✓</p>`;
+                result += `<p>φ(M') = 8·2^${n+1} = ${8 * Math.pow(2, n+1)} ✓</p>`;
+            }
+            
+            resultsDiv.innerHTML = result;
+            resultsDiv.style.display = 'block';
+        }
+
+        function runPrimeExample() {
+            let prime = parseInt(document.getElementById('prime-input').value);
+            const preset = document.getElementById('prime-preset').value;
+            const resultsDiv = document.getElementById('prime-results');
+            
+            if (preset) {
+                prime = parseInt(preset);
+                document.getElementById('prime-input').value = prime;
+            }
+            
+            if (!isPrime(prime)) {
+                resultsDiv.innerHTML = `<p class="error">${prime} is not prime! Please enter a prime number.</p>`;
+                resultsDiv.style.display = 'block';
+                return;
+            }
+            
+            const transitions = getTwinTransitions(prime);
+            const phi_p = getReducedResidueSystem(prime);
+            const forbidden = prime - 2;
+            
+            let result = `<h3>Prime Modulus Analysis: p = ${prime}</h3>`;
+            
+            // Theorem verification
+            result += `<h4>Getachew Prime Modulus Transition Law:</h4>`;
+            result += `<p>Theoretical: T(${prime}) = ${prime} - 2 = <strong>${prime - 2}</strong></p>`;
+            result += `<p>Actual: T(${prime}) = <strong>${transitions.length}</strong></p>`;
+            
+            if (transitions.length === prime - 2) {
+                result += `<p class="success">✓ Theorem verified!</p>`;
+            } else {
+                result += `<p class="error">✗ Theorem not verified (unexpected!)</p>`;
+            }
+            
+            // Detailed analysis
+            result += `<h4>Detailed Analysis:</h4>`;
+            result += `<p>Φ(${prime}) = {1, 2, 3, ..., ${prime-1}} (all nonzero residues)</p>`;
+            result += `<p>Forbidden starting residue: r ≡ -2 ≡ <strong>${forbidden}</strong> (mod ${prime})</p>`;
+            result += `<p>Valid starting residues: ${prime-1} - 1 = <strong>${prime-2}</strong></p>`;
+            
+            // Show transitions for smaller primes
+            if (prime <= 23) {
+                result += `<h4>All Twin Transitions:</h4>`;
+                result += `<div class="transition-list">`;
+                result += transitions.map(t => `<span class="transition-pair">(${t[0]},${t[1]})</span>`).join('');
+                result += `</div>`;
+                
+                result += `<h4>Verification Details:</h4>`;
+                const validStarts = transitions.map(t => t[0]).sort((a,b) => a-b);
+                const allNonZero = Array.from({length: prime-1}, (_, i) => i + 1);
+                const excludedStarts = allNonZero.filter(r => !validStarts.includes(r));
+                
+                result += `<p>Valid starts: {${validStarts.join(', ')}}</p>`;
+                result += `<p>Excluded start: {${excludedStarts.join(', ')}} = {${forbidden}}</p>`;
+            } else {
+                result += `<p>Transition count too large to display individually (${transitions.length} transitions)</p>`;
+                result += `<p>Sample transitions: ${transitions.slice(0, 5).map(t => `(${t[0]},${t[1]})`).join(', ')}...</p>`;
+            }
+            
+            resultsDiv.innerHTML = result;
+            resultsDiv.style.display = 'block';
+        }
+
+        function runCustomExample() {
+            const modulus = parseInt(document.getElementById('custom-modulus').value);
+            const gap = parseInt(document.getElementById('custom-gap').value);
+            const showDetails = document.getElementById('show-details').checked;
+            const resultsDiv = document.getElementById('custom-results');
+            
+            if (modulus < 1 || gap < 1) {
+                resultsDiv.innerHTML = `<p class="error">Please enter valid positive integers!</p>`;
+                resultsDiv.style.display = 'block';
+                return;
+            }
+            
+            const phi_m = getReducedResidueSystem(modulus);
+            const transitions = getGapTransitions(modulus, gap);
+            
+            let result = `<h3>Custom Analysis: Gap-${gap} Transitions mod ${modulus}</h3>`;
+            
+            // Basic statistics
+            result += `<h4>Basic Statistics:</h4>`;
+            result += `<p>φ(${modulus}) = ${phi_m.length}</p>`;
+            result += `<p>Gap-${gap} transitions: <strong>${transitions.length}</strong></p>`;
+            
+            if (phi_m.length > 0) {
+                const density = (transitions.length / phi_m.length * 100).toFixed(2);
+                result += `<p>Transition density: ${density}%</p>`;
+            }
+            
+            // Prime factorization and theoretical analysis
+            const primeFactors = getPrimeFactors(modulus);
+            result += `<h4>Modulus Analysis:</h4>`;
+            result += `<p>Prime factorization: ${modulus} = ${formatPrimeFactorization(primeFactors)}</p>`;
+            
+            // Check if it's in dyadic family
+            if (modulus % 30 === 0) {
+                const quotient = modulus / 30;
+                if ((quotient & (quotient - 1)) === 0) { // Check if power of 2
+                    const n = Math.log2(quotient);
+                    result += `<p class="success">✓ Dyadic family member: M = 30·2^${n}</p>`;
+                    
+                    // Theoretical prediction for twins (gap = 2)
+                    if (gap === 2) {
+                        const theoretical = Math.floor(phi_m.length * 3/8);
+                        result += `<p>Theoretical twin count: ${theoretical}</p>`;
+                        result += `<p>Match: ${theoretical === transitions.length ? '✓' : '✗'}</p>`;
+                    }
+                }
+            }
+            
+            // Show details if requested
+            if (showDetails) {
+                result += `<h4>Detailed Results:</h4>`;
+                
+                if (phi_m.length <= 50) {
+                    result += `<p>Φ(${modulus}) = {${phi_m.join(', ')}}</p>`;
+                } else {
+                    result += `<p>Φ(${modulus}) = {${phi_m.slice(0, 20).join(', ')}, ..., ${phi_m.slice(-5).join(', ')}} (${phi_m.length} total)</p>`;
+                }
+                
+                if (transitions.length <= 20) {
+                    result += `<div class="transition-list">`;
+                    result += transitions.map(t => `<span class="transition-pair">(${t[0]},${t[1]})</span>`).join('');
+                    result += `</div>`;
+                } else {
+                    result += `<p>Sample transitions: ${transitions.slice(0, 10).map(t => `(${t[0]},${t[1]})`).join(', ')}...</p>`;
+                }
+            }
+            
+            resultsDiv.innerHTML = result;
+            resultsDiv.style.display = 'block';
+        }
+
+        function runBatchAnalysis() {
+            const batchType = document.getElementById('batch-type').value;
+            const rangeInput = document.getElementById('batch-range').value;
+            const resultsDiv = document.getElementById('batch-results');
+            
+            let values;
+            try {
+                values = rangeInput.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+            } catch (e) {
+                resultsDiv.innerHTML = `<p class="error">Invalid input format! Use comma-separated numbers.</p>`;
+                resultsDiv.style.display = 'block';
+                return;
+            }
+            
+            if (values.length === 0) {
+                resultsDiv.innerHTML = `<p class="error">Please enter valid numbers!</p>`;
+                resultsDiv.style.display = 'block';
+                return;
+            }
+            
+            let moduli = [];
+            let title = '';
+            
+            if (batchType === 'dyadic') {
+                moduli = values.map(n => 30 * Math.pow(2, n));
+                title = 'Dyadic Sequence Analysis (30·2ⁿ)';
+            } else if (batchType === 'primes') {
+                moduli = values.filter(isPrime);
+                title = 'Prime Sequence Analysis';
+                if (moduli.length < values.length) {
+                    title += ` (filtered ${values.length - moduli.length} non-primes)`;
+                }
+            } else {
+                moduli = values;
+                title = 'Custom Sequence Analysis';
+            }
+            
+            let result = `<h3>${title}</h3>`;
+            result += `<div style="overflow-x: auto;">`;
+            result += `<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">`;
+            result += `<tr style="background: var(--bg-secondary); border-bottom: 2px solid var(--border);">`;
+            result += `<th style="padding: 10px; text-align: left;">Modulus</th>`;
+            result += `<th style="padding: 10px; text-align: right;">φ(M)</th>`;
+            result += `<th style="padding: 10px; text-align: right;">T(M)</th>`;
+            result += `<th style="padding: 10px; text-align: right;">Density</th>`;
+            if (batchType === 'primes') {
+                result += `<th style="padding: 10px; text-align: right;">Theory</th>`;
+                result += `<th style="padding: 10px; text-align: center;">Match</th>`;
+            }
+            result += `</tr>`;
+            
+            for (const m of moduli.slice(0, 15)) { // Limit for performance
+                const phi = eulerPhi(m);
+                const transitions = getTwinTransitions(m);
+                const density = phi > 0 ? (transitions.length / phi * 100).toFixed(1) : '0';
+                
+                result += `<tr style="border-bottom: 1px solid var(--border);">`;
+                result += `<td style="padding: 8px;"><strong>${m}</strong></td>`;
+                result += `<td style="padding: 8px; text-align: right;">${phi}</td>`;
+                result += `<td style="padding: 8px; text-align: right;">${transitions.length}</td>`;
+                result += `<td style="padding: 8px; text-align: right;">${density}%</td>`;
+                
+                if (batchType === 'primes') {
+                    const theory = m - 2;
+                    const match = transitions.length === theory;
+                    result += `<td style="padding: 8px; text-align: right;">${theory}</td>`;
+                    result += `<td style="padding: 8px; text-align: center;">${match ? '✓' : '✗'}</td>`;
+                }
+                result += `</tr>`;
+            }
+            
+            if (moduli.length > 15) {
+                result += `<tr><td colspan="${batchType === 'primes' ? '6' : '4'}" style="padding: 8px; text-align: center; font-style: italic;">... and ${moduli.length - 15} more</td></tr>`;
+            }
+            
+            result += `</table></div>`;
+            
+            resultsDiv.innerHTML = result;
+            resultsDiv.style.display = 'block';
+        }
+
+        // Utility functions for batch analysis
+        function getPrimeFactors(n) {
+            const factors = {};
+            let d = 2;
+            while (d * d <= n) {
+                while (n % d === 0) {
+                    factors[d] = (factors[d] || 0) + 1;
+                    n /= d;
+                }
+                d++;
+            }
+            if (n > 1) {
+                factors[n] = (factors[n] || 0) + 1;
+            }
+            return factors;
+        }
+
+        function formatPrimeFactorization(factors) {
+            return Object.entries(factors)
+                .map(([p, e]) => e === 1 ? p : `${p}^${e}`)
+                .join(' × ');
+        }
+
+        // Handle dynamic input visibility
+        document.getElementById('lift-base-type').addEventListener('change', function() {
+            const customInput = document.getElementById('lift-custom-base');
+            if (this.value === 'custom') {
+                customInput.style.display = 'inline-block';
+            } else {
+                customInput.style.display = 'none';
+            }
+        });
+
+        document.getElementById('prime-preset').addEventListener('change', function() {
+            if (this.value) {
+                document.getElementById('prime-input').value = this.value;
+            }
+        });
+
+        // k-tuple functions
+        function calculateTuple() {
+            const type = document.getElementById('tuple-type').value;
+            const modulus = parseInt(document.getElementById('tuple-modulus').value);
+            const resultsDiv = document.getElementById('tuple-results');
+            
+            let offsets;
+            if (type === 'twin') offsets = [0, 2];
+            else if (type === 'triplet') offsets = [0, 2, 6];
+            else if (type === 'quadruplet') offsets = [0, 2, 6, 8];
+            else {
+                const customInput = document.getElementById('custom-offsets').value;
+                offsets = customInput.split(',').map(x => parseInt(x.trim()));
+                if (offsets.some(x => x % 2 !== 0)) {
+                    resultsDiv.innerHTML = `<p class="error">All offsets must be even!</p>`;
+                    resultsDiv.style.display = 'block';
+                    return;
+                }
+            }
+            
+            const phi_m = getReducedResidueSystem(modulus);
+            const validStarts = [];
+            
+            for (const r of phi_m) {
+                let isValid = true;
+                for (const h of offsets) {
+                    const target = (r + h) % modulus;
+                    if (!phi_m.includes(target)) {
+                        isValid = false;
+                        break;
+                    }
+                }
+                if (isValid) {
+                    validStarts.push(r);
+                }
+            }
+            
+            let result = `<h3>${type.charAt(0).toUpperCase() + type.slice(1)} Analysis for M = ${modulus}</h3>`;
+            result += `<p>Offsets H = {${offsets.join(', ')}}</p>`;
+            result += `<p>φ(${modulus}) = ${phi_m.length}</p>`;
+            result += `<p class="success">Valid starting residues: <strong>${validStarts.length}</strong></p>`;
+            
+            if (validStarts.length > 0 && validStarts.length <= 10) {
+                result += `<p>Valid starts: {${validStarts.join(', ')}}</p>`;
+                result += `<h4>Realized Tuples:</h4>`;
+                for (const r of validStarts.slice(0, 5)) {
+                    const tuple = offsets.map(h => (r + h) % modulus);
+                    result += `<p>r = ${r} → {${tuple.join(', ')}}</p>`;
+                }
+                if (validStarts.length > 5) {
+                    result += `<p>... and ${validStarts.length - 5} more</p>`;
+                }
+            }
+            
+            // Calculate theoretical count for dyadic moduli
+            if (modulus === 30 || (modulus % 30 === 0 && (modulus / 30 & (modulus / 30 - 1)) === 0)) {
+                result += `<h4>Theoretical Analysis:</h4>`;
+                let theoreticalFactor = 1;
+                
+                // Check restrictions mod 3 and 5
+                for (const p of [3, 5]) {
+                    const forbidden = new Set();
+                    for (const h of offsets) {
+                        const neg_h = (-h + p) % p;
+                        if (neg_h !== 0) forbidden.add(neg_h);
+                    }
+                    if (forbidden.size > 0) {
+                        theoreticalFactor *= (1 - forbidden.size / (p - 1));
+                        result += `<p>Mod ${p} restriction: ${forbidden.size}/${p-1} forbidden → factor ${(1 - forbidden.size / (p - 1)).toFixed(3)}</p>`;
+                    }
+                }
+                
+                const theoretical = Math.floor(eulerPhi(modulus) * theoreticalFactor);
+                result += `<p class="highlight">Theoretical count: ${theoretical} (matches: ${theoretical === validStarts.length ? '✓' : '✗'})</p>`;
+            }
+            
+            resultsDiv.innerHTML = result;
+            resultsDiv.style.display = 'block';
+        }
+
+        // Enable/disable custom offsets input
+        document.getElementById('tuple-type').addEventListener('change', function() {
+            const customInput = document.getElementById('custom-offsets');
+            if (this.value === 'custom') {
+                customInput.disabled = false;
+                customInput.style.opacity = '1';
+            } else {
+                customInput.disabled = true;
+                customInput.style.opacity = '0.5';
+            }
+        });
+
+        // Initialize with default calculation
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateTransitions();
+        });
+
+        // Add some interactive hover effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add formula hover effects
+            const formulas = document.querySelectorAll('.formula');
+            formulas.forEach(formula => {
+                formula.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.02)';
+                    this.style.boxShadow = '0 8px 25px rgba(37, 99, 235, 0.3)';
+                });
+                formula.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+
+            // Add card interaction effects
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.borderColor = 'var(--primary)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.borderColor = 'var(--border)';
+                });
+            });
+        });
+
+        // Advanced visualization for large moduli
+        function createResidueVisualization(modulus, maxDisplay = 100) {
+            const phi_m = getReducedResidueSystem(modulus);
+            const canvas = document.createElement('canvas');
+            canvas.width = 600;
+            canvas.height = 400;
+            const ctx = canvas.getContext('2d');
+            
+            // Create circular visualization for larger moduli
+            if (modulus > maxDisplay) {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const radius = 150;
+                
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw circle
+                ctx.strokeStyle = '#475569';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.stroke();
+                
+                // Plot coprime residues
+                phi_m.forEach(r => {
+                    const angle = (2 * Math.PI * r) / modulus;
+                    const x = centerX + radius * Math.cos(angle - Math.PI / 2);
+                    const y = centerY + radius * Math.sin(angle - Math.PI / 2);
+                    
+                    ctx.fillStyle = '#2563eb';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+                
+                // Add title
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`Φ(${modulus}) - Circular Representation`, centerX, 30);
+                ctx.fillText(`${phi_m.length} coprime residues`, centerX, 50);
+                
+                return canvas;
+            }
+            
+            return null;
+        }
+
+        // Enhanced visualizer for larger moduli
+        function visualizeResiduesAdvanced() {
+            const modulus = parseInt(document.getElementById('vis-modulus').value);
+            const gap = parseInt(document.getElementById('vis-gap').value);
+            const displayDiv = document.getElementById('residue-display');
+            
+            if (modulus > 60) {
+                const canvas = createResidueVisualization(modulus);
+                if (canvas) {
+                    displayDiv.innerHTML = '<h3>Advanced Visualization</h3>';
+                    displayDiv.appendChild(canvas);
+                    
+                    const phi_m = getReducedResidueSystem(modulus);
+                    const transitions = getGapTransitions(modulus, gap);
+                    
+                    const info = document.createElement('div');
+                    info.innerHTML = `
+                        <p>Modulus: ${modulus}</p>
+                        <p>φ(${modulus}) = ${phi_m.length}</p>
+                        <p>Gap-${gap} transitions: ${transitions.length}</p>
+                    `;
+                    displayDiv.appendChild(info);
+                    return;
+                }
+            }
+            
+            // Fall back to grid visualization for smaller moduli
+            visualizeResidues();
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '1':
+                        e.preventDefault();
+                        showTab('theorems');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        showTab('calculator');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        showTab('visualizer');
+                        break;
+                    case '4':
+                        e.preventDefault();
+                        showTab('examples');
+                        break;
+                    case '5':
+                        e.preventDefault();
+                        showTab('generalizations');
+                        break;
+                }
+            }
+        });
+
+        // Add tooltips for mathematical terms
+        function addTooltips() {
+            const mathematicalTerms = document.querySelectorAll('.mathematical-notation');
+            mathematicalTerms.forEach(term => {
+                term.style.cursor = 'help';
+                term.title = getTooltipText(term.textContent);
+            });
+        }
+
+        function getTooltipText(term) {
+            const tooltips = {
+                'M = 30·2ⁿ': 'Dyadic modulus family - powers of 2 times 30',
+                'Φ(M)': 'Reduced residue system - integers coprime to M',
+                '(r, r+2)': 'Twin residue pair with gap of 2',
+                'φ(M)': 'Euler\'s totient function - count of integers ≤ M coprime to M',
+                'T(p) = p - 2': 'Number of twin transitions for prime modulus p'
+            };
+            return tooltips[term] || 'Mathematical notation';
+        }
+
+        // Initialize tooltips when page loads
+        document.addEventListener('DOMContentLoaded', addTooltips);
+
+        // Add export functionality for results
+        function exportResults(elementId, filename) {
+            const element = document.getElementById(elementId);
+            if (element && element.style.display !== 'none') {
+                const text = element.textContent;
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Performance optimization for large calculations
+        function calculateTransitionsOptimized(modulus, maxTransitions = 1000) {
+            if (modulus > 1000) {
+                // For very large moduli, estimate using theoretical formulas
+                return estimateTransitionCount(modulus);
+            }
+            return getTwinTransitions(modulus);
+        }
+
+        function estimateTransitionCount(modulus) {
+            // Use Hardy-Littlewood type estimation for large moduli
+            const phi = eulerPhi(modulus);
+            let density = 1;
+            
+            // Account for local restrictions at small primes
+            for (let p = 3; p <= Math.min(modulus, 100); p++) {
+                if (isPrime(p) && modulus % p === 0) {
+                    density *= (1 - 1/(p-1));
+                }
+            }
+            
+            return Math.floor(phi * density);
         }
     </script>
 </body>
