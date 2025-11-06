@@ -1168,15 +1168,7 @@
             // Initialize evenness theorem charts
             initializeEvennessCharts();
         });
-    </script>
-</body>
-</html>
-<html lang="en">
-<head>
     
-
-<html lang="en">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nested Farey Channels & Fractional-Slice Coprimality - Wessen Getachew</title>
