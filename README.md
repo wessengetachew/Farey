@@ -802,3 +802,25 @@
     </script>
 </body>
 </html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nested Farey Channels & Fractional-Slice Coprimality - Wessen Getachew</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    <style>
+        /* ==========================================
+           CLEAN WHITE THEME - COMPLETE REWRITE
+           ========================================== */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%) !important;
+            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif !important;
+            line-height: 1.6 !important;
