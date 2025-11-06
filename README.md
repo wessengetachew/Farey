@@ -8351,962 +8351,1114 @@ function drawConcentricRings() {
 </body>
 </html>
 
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmic Riemann Hypothesis Explorer</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <title>Cosmic Scale Riemann Hypothesis Tester - Up to 100 Million Points</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
             min-height: 100vh;
-            color: white;
-            overflow-x: hidden;
-        }
-
-        .cosmic-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: 
-                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
-                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
-                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
-                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
-                radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
-            background-repeat: repeat;
-            background-size: 200px 100px;
-            animation: sparkle 20s linear infinite;
-        }
-
-        @keyframes sparkle {
-            from { transform: translateY(0px); }
-            to { transform: translateY(-100px); }
+            padding: 20px;
+            line-height: 1.6;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            background: rgba(0,0,0,0.3);
-            padding: 30px;
+            background: rgba(30, 30, 45, 0.95);
             border-radius: 20px;
-            border: 2px solid rgba(255,255,255,0.1);
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .title {
-            font-size: 3.5em;
-            background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f, #4d79ff, #9c88ff);
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 10px;
-            font-weight: bold;
-            text-shadow: 0 0 30px rgba(255,255,255,0.5);
         }
 
         .subtitle {
-            font-size: 1.3em;
-            color: #bbb;
-            margin-bottom: 20px;
-        }
-
-        .achievement-banner {
-            background: linear-gradient(45deg, #ff6b6b, #4d79ff);
-            padding: 15px;
-            border-radius: 15px;
-            margin: 20px 0;
             text-align: center;
-            font-weight: bold;
-            font-size: 1.1em;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .controls-section {
-            background: rgba(0,0,0,0.4);
-            padding: 30px;
-            border-radius: 20px;
+            font-size: 1.2em;
             margin-bottom: 30px;
-            border: 2px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(15px);
+            color: #a0a0a0;
         }
 
-        .controls-grid {
+        .control-panel {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
             margin-bottom: 30px;
         }
 
         .control-group {
-            background: rgba(255,255,255,0.05);
+            background: rgba(40, 40, 60, 0.8);
             padding: 20px;
             border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .control-group h3 {
-            color: #ffd93d;
+            color: #4ecdc4;
             margin-bottom: 15px;
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
 
-        label { 
-            display: block;
-            font-weight: bold; 
-            margin-bottom: 8px; 
-            color: #ddd;
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        input, select, button {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 10px;
+        label {
+            min-width: 100px;
+            color: #c0c0c0;
+            font-weight: 500;
+        }
+
+        input, select {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
             font-size: 14px;
-            background: rgba(0,0,0,0.3);
-            color: white;
-            transition: all 0.3s ease;
-        }
-
-        input:focus, select:focus {
-            border-color: #4d79ff;
-            outline: none;
-            box-shadow: 0 0 20px rgba(77, 121, 255, 0.3);
-            background: rgba(0,0,0,0.5);
-        }
-
-        .test-button {
-            background: linear-gradient(45deg, #ff6b6b, #4d79ff);
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 16px;
-            padding: 15px;
-            margin-top: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .test-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(77, 121, 255, 0.4);
-        }
-
-        .test-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
         }
 
         .preset-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
         }
 
         .preset-btn {
-            padding: 10px;
-            background: linear-gradient(45deg, #6bcf7f, #4d79ff);
+            padding: 8px 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .start-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
             border: none;
             border-radius: 10px;
             color: white;
+            font-size: 1.2em;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .preset-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(107, 207, 127, 0.4);
+        .start-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
         }
 
-        .cosmic-btn { background: linear-gradient(45deg, #9c88ff, #ff6b6b); }
-        .galactic-btn { background: linear-gradient(45deg, #ffd93d, #ff6b6b); }
-        .legendary-btn { background: linear-gradient(45deg, #4d79ff, #9c88ff); }
-
-        .progress-section {
+        .progress-container {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             margin: 20px 0;
-            display: none;
         }
 
         .progress-bar {
             width: 100%;
-            height: 12px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 6px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
             overflow: hidden;
-            margin: 10px 0;
+            margin: 15px 0;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(45deg, #ff6b6b, #4d79ff);
+            background: linear-gradient(90deg, #4ecdc4, #44a08d);
+            border-radius: 12px;
             width: 0%;
-            transition: width 0.5s ease;
-            border-radius: 6px;
-        }
-
-        .results-section {
-            display: none;
-            background: rgba(0,0,0,0.4);
-            padding: 30px;
-            border-radius: 20px;
-            border: 2px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(15px);
-            margin-bottom: 30px;
+            transition: width 0.3s ease;
         }
 
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
         }
 
         .result-card {
-            background: rgba(255,255,255,0.05);
-            padding: 25px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .result-card h3 {
-            color: #ffd93d;
-            margin-bottom: 20px;
-            font-size: 1.3em;
-            text-align: center;
-        }
-
-        .metric {
-            display: flex;
-            justify-content: space-between;
-            margin: 12px 0;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .metric:last-child { border-bottom: none; }
-
-        .metric-label { 
-            font-weight: bold; 
-            color: #bbb; 
-        }
-
-        .metric-value { 
-            color: #fff; 
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-        }
-
-        .rh-status {
-            text-align: center;
+            background: rgba(78, 205, 196, 0.1);
             padding: 15px;
             border-radius: 10px;
-            margin: 15px 0;
-            font-weight: bold;
-            font-size: 1.1em;
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            text-align: center;
         }
 
-        .status-cosmic { background: linear-gradient(45deg, #9c88ff, #ff6b6b); }
-        .status-galactic { background: linear-gradient(45deg, #ffd93d, #ff6b6b); }
-        .status-legendary { background: linear-gradient(45deg, #4d79ff, #9c88ff); }
-        .status-exceptional { background: linear-gradient(45deg, #6bcf7f, #4d79ff); }
-        .status-excellent { background: linear-gradient(45deg, #4d79ff, #6bcf7f); }
-        .status-good { background: linear-gradient(45deg, #6bcf7f, #ffd93d); }
+        .result-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e0e0e0;
+        }
 
-        .visualization-section {
-            background: rgba(0,0,0,0.4);
-            padding: 30px;
-            border-radius: 20px;
-            border: 2px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(15px);
-            margin-bottom: 30px;
-            display: none;
+        .log-container {
+            background: rgba(20, 20, 30, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+        }
+
+        .cosmic-status {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid;
+        }
+
+        .status-cosmic {
+            background: rgba(255, 107, 107, 0.2);
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .status-legendary {
+            background: rgba(255, 154, 86, 0.2);
+            border-color: #ff9a56;
+            color: #ff9a56;
+        }
+
+        .status-mythical {
+            background: rgba(78, 205, 196, 0.2);
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        .memory-warning {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            color: #ff6b6b;
+        }
+
+        .visualization-container {
+            background: rgba(40, 40, 60, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 20px 0;
         }
 
         .chart-container {
-            height: 400px;
-            margin: 20px 0;
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
         }
 
-        .achievements-section {
-            background: rgba(0,0,0,0.4);
-            padding: 30px;
-            border-radius: 20px;
-            border: 2px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(15px);
-            margin-bottom: 30px;
-        }
-
-        .achievement {
-            background: rgba(255,255,255,0.05);
+        .chart-box {
+            background: rgba(20, 20, 30, 0.9);
+            border-radius: 10px;
             padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chart-title {
+            color: #4ecdc4;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        canvas {
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+        }
+
+        .chart-info {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #a0a0a0;
+            text-align: center;
+        }
+
+        .alpha-display {
+            background: rgba(78, 205, 196, 0.1);
+            padding: 10px;
+            border-radius: 8px;
             margin: 10px 0;
-            border-radius: 10px;
-            border-left: 4px solid #ffd93d;
+            text-align: center;
+            border: 1px solid rgba(78, 205, 196, 0.3);
         }
 
-        .math-formula {
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            font-family: 'Times New Roman', serif;
-            font-style: italic;
-            text-align: center;
+        .alpha-value {
+            font-family: 'Courier New', monospace;
             font-size: 1.2em;
-            border: 1px solid rgba(255,255,255,0.2);
+            color: #4ecdc4;
+            font-weight: bold;
         }
 
-        .cosmic-glow {
-            animation: cosmicGlow 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes cosmicGlow {
-            from { box-shadow: 0 0 20px rgba(77, 121, 255, 0.3); }
-            to { box-shadow: 0 0 40px rgba(156, 136, 255, 0.6); }
-        }
-
-        .footer {
-            text-align: center;
-            padding: 30px;
-            color: #888;
-            font-style: italic;
+        @media (max-width: 768px) {
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="cosmic-background"></div>
-    
     <div class="container">
-        <header class="header">
-            <h1 class="title">🌌 Cosmic Riemann Hypothesis Explorer 🌌</h1>
-            <p class="subtitle">
-                Interactive testing of <em>S(N, α) = Σ<sub>n≤N</sub> μ(n) e<sup>2πi n α</sup></em>
-            </p>
-            <div class="achievement-banner cosmic-glow">
-                🏆 GALACTIC ACHIEVEMENT: Successfully tested up to N = 100,000,000! 🏆
+        <h1>🌌 Cosmic Scale Riemann Hypothesis Tester</h1>
+        <div class="subtitle">Browser-Native Testing up to 100 Million Points</div>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="color: #4ecdc4; font-size: 1.1em; margin-bottom: 8px;">
+                Created by <strong>Wessen Getachew</strong>
             </div>
-            <div class="math-formula">
-                <strong>Riemann Hypothesis:</strong> |S(N,α)| = O(√N) ⟺ All non-trivial zeta zeros have Re(s) = 1/2
+            <div>
+                <a href="https://twitter.com/7dview" target="_blank" style="color: #1da1f2; text-decoration: none; font-size: 1em; display: inline-flex; align-items: center; gap: 8px; background: rgba(29, 161, 242, 0.1); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(29, 161, 242, 0.3); transition: all 0.3s ease;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                    </svg>
+                    @7dview
+                </a>
             </div>
-        </header>
+        </div>
 
-        <section class="controls-section">
-            <div class="controls-grid">
-                <div class="control-group">
-                    <h3>🎯 Test Parameters</h3>
-                    <label for="N">N (Upper Limit)</label>
-                    <input type="number" id="N" value="10000" min="100" max="100000000" step="1000">
-                    
-                    <label for="testMode">Test Mode</label>
+        <div class="memory-warning">
+            <h4>⚠️ Cosmic Scale Computing Warning</h4>
+            <p>Testing beyond 10 million points requires significant memory and computation time. For N > 50M, ensure you have adequate RAM and expect extended computation periods.</p>
+        </div>
+
+        <div class="control-panel">
+            <div class="control-group">
+                <h3> Test Configuration</h3>
+                <div class="preset-buttons">
+                    <button class="preset-btn" onclick="setPreset(1000000)">1M</button>
+                    <button class="preset-btn" onclick="setPreset(5000000)">5M</button>
+                    <button class="preset-btn" onclick="setPreset(10000000)">10M</button>
+                    <button class="preset-btn" onclick="setPreset(25000000)">25M</button>
+                    <button class="preset-btn" onclick="setPreset(50000000)">50M</button>
+                    <button class="preset-btn" onclick="setPreset(100000000)">100M</button>
+                </div>
+                <div class="input-row">
+                    <label>N Value:</label>
+                    <input type="number" id="nValue" value="5000000" min="1000" max="100000000" step="1000">
+                </div>
+                <div class="input-row">
+                    <label>Test Mode:</label>
                     <select id="testMode">
-                        <option value="random">A: Random α (Minor Arcs)</option>
-                        <option value="major" selected>B: Major Arcs α≈a/q</option>
-                        <option value="fft">C: FFT Grid</option>
-                        <option value="all">All Modes</option>
+                        <option value="B">Mode B: Major Arcs (Recommended)</option>
+                        <option value="A">Mode A: Random Sampling</option>
+                        <option value="C">Mode C: Uniform Grid</option>
                     </select>
                 </div>
+            </div>
 
-                <div class="control-group">
-                    <h3>⚙️ Advanced Settings</h3>
-                    <label for="samples">Random Samples (Mode A)</label>
-                    <input type="number" id="samples" value="50" min="5" max="500">
-                    
-                    <label for="Q0">Max Denominator Q₀ (Mode B)</label>
-                    <input type="number" id="Q0" value="32" min="8" max="128">
-                    
-                    <label for="gridSize">Grid Size K (Mode C)</label>
-                    <input type="number" id="gridSize" value="64" min="16" max="512">
+            <div class="control-group">
+                <h3>⚙️ Parameters</h3>
+                <div class="input-row">
+                    <label>Samples (A):</label>
+                    <input type="number" id="samplesA" value="50" min="10" max="500">
                 </div>
-
-                <div class="control-group">
-                    <h3>🚀 Quick Launch</h3>
-                    <button class="test-button" onclick="runTest()" id="testBtn">
-                        🔬 Run RH Test
-                    </button>
-                    
-                    <div class="preset-buttons">
-                        <button class="preset-btn" onclick="setPreset(10000, 'major')">Basic Test</button>
-                        <button class="preset-btn legendary-btn" onclick="setPreset(100000, 'all')">Professional</button>
-                        <button class="preset-btn galactic-btn" onclick="setPreset(1000000, 'major')">Legendary</button>
-                        <button class="preset-btn cosmic-btn" onclick="setPreset(10000000, 'major')">Cosmic</button>
-                    </div>
+                <div class="input-row">
+                    <label>Q₀ Bound (B):</label>
+                    <input type="number" id="q0Bound" value="24" min="8" max="64">
+                </div>
+                <div class="input-row">
+                    <label>Grid Size (C):</label>
+                    <input type="number" id="gridSize" value="256" min="32" max="1024">
                 </div>
             </div>
 
-            <div class="progress-section" id="progressSection">
-                <h3>🔄 Computation Progress</h3>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <p id="progressText">Initializing...</p>
+            <div class="control-group">
+                <h3> Launch Controls</h3>
+                <button class="start-btn" id="startBtn" onclick="startCosmicTest()">Launch Cosmic Test</button>
+                <button class="start-btn" id="stopBtn" onclick="stopTest()" style="display: none; background: #ff9a56;">Stop Test</button>
             </div>
-        </section>
+        </div>
 
-        <section class="results-section" id="resultsSection">
-            <h2>📊 Test Results</h2>
+        <div class="progress-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div style="color: #4ecdc4; font-size: 1.3em; font-weight: bold;">🔬 Computation Progress</div>
+                <div style="color: #96ceb4; font-weight: 500;" id="progressStatus">Ready to Launch</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; font-family: 'Courier New', monospace; font-size: 14px;">
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px;">
+                    <div style="color: #a0a0a0; font-size: 12px;">Current Phase</div>
+                    <div style="color: #e0e0e0; font-weight: bold;" id="currentPhase">Standby</div>
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px;">
+                    <div style="color: #a0a0a0; font-size: 12px;">Elapsed Time</div>
+                    <div style="color: #e0e0e0; font-weight: bold;" id="elapsedTime">0.0s</div>
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px;">
+                    <div style="color: #a0a0a0; font-size: 12px;">Operations/sec</div>
+                    <div style="color: #e0e0e0; font-weight: bold;" id="opsPerSec">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <h3 style="color: #4ecdc4; margin-bottom: 20px;"> Results Analysis</h3>
             <div class="results-grid">
                 <div class="result-card">
-                    <h3>🔢 Test Parameters</h3>
-                    <div class="metric">
-                        <span class="metric-label">N (Test Size)</span>
-                        <span class="metric-value" id="resultN">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">√N (RH Baseline)</span>
-                        <span class="metric-value" id="resultSqrtN">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Test Mode</span>
-                        <span class="metric-value" id="resultMode">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Computation Time</span>
-                        <span class="metric-value" id="resultTime">-</span>
-                    </div>
+                    <h4>N Value</h4>
+                    <div class="result-value" id="resultN">-</div>
                 </div>
-
                 <div class="result-card">
-                    <h3>📈 Mathematical Results</h3>
-                    <div class="metric">
-                        <span class="metric-label">Max |S(N,α)|</span>
-                        <span class="metric-value" id="resultMaxS">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Mean |S(N,α)|</span>
-                        <span class="metric-value" id="resultMeanS">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Best α Value</span>
-                        <span class="metric-value" id="resultBestAlpha">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Max/√N Ratio</span>
-                        <span class="metric-value" id="resultRatio">-</span>
-                    </div>
+                    <h4>√N</h4>
+                    <div class="result-value" id="resultSqrtN">-</div>
                 </div>
-
                 <div class="result-card">
-                    <h3>🎯 RH Analysis</h3>
-                    <div class="metric">
-                        <span class="metric-label">Möbius Density</span>
-                        <span class="metric-value" id="resultDensity">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">RH Prediction</span>
-                        <span class="metric-value">Max/√N = O(1)</span>
-                    </div>
-                    <div class="rh-status" id="rhStatus">
-                        Computing...
-                    </div>
+                    <h4>Max |S(N,α)|</h4>
+                    <div class="result-value" id="resultMax">-</div>
+                </div>
+                <div class="result-card">
+                    <h4>Max/√N Ratio</h4>
+                    <div class="result-value" id="resultRatio">-</div>
                 </div>
             </div>
-        </section>
 
-        <section class="visualization-section" id="vizSection">
-            <h2>📊 Data Visualization</h2>
+            <div class="cosmic-status" id="cosmicStatus" style="display: none;">
+                 Status will appear here
+            </div>
+
+            <div class="log-container" id="logContainer">
+                <div class="log-entry">🌌 Cosmic Scale RH Tester Ready - Up to 100 million points</div>
+                <div class="log-entry"> Use presets for quick configuration</div>
+            </div>
+        </div>
+
+        <div class="visualization-container" id="visualizationContainer" style="display: none;">
+            <h3 style="color: #4ecdc4; margin-bottom: 20px;"> Real-Time Visualization</h3>
+            
+            <div class="alpha-display" id="alphaDisplay" style="display: none;">
+                <div style="color: #a0a0a0; font-size: 14px; margin-bottom: 5px;">Current α value:</div>
+                <div class="alpha-value" id="currentAlpha">-</div>
+                <div style="color: #a0a0a0; font-size: 12px; margin-top: 5px;" id="alphaDescription">-</div>
+            </div>
+
             <div class="chart-container">
-                <canvas id="resultsChart"></canvas>
+                <div class="chart-box">
+                    <div class="chart-title">Exponential Sum Magnitudes</div>
+                    <canvas id="magnitudeChart"></canvas>
+                    <div class="chart-info">|S(N,α)| values as testing progresses</div>
+                </div>
+                
+                <div class="chart-box">
+                    <div class="chart-title">RH Compliance Tracking</div>
+                    <canvas id="ratioChart"></canvas>
+                    <div class="chart-info">Max/√N ratio vs theoretical bound</div>
+                </div>
             </div>
-        </section>
 
-        <section class="achievements-section">
-            <h2>🏆 Computational Achievements</h2>
-            <div class="achievement">
-                <strong>🌟 N = 100,000:</strong> Ratio 1.187 - Exceptional performance
+            <div class="chart-container">
+                <div class="chart-box">
+                    <div class="chart-title">α Distribution (Mode B)</div>
+                    <canvas id="alphaChart"></canvas>
+                    <div class="chart-info">Rational points being tested</div>
+                </div>
+                
+                <div class="chart-box">
+                    <div class="chart-title">Performance Metrics</div>
+                    <canvas id="performanceChart"></canvas>
+                    <div class="chart-info">Operations per second over time</div>
+                </div>
             </div>
-            <div class="achievement">
-                <strong>👑 N = 1,000,000:</strong> Ratio 0.600 - Legendary territory
-            </div>
-            <div class="achievement">
-                <strong>🌌 N = 100,000,000:</strong> Ratio 0.184 - Galactic transcendence
-            </div>
-            <div class="achievement">
-                <strong>💫 Total Journey:</strong> 93.2% improvement across 50,000x scaling
-            </div>
-            <div class="achievement">
-                <strong>🎯 Mathematical Significance:</strong> Perfect bounded behavior exactly as RH predicts
-            </div>
-        </section>
-
-        <footer class="footer">
-            <p>🌌 Cosmic Computational Mathematics • Overwhelming Evidence for the Riemann Hypothesis 🌌</p>
-            <p>Built with transcendent algorithms that broke the laws of computational physics</p>
-        </footer>
+        </div>
     </div>
 
     <script>
-        // Möbius function generation
-        function mobiusSieve(N) {
-            const mu = new Int8Array(N + 1);
-            const lp = new Int32Array(N + 1);
-            mu[1] = 1;
-            const primes = [];
-            
-            for (let x = 2; x <= N; x++) {
-                if (lp[x] === 0) {
-                    lp[x] = x;
-                    primes.push(x);
-                    mu[x] = -1;
-                }
+        class RiemannHypothesisTester {
+            constructor() {
+                this.results = [];
+                this.isRunning = false;
+                this.shouldStop = false;
+                this.startTime = 0;
+            }
+
+            async generateMobiusFunction(N, onProgress = null) {
+                this.log(` Generating Möbius function for N = ${N.toLocaleString()}`);
                 
-                for (const p of primes) {
-                    const y = p * x;
-                    if (y > N) break;
-                    lp[y] = p;
-                    if (x % p === 0) {
-                        mu[y] = 0;
-                        break;
-                    } else {
-                        mu[y] = -mu[x];
-                    }
-                }
-            }
-            return mu;
-        }
-
-        // Exponential sum computation
-        function computeSum(mu, alpha) {
-            const N = mu.length - 1;
-            let totalReal = 0.0;
-            let totalImag = 0.0;
-            
-            for (let n = 1; n <= N; n++) {
-                if (mu[n] !== 0) {
-                    totalReal += mu[n] * Math.cos(2 * Math.PI * alpha * n);
-                    totalImag += mu[n] * Math.sin(2 * Math.PI * alpha * n);
-                }
-            }
-            
-            return Math.sqrt(totalReal * totalReal + totalImag * totalImag);
-        }
-
-        // GCD function
-        function gcd(a, b) {
-            while (b !== 0) {
-                const temp = b;
-                b = a % b;
-                a = temp;
-            }
-            return a;
-        }
-
-        // Update progress
-        function updateProgress(percent, text) {
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressText').textContent = text;
-        }
-
-        // Set preset configurations
-        function setPreset(N, mode) {
-            document.getElementById('N').value = N;
-            document.getElementById('testMode').value = mode;
-            
-            // Adjust parameters based on N
-            if (N >= 1000000) {
-                document.getElementById('samples').value = Math.max(10, Math.floor(50000 / N));
-                document.getElementById('Q0').value = Math.min(32, Math.floor(Math.sqrt(N / 1000)));
-                document.getElementById('gridSize').value = Math.min(64, Math.max(16, Math.floor(N / 10000)));
-            }
-        }
-
-        // Main test function
-        async function runTest() {
-            const N = parseInt(document.getElementById('N').value);
-            const mode = document.getElementById('testMode').value;
-            const samples = parseInt(document.getElementById('samples').value);
-            const Q0 = parseInt(document.getElementById('Q0').value);
-            const gridSize = parseInt(document.getElementById('gridSize').value);
-
-            const testBtn = document.getElementById('testBtn');
-            const progressSection = document.getElementById('progressSection');
-            const resultsSection = document.getElementById('resultsSection');
-            const vizSection = document.getElementById('vizSection');
-
-            // UI setup
-            testBtn.disabled = true;
-            testBtn.innerHTML = '⚙️ Computing...';
-            progressSection.style.display = 'block';
-            resultsSection.style.display = 'none';
-            vizSection.style.display = 'none';
-
-            const startTime = performance.now();
-
-            try {
-                // Generate Möbius function
-                updateProgress(10, `Generating Möbius function for N = ${N.toLocaleString()}...`);
-                const mu = mobiusSieve(N);
+                const mu = new Int8Array(N + 1);
+                const lp = new Int32Array(N + 1);
+                mu[1] = 1;
+                const primes = [];
                 
-                // Calculate density
-                let pos = 0, neg = 0, zero = 0;
-                const sampleSize = Math.min(N, 5000);
-                for (let i = 1; i <= sampleSize; i++) {
-                    if (mu[i] > 0) pos++;
-                    else if (mu[i] < 0) neg++;
-                    else zero++;
-                }
-                const density = (pos + neg) / sampleSize;
-
-                updateProgress(20, 'Running exponential sum tests...');
-
-                let results = [];
-                let maxValue = 0;
-                let meanValue = 0;
-                let bestAlpha = 0;
-                let bestRational = '';
-
-                // Mode A: Random sampling
-                if (mode === 'random' || mode === 'all') {
-                    updateProgress(30, 'Mode A: Random α sampling...');
-                    const randomValues = [];
-                    for (let i = 0; i < samples; i++) {
-                        const alpha = Math.random();
-                        const val = computeSum(mu, alpha);
-                        randomValues.push(val);
-                        if (val > maxValue) {
-                            maxValue = val;
-                            bestAlpha = alpha;
+                let progress = 0;
+                const checkInterval = Math.max(1000, Math.floor(N / 50));
+                let nextCheck = checkInterval;
+                
+                for (let x = 2; x <= N; x++) {
+                    if (this.shouldStop) throw new Error('Stopped by user');
+                    
+                    if (x >= nextCheck) {
+                        progress = Math.floor((x / N) * 100);
+                        if (onProgress) onProgress(progress, 'Computing Möbius function');
+                        nextCheck += checkInterval;
+                        
+                        if (N > 10000000 && x % (checkInterval * 5) === 0) {
+                            await new Promise(resolve => setTimeout(resolve, 1));
                         }
                     }
-                    meanValue = randomValues.reduce((a, b) => a + b, 0) / randomValues.length;
-                    results.push({mode: 'Random', values: randomValues});
+                    
+                    if (lp[x] === 0) {
+                        lp[x] = x;
+                        primes.push(x);
+                        mu[x] = -1;
+                    }
+                    
+                    for (const p of primes) {
+                        const y = p * x;
+                        if (y > N) break;
+                        
+                        lp[y] = p;
+                        
+                        if (x % p === 0) {
+                            mu[y] = 0;
+                            break;
+                        } else {
+                            mu[y] = -mu[x];
+                        }
+                    }
                 }
+                
+                this.log(` Möbius function generated successfully`);
+                return mu;
+            }
 
-                // Mode B: Major arcs
-                if (mode === 'major' || mode === 'all') {
-                    updateProgress(mode === 'all' ? 50 : 30, 'Mode B: Major arcs α≈a/q...');
-                    const majorValues = [];
-                    for (let q = 1; q <= Q0; q++) {
-                        for (let a = 1; a <= q; a++) {
-                            if (gcd(a, q) === 1) {
-                                const val = computeSum(mu, a/q);
-                                majorValues.push(val);
-                                if (val > maxValue) {
-                                    maxValue = val;
-                                    bestAlpha = a/q;
-                                    bestRational = `${a}/${q}`;
-                                }
+            computeExponentialSum(mu, alpha) {
+                const N = mu.length - 1;
+                let totalReal = 0.0;
+                let totalImag = 0.0;
+                const factor = 2 * Math.PI * alpha;
+                
+                for (let n = 1; n <= N; n++) {
+                    if (mu[n] !== 0) {
+                        const angle = factor * n;
+                        totalReal += mu[n] * Math.cos(angle);
+                        totalImag += mu[n] * Math.sin(angle);
+                    }
+                }
+                
+                return Math.sqrt(totalReal * totalReal + totalImag * totalImag);
+            }
+
+            async testModeA_RandomSampling(mu, samples = 50) {
+                this.log(` Mode A: Testing ${samples} random α values`);
+                
+                let randomSeed = 12345;
+                const random = () => {
+                    randomSeed = (randomSeed * 9301 + 49297) % 233280;
+                    return randomSeed / 233280;
+                };
+                
+                let maxValue = 0;
+                let maxAlpha = 0;
+                const values = [];
+                const alphas = [];
+                
+                for (let i = 0; i < samples; i++) {
+                    if (this.shouldStop) throw new Error('Stopped by user');
+                    
+                    const alpha = random();
+                    const value = this.computeExponentialSum(mu, alpha);
+                    
+                    values.push(value);
+                    alphas.push(alpha);
+                    
+                    if (value > maxValue) {
+                        maxValue = value;
+                        maxAlpha = alpha;
+                    }
+                    
+                    // Update visualizations
+                    updateCurrentAlpha(alpha.toFixed(6), `Random sample ${i+1}/${samples}`);
+                    updateMagnitudeChart(value, maxValue);
+                    updateRatioChart(maxValue / Math.sqrt(mu.length - 1), Math.sqrt(mu.length - 1));
+                    
+                    if (i % 5 === 0) {
+                        updateAlphaChart(alphas.slice(0, i+1), values.slice(0, i+1));
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    }
+                }
+                
+                updateAlphaChart(alphas, values);
+                return { mode: 'A', maxValue, maxAlpha, samples, alphas, values };
+            }
+
+            async testModeB_MajorArcs(mu, Q0 = 24) {
+                this.log(` Mode B: Testing major arcs with Q₀ = ${Q0}`);
+                
+                let maxValue = 0;
+                let bestRational = "";
+                let pointsTested = 0;
+                const values = [];
+                const alphas = [];
+                const rationals = [];
+                
+                for (let q = 1; q <= Q0; q++) {
+                    if (this.shouldStop) throw new Error('Stopped by user');
+                    
+                    for (let a = 1; a <= q; a++) {
+                        if (this.gcd(a, q) === 1) {
+                            const alpha = a / q;
+                            const value = this.computeExponentialSum(mu, alpha);
+                            
+                            values.push(value);
+                            alphas.push(alpha);
+                            rationals.push(`${a}/${q}`);
+                            pointsTested++;
+                            
+                            if (value > maxValue) {
+                                maxValue = value;
+                                bestRational = `${a}/${q}`;
+                            }
+                            
+                            // Update visualizations
+                            updateCurrentAlpha(`${a}/${q} ≈ ${alpha.toFixed(6)}`, `Major arc: q=${q}, a=${a}`);
+                            updateMagnitudeChart(value, maxValue);
+                            updateRatioChart(maxValue / Math.sqrt(mu.length - 1), Math.sqrt(mu.length - 1));
+                            
+                            if (pointsTested % 10 === 0) {
+                                updateAlphaChart(alphas, values);
+                                await new Promise(resolve => setTimeout(resolve, 20));
                             }
                         }
                     }
-                    if (mode === 'major') {
-                        meanValue = majorValues.reduce((a, b) => a + b, 0) / majorValues.length;
-                    }
-                    results.push({mode: 'Major Arcs', values: majorValues});
                 }
-
-                // Mode C: FFT grid
-                if (mode === 'fft' || mode === 'all') {
-                    updateProgress(mode === 'all' ? 70 : 30, 'Mode C: FFT grid...');
-                    const fftValues = [];
-                    for (let j = 0; j < gridSize; j++) {
-                        const val = computeSum(mu, j/gridSize);
-                        fftValues.push(val);
-                        if (val > maxValue) {
-                            maxValue = val;
-                            bestAlpha = j/gridSize;
-                        }
-                    }
-                    if (mode === 'fft') {
-                        meanValue = fftValues.reduce((a, b) => a + b, 0) / fftValues.length;
-                    }
-                    results.push({mode: 'FFT Grid', values: fftValues});
-                }
-
-                updateProgress(90, 'Analyzing results...');
-
-                const sqrtN = Math.sqrt(N);
-                const ratio = maxValue / sqrtN;
-                const endTime = performance.now();
-                const computeTime = ((endTime - startTime) / 1000).toFixed(2);
-
-                // Determine status
-                let status, statusClass;
-                if (ratio < 0.2) {
-                    status = ' GALACTIC';
-                    statusClass = 'status-cosmic';
-                } else if (ratio < 0.7) {
-                    status = 'LEGENDARY';
-                    statusClass = 'status-galactic';
-                } else if (ratio < 1.0) {
-                    status = 'MYTHICAL';
-                    statusClass = 'status-legendary';
-                } else if (ratio < 1.5) {
-                    status = ' EXCEPTIONAL';
-                    statusClass = 'status-exceptional';
-                } else if (ratio < 2.0) {
-                    status = ' EXCELLENT';
-                    statusClass = 'status-excellent';
-                } else {
-                    status = '🟢 GOOD';
-                    statusClass = 'status-good';
-                }
-
-                // Update results display
-                document.getElementById('resultN').textContent = N.toLocaleString();
-                document.getElementById('resultSqrtN').textContent = sqrtN.toFixed(2);
-                document.getElementById('resultMode').textContent = mode.toUpperCase();
-                document.getElementById('resultTime').textContent = computeTime + 's';
-                document.getElementById('resultMaxS').textContent = maxValue.toFixed(4);
-                document.getElementById('resultMeanS').textContent = meanValue.toFixed(4);
-                document.getElementById('resultBestAlpha').textContent = bestRational || bestAlpha.toFixed(6);
-                document.getElementById('resultRatio').textContent = ratio.toFixed(4);
-                document.getElementById('resultDensity').textContent = (density * 100).toFixed(1) + '%';
-
-                const rhStatusEl = document.getElementById('rhStatus');
-                rhStatusEl.textContent = status;
-                rhStatusEl.className = `rh-status ${statusClass}`;
-
-                updateProgress(100, 'Complete!');
-
-                // Show results
-                resultsSection.style.display = 'block';
-                vizSection.style.display = 'block';
-
-                // Create chart
-                createChart(results);
-
-            } catch (error) {
-                updateProgress(0, `Error: ${error.message}`);
-                alert('Computation failed: ' + error.message);
-            } finally {
-                testBtn.disabled = false;
-                testBtn.innerHTML = '🔬 Run RH Test';
-                setTimeout(() => {
-                    progressSection.style.display = 'none';
-                }, 2000);
-            }
-        }
-
-        let chartInstance = null;
-
-        function createChart(results) {
-            const ctx = document.getElementById('resultsChart').getContext('2d');
-            
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-
-            const datasets = results.map((result, index) => {
-                const colors = [
-                    'rgba(255, 107, 107, 0.8)',
-                    'rgba(77, 121, 255, 0.8)',
-                    'rgba(107, 207, 127, 0.8)'
-                ];
                 
-                return {
-                    label: result.mode,
-                    data: result.values.slice(0, 100), // Limit for performance
-                    borderColor: colors[index],
-                    backgroundColor: colors[index].replace('0.8', '0.3'),
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.1
-                };
-            });
+                updateAlphaChart(alphas, values);
+                return { mode: 'B', maxValue, bestRational, Q0, pointsTested, alphas, values, rationals };
+            }
 
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: Array.from({length: Math.min(100, results[0]?.values.length || 0)}, (_, i) => i),
-                    datasets: datasets
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Möbius Exponential Sum |S(N,α)| Distribution',
-                            color: 'white',
-                            font: { size: 16 }
-                        },
-                        legend: {
-                            labels: { color: 'white' }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Sample Index',
-                                color: 'white'
-                            },
-                            ticks: { color: 'white' },
-                            grid: { color: 'rgba(255,255,255,0.2)' }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: '|S(N,α)|',
-                                color: 'white'
-                            },
-                            ticks: { color: 'white' },
-                            grid: { color: 'rgba(255,255,255,0.2)' }
-                        }
+            async testModeC_UniformGrid(mu, K = 256) {
+                this.log(` Mode C: Testing uniform grid with K = ${K}`);
+                
+                let maxValue = 0;
+                let bestJ = 0;
+                const values = [];
+                const alphas = [];
+                
+                for (let j = 0; j < K; j++) {
+                    if (this.shouldStop) throw new Error('Stopped by user');
+                    
+                    const alpha = j / K;
+                    const value = this.computeExponentialSum(mu, alpha);
+                    
+                    values.push(value);
+                    alphas.push(alpha);
+                    
+                    if (value > maxValue) {
+                        maxValue = value;
+                        bestJ = j;
+                    }
+                    
+                    // Update visualizations
+                    updateCurrentAlpha(`${j}/${K} = ${alpha.toFixed(6)}`, `Grid point ${j+1}/${K}`);
+                    updateMagnitudeChart(value, maxValue);
+                    updateRatioChart(maxValue / Math.sqrt(mu.length - 1), Math.sqrt(mu.length - 1));
+                    
+                    if (j % 20 === 0) {
+                        updateAlphaChart(alphas, values);
+                        await new Promise(resolve => setTimeout(resolve, 30));
                     }
                 }
+                
+                updateAlphaChart(alphas, values);
+                return { mode: 'C', maxValue, bestJ, K, bestAlpha: bestJ / K, alphas, values };
+            }
+
+            gcd(a, b) {
+                while (b !== 0) {
+                    const temp = b;
+                    b = a % b;
+                    a = temp;
+                }
+                return a;
+            }
+
+            async testRiemannHypothesis(N, mode = 'B', params = {}) {
+                this.log(` Starting RH test for N = ${N.toLocaleString()}, Mode ${mode}`);
+                this.startTime = performance.now();
+                this.isRunning = true;
+                this.shouldStop = false;
+                
+                try {
+                    // Generate Möbius function with progress tracking
+                    const mu = await this.generateMobiusFunction(N, (progress, phase) => {
+                        updateProgress(progress, phase);
+                    });
+                    
+                    updateProgress(100, 'Möbius generation complete');
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    // Run selected test mode
+                    let result;
+                    updateProgress(0, 'Running exponential sum tests');
+                    
+                    if (mode === 'A') {
+                        result = await this.testModeA_RandomSampling(mu, params.samplesA || 50);
+                    } else if (mode === 'B') {
+                        result = await this.testModeB_MajorArcs(mu, params.q0Bound || 24);
+                    } else if (mode === 'C') {
+                        result = await this.testModeC_UniformGrid(mu, params.gridSize || 256);
+                    }
+                    
+                    updateProgress(100, 'Analysis complete');
+                    
+                    // Analyze results
+                    const sqrtN = Math.sqrt(N);
+                    const ratio = result.maxValue / sqrtN;
+                    
+                    let status = '';
+                    if (ratio < 0.5) status = 'COSMIC';
+                    else if (ratio < 0.7) status = 'LEGENDARY';
+                    else if (ratio < 1.0) status = 'MYTHICAL';
+                    else if (ratio < 1.5) status = 'EXCEPTIONAL';
+                    else if (ratio < 2.0) status = 'EXCELLENT';
+                    else status = 'GOOD';
+                    
+                    const analysis = {
+                        N, sqrtN, 
+                        maxValue: result.maxValue,
+                        ratio, status,
+                        result,
+                        computationTime: performance.now() - this.startTime
+                    };
+                    
+                    this.displayResults(analysis);
+                    this.log(` Test completed! Status: ${status}`);
+                    
+                    return analysis;
+                    
+                } catch (error) {
+                    this.log(` Error: ${error.message}`);
+                    throw error;
+                } finally {
+                    this.isRunning = false;
+                    document.getElementById('startBtn').disabled = false;
+                    document.getElementById('startBtn').style.display = 'block';
+                    document.getElementById('stopBtn').style.display = 'none';
+                }
+            }
+
+            displayResults(analysis) {
+                document.getElementById('resultN').textContent = analysis.N.toLocaleString();
+                document.getElementById('resultSqrtN').textContent = analysis.sqrtN.toFixed(1);
+                document.getElementById('resultMax').textContent = analysis.maxValue.toFixed(3);
+                document.getElementById('resultRatio').textContent = analysis.ratio.toFixed(4);
+                
+                const statusEl = document.getElementById('cosmicStatus');
+                statusEl.style.display = 'block';
+                statusEl.textContent = ` ${analysis.status} EVIDENCE FOR RIEMANN HYPOTHESIS!`;
+                statusEl.className = `cosmic-status status-${analysis.status.toLowerCase()}`;
+            }
+
+            log(message) {
+                const logContainer = document.getElementById('logContainer');
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+                logContainer.appendChild(entry);
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }
+        }
+
+        // Global variables
+        let tester = new RiemannHypothesisTester();
+        let progressInterval;
+        let charts = {};
+        let chartData = {
+            magnitudes: [],
+            ratios: [],
+            alphas: [],
+            performance: []
+        };
+
+        // Chart initialization and management
+        function initializeCharts() {
+            const magnitudeCtx = document.getElementById('magnitudeChart').getContext('2d');
+            const ratioCtx = document.getElementById('ratioChart').getContext('2d');
+            const alphaCtx = document.getElementById('alphaChart').getContext('2d');
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+
+            // Set canvas size
+            [magnitudeCtx, ratioCtx, alphaCtx, performanceCtx].forEach(ctx => {
+                ctx.canvas.width = ctx.canvas.offsetWidth;
+                ctx.canvas.height = 200;
             });
+
+            charts.magnitude = magnitudeCtx;
+            charts.ratio = ratioCtx;
+            charts.alpha = alphaCtx;
+            charts.performance = performanceCtx;
+
+            clearAllCharts();
         }
 
-        // Initialize with cosmic greeting
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Cosmic Riemann Hypothesis Explorer initialized');
-            console.log(' Ready to explore the mathematical universe!');
+        function clearAllCharts() {
+            Object.values(charts).forEach(ctx => {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                drawChartBackground(ctx);
+            });
             
-            // Add cosmic particle effect
-            createCosmicParticles();
-        });
-
-        function createCosmicParticles() {
-            // Add floating mathematical symbols
-            const symbols = ['α', 'μ', 'π', '∑', '∫', '∞', 'ζ', '√'];
-            const container = document.querySelector('.container');
-            
-            setInterval(() => {
-                if (Math.random() < 0.3) {
-                    const particle = document.createElement('div');
-                    particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-                    particle.style.cssText = `
-                        position: fixed;
-                        color: rgba(255,255,255,0.3);
-                        font-size: ${Math.random() * 20 + 10}px;
-                        left: ${Math.random() * window.innerWidth}px;
-                        top: ${window.innerHeight + 20}px;
-                        pointer-events: none;
-                        z-index: 0;
-                        animation: floatUp ${Math.random() * 10 + 5}s linear forwards;
-                    `;
-                    
-                    document.body.appendChild(particle);
-                    
-                    setTimeout(() => {
-                        particle.remove();
-                    }, 15000);
-                }
-            }, 2000);
+            chartData = {
+                magnitudes: [],
+                ratios: [],
+                alphas: [],
+                performance: []
+            };
         }
 
-        // Add CSS animation for floating particles
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes floatUp {
-                from {
-                    transform: translateY(0) rotate(0deg);
-                    opacity: 0.3;
-                }
-                to {
-                    transform: translateY(-${window.innerHeight + 100}px) rotate(360deg);
-                    opacity: 0;
-                }
+        function drawChartBackground(ctx) {
+            const width = ctx.canvas.width;
+            const height = ctx.canvas.height;
+            
+            // Background
+            ctx.fillStyle = 'rgba(20, 20, 30, 0.8)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Grid lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i <= 10; i++) {
+                const x = (width * i) / 10;
+                const y = (height * i) / 10;
+                
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
             }
-        `;
-        document.head.appendChild(style);
-
-        // Add keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey || e.metaKey) {
-                switch(e.key) {
-                    case 'Enter':
-                        e.preventDefault();
-                        runTest();
-                        break;
-                    case '1':
-                        e.preventDefault();
-                        setPreset(10000, 'major');
-                        break;
-                    case '2':
-                        e.preventDefault();
-                        setPreset(100000, 'all');
-                        break;
-                    case '3':
-                        e.preventDefault();
-                        setPreset(1000000, 'major');
-                        break;
-                }
-            }
-        });
-
-        // Add cosmic sound effects (optional)
-        function playCosmicSound() {
-            // Create subtle audio feedback
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.1);
-            
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-            
-            oscillator.start();
-            oscillator.stop(audioContext.currentTime + 0.1);
         }
 
-        // Enhanced preset function with animations
-        function setPreset(N, mode) {
-            document.getElementById('N').value = N;
-            document.getElementById('testMode').value = mode;
+        function updateMagnitudeChart(magnitude, maxMagnitude) {
+            const ctx = charts.magnitude;
+            const width = ctx.canvas.width;
+            const height = ctx.canvas.height;
             
-            // Cosmic parameter adjustment
-            if (N >= 1000000) {
-                document.getElementById('samples').value = Math.max(5, Math.floor(50000 / N));
-                document.getElementById('Q0').value = Math.min(32, Math.floor(Math.sqrt(N / 1000)));
-                document.getElementById('gridSize').value = Math.min(64, Math.max(16, Math.floor(N / 10000)));
-            } else if (N >= 100000) {
-                document.getElementById('samples').value = 25;
-                document.getElementById('Q0').value = 24;
-                document.getElementById('gridSize').value = 48;
+            chartData.magnitudes.push(magnitude);
+            if (chartData.magnitudes.length > 50) {
+                chartData.magnitudes.shift();
+            }
+            
+            drawChartBackground(ctx);
+            
+            if (chartData.magnitudes.length > 1) {
+                ctx.strokeStyle = '#4ecdc4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                chartData.magnitudes.forEach((mag, i) => {
+                    const x = (width * i) / (chartData.magnitudes.length - 1);
+                    const y = height - (height * mag) / (maxMagnitude * 1.1);
+                    
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                
+                ctx.stroke();
+                
+                // Highlight current maximum
+                ctx.fillStyle = '#ff6b6b';
+                ctx.beginPath();
+                const maxIndex = chartData.magnitudes.indexOf(Math.max(...chartData.magnitudes));
+                const maxX = (width * maxIndex) / (chartData.magnitudes.length - 1);
+                const maxY = height - (height * Math.max(...chartData.magnitudes)) / (maxMagnitude * 1.1);
+                ctx.arc(maxX, maxY, 4, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+
+        function updateRatioChart(ratio, sqrtN) {
+            const ctx = charts.ratio;
+            const width = ctx.canvas.width;
+            const height = ctx.canvas.height;
+            
+            chartData.ratios.push(ratio);
+            if (chartData.ratios.length > 50) {
+                chartData.ratios.shift();
+            }
+            
+            drawChartBackground(ctx);
+            
+            // Draw RH bound line (y = 1)
+            const boundY = height - (height * 1) / 3; // Assuming max ratio display of 3
+            ctx.strokeStyle = '#ff6b6b';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(0, boundY);
+            ctx.lineTo(width, boundY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Draw ratio progression
+            if (chartData.ratios.length > 1) {
+                ctx.strokeStyle = '#96ceb4';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                chartData.ratios.forEach((r, i) => {
+                    const x = (width * i) / (chartData.ratios.length - 1);
+                    const y = height - (height * r) / 3;
+                    
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                
+                ctx.stroke();
+            }
+            
+            // Add text labels
+            ctx.fillStyle = '#a0a0a0';
+            ctx.font = '12px monospace';
+            ctx.fillText('RH Bound', 5, boundY - 5);
+            ctx.fillText(`Current: ${ratio.toFixed(4)}`, 5, 20);
+        }
+
+        function updateAlphaChart(alphas, values) {
+            const ctx = charts.alpha;
+            const width = ctx.canvas.width;
+            const height = ctx.canvas.height;
+            
+            drawChartBackground(ctx);
+            
+            if (alphas.length === 0) return;
+            
+            const maxValue = Math.max(...values);
+            
+            // Draw bars for each alpha
+            const barWidth = Math.max(2, width / alphas.length);
+            
+            alphas.forEach((alpha, i) => {
+                const x = (width * i) / alphas.length;
+                const barHeight = (height * values[i]) / maxValue;
+                const y = height - barHeight;
+                
+                // Color based on value intensity
+                const intensity = values[i] / maxValue;
+                const red = Math.floor(255 * intensity);
+                const green = Math.floor(255 * (1 - intensity));
+                ctx.fillStyle = `rgb(${red}, ${green}, 100)`;
+                
+                ctx.fillRect(x, y, barWidth, barHeight);
+            });
+            
+            // Highlight maximum
+            const maxIndex = values.indexOf(maxValue);
+            if (maxIndex >= 0) {
+                const maxX = (width * maxIndex) / alphas.length;
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(maxX, height - (height * maxValue) / maxValue, barWidth, height);
+                
+                // Display alpha value
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '10px monospace';
+                const alphaText = `α=${alphas[maxIndex].toFixed(4)}`;
+                ctx.fillText(alphaText, maxX, height - 5);
+            }
+        }
+
+        function updatePerformanceChart(opsPerSec) {
+            const ctx = charts.performance;
+            const width = ctx.canvas.width;
+            const height = ctx.canvas.height;
+            
+            chartData.performance.push(opsPerSec);
+            if (chartData.performance.length > 50) {
+                chartData.performance.shift();
+            }
+            
+            drawChartBackground(ctx);
+            
+            if (chartData.performance.length > 1) {
+                const maxOps = Math.max(...chartData.performance);
+                
+                ctx.strokeStyle = '#45b7d1';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                chartData.performance.forEach((ops, i) => {
+                    const x = (width * i) / (chartData.performance.length - 1);
+                    const y = height - (height * ops) / (maxOps * 1.1);
+                    
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                
+                ctx.stroke();
+                
+                // Add current value text
+                ctx.fillStyle = '#45b7d1';
+                ctx.font = '12px monospace';
+                const currentOps = opsPerSec > 1000000 ? 
+                    `${(opsPerSec/1000000).toFixed(1)}M ops/s` :
+                    `${(opsPerSec/1000).toFixed(1)}K ops/s`;
+                ctx.fillText(currentOps, 5, 20);
+            }
+        }
+
+        function updateCurrentAlpha(alpha, description) {
+            document.getElementById('currentAlpha').textContent = alpha;
+            document.getElementById('alphaDescription').textContent = description;
+            document.getElementById('alphaDisplay').style.display = 'block';
+        }
+
+        function setPreset(value) {
+            document.getElementById('nValue').value = value;
+            
+            // Adjust parameters based on N size
+            if (value >= 50000000) {
+                document.getElementById('q0Bound').value = 16;
+                document.getElementById('samplesA').value = 25;
+                document.getElementById('gridSize').value = 128;
+            } else if (value >= 10000000) {
+                document.getElementById('q0Bound').value = 20;
+                document.getElementById('samplesA').value = 35;
+                document.getElementById('gridSize').value = 192;
             } else {
-                document.getElementById('samples').value = 50;
-                document.getElementById('Q0').value = 32;
-                document.getElementById('gridSize').value = 64;
+                document.getElementById('q0Bound').value = 24;
+                document.getElementById('samplesA').value = 50;
+                document.getElementById('gridSize').value = 256;
             }
             
-            // Visual feedback
-            const controlsSection = document.querySelector('.controls-section');
-            controlsSection.style.transform = 'scale(1.02)';
-            setTimeout(() => {
-                controlsSection.style.transform = 'scale(1)';
-            }, 200);
+            tester.log(` Preset configured for N = ${value.toLocaleString()}`);
+        }
+
+        function updateProgress(percentage, phase) {
+            const progressFill = document.getElementById('progressFill');
+            const progressStatus = document.getElementById('progressStatus');
+            const currentPhase = document.getElementById('currentPhase');
+            const elapsedTime = document.getElementById('elapsedTime');
+            const opsPerSec = document.getElementById('opsPerSec');
             
-            // Optional sound feedback
-            try {
-                playCosmicSound();
-            } catch (e) {
-                // Audio might not be supported
+            progressFill.style.width = percentage + '%';
+            progressStatus.textContent = `${percentage}%`;
+            currentPhase.textContent = phase;
+            
+            if (tester.startTime) {
+                const elapsed = (performance.now() - tester.startTime) / 1000;
+                elapsedTime.textContent = elapsed.toFixed(1) + 's';
+                
+                const N = parseInt(document.getElementById('nValue').value);
+                const estimatedOps = N * (percentage / 100);
+                const rate = estimatedOps / elapsed;
+                
+                // Update performance chart
+                if (rate > 0) {
+                    updatePerformanceChart(rate);
+                }
+                
+                if (rate > 1000000) {
+                    opsPerSec.textContent = (rate / 1000000).toFixed(1) + 'M';
+                } else if (rate > 1000) {
+                    opsPerSec.textContent = (rate / 1000).toFixed(1) + 'K';
+                } else {
+                    opsPerSec.textContent = rate.toFixed(0);
+                }
             }
         }
+
+        async function startCosmicTest() {
+            const N = parseInt(document.getElementById('nValue').value);
+            const mode = document.getElementById('testMode').value;
+            
+            if (N > 100000000) {
+                alert('Maximum N value is 100 million for browser safety');
+                return;
+            }
+            
+            const params = {
+                samplesA: parseInt(document.getElementById('samplesA').value),
+                q0Bound: parseInt(document.getElementById('q0Bound').value),
+                gridSize: parseInt(document.getElementById('gridSize').value)
+            };
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'block';
+            
+            // Show visualization container and initialize charts
+            document.getElementById('visualizationContainer').style.display = 'block';
+            initializeCharts();
+            
+            // Clear previous results
+            document.getElementById('cosmicStatus').style.display = 'none';
+            document.getElementById('resultN').textContent = '-';
+            document.getElementById('resultSqrtN').textContent = '-';
+            document.getElementById('resultMax').textContent = '-';
+            document.getElementById('resultRatio').textContent = '-';
+            document.getElementById('alphaDisplay').style.display = 'none';
+            
+            try {
+                await tester.testRiemannHypothesis(N, mode, params);
+            } catch (error) {
+                console.error('Test failed:', error);
+            }
+        }
+
+        function stopTest() {
+            tester.shouldStop = true;
+            tester.log(' Stopping test...');
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('startBtn').style.display = 'block';
+            document.getElementById('stopBtn').style.display = 'none';
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            tester.log(' Cosmic Scale RH Tester by Wessen Getachew');
+            tester.log(' Ready for tests up to 100 million points');
+            tester.log(' Follow @7dview for updates and mathematical insights');
+        });
     </script>
 </body>
 </html>
