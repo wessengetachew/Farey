@@ -1,8 +1,9 @@
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modular Coprime Density Analyzer</title>
+    <title>Advanced Modular Mathematics Analyzer</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <!-- MathJax for LaTeX rendering -->
@@ -16,23 +17,31 @@
             --dark: #2c3e50;
         }
         
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f8f9fa;
+            font-family: 'Georgia', serif;
             line-height: 1.6;
             color: #333;
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
         }
         
         .container {
+            max-width: 1400px;
+            margin: 0 auto;
             background: white;
-            padding: 25px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
             margin-bottom: 25px;
             border-left: 4px solid var(--secondary);
+            padding: 25px;
         }
         
         .header {
@@ -60,6 +69,43 @@
             color: var(--dark);
             margin-top: 25px;
             font-weight: 500;
+        }
+        
+        .tab-container {
+            margin: 20px 0;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--dark);
+            transition: all 0.3s;
+            border-radius: 4px;
+        }
+        
+        .tab-button.active {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
         
         .controls {
@@ -104,7 +150,6 @@
         
         button:hover {
             background: #2980b9;
-            transform: translateY(-1px);
         }
         
         .results {
@@ -228,6 +273,21 @@
             color: var(--primary);
         }
         
+        .proof-section {
+            background: #f0f8ff;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 6px;
+            border: 1px solid #b8d8e8;
+        }
+        
+        .visualization-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
         .loading {
             text-align: center;
             padding: 20px;
@@ -242,137 +302,273 @@
             color: #7f8c8d;
             font-size: 14px;
         }
+        
+        @media (max-width: 768px) {
+            .controls, .results, .visualization-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-buttons {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Modular Coprime Density Analyzer</h1>
-            <p>An interactive tool for exploring the convergence of coprime density to the theoretical limit of \( \frac{6}{\pi^2} \)</p>
+            <h1>Advanced Modular Mathematics Analyzer</h1>
+            <p>A comprehensive tool for exploring modular arithmetic, totient functions, and number theory</p>
         </div>
         
-        <div class="theorem">
-            <div class="theorem-title">Mathematical Foundation</div>
-            <p>This tool visualizes the convergence of the average coprime density across moduli up to \( M \):</p>
-            <p>\[ A(M) = \frac{1}{M} \sum_{m=1}^{M} \frac{\varphi(m)}{m} \]</p>
-            <p>where \( \varphi(m) \) is Euler's totient function, counting the numbers coprime to \( m \).</p>
-            <p>As \( M \to \infty \), this converges to the theoretical limit:</p>
-            <p>\[ \lim_{M \to \infty} A(M) = \frac{1}{\zeta(2)} = \frac{6}{\pi^2} \approx 0.607927 \]</p>
-            <p>This constant represents the probability that two randomly selected integers are coprime.</p>
-        </div>
-        
-        <h2>Analysis Parameters</h2>
-        <div class="controls">
-            <div class="control-group">
-                <label for="maxModulus">Maximum Modulus (M):</label>
-                <input type="number" id="maxModulus" value="1000" min="10" max="100000">
-                
-                <label for="stepSize">Step Size (for table display):</label>
-                <input type="number" id="stepSize" value="100" min="1" max="1000">
-                
-                <label for="updateFrequency">Update Frequency:</label>
-                <select id="updateFrequency">
-                    <option value="10">Every 10 steps</option>
-                    <option value="50">Every 50 steps</option>
-                    <option value="100" selected>Every 100 steps</option>
-                    <option value="1000">Every 1000 steps</option>
-                </select>
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="switchTab('density')">Coprime Density Analysis</button>
+                <button class="tab-button" onclick="switchTab('evenness')">Modular Evenness Theorem</button>
+                <button class="tab-button" onclick="switchTab('mathematics')">Mathematical Background</button>
             </div>
             
-            <div class="control-group">
-                <label for="visualizationType">Visualization Type:</label>
-                <select id="visualizationType">
-                    <option value="convergence">Convergence Plot</option>
-                    <option value="error">Error Analysis</option>
-                    <option value="local">Local Density</option>
-                    <option value="primes">Prime Moduli Analysis</option>
-                </select>
+            <!-- Tab 1: Coprime Density Analysis -->
+            <div id="density-tab" class="tab-content active">
+                <div class="theorem">
+                    <div class="theorem-title">Mathematical Foundation: Coprime Density</div>
+                    <p>This tool visualizes the convergence of the average coprime density across moduli up to \( M \):</p>
+                    <p>\[ A(M) = \frac{1}{M} \sum_{m=1}^{M} \frac{\varphi(m)}{m} \]</p>
+                    <p>where \( \varphi(m) \) is Euler's totient function, counting the numbers coprime to \( m \).</p>
+                    <p>As \( M \to \infty \), this converges to the theoretical limit:</p>
+                    <p>\[ \lim_{M \to \infty} A(M) = \frac{1}{\zeta(2)} = \frac{6}{\pi^2} \approx 0.607927 \]</p>
+                    <p>This constant represents the probability that two randomly selected integers are coprime.</p>
+                </div>
                 
-                <label for="angularModuli">Angular Visualization Moduli (comma-separated):</label>
-                <input type="text" id="angularModuli" value="2,3,4,5,6,7,8">
-                
-                <button onclick="runAnalysis()">Run Analysis</button>
-            </div>
-        </div>
-    </div>
+                <h2>Analysis Parameters</h2>
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="maxModulus">Maximum Modulus (M):</label>
+                        <input type="number" id="maxModulus" value="1000" min="10" max="100000">
+                        
+                        <label for="stepSize">Step Size (for table display):</label>
+                        <input type="number" id="stepSize" value="100" min="1" max="1000">
+                        
+                        <label for="updateFrequency">Update Frequency:</label>
+                        <select id="updateFrequency">
+                            <option value="10">Every 10 steps</option>
+                            <option value="50">Every 50 steps</option>
+                            <option value="100" selected>Every 100 steps</option>
+                            <option value="1000">Every 1000 steps</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="visualizationType">Visualization Type:</label>
+                        <select id="visualizationType">
+                            <option value="convergence">Convergence Plot</option>
+                            <option value="error">Error Analysis</option>
+                            <option value="local">Local Density</option>
+                            <option value="primes">Prime Moduli Analysis</option>
+                        </select>
+                        
+                        <label for="angularModuli">Angular Visualization Moduli (comma-separated):</label>
+                        <input type="text" id="angularModuli" value="2,3,4,5,6,7,8">
+                        
+                        <button onclick="runDensityAnalysis()">Run Analysis</button>
+                    </div>
+                </div>
 
-    <div class="container">
-        <h2>Convergence Analysis</h2>
-        <div class="chart-container">
-            <canvas id="convergenceChart"></canvas>
-        </div>
-        
-        <div class="results">
-            <div>
-                <h3>Current Results</h3>
-                <div class="current-results" id="currentResults">
-                    <p>Click "Run Analysis" to compute and display results.</p>
+                <h2>Convergence Analysis</h2>
+                <div class="chart-container">
+                    <canvas id="convergenceChart"></canvas>
+                </div>
+                
+                <div class="results">
+                    <div>
+                        <h3>Current Results</h3>
+                        <div class="current-results" id="currentResults">
+                            <p>Click "Run Analysis" to compute and display results.</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3>Sample Data</h3>
+                        <div class="data-table">
+                            <table id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Modulus M</th>
+                                        <th>φ(M)</th>
+                                        <th>φ(M)/M</th>
+                                        <th>A(M)</th>
+                                        <th>Error</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="export-buttons">
+                    <button onclick="exportCSV()">Export CSV</button>
+                    <button onclick="exportPNG()">Export Chart as PNG</button>
+                    <button onclick="exportText()">Export Full Analysis</button>
+                </div>
+
+                <div class="container">
+                    <h2>Angular Distribution Visualization</h2>
+                    <p>This visualization shows the distribution of coprime residues on the unit circle for different moduli. Each point represents a residue \( r \) where \( \gcd(r, m) = 1 \), positioned at angle \( \theta = \frac{2\pi r}{m} \).</p>
+                    
+                    <div id="angularVisualization" class="angular-vis">
+                        <!-- Angular plots will be generated here -->
+                    </div>
                 </div>
             </div>
             
-            <div>
-                <h3>Sample Data</h3>
-                <div class="data-table">
-                    <table id="dataTable">
+            <!-- Tab 2: Modular Evenness Theorem -->
+            <div id="evenness-tab" class="tab-content">
+                <div class="theorem">
+                    <div class="theorem-title">Theorem: Law of Modular Evenness</div>
+                    <p>For every integer \( n > 2 \), the Euler totient function \( \varphi(n) \) is even:</p>
+                    <p style="text-align: center; font-size: 1.2em; margin: 15px 0;">
+                        \( \varphi(n) \equiv 0 \pmod{2} \)
+                    </p>
+                    <p>The only exceptions occur at \( n = 1 \) and \( n = 2 \), where \( \varphi(n) = 1 \).</p>
+                </div>
+
+                <div class="proof-section">
+                    <h2>Classical Proof (Group-Theoretic Perspective)</h2>
+                    <p>Let \( U_n = (\mathbb{Z}/n\mathbb{Z})^{\times} \) be the multiplicative group of units modulo \( n \). Each element \( a \in U_n \) has a unique inverse \( a^{-1} \) with \( a a^{-1} \equiv 1 \pmod{n} \).</p>
+                    
+                    <ul>
+                        <li>The group elements partition into inverse pairs \( \{a, a^{-1}\} \)</li>
+                        <li>The only potential exceptions are <em>self-inverse</em> elements satisfying \( a^2 \equiv 1 \pmod{n} \)</li>
+                        <li>For \( n > 2 \), the solutions to \( a^2 \equiv 1 \) always include \( 1 \) and \( -1 \), which are distinct modulo \( n \)</li>
+                        <li>The full solution set forms pairs \( \{a, -a\} \), making the number of self-inverse elements <em>even</em></li>
+                    </ul>
+                    
+                    <p>Since all elements are distributed among inverse pairs and an even number of fixed points, \( |U_n| = \varphi(n) \) must be even. <strong>∎</strong></p>
+                </div>
+
+                <div class="controls">
+                    <h3>Explore Modular Evenness</h3>
+                    <label for="modulus">Choose modulus n:</label>
+                    <input type="number" id="modulus" min="3" max="50" value="8">
+                    <button onclick="updateEvennessVisualization()">Update Visualization</button>
+                </div>
+
+                <div class="visualization-grid">
+                    <div class="chart-container">
+                        <h3>Unit Circle Visualization</h3>
+                        <canvas id="unitCircle" width="400" height="400"></canvas>
+                        <div id="circleInfo" style="text-align: center; margin-top: 10px;"></div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Totient Function Values</h3>
+                        <canvas id="totientChart" width="400" height="400"></canvas>
+                    </div>
+                </div>
+
+                <div class="proof-section">
+                    <h2>Geometric Interpretation</h2>
+                    <p>Define the modular union of all reduced fractions:</p>
+                    <p style="text-align: center;">
+                        \( U_{\infty} = \left\{ \frac{a}{n} \in \mathbb{Q} : 0 \leq \frac{a}{n} < 1,\ \gcd(a,n) = 1 \right\} \)
+                    </p>
+                    
+                    <p>Under the exponential map:</p>
+                    <p style="text-align: center;">
+                        \( f\left(\frac{a}{n}\right) = e^{2\pi i \frac{a}{n}} \)
+                    </p>
+                    <p>each coprime fraction maps to a primitive \( n \)-th root of unity on the unit circle.</p>
+                    
+                    <h3>Key Observations:</h3>
+                    <ul>
+                        <li><strong>Inverse Symmetry:</strong> The modular inverse \( a^{-1} \) corresponds to complex conjugation</li>
+                        <li><strong>Mirror Symmetry:</strong> The real axis acts as a mirror—every root above corresponds to one below</li>
+                        <li><strong>Even Cardinality:</strong> For \( n > 2 \), primitive roots appear in symmetric pairs</li>
+                        <li><strong>Global Structure:</strong> As \( n \to \infty \), these roots become dense while preserving reflection symmetry</li>
+                    </ul>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Examples of the Phenomenon</h3>
+                    <table>
                         <thead>
                             <tr>
-                                <th>Modulus M</th>
-                                <th>φ(M)</th>
-                                <th>φ(M)/M</th>
-                                <th>A(M)</th>
-                                <th>Error</th>
+                                <th>\( n \)</th>
+                                <th>\( \varphi(n) \)</th>
+                                <th>Coprime Residues</th>
+                                <th>Pairing Structure</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody">
+                        <tbody id="examplesTable">
+                            <!-- Filled by JavaScript -->
                         </tbody>
                     </table>
                 </div>
             </div>
+            
+            <!-- Tab 3: Mathematical Background -->
+            <div id="mathematics-tab" class="tab-content">
+                <h2>Mathematical Background</h2>
+                
+                <h3>Euler's Totient Function</h3>
+                <p>Euler's totient function \( \varphi(n) \) counts the positive integers up to \( n \) that are relatively prime to \( n \). For example:</p>
+                <ul>
+                    <li>\( \varphi(1) = 1 \)</li>
+                    <li>\( \varphi(6) = 2 \) (numbers 1 and 5 are coprime to 6)</li>
+                    <li>\( \varphi(p) = p-1 \) for prime \( p \)</li>
+                </ul>
+                
+                <h3>Modular Angular Representation</h3>
+                <p>For modulus \( m \), each residue \( r \) can be represented as a point on the unit circle:</p>
+                <p>\[ z_{r,m} = e^{2\pi i r/m} = \cos\left(\frac{2\pi r}{m}\right) + i\sin\left(\frac{2\pi r}{m}\right) \]</p>
+                <p>The reduced residue system consists of those \( r \) where \( \gcd(r, m) = 1 \), forming the coprime angular constellation.</p>
+                
+                <h3>Connection to the Riemann Zeta Function</h3>
+                <p>The limit \( \frac{6}{\pi^2} \) arises from the Euler product formula for the Riemann zeta function:</p>
+                <p>\[ \zeta(s) = \prod_{p \text{ prime}} \frac{1}{1 - p^{-s}} \]</p>
+                <p>Specifically, \( \zeta(2) = \frac{\pi^2}{6} \), so the reciprocal gives the coprime density.</p>
+                
+                <h3>Applications and Significance</h3>
+                <p>The study of coprime density and modular symmetry has applications in:</p>
+                <ul>
+                    <li>Number theory and analytic number theory</li>
+                    <li>Cryptography and security algorithms</li>
+                    <li>Probability theory and random number generation</li>
+                    <li>Signal processing and Fourier analysis</li>
+                    <li>Quantum computing and algorithm design</li>
+                </ul>
+            </div>
         </div>
-
-        <div class="export-buttons">
-            <button onclick="exportCSV()">Export CSV</button>
-            <button onclick="exportPNG()">Export Chart as PNG</button>
-            <button onclick="exportText()">Export Full Analysis</button>
-        </div>
-    </div>
-
-    <div class="container">
-        <h2>Angular Distribution Visualization</h2>
-        <p>This visualization shows the distribution of coprime residues on the unit circle for different moduli. Each point represents a residue \( r \) where \( \gcd(r, m) = 1 \), positioned at angle \( \theta = \frac{2\pi r}{m} \).</p>
-        
-        <div id="angularVisualization" class="angular-vis">
-            <!-- Angular plots will be generated here -->
-        </div>
-    </div>
-
-    <div class="container">
-        <h2>Mathematical Background</h2>
-        
-        <h3>Euler's Totient Function</h3>
-        <p>Euler's totient function \( \varphi(n) \) counts the positive integers up to \( n \) that are relatively prime to \( n \). For example:</p>
-        <ul>
-            <li>\( \varphi(1) = 1 \)</li>
-            <li>\( \varphi(6) = 2 \) (numbers 1 and 5 are coprime to 6)</li>
-            <li>\( \varphi(p) = p-1 \) for prime \( p \)</li>
-        </ul>
-        
-        <h3>Modular Angular Representation</h3>
-        <p>For modulus \( m \), each residue \( r \) can be represented as a point on the unit circle:</p>
-        <p>\[ z_{r,m} = e^{2\pi i r/m} = \cos\left(\frac{2\pi r}{m}\right) + i\sin\left(\frac{2\pi r}{m}\right) \]</p>
-        <p>The reduced residue system consists of those \( r \) where \( \gcd(r, m) = 1 \), forming the coprime angular constellation.</p>
-        
-        <h3>Connection to the Riemann Zeta Function</h3>
-        <p>The limit \( \frac{6}{\pi^2} \) arises from the Euler product formula for the Riemann zeta function:</p>
-        <p>\[ \zeta(s) = \prod_{p \text{ prime}} \frac{1}{1 - p^{-s}} \]</p>
-        <p>Specifically, \( \zeta(2) = \frac{\pi^2}{6} \), so the reciprocal gives the coprime density.</p>
     </div>
 
     <div class="footer">
-        <p>Modular Coprime Density Analyzer | Mathematical Visualization Tool</p>
+        <p>Advanced Modular Mathematics Analyzer | Mathematical Visualization Tool</p>
     </div>
 
     <script>
+        // Tab management
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Activate selected button
+            event.target.classList.add('active');
+        }
+
+        // ===== DENSITY ANALYSIS FUNCTIONS =====
+        
         // Euler's totient function implementation
         function totient(n) {
             if (n < 1) return 0;
@@ -415,7 +611,7 @@
         let currentChart = null;
         let analysisData = [];
 
-        function runAnalysis() {
+        function runDensityAnalysis() {
             const M_max = parseInt(document.getElementById('maxModulus').value);
             const stepSize = parseInt(document.getElementById('stepSize').value);
             const updateFreq = parseInt(document.getElementById('updateFrequency').value);
@@ -793,16 +989,189 @@
             document.body.removeChild(link);
         }
 
-        // Initialize on load
+        // ===== MODULAR EVENNESS FUNCTIONS =====
+        
+        let unitCircleChart, totientChart;
+        
+        function initializeEvennessCharts() {
+            // Unit Circle Chart
+            const unitCtx = document.getElementById('unitCircle').getContext('2d');
+            unitCircleChart = new Chart(unitCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Primitive Roots',
+                            data: [],
+                            backgroundColor: 'blue',
+                            pointRadius: 6
+                        },
+                        {
+                            label: 'Inverse Pairs',
+                            data: [],
+                            backgroundColor: 'red',
+                            pointRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: false,
+                    scales: {
+                        x: {
+                            min: -1.2,
+                            max: 1.2,
+                            grid: {
+                                color: '#f0f0f0'
+                            }
+                        },
+                        y: {
+                            min: -1.2,
+                            max: 1.2,
+                            grid: {
+                                color: '#f0f0f0'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Complex Roots of Unity'
+                        }
+                    }
+                }
+            });
+
+            // Totient Function Chart
+            const totientCtx = document.getElementById('totientChart').getContext('2d');
+            totientChart = new Chart(totientCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'φ(n)',
+                        data: [],
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'φ(n)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'n'
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateEvennessVisualization();
+            updateExamplesTable();
+        }
+
+        function modInverse(a, n) {
+            for (let x = 1; x < n; x++) {
+                if ((a * x) % n === 1) return x;
+            }
+            return 1;
+        }
+
+        function updateEvennessVisualization() {
+            const n = parseInt(document.getElementById('modulus').value);
+            if (n < 3) {
+                alert('Please choose n ≥ 3');
+                return;
+            }
+
+            // Update unit circle
+            const primitiveRoots = [];
+            const inversePairs = [];
+            
+            for (let a = 1; a < n; a++) {
+                if (gcd(a, n) === 1) {
+                    const angle = (2 * Math.PI * a) / n;
+                    const x = Math.cos(angle);
+                    const y = Math.sin(angle);
+                    
+                    const inverse = modInverse(a, n);
+                    if (a === inverse || a === n - inverse) {
+                        // Self-inverse (on real axis)
+                        primitiveRoots.push({x, y});
+                    } else if (a < inverse) {
+                        // Regular pair
+                        primitiveRoots.push({x, y});
+                        const invAngle = (2 * Math.PI * inverse) / n;
+                        inversePairs.push({
+                            x: Math.cos(invAngle),
+                            y: Math.sin(invAngle)
+                        });
+                    }
+                }
+            }
+
+            unitCircleChart.data.datasets[0].data = primitiveRoots;
+            unitCircleChart.data.datasets[1].data = inversePairs;
+            unitCircleChart.update();
+
+            // Update totient chart
+            const labels = [];
+            const data = [];
+            for (let i = 3; i <= Math.min(n + 5, 20); i++) {
+                labels.push(i);
+                data.push(totient(i));
+            }
+            totientChart.data.labels = labels;
+            totientChart.data.datasets[0].data = data;
+            totientChart.update();
+
+            // Update circle info
+            document.getElementById('circleInfo').innerHTML = 
+                `n = ${n}, φ(${n}) = ${totient(n)} (${totient(n) % 2 === 0 ? 'even' : 'odd'})`;
+        }
+
+        function updateExamplesTable() {
+            const examples = [
+                {n: 3, totient: 2, residues: '{1, 2}', pairing: '2 ↔ 2 (self-inverse)'},
+                {n: 4, totient: 2, residues: '{1, 3}', pairing: '3 ↔ 3 (self-inverse)'},
+                {n: 5, totient: 4, residues: '{1, 2, 3, 4}', pairing: '2 ↔ 3, 4 ↔ 4'},
+                {n: 6, totient: 2, residues: '{1, 5}', pairing: '5 ↔ 5 (self-inverse)'},
+                {n: 7, totient: 6, residues: '{1, 2, 3, 4, 5, 6}', pairing: '2 ↔ 4, 3 ↔ 5, 6 ↔ 6'},
+                {n: 8, totient: 4, residues: '{1, 3, 5, 7}', pairing: '3 ↔ 3, 5 ↔ 5, 7 ↔ 7'}
+            ];
+
+            const tableBody = document.getElementById('examplesTable');
+            tableBody.innerHTML = examples.map(ex => `
+                <tr>
+                    <td>${ex.n}</td>
+                    <td>${ex.totient}</td>
+                    <td>${ex.residues}</td>
+                    <td>${ex.pairing}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Run initial analysis with smaller dataset for quick load
+            // Run initial density analysis with smaller dataset for quick load
             document.getElementById('maxModulus').value = '500';
-            runAnalysis();
+            runDensityAnalysis();
+            
+            // Initialize evenness theorem charts
+            initializeEvennessCharts();
         });
     </script>
 </body>
 </html>
-
 <html lang="en">
 <head>
     
