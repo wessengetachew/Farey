@@ -457,13 +457,13 @@
                 <div class="visualization-grid">
                     <div class="chart-container">
                         <h3>Unit Circle Visualization</h3>
-                        <canvas id="unitCircle" width="800" height="800"></canvas>
+                        <canvas id="unitCircle" width="400" height="400"></canvas>
                         <div id="circleInfo" style="text-align: center; margin-top: 10px;"></div>
                     </div>
                     
                     <div class="chart-container">
                         <h3>Totient Function Values</h3>
-                        <canvas id="totientChart" width="800" height="800"></canvas>
+                        <canvas id="totientChart" width="400" height="400"></canvas>
                     </div>
                 </div>
 
