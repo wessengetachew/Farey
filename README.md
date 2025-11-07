@@ -78,7 +78,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .control-group {
@@ -109,6 +109,33 @@
 
         button:hover {
             background-color: #2980b9;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .run-btn {
+            background-color: #27ae60;
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .run-btn:hover {
+            background-color: #219a52;
+        }
+
+        .reset-btn {
+            background-color: #95a5a6;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .reset-btn:hover {
+            background-color: #7f8c8d;
         }
 
         .export-buttons {
@@ -223,6 +250,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
+            z-index: 100;
         }
 
         .spinner {
@@ -240,12 +268,56 @@
             100% { transform: rotate(360deg); }
         }
 
+        .status-bar {
+            background: var(--card-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .parameter-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .param-item {
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        .param-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .param-value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
         footer {
             text-align: center;
             margin-top: 2rem;
             padding: 1rem;
             color: #666;
             border-top: 1px solid #ddd;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            pointer-events: none;
+            z-index: 1000;
         }
     </style>
 </head>
@@ -263,7 +335,7 @@
             <div class="controls-grid">
                 <div class="control-group">
                     <label for="modulus">Modulus (N):</label>
-                    <input type="number" id="modulus" min="1" max="1000" value="30">
+                    <input type="number" id="modulus" min="1" max="500" value="30">
                 </div>
                 <div class="control-group">
                     <label for="visualization-type">Visualization Type:</label>
@@ -286,7 +358,13 @@
                 <div class="control-group">
                     <label for="animation-speed">Animation Speed:</label>
                     <input type="range" id="animation-speed" min="0" max="100" value="50">
+                    <span id="speed-value">50%</span>
                 </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="run-btn" id="run-visualization">Run Visualization</button>
+                <button class="reset-btn" id="reset-parameters">Reset Parameters</button>
             </div>
             
             <div class="export-buttons">
@@ -297,9 +375,13 @@
             </div>
         </div>
 
+        <div class="status-bar" id="status-bar">
+            Ready - Click "Run Visualization" to generate plots
+        </div>
+
         <div class="visualization-area">
             <div class="viz-container">
-                <div class="viz-title">Modular Rings Visualization</div>
+                <div class="viz-title" id="main-viz-title">Modular Rings Visualization</div>
                 <div class="viz-content" id="viz-main">
                     <div class="loading" id="loading-main">
                         <div class="spinner"></div>
@@ -320,6 +402,13 @@
         </div>
 
         <div class="info-panel">
+            <div class="info-section">
+                <h3>Current Parameters</h3>
+                <div class="parameter-summary" id="parameter-summary">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+            
             <div class="info-section">
                 <h3>Mathematical Framework</h3>
                 <div class="math-display">
@@ -455,7 +544,7 @@
         }
 
         // Visualization functions
-        function createModularRingsVisualization(container, data, maxModulus) {
+        function createModularRingsVisualization(container, data, maxModulus, colorScheme) {
             const width = container.clientWidth;
             const height = container.clientHeight;
             const margin = 40;
@@ -471,6 +560,18 @@
             const scale = d3.scaleLinear()
                 .domain([0, maxModulus])
                 .range([0, Math.min(width, height) / 2 - margin]);
+            
+            // Color scales based on scheme
+            const colorScales = {
+                viridis: d3.scaleSequential(d3.interpolateViridis).domain([0, maxModulus]),
+                plasma: d3.scaleSequential(d3.interpolatePlasma).domain([0, maxModulus]),
+                inferno: d3.scaleSequential(d3.interpolateInferno).domain([0, maxModulus]),
+                custom: d3.scaleOrdinal()
+                    .domain([true, false])
+                    .range(['#e74c3c', '#3498db'])
+            };
+            
+            const colorScale = colorScales[colorScheme] || colorScales.viridis;
             
             // Create rings for each modulus
             const rings = svg.selectAll('.ring')
@@ -496,23 +597,30 @@
                 .attr('cx', d => scale(d.modulus) * Math.cos(d.theta))
                 .attr('cy', d => scale(d.modulus) * Math.sin(d.theta))
                 .attr('r', 3)
-                .attr('fill', d => d.isCoprime ? '#e74c3c' : '#3498db')
+                .attr('fill', d => {
+                    if (colorScheme === 'custom') {
+                        return d.isCoprime ? colorScale(true) : colorScale(false);
+                    } else {
+                        return colorScale(d.modulus);
+                    }
+                })
                 .attr('opacity', d => d.isCoprime ? 0.8 : 0.3)
                 .on('mouseover', function(event, d) {
                     // Show tooltip
                     const tooltip = d3.select('body').append('div')
                         .attr('class', 'tooltip')
                         .style('position', 'absolute')
-                        .style('background', 'white')
-                        .style('padding', '5px')
-                        .style('border', '1px solid #ccc')
-                        .style('border-radius', '3px')
+                        .style('background', 'rgba(0,0,0,0.8)')
+                        .style('color', 'white')
+                        .style('padding', '8px')
+                        .style('border-radius', '4px')
+                        .style('font-size', '12px')
                         .style('pointer-events', 'none');
                     
                     tooltip.html(`
-                        Modulus: ${d.modulus}<br>
+                        <strong>Modulus: ${d.modulus}</strong><br>
                         Residue: ${d.r}<br>
-                        Coprime: ${d.isCoprime}<br>
+                        Coprime: ${d.isCoprime ? 'Yes' : 'No'}<br>
                         Angle: ${(d.theta * 180 / Math.PI).toFixed(1)}°
                     `);
                 })
@@ -536,7 +644,7 @@
                 .style('fill', '#666');
         }
 
-        function createPropertiesVisualization(container, data) {
+        function createPropertiesVisualization(container, data, colorScheme) {
             container.innerHTML = '';
             
             const width = container.clientWidth;
@@ -555,6 +663,10 @@
             const yScale = d3.scaleLinear()
                 .domain([0, 1])
                 .range([height - margin.bottom, margin.top]);
+            
+            // Color scale
+            const lineColor = colorScheme === 'plasma' ? '#f0e442' : 
+                             colorScheme === 'inferno' ? '#fcffa4' : '#3498db';
             
             // Theoretical density line
             const theoreticalDensity = 6 / (Math.PI * Math.PI);
@@ -575,7 +687,7 @@
             svg.append('path')
                 .datum(data)
                 .attr('fill', 'none')
-                .attr('stroke', '#3498db')
+                .attr('stroke', lineColor)
                 .attr('stroke-width', 2)
                 .attr('d', line);
             
@@ -614,7 +726,7 @@
                 .attr('x2', 20)
                 .attr('y1', 0)
                 .attr('y2', 0)
-                .attr('stroke', '#3498db')
+                .attr('stroke', lineColor)
                 .attr('stroke-width', 2);
             
             legend.append('text')
@@ -641,6 +753,28 @@
                 .style('font-size', '12px');
         }
 
+        function updateParameterSummary(params) {
+            const summary = document.getElementById('parameter-summary');
+            summary.innerHTML = `
+                <div class="param-item">
+                    <div class="param-label">Modulus</div>
+                    <div class="param-value">${params.modulus}</div>
+                </div>
+                <div class="param-item">
+                    <div class="param-label">Visualization</div>
+                    <div class="param-value">${params.visualizationType}</div>
+                </div>
+                <div class="param-item">
+                    <div class="param-label">Color Scheme</div>
+                    <div class="param-value">${params.colorScheme}</div>
+                </div>
+                <div class="param-item">
+                    <div class="param-label">Animation</div>
+                    <div class="param-value">${params.animationSpeed}%</div>
+                </div>
+            `;
+        }
+
         function updateDataTable(data) {
             const tbody = document.getElementById('data-body');
             tbody.innerHTML = '';
@@ -656,6 +790,12 @@
                 `;
                 tbody.appendChild(row);
             });
+        }
+
+        function updateStatus(message, isError = false) {
+            const statusBar = document.getElementById('status-bar');
+            statusBar.textContent = message;
+            statusBar.style.borderLeftColor = isError ? '#e74c3c' : '#3498db';
         }
 
         // Export functions
@@ -695,17 +835,21 @@
 
         function exportJPEG() {
             const element = document.getElementById('viz-main');
+            updateStatus('Exporting JPEG...');
             html2canvas(element).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `modular_visualization_N${document.getElementById('modulus').value}.jpg`;
                 link.href = canvas.toDataURL('image/jpeg', 0.9);
                 link.click();
+                updateStatus('JPEG export completed');
             });
         }
 
         function exportPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            
+            updateStatus('Exporting PDF...');
             
             // Add title
             doc.setFontSize(20);
@@ -718,55 +862,110 @@
             doc.text('Mathematical Properties:', 20, 60);
             doc.text(`Theoretical Density (6/π²): ${(6/(Math.PI*Math.PI)).toFixed(6)}`, 30, 70);
             
-            // For now, we'll just save the PDF. In a real implementation, 
-            // you might want to add the visualizations as images.
             doc.save(`modular_analysis_N${document.getElementById('modulus').value}.pdf`);
+            updateStatus('PDF export completed');
         }
 
         // Main application logic
         let currentData = null;
 
-        function updateVisualizations() {
+        function runVisualization() {
             const modulus = parseInt(document.getElementById('modulus').value);
             const vizType = document.getElementById('visualization-type').value;
+            const colorScheme = document.getElementById('color-scheme').value;
+            const animationSpeed = document.getElementById('animation-speed').value;
+            
+            // Validate input
+            if (modulus < 1 || modulus > 500) {
+                updateStatus('Error: Modulus must be between 1 and 500', true);
+                return;
+            }
+            
+            // Update status
+            updateStatus(`Computing modular data for N=${modulus}...`);
             
             // Show loading
             document.getElementById('loading-main').style.display = 'block';
             document.getElementById('loading-props').style.display = 'block';
             
+            // Update viz title
+            document.getElementById('main-viz-title').textContent = 
+                document.getElementById('visualization-type').selectedOptions[0].text + ' (N=' + modulus + ')';
+            
             setTimeout(() => {
-                const computedData = computeModularData(modulus);
-                currentData = computedData.data;
-                
-                createModularRingsVisualization(
-                    document.getElementById('viz-main'), 
-                    currentData, 
-                    modulus
-                );
-                
-                createPropertiesVisualization(
-                    document.getElementById('viz-properties'),
-                    currentData
-                );
-                
-                updateDataTable(currentData);
-                
-                // Hide loading
-                document.getElementById('loading-main').style.display = 'none';
-                document.getElementById('loading-props').style.display = 'none';
-            }, 100);
+                try {
+                    const computedData = computeModularData(modulus);
+                    currentData = computedData.data;
+                    
+                    createModularRingsVisualization(
+                        document.getElementById('viz-main'), 
+                        currentData, 
+                        modulus,
+                        colorScheme
+                    );
+                    
+                    createPropertiesVisualization(
+                        document.getElementById('viz-properties'),
+                        currentData,
+                        colorScheme
+                    );
+                    
+                    updateDataTable(currentData);
+                    
+                    // Update parameter summary
+                    updateParameterSummary({
+                        modulus,
+                        visualizationType: document.getElementById('visualization-type').selectedOptions[0].text,
+                        colorScheme,
+                        animationSpeed
+                    });
+                    
+                    updateStatus(`Visualization completed. Overall density: ${(computedData.overallDensity).toFixed(6)} (Theoretical: ${computedData.theoreticalDensity.toFixed(6)})`);
+                    
+                } catch (error) {
+                    updateStatus('Error: ' + error.message, true);
+                    console.error(error);
+                } finally {
+                    // Hide loading
+                    document.getElementById('loading-main').style.display = 'none';
+                    document.getElementById('loading-props').style.display = 'none';
+                }
+            }, 500);
+        }
+
+        function resetParameters() {
+            document.getElementById('modulus').value = 30;
+            document.getElementById('visualization-type').value = 'modular-rings';
+            document.getElementById('color-scheme').value = 'viridis';
+            document.getElementById('animation-speed').value = 50;
+            document.getElementById('speed-value').textContent = '50%';
+            updateStatus('Parameters reset to defaults');
         }
 
         // Event listeners
-        document.getElementById('modulus').addEventListener('change', updateVisualizations);
-        document.getElementById('visualization-type').addEventListener('change', updateVisualizations);
+        document.getElementById('run-visualization').addEventListener('click', runVisualization);
+        document.getElementById('reset-parameters').addEventListener('click', resetParameters);
+        
+        document.getElementById('animation-speed').addEventListener('input', function() {
+            document.getElementById('speed-value').textContent = this.value + '%';
+        });
         
         document.getElementById('export-csv').addEventListener('click', () => {
-            if (currentData) exportCSV(currentData);
+            if (currentData) {
+                exportCSV(currentData);
+                updateStatus('CSV export completed');
+            } else {
+                updateStatus('Error: No data to export. Please run visualization first.', true);
+            }
         });
         
         document.getElementById('export-json').addEventListener('click', () => {
-            if (currentData) exportJSON(currentData);
+            if (currentData) {
+                exportJSON(currentData);
+                updateStatus('JSON export completed');
+            } else {
+                updateStatus('Error: No data to export. Please run visualization first.', true);
+            }
         });
         
         document.getElementById('export-jpeg').addEventListener('click', exportJPEG);
@@ -774,7 +973,8 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            updateVisualizations();
+            updateStatus('Ready - Configure parameters and click "Run Visualization"');
+            document.getElementById('speed-value').textContent = '50%';
         });
     </script>
 </body>
