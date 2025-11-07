@@ -8339,4 +8339,4 @@ function drawConcentricRings() {
 
     </script>
 </body>
-</html>
+
