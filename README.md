@@ -1974,7 +1974,118 @@
                 eulerAnimationId = null;
             }
         }
+<!-- Add this to the Farey Channels tab after the existing content -->
+<div class="section-title" id="section-5"><span class="section-number">5</span> Concentric Rings Visualization</div>
 
+<p>This visualization shows nested Farey channels across multiple moduli as concentric rings. Each ring represents a modulus, with points showing coprime residues.</p>
+
+<div class="canvas-container">
+    <div style="text-align: center; margin-bottom: 15px;">
+        <span style="color: #666; font-weight: 600;">Resolution: </span>
+        <button class="mode-btn" onclick="setConcentricResolution(1920)">HD</button>
+        <button class="mode-btn active" onclick="setConcentricResolution(2560)">2K</button>
+        <button class="mode-btn" onclick="setConcentricResolution(3840)">4K</button>
+    </div>
+    <canvas id="concentricCanvas" width="2560" height="2560" style="max-width: 100%; height: auto;"></canvas>
+    
+    <div class="controls" style="margin-top: 15px;">
+        <div class="control-group">
+            <label for="minMod">Min Modulus:</label>
+            <input type="number" id="minMod" value="1" min="1" max="200">
+        </div>
+        <div class="control-group">
+            <label for="maxMod">Max Modulus:</label>
+            <input type="number" id="maxMod" value="100" min="1" max="200">
+        </div>
+        <div class="control-group">
+            <label for="pointSize">Point Size:</label>
+            <input type="range" id="pointSize" min="1" max="10" value="2" step="0.5" style="width: 100px;">
+            <span id="pointSizeVal">2</span>px
+        </div>
+        <div class="control-group">
+            <label>
+                <input type="checkbox" id="invertRings">
+                Invert (Outer→Inner)
+            </label>
+        </div>
+        <div class="control-group">
+            <label>
+                <input type="checkbox" id="concentricDarkBg" checked>
+                Black Background
+            </label>
+        </div>
+    </div>
+
+    <div class="controls" style="margin-top: 10px;">
+        <div class="control-group" style="flex: 2;">
+            <label for="trackMultipleR">Track r values:</label>
+            <input type="text" id="trackMultipleR" value="1" placeholder="e.g., 1,2,3,5 or primes or composites" style="width: 100%;">
+        </div>
+        <div class="control-group">
+            <label>
+                <input type="checkbox" id="showAllR" checked>
+                Show All r
+            </label>
+        </div>
+        <div class="control-group">
+            <label>
+                <input type="checkbox" id="highlightTracked" checked>
+                Highlight Tracked r
+            </label>
+        </div>
+    </div>
+
+    <div class="controls" style="margin-top: 10px;">
+        <div class="control-group">
+            <label for="ringMode">Display Mode:</label>
+            <select id="ringMode" onchange="updateModeControls()">
+                <option value="all">All Residues</option>
+                <option value="open-only">Open Channels Only</option>
+                <option value="primes-only">Primes Only</option>
+                <option value="fixed-r">Fixed r (vary m)</option>
+                <option value="fixed-m">Fixed m (vary r)</option>
+                <option value="multi-r">Multiple r values</option>
+                <option value="multi-m">Multiple m values</option>
+            </select>
+        </div>
+        <div class="control-group" id="fixedRGroup" style="display: none;">
+            <label for="fixedRValue">r value:</label>
+            <input type="number" id="fixedRValue" value="1" min="1" max="100">
+        </div>
+        <div class="control-group" id="fixedMGroup" style="display: none;">
+            <label for="fixedMValue">m value:</label>
+            <input type="number" id="fixedMValue" value="12" min="2" max="200">
+        </div>
+    </div>
+
+    <div class="controls" style="margin-top: 10px;">
+        <div class="control-group">
+            <label for="colorMode">Color Mode:</label>
+            <select id="colorMode" onchange="updateColorModeInfo()">
+                <option value="open-blocked">1. Binary: Open vs Blocked</option>
+                <option value="gcd-gradient">2. GCD Gradient</option>
+                <option value="gcd-local">3. GCD (Local per m)</option>
+                <option value="gcd-global">4. GCD (Global)</option>
+                <option value="prime-factor">5. Smallest Prime Factor</option>
+                <option value="density-local">6. Local Density Gradient</option>
+                <option value="residue-class">7. Residue Class mod k</option>
+                <option value="farey-level">8. Farey Denominator Level</option>
+                <option value="angular-hue">9. Angular Hue</option>
+                <option value="multi-property">10. Multi-Property (HSB)</option>
+            </select>
+        </div>
+        <div id="colorModeInfo" style="margin-top: 5px; font-size: 0.85em; color: #666; font-style: italic;"></div>
+    </div>
+
+    <div class="controls" style="margin-top: 15px;">
+        <button onclick="drawConcentricRings()">Visualize</button>
+        <button class="success" onclick="exportConcentricWithLegend('4k')"> Export 4K + Legend</button>
+        <button class="success" onclick="exportConcentricWithLegend('2k')"> Export 2K + Legend</button>
+        <button class="secondary" onclick="exportConcentricView()"> Simple Export</button>
+    </div>
+    
+    <div class="stats-display" id="concentricStats" style="margin-top: 20px;"></div>
+</div>
         // ==================== INITIALIZATION ====================
         
         // Initialize when page loads
