@@ -684,7 +684,7 @@
                     <header>
                         <h1>Nested Farey Channels & Fractional-Slice Coprimality Heuristic</h1>
                         <div class="author">Wessen Getachew</div>
-                        <div class="date">October 2025</div>
+                        <div class="date">November 2025</div>
                     </header>
 
                     <div class="abstract">
@@ -836,11 +836,11 @@
                     </div>
 
                     <div class="canvas-container">
-                        <canvas id="channelCanvas" width="700" height="700"></canvas>
+                        <canvas id="channelCanvas" width="1000" height="1000"></canvas>
                         <div class="controls">
                             <div class="control-group">
                                 <label for="modInput">Modulus:</label>
-                                <input type="number" id="modInput" value="13" min="2" max="500">
+                                <input type="number" id="modInput" value="13" min="2" max="100">
                             </div>
                             <button onclick="drawChannelRing()">Visualize</button>
                         </div>
@@ -894,7 +894,7 @@
                         <button class="success" onclick="runFractionalTest()">Run Test</button>
                     </div>
 
-                    <canvas id="testCanvas" width="600" height="600" style="display: block; margin: 20px auto;"></canvas>
+                    <canvas id="testCanvas" width="1000" height="1000" style="display: block; margin: 20px auto;"></canvas>
                     
                     <div id="testResult"></div>
 
