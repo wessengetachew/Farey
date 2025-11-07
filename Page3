@@ -8130,7 +8130,7 @@ function drawConcentricRings() {
                 const originalHTML = statsDiv.innerHTML;
                 statsDiv.innerHTML = `
                     <div style="background: #27ae60; color: white; padding: 15px; border-radius: 8px; text-align: center;">
-                        ✅ <strong>CSV Exported!</strong><br>
+                         <strong>CSV Exported!</strong><br>
                         ${moduli.length} moduli with complete GCD=1 point data
                     </div>
                 `;
@@ -8250,7 +8250,7 @@ function drawConcentricRings() {
             if (colorScheme !== 'default') {
                 valuesList.innerHTML += `
                 <div style="margin-top: 8px; font-size: 0.9em; color: #93c5fd;">
-                    🎨 Color scheme: ${colorScheme.replace('-', ' ')}
+                     Color scheme: ${colorScheme.replace('-', ' ')}
                 </div>
                 `;
             }
