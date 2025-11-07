@@ -412,7 +412,7 @@
             </div>
             
             <div class="viz-container">
-                <div class="viz-title">Mathematical Properties</div>
+                <div class="viz-title" id="properties-viz-title">Mathematical Properties</div>
                 <div class="viz-content" id="viz-properties">
                     <div class="loading" id="loading-props">
                         <div class="spinner"></div>
@@ -500,6 +500,22 @@
             return primeCount % 2 === 0 ? 1 : -1;
         }
 
+        function fareySequence(n) {
+            const sequence = [];
+            for (let denominator = 1; denominator <= n; denominator++) {
+                for (let numerator = 0; numerator <= denominator; numerator++) {
+                    if (gcd(numerator, denominator) === 1) {
+                        sequence.push({
+                            numerator,
+                            denominator,
+                            value: numerator / denominator
+                        });
+                    }
+                }
+            }
+            return sequence.sort((a, b) => a.value - b.value);
+        }
+
         function computeModularData(maxModulus) {
             const data = [];
             let totalResidues = 0;
@@ -549,7 +565,7 @@
             };
         }
 
-        // Visualization functions
+        // Visualization functions for different types
         function createModularRingsVisualization(container, data, maxModulus, colorScheme) {
             // Clear previous visualization properly
             d3.select(container).selectAll("*").remove();
@@ -612,7 +628,6 @@
                 })
                 .attr('opacity', d => d.isCoprime ? 0.8 : 0.3)
                 .on('mouseover', function(event, d) {
-                    // Show tooltip
                     const tooltip = d3.select('body').append('div')
                         .attr('class', 'tooltip')
                         .style('position', 'absolute')
@@ -650,8 +665,315 @@
                 .style('fill', '#666');
         }
 
-        function createPropertiesVisualization(container, data, colorScheme) {
-            // Clear previous visualization properly
+        function createFareySequenceVisualization(container, data, maxModulus, colorScheme) {
+            d3.select(container).selectAll("*").remove();
+            
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const margin = 40;
+            
+            const svg = d3.select(container)
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+            
+            // Generate Farey sequence
+            const farey = fareySequence(maxModulus);
+            
+            // Color scale for fractions
+            const colorScale = d3.scaleSequential(d3.interpolateViridis)
+                .domain([0, farey.length]);
+            
+            // Plot Farey sequence on unit circle
+            const scale = Math.min(width, height) / 2 - margin;
+            
+            const points = svg.selectAll('.farey-point')
+                .data(farey)
+                .enter()
+                .append('circle')
+                .attr('class', 'farey-point')
+                .attr('cx', d => width/2 + scale * Math.cos(2 * Math.PI * d.value))
+                .attr('cy', d => height/2 + scale * Math.sin(2 * Math.PI * d.value))
+                .attr('r', 3)
+                .attr('fill', (d, i) => colorScale(i))
+                .attr('opacity', 0.7)
+                .on('mouseover', function(event, d) {
+                    const tooltip = d3.select('body').append('div')
+                        .attr('class', 'tooltip')
+                        .style('position', 'absolute')
+                        .style('background', 'rgba(0,0,0,0.8)')
+                        .style('color', 'white')
+                        .style('padding', '8px')
+                        .style('border-radius', '4px')
+                        .style('font-size', '12px')
+                        .style('pointer-events', 'none');
+                    
+                    tooltip.html(`
+                        <strong>Farey Fraction</strong><br>
+                        ${d.numerator}/${d.denominator}<br>
+                        Value: ${d.value.toFixed(4)}
+                    `);
+                })
+                .on('mousemove', function(event) {
+                    d3.select('.tooltip')
+                        .style('left', (event.pageX + 10) + 'px')
+                        .style('top', (event.pageY - 10) + 'px');
+                })
+                .on('mouseout', function() {
+                    d3.select('.tooltip').remove();
+                });
+            
+            // Draw unit circle
+            svg.append('circle')
+                .attr('cx', width/2)
+                .attr('cy', height/2)
+                .attr('r', scale)
+                .attr('fill', 'none')
+                .attr('stroke', '#ddd')
+                .attr('stroke-width', 1);
+            
+            // Add title
+            svg.append('text')
+                .attr('x', width/2)
+                .attr('y', 20)
+                .attr('text-anchor', 'middle')
+                .text(`Farey Sequence of Order ${maxModulus} (${farey.length} fractions)`)
+                .style('font-size', '14px')
+                .style('font-weight', 'bold');
+        }
+
+        function createMobiusSumVisualization(container, data, maxModulus, colorScheme) {
+            d3.select(container).selectAll("*").remove();
+            
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const margin = {top: 40, right: 30, bottom: 40, left: 50};
+            
+            const svg = d3.select(container)
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+            
+            // Extract Möbius sums
+            const mobiusData = data.map(d => ({
+                modulus: d.modulus,
+                mobiusSum: d.mobiusSum,
+                cumulative: data.slice(0, d.modulus).reduce((sum, item) => sum + item.mobiusSum, 0)
+            }));
+            
+            const xScale = d3.scaleLinear()
+                .domain([1, maxModulus])
+                .range([margin.left, width - margin.right]);
+            
+            const yScale = d3.scaleLinear()
+                .domain(d3.extent(mobiusData, d => d.mobiusSum))
+                .range([height - margin.bottom, margin.top]);
+            
+            const cumulativeYScale = d3.scaleLinear()
+                .domain(d3.extent(mobiusData, d => d.cumulative))
+                .range([height - margin.bottom, margin.top]);
+            
+            // Color scale
+            const lineColor = colorScheme === 'plasma' ? '#f0e442' : 
+                             colorScheme === 'inferno' ? '#fcffa4' : '#3498db';
+            
+            // Möbius sum line
+            const line = d3.line()
+                .x(d => xScale(d.modulus))
+                .y(d => yScale(d.mobiusSum));
+            
+            svg.append('path')
+                .datum(mobiusData)
+                .attr('fill', 'none')
+                .attr('stroke', lineColor)
+                .attr('stroke-width', 2)
+                .attr('d', line);
+            
+            // Cumulative sum line
+            const cumulativeLine = d3.line()
+                .x(d => xScale(d.modulus))
+                .y(d => cumulativeYScale(d.cumulative));
+            
+            svg.append('path')
+                .datum(mobiusData)
+                .attr('fill', 'none')
+                .attr('stroke', '#e74c3c')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '5,5')
+                .attr('d', cumulativeLine);
+            
+            // Axes
+            const xAxis = d3.axisBottom(xScale);
+            const yAxis = d3.axisLeft(yScale);
+            
+            svg.append('g')
+                .attr('transform', `translate(0, ${height - margin.bottom})`)
+                .call(xAxis);
+            
+            svg.append('g')
+                .attr('transform', `translate(${margin.left}, 0)`)
+                .call(yAxis);
+            
+            // Labels
+            svg.append('text')
+                .attr('x', width / 2)
+                .attr('y', height - 5)
+                .attr('text-anchor', 'middle')
+                .text('Modulus');
+            
+            svg.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('x', -height / 2)
+                .attr('y', 15)
+                .attr('text-anchor', 'middle')
+                .text('Möbius Sum');
+            
+            // Legend
+            const legend = svg.append('g')
+                .attr('transform', `translate(${width - 150}, ${margin.top})`);
+            
+            legend.append('line')
+                .attr('x1', 0)
+                .attr('x2', 20)
+                .attr('y1', 0)
+                .attr('y2', 0)
+                .attr('stroke', lineColor)
+                .attr('stroke-width', 2);
+            
+            legend.append('text')
+                .attr('x', 25)
+                .attr('y', 0)
+                .attr('dy', '0.35em')
+                .text('Möbius Sum')
+                .style('font-size', '12px');
+            
+            legend.append('line')
+                .attr('x1', 0)
+                .attr('x2', 20)
+                .attr('y1', 20)
+                .attr('y2', 20)
+                .attr('stroke', '#e74c3c')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '5,5');
+            
+            legend.append('text')
+                .attr('x', 25)
+                .attr('y', 20)
+                .attr('dy', '0.35em')
+                .text('Cumulative Sum')
+                .style('font-size', '12px');
+        }
+
+        function createConformalMappingVisualization(container, data, maxModulus, colorScheme) {
+            d3.select(container).selectAll("*").remove();
+            
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const margin = 40;
+            
+            const svg = d3.select(container)
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+            
+            // Universal modular conformal mapping: Φ(r, m) = m·e^(2πi r/m)
+            const allPoints = [];
+            data.forEach(modulusData => {
+                modulusData.residues.forEach(residue => {
+                    if (residue.isCoprime) {
+                        allPoints.push({
+                            x: residue.x,
+                            y: residue.y,
+                            modulus: residue.m,
+                            residue: residue.r,
+                            theta: residue.theta
+                        });
+                    }
+                });
+            });
+            
+            // Find bounds for scaling
+            const xExtent = d3.extent(allPoints, d => d.x);
+            const yExtent = d3.extent(allPoints, d => d.y);
+            const maxExtent = Math.max(
+                Math.abs(xExtent[0]), Math.abs(xExtent[1]),
+                Math.abs(yExtent[0]), Math.abs(yExtent[1])
+            );
+            
+            const scale = d3.scaleLinear()
+                .domain([-maxExtent, maxExtent])
+                .range([margin, width - margin]);
+            
+            // Color scale
+            const colorScale = d3.scaleSequential(d3.interpolateViridis)
+                .domain([0, maxModulus]);
+            
+            // Plot all coprime points
+            const points = svg.selectAll('.conformal-point')
+                .data(allPoints)
+                .enter()
+                .append('circle')
+                .attr('class', 'conformal-point')
+                .attr('cx', d => scale(d.x))
+                .attr('cy', d => scale(d.y))
+                .attr('r', 2)
+                .attr('fill', d => colorScale(d.modulus))
+                .attr('opacity', 0.6)
+                .on('mouseover', function(event, d) {
+                    const tooltip = d3.select('body').append('div')
+                        .attr('class', 'tooltip')
+                        .style('position', 'absolute')
+                        .style('background', 'rgba(0,0,0,0.8)')
+                        .style('color', 'white')
+                        .style('padding', '8px')
+                        .style('border-radius', '4px')
+                        .style('font-size', '12px')
+                        .style('pointer-events', 'none');
+                    
+                    tooltip.html(`
+                        <strong>Conformal Mapping</strong><br>
+                        Modulus: ${d.modulus}<br>
+                        Residue: ${d.residue}<br>
+                        Point: (${d.x.toFixed(2)}, ${d.y.toFixed(2)})
+                    `);
+                })
+                .on('mousemove', function(event) {
+                    d3.select('.tooltip')
+                        .style('left', (event.pageX + 10) + 'px')
+                        .style('top', (event.pageY - 10) + 'px');
+                })
+                .on('mouseout', function() {
+                    d3.select('.tooltip').remove();
+                });
+            
+            // Add coordinate axes
+            svg.append('line')
+                .attr('x1', scale(0))
+                .attr('x2', scale(0))
+                .attr('y1', margin)
+                .attr('y2', height - margin)
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 1);
+            
+            svg.append('line')
+                .attr('x1', margin)
+                .attr('x2', width - margin)
+                .attr('y1', scale(0))
+                .attr('y2', scale(0))
+                .attr('stroke', '#ccc')
+                .attr('stroke-width', 1);
+            
+            // Add title
+            svg.append('text')
+                .attr('x', width/2)
+                .attr('y', 20)
+                .attr('text-anchor', 'middle')
+                .text('Universal Modular Conformal Mapping: Φ(r,m) = m·e^(2πi r/m)')
+                .style('font-size', '14px')
+                .style('font-weight', 'bold');
+        }
+
+        function createPropertiesVisualization(container, data, colorScheme, vizType) {
             d3.select(container).selectAll("*").remove();
             
             const width = container.clientWidth;
@@ -902,15 +1224,24 @@
             isComputing = true;
             
             // Update status
-            updateStatus(`Computing modular data for N=${modulus}...`);
+            updateStatus(`Computing data for ${vizType.replace('-', ' ')} with N=${modulus}...`);
             
             // Show loading
             document.getElementById('loading-main').style.display = 'block';
             document.getElementById('loading-props').style.display = 'block';
             
-            // Update viz title
+            // Update viz titles
+            const vizTypeNames = {
+                'modular-rings': 'Modular Rings',
+                'farey-sequence': 'Farey Sequence', 
+                'mobius-sum': 'Möbius Sum',
+                'conformal-mapping': 'Conformal Mapping'
+            };
+            
             document.getElementById('main-viz-title').textContent = 
-                document.getElementById('visualization-type').selectedOptions[0].text + ' (N=' + modulus + ')';
+                vizTypeNames[vizType] + ' (N=' + modulus + ')';
+            document.getElementById('properties-viz-title').textContent = 
+                'Mathematical Properties - ' + vizTypeNames[vizType];
             
             // Use setTimeout to allow UI to update
             setTimeout(() => {
@@ -921,17 +1252,48 @@
                     // Clear any existing tooltips
                     d3.selectAll('.tooltip').remove();
                     
-                    createModularRingsVisualization(
-                        document.getElementById('main-canvas'), 
-                        currentData, 
-                        modulus,
-                        colorScheme
-                    );
+                    // Create main visualization based on type
+                    switch(vizType) {
+                        case 'modular-rings':
+                            createModularRingsVisualization(
+                                document.getElementById('main-canvas'), 
+                                currentData, 
+                                modulus,
+                                colorScheme
+                            );
+                            break;
+                        case 'farey-sequence':
+                            createFareySequenceVisualization(
+                                document.getElementById('main-canvas'),
+                                currentData,
+                                modulus,
+                                colorScheme
+                            );
+                            break;
+                        case 'mobius-sum':
+                            createMobiusSumVisualization(
+                                document.getElementById('main-canvas'),
+                                currentData,
+                                modulus,
+                                colorScheme
+                            );
+                            break;
+                        case 'conformal-mapping':
+                            createConformalMappingVisualization(
+                                document.getElementById('main-canvas'),
+                                currentData,
+                                modulus,
+                                colorScheme
+                            );
+                            break;
+                    }
                     
+                    // Always show density properties in second panel
                     createPropertiesVisualization(
                         document.getElementById('properties-canvas'),
                         currentData,
-                        colorScheme
+                        colorScheme,
+                        vizType
                     );
                     
                     updateDataTable(currentData);
@@ -939,7 +1301,7 @@
                     // Update parameter summary
                     updateParameterSummary({
                         modulus,
-                        visualizationType: document.getElementById('visualization-type').selectedOptions[0].text,
+                        visualizationType: vizTypeNames[vizType],
                         colorScheme,
                         animationSpeed
                     });
