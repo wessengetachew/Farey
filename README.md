@@ -174,6 +174,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             height: 500px;
             position: relative;
+            overflow: hidden;
         }
 
         .viz-title {
@@ -187,6 +188,11 @@
         .viz-content {
             height: calc(100% - 3rem);
             position: relative;
+        }
+
+        .viz-canvas {
+            width: 100%;
+            height: 100%;
         }
 
         .info-panel {
@@ -251,6 +257,10 @@
             transform: translate(-50%, -50%);
             text-align: center;
             z-index: 100;
+            background: rgba(255,255,255,0.9);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .spinner {
@@ -319,6 +329,15 @@
             pointer-events: none;
             z-index: 1000;
         }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+            margin: 1rem 0;
+        }
     </style>
 </head>
 <body>
@@ -335,7 +354,8 @@
             <div class="controls-grid">
                 <div class="control-group">
                     <label for="modulus">Modulus (N):</label>
-                    <input type="number" id="modulus" min="1" max="500" value="30">
+                    <input type="number" id="modulus" min="1" max="200" value="30">
+                    <small style="color: #666; margin-top: 0.25rem;">Max: 200 for performance</small>
                 </div>
                 <div class="control-group">
                     <label for="visualization-type">Visualization Type:</label>
@@ -387,6 +407,7 @@
                         <div class="spinner"></div>
                         <div>Calculating modular residues...</div>
                     </div>
+                    <div class="viz-canvas" id="main-canvas"></div>
                 </div>
             </div>
             
@@ -397,6 +418,7 @@
                         <div class="spinner"></div>
                         <div>Computing properties...</div>
                     </div>
+                    <div class="viz-canvas" id="properties-canvas"></div>
                 </div>
             </div>
         </div>
@@ -478,22 +500,6 @@
             return primeCount % 2 === 0 ? 1 : -1;
         }
 
-        function fareySequence(n) {
-            const sequence = [];
-            for (let denominator = 1; denominator <= n; denominator++) {
-                for (let numerator = 0; numerator <= denominator; numerator++) {
-                    if (gcd(numerator, denominator) === 1) {
-                        sequence.push({
-                            numerator,
-                            denominator,
-                            value: numerator / denominator
-                        });
-                    }
-                }
-            }
-            return sequence.sort((a, b) => a.value - b.value);
-        }
-
         function computeModularData(maxModulus) {
             const data = [];
             let totalResidues = 0;
@@ -506,7 +512,7 @@
                 
                 for (let r = 0; r < m; r++) {
                     const isCoprimeVal = isCoprime(r, m);
-                    if (isCoprimeVal) {
+                    if (isCoprimeVal && r > 0) {
                         coprimeCount++;
                         mobiusSum += mobius(r);
                     }
@@ -545,12 +551,12 @@
 
         // Visualization functions
         function createModularRingsVisualization(container, data, maxModulus, colorScheme) {
+            // Clear previous visualization properly
+            d3.select(container).selectAll("*").remove();
+            
             const width = container.clientWidth;
             const height = container.clientHeight;
             const margin = 40;
-            
-            // Clear previous visualization
-            container.innerHTML = '';
             
             const svg = d3.select(container)
                 .append('svg')
@@ -645,7 +651,8 @@
         }
 
         function createPropertiesVisualization(container, data, colorScheme) {
-            container.innerHTML = '';
+            // Clear previous visualization properly
+            d3.select(container).selectAll("*").remove();
             
             const width = container.clientWidth;
             const height = container.clientHeight;
@@ -779,7 +786,10 @@
             const tbody = document.getElementById('data-body');
             tbody.innerHTML = '';
             
-            data.forEach(item => {
+            // Show only a subset for performance
+            const displayData = data.filter((item, index) => index % Math.ceil(data.length / 20) === 0 || index === data.length - 1);
+            
+            displayData.forEach(item => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${item.modulus}</td>
@@ -796,6 +806,8 @@
             const statusBar = document.getElementById('status-bar');
             statusBar.textContent = message;
             statusBar.style.borderLeftColor = isError ? '#e74c3c' : '#3498db';
+            statusBar.style.background = isError ? '#fee' : 'var(--card-color)';
+            statusBar.style.color = isError ? '#c33' : 'var(--text-color)';
         }
 
         // Export functions
@@ -868,18 +880,26 @@
 
         // Main application logic
         let currentData = null;
+        let isComputing = false;
 
         function runVisualization() {
+            if (isComputing) {
+                updateStatus('Computation in progress... please wait', true);
+                return;
+            }
+
             const modulus = parseInt(document.getElementById('modulus').value);
             const vizType = document.getElementById('visualization-type').value;
             const colorScheme = document.getElementById('color-scheme').value;
             const animationSpeed = document.getElementById('animation-speed').value;
             
             // Validate input
-            if (modulus < 1 || modulus > 500) {
-                updateStatus('Error: Modulus must be between 1 and 500', true);
+            if (isNaN(modulus) || modulus < 1 || modulus > 200) {
+                updateStatus('Error: Modulus must be a number between 1 and 200', true);
                 return;
             }
+            
+            isComputing = true;
             
             // Update status
             updateStatus(`Computing modular data for N=${modulus}...`);
@@ -892,20 +912,24 @@
             document.getElementById('main-viz-title').textContent = 
                 document.getElementById('visualization-type').selectedOptions[0].text + ' (N=' + modulus + ')';
             
+            // Use setTimeout to allow UI to update
             setTimeout(() => {
                 try {
                     const computedData = computeModularData(modulus);
                     currentData = computedData.data;
                     
+                    // Clear any existing tooltips
+                    d3.selectAll('.tooltip').remove();
+                    
                     createModularRingsVisualization(
-                        document.getElementById('viz-main'), 
+                        document.getElementById('main-canvas'), 
                         currentData, 
                         modulus,
                         colorScheme
                     );
                     
                     createPropertiesVisualization(
-                        document.getElementById('viz-properties'),
+                        document.getElementById('properties-canvas'),
                         currentData,
                         colorScheme
                     );
@@ -923,14 +947,15 @@
                     updateStatus(`Visualization completed. Overall density: ${(computedData.overallDensity).toFixed(6)} (Theoretical: ${computedData.theoreticalDensity.toFixed(6)})`);
                     
                 } catch (error) {
+                    console.error('Visualization error:', error);
                     updateStatus('Error: ' + error.message, true);
-                    console.error(error);
                 } finally {
                     // Hide loading
                     document.getElementById('loading-main').style.display = 'none';
                     document.getElementById('loading-props').style.display = 'none';
+                    isComputing = false;
                 }
-            }, 500);
+            }, 100);
         }
 
         function resetParameters() {
@@ -975,6 +1000,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateStatus('Ready - Configure parameters and click "Run Visualization"');
             document.getElementById('speed-value').textContent = '50%';
+            
+            // Add performance warning for large moduli
+            const modulusInput = document.getElementById('modulus');
+            modulusInput.addEventListener('change', function() {
+                if (this.value > 100) {
+                    updateStatus('Note: Large moduli may take longer to compute', false);
+                }
+            });
         });
     </script>
 </body>
