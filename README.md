@@ -457,13 +457,13 @@
                 <div class="visualization-grid">
                     <div class="chart-container">
                         <h3>Unit Circle Visualization</h3>
-                        <canvas id="unitCircle" width="400" height="400"></canvas>
+                        <canvas id="unitCircle" width="800" height="800"></canvas>
                         <div id="circleInfo" style="text-align: center; margin-top: 10px;"></div>
                     </div>
                     
                     <div class="chart-container">
                         <h3>Totient Function Values</h3>
-                        <canvas id="totientChart" width="400" height="400"></canvas>
+                        <canvas id="totientChart" width="800" height="800"></canvas>
                     </div>
                 </div>
 
@@ -1162,7 +1162,7 @@
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
             // Run initial density analysis with smaller dataset for quick load
-            document.getElementById('maxModulus').value = '500';
+            document.getElementById('maxModulus').value = '30';
             runDensityAnalysis();
             
             // Initialize evenness theorem charts
