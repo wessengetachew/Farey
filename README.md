@@ -9709,4 +9709,4183 @@ function drawConcentricRings() {
 
     </script>
 </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonic Numbers, Zeta Values, and Twin-Prime Constants - Interactive Exploration</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #1a472a;
+            border-bottom: 3px solid #27ae60;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: #16a085;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            cursor: pointer;
+            padding: 10px;
+            background: #ecf0f1;
+            border-left: 5px solid #16a085;
+            transition: background 0.3s;
+        }
+        
+        h2:hover {
+            background: #d5dbdb;
+        }
+        
+        h2::before {
+            content: '▶ ';
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+        
+        h2.active::before {
+            transform: rotate(90deg);
+        }
+        
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            padding: 0 15px;
+        }
+        
+        .section-content.active {
+            max-height: 5000px;
+            padding: 20px 15px;
+        }
+        
+        .abstract {
+            background: #fff9e6;
+            border-left: 5px solid #f39c12;
+            padding: 20px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        
+        .theorem, .proposition, .lemma {
+            background: #e8f8f5;
+            border: 2px solid #1abc9c;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .theorem-title {
+            font-weight: bold;
+            color: #16a085;
+            margin-bottom: 10px;
+        }
+        
+        .proof {
+            background: #fef5e7;
+            border-left: 3px solid #f39c12;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .proof-title {
+            font-weight: bold;
+            color: #d68910;
+            margin-bottom: 10px;
+        }
+        
+        .remark {
+            background: #ebf5fb;
+            border-left: 3px solid #3498db;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .warning {
+            background: #fadbd8;
+            border: 2px solid #e74c3c;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        ul, ol {
+            margin: 15px 0 15px 40px;
+        }
+        
+        li {
+            margin: 10px 0;
+        }
+        
+        .interactive-box {
+            background: #f8f9fa;
+            border: 2px solid #6c757d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .slider-container {
+            margin: 20px 0;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            margin-bottom: 10px;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #16a085;
+            cursor: pointer;
+        }
+        
+        .value-display {
+            font-size: 1.2em;
+            color: #16a085;
+            font-weight: bold;
+        }
+        
+        canvas {
+            max-width: 100%;
+            margin: 20px 0;
+            min-height: 400px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin: 30px 0;
+        }
+        
+        .calculation-output {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        /* Export buttons styling */
+        .export-buttons {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(52, 152, 219, 0.05);
+            border-radius: 8px;
+            border: 2px dashed rgba(52, 152, 219, 0.3);
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9) !important;
+            color: white !important;
+            border: none !important;
+            padding: 10px 20px !important;
+            border-radius: 6px !important;
+            cursor: pointer !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3) !important;
+        }
+        
+        .export-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #21618c) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4) !important;
+        }
+        
+        .export-btn.csv-btn {
+            background: linear-gradient(135deg, #27ae60, #229954) !important;
+        }
+        
+        .export-btn.csv-btn:hover {
+            background: linear-gradient(135deg, #229954, #1e8449) !important;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #bdc3c7;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        th {
+            background: #34495e;
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background: #ecf0f1;
+        }
+        
+        .nav-buttons {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-button {
+            background: #16a085;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+        
+        .nav-button:hover {
+            background: #1abc9c;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Harmonic Numbers, Zeta Values, Divisor Sums, and Modular-Density Connections</h1>
+        
+        <p style="text-align: center; font-style: italic; margin-bottom: 30px; color: #7f8c8d;">
+            An Interactive Exploration of Analytic Number Theory
+        </p>
+        
+        <div class="abstract">
+            <strong>Abstract:</strong> This interactive document presents fundamental results in analytic number theory: the asymptotic behavior of harmonic numbers \(H_n\), the Euler product representation for the Riemann zeta function with the celebrated result \(\zeta(2)=\pi^2/6\), the probabilistic interpretation that two random integers are coprime with probability \(6/\pi^2\), and average-order estimates for the sum-of-divisors function \(\sigma(n)\). These classical results are connected to modular-sieve density heuristics and the Hardy-Littlewood approach to twin-prime distribution, demonstrating the fundamental role of Euler products and logarithmic growth in sieve-theoretic estimates.
+        </div>
 
+        <h2 id="section1">1. Definitions and Basic Asymptotics</h2>
+        <div class="section-content">
+            <h3>Harmonic Numbers</h3>
+            <p>The <em>harmonic numbers</em> are defined as:</p>
+            <p>\[H_n = \sum_{k=1}^n \frac{1}{k}\]</p>
+            
+            <p>A classical asymptotic expansion is:</p>
+            <p>\[H_n = \ln n + \gamma + \frac{1}{2n} - \frac{1}{12n^2} + O\!\left(\frac{1}{n^4}\right)\]</p>
+            
+            <p>where \(\gamma \approx 0.5772156649\) is the Euler-Mascheroni constant. In particular:</p>
+            <p>\[H_n = \ln n + \gamma + o(1) \quad (n\to\infty)\]</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Explore Harmonic Numbers</h3>
+                <div class="slider-container">
+                    <label for="nSlider">Select n: <span class="value-display" id="nValue">100</span></label>
+                    <input type="range" id="nSlider" min="1" max="10000" value="100">
+                </div>
+                <div class="calculation-output" id="harmonicOutput"></div>
+                <div class="chart-container">
+                    <canvas id="harmonicChart"></canvas>
+                </div>
+            </div>
+
+            <h3>Riemann Zeta Function</h3>
+            <p>The Riemann zeta function for \(\Re(s)>1\) is:</p>
+            <p>\[\zeta(s)=\sum_{n=1}^\infty \frac{1}{n^s} = \prod_{p\ \text{prime}} \frac{1}{1-p^{-s}}\]</p>
+            <p>where the product is Euler's product over primes.</p>
+
+            <h3>Sum-of-Divisors Function</h3>
+            <p>The sum-of-divisors function \(\sigma(n)\) is:</p>
+            <p>\[\sigma(n)=\sum_{d\mid n} d\]</p>
+            <div class="remark">
+                <strong>Note:</strong> Sometimes authors use \(\sigma_k(n)=\sum_{d\mid n} d^k\), and \(\tau(n)\) or \(d(n)\) denotes the number of divisors. Be attentive to notation.
+            </div>
+        </div>
+
+        <h2 id="section2">2. The Special Value \(\zeta(2)=\pi^2/6\) and Coprimality Density</h2>
+        <div class="section-content">
+            <div class="theorem">
+                <div class="theorem-title">Theorem (Euler)</div>
+                <p>\[\zeta(2)=\sum_{n=1}^\infty \frac{1}{n^2}=\frac{\pi^2}{6}\]</p>
+            </div>
+
+            <div class="proof">
+                <div class="proof-title">Sketch of Proof (Fourier/Series Method)</div>
+                <p>A classical proof expands the product representation of \(\sin x\):</p>
+                <p>\[\frac{\sin x}{x}=\prod_{n=1}^\infty\left(1-\frac{x^2}{\pi^2 n^2}\right)\]</p>
+                <p>Comparing coefficients in the Maclaurin expansion of \(\sin x/x\) yields the identity for \(\sum_{n\ge1}n^{-2}\).</p>
+            </div>
+
+            <div class="theorem">
+                <div class="theorem-title">Proposition (Probability Two Integers are Coprime)</div>
+                <p>Let \(a,b\) be two integers chosen uniformly at random from \(\{1,2,\dots,N\}\) and let \(N\to\infty\). Then:</p>
+                <p>\[\Pr(\gcd(a,b)=1)=\frac{1}{\zeta(2)}=\frac{6}{\pi^2} \approx 0.6079\]</p>
+            </div>
+
+            <div class="interactive-box">
+                <h3>Interactive: Coprimality Simulation</h3>
+                <div class="slider-container">
+                    <label for="pairsSlider">Number of pairs to test: <span class="value-display" id="pairsValue">50000</span></label>
+                    <input type="range" id="pairsSlider" min="10000" max="1000000" step="10000" value="50000">
+                </div>
+                <button class="nav-button" onclick="runCoprimalityTest()">Run Simulation</button>
+                <div class="calculation-output" id="coprimalityOutput"></div>
+            </div>
+
+            <p>This \(6/\pi^2\) density is the simplest example of how Euler products turn multiplicative constraints into product densities — a core idea behind modular sieves and residue-density heuristics.</p>
+        </div>
+
+        <h2 id="section3">3. Average Order of \(\sigma(n)\)</h2>
+        <div class="section-content">
+            <div class="theorem">
+                <div class="theorem-title">Proposition</div>
+                <p>For \(x\ge1\):</p>
+                <p>\[\sum_{n\le x}\sigma(n)=\frac{\pi^2}{12}x^2 + O(x\log x)\]</p>
+                <p>Consequently, the average order of \(\sigma(n)\) is:</p>
+                <p>\[\frac{1}{x}\sum_{n\le x}\sigma(n)\sim \frac{\pi^2}{12}\,x \quad(x\to\infty)\]</p>
+            </div>
+
+            <div class="interactive-box">
+                <h3>Interactive: Divisor Sum Analysis</h3>
+                <div class="slider-container">
+                    <label for="maxNSlider">Compute up to n = <span class="value-display" id="maxNValue">500</span></label>
+                    <input type="range" id="maxNSlider" min="10" max="5000" value="500">
+                </div>
+                <div class="chart-container">
+                    <canvas id="sigmaChart"></canvas>
+                </div>
+                <div class="calculation-output" id="sigmaOutput"></div>
+            </div>
+        </div>
+
+        <h2 id="section4">4. Hardy-Littlewood Twin-Prime Constant</h2>
+        <div class="section-content">
+            <h3>Local Densities at a Prime \(p\)</h3>
+            <p>For a prime \(p>2\), the fraction of residues mod \(p\) where neither \(n\) nor \(n+2\) is divisible by \(p\) is:</p>
+            <p>\[\frac{p-2}{p}=1-\frac{2}{p}\]</p>
+
+            <p>The correction factor adjusting naive independence to the true local constraint is:</p>
+            <p>\[\frac{1-2/p}{(1-1/p)^2} = \frac{p(p-2)}{(p-1)^2}\]</p>
+
+            <div class="theorem">
+                <div class="theorem-title">The Twin-Prime Constant \(C_2\)</div>
+                <p>\[C_2 = 2\prod_{p>2}\frac{p(p-2)}{(p-1)^2} = 2\prod_{p>2}\left(1-\frac{1}{(p-1)^2}\right) \approx 0.6602\]</p>
+            </div>
+
+            <div class="interactive-box">
+                <h3>Interactive: Twin-Prime Constant Approximation</h3>
+                <div class="slider-container">
+                    <label for="primesSlider">Number of primes in product: <span class="value-display" id="primesValue">100</span></label>
+                    <input type="range" id="primesSlider" min="1" max="500" value="100">
+                </div>
+                <div class="chart-container">
+                    <canvas id="twinPrimeChart"></canvas>
+                </div>
+                <div class="calculation-output" id="twinPrimeOutput"></div>
+            </div>
+
+            <h3>Hardy-Littlewood Conjecture</h3>
+            <p>The heuristic predicts:</p>
+            <p>\[\pi_2(x)\sim 2C_2\int_2^x\frac{dt}{(\log t)^2}\sim 2C_2\frac{x}{(\log x)^2}\]</p>
+        </div>
+
+        <h2 id="section5">5. Modular Sieve Perspective</h2>
+        <div class="section-content">
+            <h3>Admissible Residues for General Moduli</h3>
+            <p>For any modulus \(M\), we can analyze which residue classes \(r \pmod{M}\) form admissible twin pairs \((r, r+2)\). A pair is admissible if both \(r\) and \(r+2\) are coprime to \(M\).</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: General Modular Sieve Calculator</h3>
+                <div class="slider-container">
+                    <label for="modulusSlider">Select modulus M: <span class="value-display" id="modulusValue">210</span></label>
+                    <input type="range" id="modulusSlider" min="2" max="2310" value="210">
+                </div>
+                <button class="nav-button" onclick="computeModularSieve()">Compute Sieve</button>
+                <div class="calculation-output" id="modulusStats"></div>
+                <div id="modulusTable"></div>
+                <div class="chart-container">
+                    <canvas id="admissibleChart"></canvas>
+                </div>
+            </div>
+
+            <h3>Example: Admissible Residues Modulo 30</h3>
+            <p>The reduced residue classes modulo 30 (coprime to 30) are:</p>
+            <p>\[\Phi(30)=\{1,7,11,13,17,19,23,29\}\]</p>
+
+            <p>Admissible twin pairs \((r,r+2)\) modulo 30 where both are coprime to 30:</p>
+            <ul>
+                <li>\((11,13)\)</li>
+                <li>\((17,19)\)</li>
+                <li>\((29,1)\) (wrapping around)</li>
+            </ul>
+
+            <p>This gives an admissible fraction:</p>
+            <p>\[\delta_{30}=\frac{3}{30}=\frac{1}{10}=0.1\]</p>
+
+            <h3>Connection to \(M=30\cdot 2^n\) Modular Framework</h3>
+            <p>Modular frameworks using moduli \(M_n=30\cdot 2^n\) naturally build concentric sieves that include the base primes \(2,3,5\) and refine by powers of \(2\). The finite-modulus admissible residue pairs modulo \(M_n\) are exactly the residue classes that survive the small-prime constraints up to those dividing \(M_n\). As \(n\to\infty\) (so the modulus includes ever-finer 2-power structure) the set of admissible residues modulo \(M_n\) stabilizes in the sense of constraints coming from odd primes. The partial Euler-product formed by multiplying the local factors for primes dividing \(M_n\) approximates the full product for \(C_2\); the remaining tail product over primes not dividing \(M_n\) completes the constant.</p>
+
+            <div class="remark">
+                <strong>Key Insight:</strong> The modular-sieve picture and concentric-ring visualizations are finite-approximations (localizations) of the global Euler-product/local-density heuristic. Counting twin-residue transitions in the modular picture and lifting those to integers (with \(1/(\log n)^2\) normalization and the Euler-product correction) recovers the Hardy-Littlewood prediction.
+            </div>
+        </div>
+
+        <h2 id="section6">6. Mertens' Theorems and Prime Density</h2>
+        <div class="section-content">
+            <h3>Mertens' Theorems</h3>
+            <p>Mertens proved several fundamental results about the distribution of primes:</p>
+            
+            <div class="theorem">
+                <div class="theorem-title">Mertens' First Theorem</div>
+                <p>\[\sum_{p \le x} \frac{\ln p}{p} = \ln x + O(1)\]</p>
+            </div>
+            
+            <div class="theorem">
+                <div class="theorem-title">Mertens' Second Theorem</div>
+                <p>\[\sum_{p \le x} \frac{1}{p} = \ln \ln x + M + O\left(\frac{1}{\ln x}\right)\]</p>
+                <p>where \(M \approx 0.2614972128\) is the Meissel-Mertens constant.</p>
+            </div>
+            
+            <div class="theorem">
+                <div class="theorem-title">Mertens' Third Theorem</div>
+                <p>\[\prod_{p \le x} \left(1 - \frac{1}{p}\right) = \frac{e^{-\gamma}}{\ln x}\left(1 + O\left(\frac{1}{\ln x}\right)\right)\]</p>
+            </div>
+
+            <div class="interactive-box">
+                <h3>Interactive: Mertens' Second Theorem Convergence</h3>
+                <div class="slider-container">
+                    <label for="mertensSlider">Compute up to x = <span class="value-display" id="mertensValue">1000</span></label>
+                    <input type="range" id="mertensSlider" min="10" max="10000" value="1000">
+                </div>
+                <div class="chart-container">
+                    <canvas id="mertensChart"></canvas>
+                </div>
+                <div class="calculation-output" id="mertensOutput"></div>
+            </div>
+        </div>
+
+        <h2 id="section7">7. Goldbach Conjecture and Even Number Representations</h2>
+        <div class="section-content">
+            <h3>The Goldbach Conjecture</h3>
+            <p>The Goldbach conjecture states that every even integer \(n > 2\) can be expressed as the sum of two primes. While unproven, it has been verified computationally for extremely large values.</p>
+            
+            <div class="interactive-box">
+                <h3>Interactive: Goldbach Partition Counter</h3>
+                <div class="slider-container">
+                    <label for="goldbachSlider">Even number 2n: <span class="value-display" id="goldbachValue">1000</span></label>
+                    <input type="range" id="goldbachSlider" min="4" max="10000" step="2" value="1000">
+                </div>
+                <button class="nav-button" onclick="computeGoldbach()">Find Representations</button>
+                <div class="calculation-output" id="goldbachOutput"></div>
+                <div class="chart-container">
+                    <canvas id="goldbachChart"></canvas>
+                </div>
+            </div>
+
+            <div class="remark">
+                <strong>Connection to Twin Primes:</strong> The number of Goldbach representations is related to local prime densities. Hardy-Littlewood heuristics predict the number of ways to write \(2n\) as \(p + q\) grows like \(C \cdot n / (\ln n)^2\).
+            </div>
+        </div>
+
+        <h2 id="section8">8. Prime Races and Residue Class Distribution</h2>
+        <div class="section-content">
+            <h3>Chebyshev's Bias</h3>
+            <p>Primes are not equally distributed among residue classes. For example, there are often more primes \(\equiv 3 \pmod{4}\) than primes \(\equiv 1 \pmod{4}\) up to a given bound, a phenomenon known as Chebyshev's bias.</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Prime Race Visualizer</h3>
+                <div class="slider-container">
+                    <label for="primeRaceSlider">Count primes up to: <span class="value-display" id="primeRaceValue">2000</span></label>
+                    <input type="range" id="primeRaceSlider" min="100" max="10000" value="2000">
+                </div>
+                <div class="slider-container">
+                    <label for="moduloSelect">Modulo: 
+                        <select id="moduloSelect" style="padding: 5px; font-size: 1em; margin-left: 10px;">
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="8">8</option>
+                            <option value="10">10</option>
+                            <option value="12">12</option>
+                        </select>
+                    </label>
+                </div>
+                <button class="nav-button" onclick="computePrimeRace()">Run Prime Race</button>
+                <div class="chart-container">
+                    <canvas id="primeRaceChart"></canvas>
+                </div>
+                <div class="calculation-output" id="primeRaceOutput"></div>
+            </div>
+        </div>
+
+        <h2 id="section9">9. Farey Sequences and Ford Circles</h2>
+        <div class="section-content">
+            <h3>Connection to Number Theory</h3>
+            <p>The Farey sequence \(F_n\) consists of all reduced fractions between 0 and 1 with denominators at most \(n\), arranged in increasing order. The length of \(F_n\) is:</p>
+            <p>\[|F_n| = 1 + \sum_{k=1}^n \phi(k) \sim \frac{3n^2}{\pi^2}\]</p>
+            
+            <p>This connects to our coprimality density \(6/\pi^2\) through the asymptotic density of reduced fractions.</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Farey Sequence Explorer</h3>
+                <div class="slider-container">
+                    <label for="fareySlider">Farey order n: <span class="value-display" id="fareyValue">20</span></label>
+                    <input type="range" id="fareySlider" min="1" max="100" value="20">
+                </div>
+                <div class="calculation-output" id="fareyOutput"></div>
+                <div class="chart-container">
+                    <canvas id="fareyChart"></canvas>
+                </div>
+            </div>
+
+            <div class="remark">
+                <strong>Deep Connection:</strong> The Farey sequence neighbors satisfy \(|bq - ap| = 1\) (mediant property), which connects to the theory of continued fractions and the distribution of rationals with bounded denominators—another manifestation of coprimality patterns.
+            </div>
+        </div>
+
+        <h2 id="section10">10. Advanced Topics and Computational Tools</h2>
+        <div class="section-content">
+            <h3>Primorial-Based Moduli</h3>
+            <p>Primorial numbers \(p\# = \prod_{q \le p} q\) are natural choices for moduli in sieve theory. Compare densities:</p>
+            
+            <div class="interactive-box">
+                <h3>Interactive: Primorial Sieve Comparison</h3>
+                <button class="nav-button" onclick="comparePrimorials()">Compare Primorials</button>
+                <div class="calculation-output" id="primorialOutput"></div>
+                <div class="chart-container">
+                    <canvas id="primorialChart"></canvas>
+                </div>
+            </div>
+
+            <h3>Brun's Constant and Twin Prime Density</h3>
+            <p>Brun proved that the sum of reciprocals of twin primes converges:</p>
+            <p>\[B = \sum_{\substack{p, p+2 \text{ prime}}} \left(\frac{1}{p} + \frac{1}{p+2}\right) \approx 1.902160583104\]</p>
+            
+            <div class="remark">
+                <strong>Contrast with Harmonic Series:</strong> While \(\sum 1/p\) diverges (like \(\ln \ln x\)), the twin prime sum converges, suggesting twin primes are much rarer than general primes—quantified by the Hardy-Littlewood \(C_2\) constant.
+            </div>
+
+            <h3>Export Data for Further Analysis</h3>
+            <div class="interactive-box">
+                <button class="nav-button" onclick="exportAllData()">Export Current Data as JSON</button>
+                <button class="nav-button" onclick="exportAsCSV()">Export as CSV</button>
+                <div class="calculation-output" id="exportOutput"></div>
+            </div>
+        </div>
+
+        <h2 id="section11">11. Prime Gaps and Distribution Analysis</h2>
+        <div class="section-content">
+            <h3>Prime Gap Statistics</h3>
+            <p>The gap between consecutive primes \(g_n = p_{n+1} - p_n\) has been extensively studied. The average gap near \(x\) is approximately \(\ln x\) by the prime number theorem, but individual gaps can be much larger.</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Prime Gap Explorer</h3>
+                <div class="slider-container">
+                    <label for="gapSlider">Analyze primes up to: <span class="value-display" id="gapValue">5000</span></label>
+                    <input type="range" id="gapSlider" min="100" max="20000" value="5000">
+                </div>
+                <button class="nav-button" onclick="analyzeGaps()">Analyze Gaps</button>
+                <div class="calculation-output" id="gapOutput"></div>
+                <div class="chart-container">
+                    <canvas id="gapChart"></canvas>
+                </div>
+            </div>
+
+            <div class="theorem">
+                <div class="theorem-title">Cramér's Conjecture</div>
+                <p>The maximum gap \(g_n\) between consecutive primes near \(p_n\) satisfies:</p>
+                <p>\[g_n = O((\ln p_n)^2)\]</p>
+                <p>More precisely, \(\limsup_{n \to \infty} \frac{g_n}{(\ln p_n)^2} = 1\) (conjectured).</p>
+            </div>
+        </div>
+
+        <h2 id="section12">12. Möbius Function and Inclusion-Exclusion</h2>
+        <div class="section-content">
+            <h3>The Möbius Function</h3>
+            <p>The Möbius function \(\mu(n)\) is fundamental in number theory:</p>
+            <p>\[\mu(n) = \begin{cases}
+                1 & \text{if } n \text{ is a product of an even number of distinct primes} \\
+                -1 & \text{if } n \text{ is a product of an odd number of distinct primes} \\
+                0 & \text{if } n \text{ has a squared prime factor}
+            \end{cases}\]</p>
+
+            <p>Key identity: \[\sum_{d \mid n} \mu(d) = \begin{cases} 1 & \text{if } n = 1 \\ 0 & \text{if } n > 1 \end{cases}\]</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Möbius Function Calculator</h3>
+                <div class="slider-container">
+                    <label for="mobiusSlider">Compute μ(n) for n up to: <span class="value-display" id="mobiusValue">200</span></label>
+                    <input type="range" id="mobiusSlider" min="10" max="2000" value="200">
+                </div>
+                <button class="nav-button" onclick="computeMobius()">Calculate</button>
+                <div class="chart-container">
+                    <canvas id="mobiusChart"></canvas>
+                </div>
+                <div class="calculation-output" id="mobiusOutput"></div>
+            </div>
+
+            <div class="remark">
+                <strong>Mertens Function:</strong> The summatory function \(M(x) = \sum_{n \le x} \mu(n)\) is connected to the Riemann Hypothesis. The RH is equivalent to \(M(x) = O(x^{1/2+\epsilon})\) for any \(\epsilon > 0\).
+            </div>
+        </div>
+
+        <h2 id="section13">13. Riemann Zeta Function Zeros and Prime Distribution</h2>
+        <div class="section-content">
+            <h3>The Critical Strip</h3>
+            <p>The Riemann Hypothesis states that all non-trivial zeros of \(\zeta(s)\) lie on the critical line \(\Re(s) = 1/2\). This is connected to the error term in the prime number theorem.</p>
+
+            <div class="theorem">
+                <div class="theorem-title">Prime Number Theorem with Error Term</div>
+                <p>If the Riemann Hypothesis is true, then:</p>
+                <p>\[\pi(x) = \text{Li}(x) + O(x^{1/2} \ln x)\]</p>
+                <p>where \(\text{Li}(x) = \int_2^x \frac{dt}{\ln t}\) is the logarithmic integral.</p>
+            </div>
+
+            <div class="interactive-box">
+                <h3>Interactive: π(x) vs Li(x) Comparison</h3>
+                <div class="slider-container">
+                    <label for="piSlider">Compare up to x = <span class="value-display" id="piValue">2000</span></label>
+                    <input type="range" id="piSlider" min="100" max="10000" value="2000">
+                </div>
+                <button class="nav-button" onclick="comparePiLi()">Compare</button>
+                <div class="chart-container">
+                    <canvas id="piChart"></canvas>
+                </div>
+                <div class="calculation-output" id="piOutput"></div>
+            </div>
+        </div>
+
+        <h2 id="section14">14. Euler Product Decomposition and L-Functions</h2>
+        <div class="section-content">
+            <h3>Generalized Euler Products</h3>
+            <p>For Dirichlet characters \(\chi\), we have L-functions:</p>
+            <p>\[L(s, \chi) = \sum_{n=1}^\infty \frac{\chi(n)}{n^s} = \prod_p \frac{1}{1 - \chi(p)p^{-s}}\]</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Partial Euler Products for ζ(s)</h3>
+                <div class="slider-container">
+                    <label for="zetaSSlider">Select s: <span class="value-display" id="zetaSValue">2.0</span></label>
+                    <input type="range" id="zetaSSlider" min="1.1" max="10" step="0.1" value="2.0">
+                </div>
+                <div class="slider-container">
+                    <label for="eulerProductSlider">Use first n primes: <span class="value-display" id="eulerProductValue">50</span></label>
+                    <input type="range" id="eulerProductSlider" min="5" max="200" value="50">
+                </div>
+                <button class="nav-button" onclick="computeEulerProduct()">Compute</button>
+                <div class="calculation-output" id="eulerProductOutput"></div>
+                <div class="chart-container">
+                    <canvas id="eulerProductChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <h2 id="section15">15. Sieve of Eratosthenes Variants and Efficiency</h2>
+        <div class="section-content">
+            <h3>Classical vs Segmented Sieve</h3>
+            <p>The Sieve of Eratosthenes finds all primes up to \(n\) in \(O(n \log \log n)\) time. Segmented variants improve cache efficiency for large \(n\).</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Sieve Performance Comparison</h3>
+                <div class="slider-container">
+                    <label for="sieveSlider">Sieve up to n = <span class="value-display" id="sieveValue">10000</span></label>
+                    <input type="range" id="sieveSlider" min="1000" max="100000" step="1000" value="10000">
+                </div>
+                <button class="nav-button" onclick="runSieveComparison()">Run Sieve</button>
+                <div class="calculation-output" id="sieveOutput"></div>
+                <div class="chart-container">
+                    <canvas id="sieveChart"></canvas>
+                </div>
+            </div>
+
+            <div class="remark">
+                <strong>Wheel Factorization:</strong> By pre-sieving with small primes (2, 3, 5), we can skip 77% of candidates when looking for larger primes. This connects directly to our modular sieve framework with \(M = 30\).
+            </div>
+        </div>
+
+        <h2 id="section16">16. Bertrand's Postulate and Prime Bounds</h2>
+        <div class="section-content">
+            <h3>Guaranteed Prime Existence</h3>
+            <div class="theorem">
+                <div class="theorem-title">Bertrand's Postulate (Chebyshev, 1852)</div>
+                <p>For all integers \(n \geq 1\), there exists at least one prime \(p\) with \(n < p < 2n\).</p>
+            </div>
+
+            <p>Stronger results exist. For \(n \geq 25\), there is always a prime between \(n\) and \(1.2n\).</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Prime Density in Intervals</h3>
+                <div class="slider-container">
+                    <label for="intervalSlider">Interval starting point n: <span class="value-display" id="intervalValue">1000</span></label>
+                    <input type="range" id="intervalSlider" min="100" max="10000" value="1000">
+                </div>
+                <button class="nav-button" onclick="analyzeIntervals()">Analyze</button>
+                <div class="calculation-output" id="intervalOutput"></div>
+                <div class="chart-container">
+                    <canvas id="intervalChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <h2 id="section17">17. Euler's Theorem & Unit Circle Orbit Visualization</h2>
+        <div class="section-content">
+            <h3>Euler's Theorem: The GCD=1 Foundation</h3>
+            <div class="theorem">
+                <div class="theorem-title">Theorem (Euler)</div>
+                For integers \(a, n\) with \(\gcd(a,n)=1\):
+                \[ a^{\varphi(n)} \equiv 1 \pmod{n} \]
+                The set \(\{r : \gcd(r,n)=1, 1 \leq r < n\}\) forms a multiplicative group of order \(\varphi(n)\).
+            </div>
+
+            <p>Each coprime residue maps to the unit circle: \(z_r = e^{2\pi i r/n}\), creating symmetric rings of \(\varphi(n)\) points. For prime \(p\), all \(p-1\) residues are coprime, forming a complete ring.</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Euler Orbits on Concentric Rings</h3>
+                <canvas id="eulerOrbitCanvas" width="900" height="900" style="background: #000;"></canvas>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                    <div>
+                        <label>Max Modulus: <span id="eulerMaxVal">50</span></label>
+                        <input type="range" id="eulerMaxMod" min="10" max="200" value="50" oninput="updateEulerDisplay()">
+                    </div>
+                    <div>
+                        <label>Orbit Modulus m: <span id="eulerModVal">17</span></label>
+                        <input type="range" id="eulerOrbitMod" min="2" max="100" value="17" oninput="updateEulerDisplay()">
+                    </div>
+                    <div>
+                        <label>Base a: <span id="eulerBaseVal">3</span></label>
+                        <input type="range" id="eulerBase" min="2" max="20" value="3" oninput="updateEulerDisplay()">
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px; margin: 15px 0; flex-wrap: wrap;">
+                    <label><input type="checkbox" id="eulerPrimesOnly"> Primes Only</label>
+                    <label><input type="checkbox" id="eulerShowOrbit" checked> Show Orbit</label>
+                    <label><input type="checkbox" id="eulerShowLabels"> Labels</label>
+                    <label><input type="checkbox" id="eulerShowConnections" checked> Connections</label>
+                </div>
+                
+                <button onclick="drawEulerVisualization()">Redraw</button>
+                <button onclick="animateOrbit()">Animate Orbit</button>
+                <button onclick="stopOrbitAnimation()">Stop</button>
+                
+                <div id="eulerStats" style="margin-top: 15px; padding: 15px; background: rgba(46, 204, 113, 0.1); border-radius: 8px;"></div>
+            </div>
+
+            <div class="remark">
+                <strong>Connection to \(\zeta(s)\):</strong> Each prime \(p\) contributes factor \(\frac{1}{1-p^{-s}}\) to Euler's product. At \(\text{Re}(s)=1/2\), all prime rotations reach equilibrium—the critical line of the Riemann Hypothesis.
+            </div>
+        </div>
+
+        <h2 id="section18">18. Concentric Farey Rings: Nested GCD=1 Structure</h2>
+        <div class="section-content">
+            <h3>Geometric Visualization of Modular Coprimality</h3>
+            <p>Each modulus \(m\) defines a ring where points at angles \(\theta_r = 2\pi r/m\) are colored by \(\gcd(r,m)\). Green points (\(\gcd=1\)) are "open channels", red points (\(\gcd>1\)) are "blocked".</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Multi-Scale GCD=1 Mapping</h3>
+                <canvas id="concentricCanvas" width="2560" height="2560" style="max-width: 100%; height: auto; background: #000;"></canvas>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 20px 0;">
+                    <div>
+                        <label>Min Modulus: <span id="concMinVal">1</span></label>
+                        <input type="range" id="concMinMod" min="1" max="50" value="1" oninput="updateConcentricDisplay()">
+                    </div>
+                    <div>
+                        <label>Max Modulus: <span id="concMaxVal">30</span></label>
+                        <input type="range" id="concMaxMod" min="10" max="200" value="30" oninput="updateConcentricDisplay()">
+                    </div>
+                    <div>
+                        <label>Point Size: <span id="concPointVal">2</span>px</label>
+                        <input type="range" id="concPointSize" min="1" max="10" value="2" step="0.5" oninput="updateConcentricDisplay()">
+                    </div>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <label>Color Mode: 
+                        <select id="concColorMode" onchange="drawConcentricVisualization()">
+                            <option value="binary">Binary (Green/Red)</option>
+                            <option value="gcd-gradient">GCD Gradient</option>
+                            <option value="gcd-global">GCD Global Colors</option>
+                            <option value="prime-factor">Prime Factor</option>
+                            <option value="angular">Angular Hue</option>
+                        </select>
+                    </label>
+                </div>
+                
+                <div style="background: rgba(59, 130, 246, 0.15); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <strong style="color: #60a5fa;">Track Specific GCD=1 Values:</strong>
+                    <div style="display: flex; gap: 15px; margin-top: 10px; align-items: center;">
+                        <label>Modulus n: <input type="number" id="gcdTrackMod" value="30" min="2" max="200" style="width: 70px;"></label>
+                        <button onclick="trackGCD1Values()">Show GCD(r,n)=1</button>
+                        <label><input type="checkbox" id="showOnlyGCD1"> GCD=1 Only</label>
+                    </div>
+                    <div id="gcdTrackInfo" style="margin-top: 10px; display: none;"></div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap;">
+                    <label><input type="checkbox" id="concShowRings" checked> Rings</label>
+                    <label><input type="checkbox" id="concShowLabels"> Labels</label>
+                    <label><input type="checkbox" id="concShowAxes" checked> Axes</label>
+                </div>
+                
+                <button onclick="drawConcentricVisualization()">Visualize</button>
+                <button onclick="exportConcentric4K()">Export 4K PNG</button>
+                
+                <div id="concentricStats" style="margin-top: 15px; padding: 15px; background: rgba(46, 204, 113, 0.1); border-radius: 8px;"></div>
+            </div>
+
+            <div class="remark">
+                <strong>Pattern Recognition:</strong>
+                <ul>
+                    <li>Prime rings: Complete circles (only r=0 blocked)</li>
+                    <li>Even moduli: Half the circle blocked (multiples of 2)</li>
+                    <li>Highly composite: Multiple radial gaps aligned with factors</li>
+                    <li>Nested structure reveals divisibility inheritance</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2 id="section19">19. 3D Prime Spiral Visualization (Ulam Spiral)</h2>
+        <div class="section-content">
+            <h3>The Ulam Spiral</h3>
+            <p>Stanisław Ulam discovered that plotting integers in a spiral and marking primes reveals unexpected diagonal patterns, suggesting deep structure in prime distribution.</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: 3D Rotating Ulam Spiral</h3>
+                <div class="slider-container">
+                    <label for="ulamSlider">Spiral size (n×n): <span class="value-display" id="ulamValue">100</span></label>
+                    <input type="range" id="ulamSlider" min="50" max="500" value="100">
+                </div>
+                <div class="slider-container">
+                    <label>Color scheme: 
+                        <select id="ulamColorScheme" style="padding: 5px; font-size: 1em; margin-left: 10px;">
+                            <option value="classic">Classic (Black/White)</option>
+                            <option value="heatmap">Heatmap</option>
+                            <option value="rainbow">Rainbow</option>
+                            <option value="neon">Neon</option>
+                        </select>
+                    </label>
+                </div>
+                <button class="nav-button" onclick="generateUlamSpiral()">Generate Spiral</button>
+                <canvas id="ulamCanvas" width="800" height="800" style="border: 2px solid #34495e; background: black; cursor: crosshair;"></canvas>
+                <div class="calculation-output" id="ulamOutput"></div>
+            </div>
+
+            <div class="remark">
+                <strong>Pattern Discovery:</strong> Certain diagonals show higher prime density, related to quadratic polynomials like \(n^2 + n + 41\) that produce many primes.
+            </div>
+        </div>
+
+        <h2 id="section18">18. Riemann Zeta Function 3D Landscape</h2>
+        <div class="section-content">
+            <h3>Complex Plane Visualization</h3>
+            <p>The Riemann zeta function \(\zeta(s)\) for complex \(s = \sigma + it\) creates a fascinating landscape. The critical strip \(0 < \sigma < 1\) contains all non-trivial zeros.</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: |ζ(s)| Magnitude Heat Map</h3>
+                <canvas id="zetaLandscape" width="900" height="600" style="border: 2px solid #34495e;"></canvas>
+                <div class="slider-container">
+                    <label for="zetaResSlider">Resolution: <span class="value-display" id="zetaResValue">50</span></label>
+                    <input type="range" id="zetaResSlider" min="20" max="200" value="50">
+                </div>
+                <button class="nav-button" onclick="generateZetaLandscape()">Generate Landscape</button>
+                <div class="calculation-output" id="zetaOutput"></div>
+            </div>
+        </div>
+
+        <h2 id="section19">19. Prime Constellation Hunter</h2>
+        <div class="section-content">
+            <h3>Beyond Twin Primes</h3>
+            <p>Prime constellations are admissible patterns of primes:</p>
+            <ul>
+                <li><strong>Twin primes:</strong> (p, p+2)</li>
+                <li><strong>Prime triplets:</strong> (p, p+2, p+6) or (p, p+4, p+6)</li>
+                <li><strong>Prime quadruplets:</strong> (p, p+2, p+6, p+8)</li>
+                <li><strong>Sexy primes:</strong> (p, p+6)</li>
+                <li><strong>Cousin primes:</strong> (p, p+4)</li>
+            </ul>
+
+            <div class="interactive-box">
+                <h3>Interactive: Prime Constellation Finder</h3>
+                <div class="slider-container">
+                    <label for="constellationSlider">Search up to: <span class="value-display" id="constellationValue">10000</span></label>
+                    <input type="range" id="constellationSlider" min="1000" max="50000" value="10000">
+                </div>
+                <button class="nav-button" onclick="findConstellations()">Find All Constellations</button>
+                <div class="calculation-output" id="constellationOutput"></div>
+                <div class="chart-container">
+                    <canvas id="constellationChart"></canvas>
+                </div>
+            </div>
+
+            <div class="theorem">
+                <div class="theorem-title">Hardy-Littlewood k-tuple Conjecture</div>
+                <p>For any admissible pattern, infinitely many prime constellations exist with that pattern, and their density can be predicted by a generalized Euler product.</p>
+            </div>
+        </div>
+
+        <h2 id="section20">20. Interactive Sieve Animation</h2>
+        <div class="section-content">
+            <h3>Watch the Sieve in Action</h3>
+            <p>See the Sieve of Eratosthenes eliminate composites in real-time, revealing the structure of prime distribution.</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Animated Sieve of Eratosthenes</h3>
+                <div class="slider-container">
+                    <label for="animSieveSlider">Sieve size: <span class="value-display" id="animSieveValue">400</span></label>
+                    <input type="range" id="animSieveSlider" min="100" max="2500" value="400">
+                </div>
+                <div class="slider-container">
+                    <label for="animSpeedSlider">Animation speed: <span class="value-display" id="animSpeedValue">50</span> ms</label>
+                    <input type="range" id="animSpeedSlider" min="10" max="500" value="50">
+                </div>
+                <button class="nav-button" onclick="startSieveAnimation()">Start Animation</button>
+                <button class="nav-button" onclick="stopSieveAnimation()">Stop</button>
+                <canvas id="sieveAnimCanvas" width="900" height="600" style="border: 2px solid #34495e; background: #2c3e50;"></canvas>
+                <div class="calculation-output" id="sieveAnimOutput"></div>
+            </div>
+        </div>
+
+        <h2 id="section21">21. Goldbach Comet Visualization</h2>
+        <div class="section-content">
+            <h3>The Goldbach Comet</h3>
+            <p>Plotting even numbers against their number of Goldbach partitions creates a striking comet-like pattern with mysterious dense rays.</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Goldbach Comet</h3>
+                <div class="slider-container">
+                    <label for="cometSlider">Compute up to 2n = <span class="value-display" id="cometValue">5000</span></label>
+                    <input type="range" id="cometSlider" min="1000" max="20000" step="2" value="5000">
+                </div>
+                <button class="nav-button" onclick="generateGoldbachComet()">Generate Comet</button>
+                <canvas id="cometCanvas" width="1000" height="700" style="border: 2px solid #34495e; background: #000;"></canvas>
+                <div class="calculation-output" id="cometOutput"></div>
+            </div>
+
+            <div class="remark">
+                <strong>Ray Structure:</strong> The rays correspond to different residue classes and divisibility patterns. Numbers with many small prime factors have more representations.
+            </div>
+        </div>
+
+        <h2 id="section22">22. Prime Number Theorem Race</h2>
+        <div class="section-content">
+            <h3>Real-time Convergence</h3>
+            <p>Watch π(x), Li(x), and x/ln(x) race as x grows, demonstrating the PNT convergence.</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Live Prime Counting Race</h3>
+                <button class="nav-button" onclick="startPrimeRace()">Start Race</button>
+                <button class="nav-button" onclick="stopPrimeRace()">Stop Race</button>
+                <button class="nav-button" onclick="resetPrimeRace()">Reset</button>
+                <div class="chart-container" style="height: 600px;">
+                    <canvas id="primeRaceCanvas"></canvas>
+                </div>
+                <div class="calculation-output" id="primeRaceAnimOutput"></div>
+            </div>
+        </div>
+
+        <h2 id="section23">23. Modular Multiplication Circles (Cardioid Pattern)</h2>
+        <div class="section-content">
+            <h3>Times Tables on a Circle</h3>
+            <p>Plotting modular multiplication tables on a circle creates stunning patterns. The ×2 table produces a cardioid, higher multiples create other curves.</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Modular Circle Patterns</h3>
+                <div class="slider-container">
+                    <label for="modCirclePoints">Number of points: <span class="value-display" id="modCirclePointsValue">200</span></label>
+                    <input type="range" id="modCirclePoints" min="50" max="1000" value="200">
+                </div>
+                <div class="slider-container">
+                    <label for="modCircleMult">Multiplier: <span class="value-display" id="modCircleMultValue">2</span></label>
+                    <input type="range" id="modCircleMult" min="2" max="100" value="2" step="0.1">
+                </div>
+                <button class="nav-button" onclick="generateModCircle()">Generate Pattern</button>
+                <button class="nav-button" onclick="animateModCircle()">Animate</button>
+                <canvas id="modCircleCanvas" width="800" height="800" style="border: 2px solid #34495e; background: #000;"></canvas>
+                <div class="calculation-output" id="modCircleOutput"></div>
+            </div>
+        </div>
+
+        <h2 id="section24">24. Prime Gaps Spiral Galaxy</h2>
+        <div class="section-content">
+            <h3>Visualizing Gap Patterns</h3>
+            <p>Plot prime gaps in polar coordinates with radius = gap size, creating a galaxy-like visualization.</p>
+
+            <div class="interactive-box">
+                <h3>Interactive: Prime Gap Galaxy</h3>
+                <div class="slider-container">
+                    <label for="galaxySlider">Primes to analyze: <span class="value-display" id="galaxyValue">5000</span></label>
+                    <input type="range" id="galaxySlider" min="500" max="20000" value="5000">
+                </div>
+                <button class="nav-button" onclick="generateGapGalaxy()">Generate Galaxy</button>
+                <canvas id="galaxyCanvas" width="900" height="900" style="border: 2px solid #34495e; background: #000;"></canvas>
+                <div class="calculation-output" id="galaxyOutput"></div>
+            </div>
+        </div>
+
+        <h2 id="section25">25. Summary and Connections</h2>
+        <div class="section-content">
+            <ul>
+                <li>The identity \(\zeta(2)=\pi^2/6\) yields the coprimality density \(6/\pi^2\approx 0.608\), a fundamental result connecting analysis to probabilistic number theory</li>
+                <li>Harmonic numbers \(H_n\) and logarithmic terms appear throughout sieve heuristics due to the cumulative reciprocal mass of initial integers</li>
+                <li>The average order \(\sum_{n\le x}\sigma(n)\sim \frac{\pi^2}{12}x^2\) reveals divisor-sum behavior through Euler products</li>
+                <li>The Hardy-Littlewood constant \(C_2\approx 0.660161815846869\) arises from multiplicative local density corrections at each prime</li>
+                <li>Modular sieves at finite moduli \(M\) provide finite-approximations to the global Euler product, with convergence as \(M\) increases through primorial sequences</li>
+                <li>The modular framework \(M_n=30\cdot 2^n\) demonstrates the localization principle where concentric residue structures approximate infinite Euler products</li>
+            </ul>
+
+            <div class="warning">
+                <strong>Important Note:</strong> These heuristics represent classical approaches to unsolved problems in analytic number theory. While the Euler product formalism and local density arguments are rigorous mathematical constructions, making these arguments fully rigorous for counting functions such as \(\pi_2(x)\) remains an open problem. The twin prime conjecture and the Hardy-Littlewood conjectures are among the most significant unsolved problems in mathematics.
+            </div>
+        </div>
+
+        <div style="margin-top: 60px; padding: 30px; background: #ecf0f1; border-top: 3px solid #16a085; text-align: center;">
+            <p style="font-size: 0.9em; color: #7f8c8d; margin-bottom: 10px;">
+                <strong>Interactive Mathematical Exploration</strong><br>
+                An educational resource for analytic number theory, modular arithmetic, and prime distribution heuristics
+            </p>
+            <p style="font-size: 0.85em; color: #95a5a6;">
+                All computations performed in-browser using JavaScript. MathJax for mathematical typesetting. Chart.js for visualizations.
+            </p>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <button class="nav-button" onclick="expandAll()">Expand All</button>
+        <button class="nav-button" onclick="collapseAll()">Collapse All</button>
+    </div>
+
+    <script>
+        // Collapsible sections
+        document.querySelectorAll('h2').forEach(header => {
+            header.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                content.classList.toggle('active');
+            });
+        });
+
+        function expandAll() {
+            document.querySelectorAll('h2').forEach(h => h.classList.add('active'));
+            document.querySelectorAll('.section-content').forEach(c => c.classList.add('active'));
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('h2').forEach(h => h.classList.remove('active'));
+            document.querySelectorAll('.section-content').forEach(c => c.classList.remove('active'));
+        }
+
+        // Harmonic numbers calculator
+        const nSlider = document.getElementById('nSlider');
+        const nValue = document.getElementById('nValue');
+        const harmonicOutput = document.getElementById('harmonicOutput');
+        let harmonicChart;
+
+        function calculateHarmonic(n) {
+            let sum = 0;
+            for (let k = 1; k <= n; k++) {
+                sum += 1/k;
+            }
+            return sum;
+        }
+
+        function updateHarmonic() {
+            const n = parseInt(nSlider.value);
+            nValue.textContent = n;
+            
+            const Hn = calculateHarmonic(n);
+            const gamma = 0.5772156649;
+            const approximation = Math.log(n) + gamma;
+            const error = Math.abs(Hn - approximation);
+            
+            harmonicOutput.innerHTML = `
+H_${n} = ${Hn.toFixed(10)}
+ln(${n}) + γ ≈ ${approximation.toFixed(10)}
+Error: ${error.toFixed(12)}
+Relative error: ${(error/Hn * 100).toFixed(6)}%
+            `;
+            
+            updateHarmonicChart(n);
+        }
+
+        function updateHarmonicChart(maxN) {
+            const ctx = document.getElementById('harmonicChart').getContext('2d');
+            const data = [];
+            const approx = [];
+            const labels = [];
+            
+            // Sample points for large n to maintain performance
+            const step = maxN > 100 ? Math.ceil(maxN / 100) : 1;
+            
+            for (let i = 1; i <= maxN; i += step) {
+                labels.push(i);
+                data.push(calculateHarmonic(i));
+                approx.push(Math.log(i) + 0.5772156649);
+            }
+            
+            if (harmonicChart) harmonicChart.destroy();
+            
+            harmonicChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'H_n (exact)',
+                        data: data,
+                        borderColor: '#16a085',
+                        backgroundColor: 'rgba(22, 160, 133, 0.1)',
+                        tension: 0.1,
+                        pointRadius: maxN > 100 ? 0 : 2
+                    }, {
+                        label: 'ln(n) + γ (approximation)',
+                        data: approx,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        borderDash: [5, 5],
+                        tension: 0.1,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Harmonic Numbers vs Logarithmic Approximation',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'n',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Value',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        nSlider.addEventListener('input', updateHarmonic);
+        updateHarmonic();
+
+        // Coprimality test
+        // ==================== UNIVERSAL EXPORT SYSTEM ====================
+        
+        function exportCanvasAsJPEG(canvasId, filename, resolution = '4k') {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                alert('Canvas not found!');
+                return;
+            }
+            
+            const resolutions = {
+                'hd': 1920,
+                '2k': 2560,
+                '4k': 3840,
+                '8k': 7680
+            };
+            
+            const targetSize = resolutions[resolution] || 3840;
+            
+            // Create high-res temporary canvas
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = targetSize;
+            tempCanvas.height = targetSize;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // White background for JPEG
+            tempCtx.fillStyle = '#ffffff';
+            tempCtx.fillRect(0, 0, targetSize, targetSize);
+            
+            // Save original size
+            const origWidth = canvas.width;
+            const origHeight = canvas.height;
+            
+            // Temporarily resize and redraw
+            canvas.width = targetSize;
+            canvas.height = targetSize;
+            
+            // Trigger appropriate redraw function based on canvas ID
+            const redrawFunctions = {
+                'eulerOrbitCanvas': drawEulerVisualization,
+                'concentricCanvas': drawConcentricVisualization,
+                'canvas3d': drawPrimeSpiral,
+                'landscapeCanvas': drawZetaLandscape,
+                'constellationCanvas': drawPrimeConstellation,
+                'sieveCanvas': drawSieve,
+                'goldbachCanvas': drawGoldbachComet,
+                'gapsCanvas': drawPrimeGaps,
+                'helixCanvas': drawPrimeHelix,
+                'polarCanvas': drawPolarPrimes,
+                'sacksCanvas': drawSackSpiral,
+                'modularCanvas': drawModularArt,
+                'harmonicCanvas': drawHarmonicSeries,
+                'voronoiCanvas': drawVoronoi,
+                'networkCanvas': drawPrimeNetwork,
+                'heatmapCanvas': drawDensityHeatmap,
+                'reciprocalCanvas': drawReciprocalSum,
+                'gapDistCanvas': drawGapDistribution,
+                'twinCanvas': drawTwinPrimes,
+                'factorCanvas': drawFactorDiagram,
+                'harmonicLandscapeCanvas': drawHarmonicLandscape
+            };
+            
+            if (redrawFunctions[canvasId]) {
+                redrawFunctions[canvasId]();
+            }
+            
+            // Export as JPEG with high quality
+            const link = document.createElement('a');
+            link.download = `${filename}-${resolution}-${Date.now()}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+            
+            // Restore original size and redraw
+            canvas.width = origWidth;
+            canvas.height = origHeight;
+            if (redrawFunctions[canvasId]) {
+                redrawFunctions[canvasId]();
+            }
+            
+            // Show confirmation
+            showExportConfirmation(`${resolution.toUpperCase()} JPEG exported successfully!`);
+        }
+        
+        function showExportConfirmation(message) {
+            const notif = document.createElement('div');
+            notif.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #27ae60, #229954);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-weight: 600;
+                animation: slideIn 0.3s ease;
+            `;
+            notif.textContent = '✅ ' + message;
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notif.remove(), 300);
+            }, 3000);
+        }
+        
+        // ==================== CSV EXPORT FUNCTIONS ====================
+        
+        function exportEulerOrbitCSV() {
+            const maxM = parseInt(document.getElementById('eulerMaxMod').value);
+            const orbitM = parseInt(document.getElementById('eulerOrbitMod').value);
+            const base = parseInt(document.getElementById('eulerBase').value);
+            const primesOnly = document.getElementById('eulerPrimesOnly').checked;
+            
+            let csv = 'modulus,is_prime,euler_phi,residue,gcd_value,angle_rad,angle_deg,x_coord,y_coord,orbit_step\n';
+            
+            const moduli = [];
+            for (let m = 2; m <= maxM; m++) {
+                if (!primesOnly || isPrime(m)) moduli.push(m);
+            }
+            
+            moduli.forEach(m => {
+                const phi = totient(m);
+                const prime = isPrime(m);
+                
+                for (let r = 0; r < m; r++) {
+                    const g = gcd(r, m);
+                    const theta = (2 * Math.PI * r) / m - Math.PI / 2;
+                    const angleDeg = (theta * 180 / Math.PI).toFixed(4);
+                    const x = Math.cos(theta).toFixed(8);
+                    const y = Math.sin(theta).toFixed(8);
+                    
+                    let orbitStep = -1;
+                    if (m === orbitM && g === 1) {
+                        let curr = 1;
+                        for (let k = 0; k < phi; k++) {
+                            if (curr === r) { orbitStep = k; break; }
+                            curr = (curr * base) % m;
+                        }
+                    }
+                    
+                    csv += `${m},${prime},${phi},${r},${g},${theta.toFixed(8)},${angleDeg},${x},${y},${orbitStep}\n`;
+                }
+            });
+            
+            const metadata = `# Euler Orbit Visualization Data Export
+# Generated: ${new Date().toISOString()}
+# Max Modulus: ${maxM}
+# Orbit Modulus: ${orbitM}, Base: ${base}
+# Primes Only: ${primesOnly}
+# Total Moduli: ${moduli.length}
+# Total Data Points: ${csv.split('\n').length - 2}
+#
+`;
+            
+            downloadCSV(metadata + csv, `euler-orbits-M${maxM}-orbit${orbitM}-a${base}`);
+        }
+        
+        function exportConcentricCSV() {
+            const minM = parseInt(document.getElementById('concMinMod').value);
+            const maxM = parseInt(document.getElementById('concMaxMod').value);
+            const colorMode = document.getElementById('concColorMode').value;
+            
+            let csv = 'modulus,is_prime,euler_phi,residue,gcd_value,is_coprime,angle_rad,angle_deg,x_coord,y_coord,ring_radius,color_mode,computed_color\n';
+            
+            for (let m = minM; m <= maxM; m++) {
+                const phi = totient(m);
+                const prime = isPrime(m);
+                const ringIdx = m - minM + 1;
+                
+                for (let r = 1; r < m; r++) {
+                    const g = gcd(r, m);
+                    const coprime = g === 1;
+                    const theta = (2 * Math.PI * r) / m;
+                    const angleDeg = (theta * 180 / Math.PI).toFixed(4);
+                    const x = Math.cos(theta).toFixed(8);
+                    const y = Math.sin(theta).toFixed(8);
+                    
+                    let color = '';
+                    if (colorMode === 'binary') {
+                        color = coprime ? 'green' : 'red';
+                    } else if (colorMode === 'gcd-gradient') {
+                        const intensity = g / m;
+                        const hue = 120 * (1 - intensity);
+                        color = `hsl(${hue.toFixed(0)},70%,50%)`;
+                    } else if (colorMode === 'angular') {
+                        const hue = (theta / (2 * Math.PI)) * 360;
+                        color = `hsl(${hue.toFixed(0)},70%,${coprime ? 50 : 30}%)`;
+                    }
+                    
+                    csv += `${m},${prime},${phi},${r},${g},${coprime},${theta.toFixed(8)},${angleDeg},${x},${y},${ringIdx},${colorMode},${color}\n`;
+                }
+            }
+            
+            const metadata = `# Concentric Farey Rings Data Export
+# Generated: ${new Date().toISOString()}
+# Modulus Range: [${minM}, ${maxM}]
+# Color Mode: ${colorMode}
+# Total Moduli: ${maxM - minM + 1}
+# Total Data Points: ${csv.split('\n').length - 2}
+#
+`;
+            
+            downloadCSV(metadata + csv, `concentric-rings-M${minM}-${maxM}`);
+        }
+        
+        function exportPrimeSpiralCSV() {
+            const maxNum = parseInt(document.getElementById('maxNumber').value);
+            let csv = 'number,is_prime,x_coord,y_coord,distance_from_center,angle_rad,angle_deg,spiral_turn\n';
+            
+            for (let n = 1; n <= maxNum; n++) {
+                const prime = isPrime(n);
+                const angle = Math.sqrt(n) * 2 * Math.PI;
+                const radius = Math.sqrt(n) * 5;
+                const x = (radius * Math.cos(angle)).toFixed(6);
+                const y = (radius * Math.sin(angle)).toFixed(6);
+                const angleDeg = ((angle * 180 / Math.PI) % 360).toFixed(4);
+                const turns = (angle / (2 * Math.PI)).toFixed(4);
+                
+                csv += `${n},${prime},${x},${y},${radius.toFixed(6)},${angle.toFixed(8)},${angleDeg},${turns}\n`;
+            }
+            
+            const metadata = `# Ulam Prime Spiral Data Export
+# Generated: ${new Date().toISOString()}
+# Max Number: ${maxNum}
+# Prime Count: ${csv.split('true').length - 1}
+# Total Numbers: ${maxNum}
+#
+`;
+            
+            downloadCSV(metadata + csv, `ulam-spiral-N${maxNum}`);
+        }
+        
+        function exportZetaLandscapeCSV() {
+            const gridSize = parseInt(document.getElementById('zetaGrid').value);
+            const rangeMin = parseFloat(document.getElementById('zetaRangeMin').value);
+            const rangeMax = parseFloat(document.getElementById('zetaRangeMax').value);
+            
+            let csv = 'real_part,imag_part,zeta_magnitude,zeta_real,zeta_imaginary,zeta_phase,distance_to_critical_line\n';
+            
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const re = rangeMin + (rangeMax - rangeMin) * i / gridSize;
+                    const im = -20 + 40 * j / gridSize;
+                    
+                    // Simplified zeta approximation
+                    let zetaReal = 0, zetaImag = 0;
+                    for (let n = 1; n <= 50; n++) {
+                        const term = Math.pow(n, -re);
+                        zetaReal += term * Math.cos(-im * Math.log(n));
+                        zetaImag += term * Math.sin(-im * Math.log(n));
+                    }
+                    
+                    const magnitude = Math.sqrt(zetaReal * zetaReal + zetaImag * zetaImag);
+                    const phase = Math.atan2(zetaImag, zetaReal);
+                    const distToCritical = Math.abs(re - 0.5);
+                    
+                    csv += `${re.toFixed(6)},${im.toFixed(6)},${magnitude.toFixed(8)},${zetaReal.toFixed(8)},${zetaImag.toFixed(8)},${phase.toFixed(8)},${distToCritical.toFixed(6)}\n`;
+                }
+            }
+            
+            const metadata = `# Riemann Zeta Landscape Data Export
+# Generated: ${new Date().toISOString()}
+# Grid Size: ${gridSize}x${gridSize}
+# Real Range: [${rangeMin}, ${rangeMax}]
+# Imaginary Range: [-20, 20]
+# Total Grid Points: ${gridSize * gridSize}
+#
+`;
+            
+            downloadCSV(metadata + csv, `zeta-landscape-${gridSize}x${gridSize}`);
+        }
+        
+        function exportTwinPrimesCSV() {
+            const maxN = parseInt(document.getElementById('twinMax').value);
+            let csv = 'twin_pair_index,prime_p,prime_q,gap,p_position,q_position,sum,product,average\n';
+            
+            let index = 1;
+            for (let p = 3; p <= maxN - 2; p++) {
+                if (isPrime(p) && isPrime(p + 2)) {
+                    const q = p + 2;
+                    csv += `${index},${p},${q},2,${p},${q},${p+q},${p*q},${(p+q)/2}\n`;
+                    index++;
+                }
+            }
+            
+            const metadata = `# Twin Primes Data Export
+# Generated: ${new Date().toISOString()}
+# Search Range: [3, ${maxN}]
+# Twin Prime Pairs Found: ${index - 1}
+#
+`;
+            
+            downloadCSV(metadata + csv, `twin-primes-N${maxN}`);
+        }
+        
+        function exportGoldbachCSV() {
+            const n = parseInt(document.getElementById('goldbachN').value);
+            let csv = 'even_number,prime_p,prime_q,sum_check,p_index,q_index,gap_pq\n';
+            
+            for (let even = 4; even <= n; even += 2) {
+                let found = false;
+                for (let p = 2; p <= even / 2; p++) {
+                    const q = even - p;
+                    if (isPrime(p) && isPrime(q)) {
+                        const pIndex = primeIndex(p);
+                        const qIndex = primeIndex(q);
+                        csv += `${even},${p},${q},${p+q},${pIndex},${qIndex},${Math.abs(q-p)}\n`;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    csv += `${even},NONE,NONE,FAIL,0,0,0\n`;
+                }
+            }
+            
+            const metadata = `# Goldbach Conjecture Data Export
+# Generated: ${new Date().toISOString()}
+# Even Number: ${n}
+# Test Range: [4, ${n}]
+# All even numbers shown with their prime decomposition
+#
+`;
+            
+            downloadCSV(metadata + csv, `goldbach-N${n}`);
+        }
+        
+        function primeIndex(p) {
+            let count = 0;
+            for (let i = 2; i <= p; i++) {
+                if (isPrime(i)) count++;
+            }
+            return count;
+        }
+        
+        function downloadCSV(content, filename) {
+            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${filename}-${Date.now()}.csv`;
+            link.click();
+            
+            showExportConfirmation('Detailed CSV exported successfully!');
+        }
+        
+        // Add export buttons to each visualization
+        function addExportButtons(sectionId, canvasId, csvExportFunc) {
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+            
+            const interactiveBox = section.querySelector('.interactive-box');
+            if (!interactiveBox) return;
+            
+            const existingButtons = interactiveBox.querySelector('.export-buttons');
+            if (existingButtons) return; // Already added
+            
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'export-buttons';
+            buttonContainer.style.cssText = 'margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;';
+            
+            buttonContainer.innerHTML = `
+                <button onclick="exportCanvasAsJPEG('${canvasId}', '${sectionId}', 'hd')" class="export-btn">
+                    📸 Export HD (1920px)
+                </button>
+                <button onclick="exportCanvasAsJPEG('${canvasId}', '${sectionId}', '2k')" class="export-btn">
+                    📸 Export 2K (2560px)
+                </button>
+                <button onclick="exportCanvasAsJPEG('${canvasId}', '${sectionId}', '4k')" class="export-btn">
+                    📸 Export 4K (3840px)
+                </button>
+                <button onclick="exportCanvasAsJPEG('${canvasId}', '${sectionId}', '8k')" class="export-btn">
+                    📸 Export 8K (7680px)
+                </button>
+                <button onclick="${csvExportFunc}()" class="export-btn csv-btn">
+                    📊 Export Detailed CSV
+                </button>
+            `;
+            
+            // Find best insertion point (after last button or at end)
+            const lastButton = Array.from(interactiveBox.querySelectorAll('button')).pop();
+            if (lastButton) {
+                lastButton.parentNode.insertBefore(buttonContainer, lastButton.nextSibling);
+            } else {
+                interactiveBox.appendChild(buttonContainer);
+            }
+        }
+        
+        // Initialize export buttons for all visualizations
+        setTimeout(() => {
+            addExportButtons('section17', 'eulerOrbitCanvas', 'exportEulerOrbitCSV');
+            addExportButtons('section18', 'concentricCanvas', 'exportConcentricCSV');
+            addExportButtons('section19', 'canvas3d', 'exportPrimeSpiralCSV');
+            addExportButtons('section20', 'landscapeCanvas', 'exportZetaLandscapeCSV');
+            addExportButtons('section23', 'goldbachCanvas', 'exportGoldbachCSV');
+            addExportButtons('section25', 'twinCanvas', 'exportTwinPrimesCSV');
+        }, 500);
+
+        // ==================== EXISTING CODE CONTINUES ====================
+        
+        function gcd(a, b) {
+            while (b !== 0) {
+                let temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        function totient(n) {
+            if (n < 1) return 0;
+            let result = n;
+            let p = 2;
+            let temp = n;
+            
+            while (p * p <= temp) {
+                if (temp % p === 0) {
+                    while (temp % p === 0) temp = Math.floor(temp / p);
+                    result -= Math.floor(result / p);
+                }
+                p++;
+            }
+            
+            if (temp > 1) result -= Math.floor(result / temp);
+            return result;
+        }
+        
+        function smallestPrimeFactor(n) {
+            if (n < 2) return n;
+            if (n % 2 === 0) return 2;
+            for (let i = 3; i * i <= n; i += 2) {
+                if (n % i === 0) return i;
+            }
+            return n;
+        }
+
+        function runCoprimalityTest() {
+            const numPairs = parseInt(document.getElementById('pairsSlider').value);
+            let coprime = 0;
+            
+            const startTime = performance.now();
+            for (let i = 0; i < numPairs; i++) {
+                const a = Math.floor(Math.random() * 10000) + 1;
+                const b = Math.floor(Math.random() * 10000) + 1;
+                if (gcd(a, b) === 1) coprime++;
+            }
+            const endTime = performance.now();
+            
+            const empirical = coprime / numPairs;
+            const theoretical = 6 / (Math.PI * Math.PI);
+            const error = Math.abs(empirical - theoretical);
+            
+            document.getElementById('coprimalityOutput').innerHTML = `
+Tested ${numPairs.toLocaleString()} random integer pairs
+Coprime pairs found: ${coprime.toLocaleString()}
+Empirical probability: ${empirical.toFixed(8)}
+Theoretical (6/π²): ${theoretical.toFixed(8)}
+Absolute error: ${error.toFixed(8)}
+Relative error: ${(error/theoretical * 100).toFixed(4)}%
+Computation time: ${(endTime - startTime).toFixed(2)} ms
+            `;
+        }
+
+        document.getElementById('pairsSlider').addEventListener('input', function() {
+            document.getElementById('pairsValue').textContent = this.value;
+        });
+
+        // Sigma function calculator
+        const maxNSlider = document.getElementById('maxNSlider');
+        const maxNValue = document.getElementById('maxNValue');
+        let sigmaChart;
+
+        function sigma(n) {
+            let sum = 0;
+            for (let d = 1; d <= n; d++) {
+                if (n % d === 0) sum += d;
+            }
+            return sum;
+        }
+
+        function updateSigma() {
+            const maxN = parseInt(maxNSlider.value);
+            maxNValue.textContent = maxN;
+            
+            const ctx = document.getElementById('sigmaChart').getContext('2d');
+            const labels = [];
+            const sigmaData = [];
+            const avgData = [];
+            
+            // Sample points for large n to maintain performance
+            const step = maxN > 100 ? Math.ceil(maxN / 100) : 1;
+            
+            let cumulativeSum = 0;
+            let count = 0;
+            
+            for (let n = 1; n <= maxN; n++) {
+                const s = sigma(n);
+                cumulativeSum += s;
+                count++;
+                
+                if (n % step === 0 || n === maxN) {
+                    labels.push(n);
+                    sigmaData.push(s);
+                    avgData.push(cumulativeSum / n);
+                }
+            }
+            
+            const theoreticalSum = (Math.PI * Math.PI / 12) * maxN * maxN;
+            const empiricalSum = cumulativeSum;
+            const empiricalAvg = cumulativeSum / maxN;
+            const theoreticalAvg = (Math.PI * Math.PI / 12) * maxN;
+            
+            document.getElementById('sigmaOutput').innerHTML = `
+Computed σ(n) for n = 1 to ${maxN}
+Total sum: ${empiricalSum.toLocaleString()}
+Predicted sum (π²x²/12): ${theoreticalSum.toFixed(2)}
+Average σ(n): ${empiricalAvg.toFixed(6)}
+Predicted average (π²n/12): ${theoreticalAvg.toFixed(6)}
+Relative error: ${(Math.abs(empiricalSum - theoreticalSum) / theoreticalSum * 100).toFixed(4)}%
+            `;
+            
+            if (sigmaChart) sigmaChart.destroy();
+            
+            sigmaChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'σ(n)',
+                        data: sigmaData,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.1,
+                        yAxisID: 'y',
+                        pointRadius: maxN > 100 ? 0 : 2
+                    }, {
+                        label: 'Average σ(k) for k≤n',
+                        data: avgData,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        tension: 0.1,
+                        yAxisID: 'y1',
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Sum of Divisors Function σ(n)',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'n',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'σ(n)',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Average',
+                                font: {
+                                    size: 14
+                                }
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        maxNSlider.addEventListener('input', updateSigma);
+        updateSigma();
+
+        // Twin prime constant calculator
+        function isPrime(n) {
+            if (n < 2) return false;
+            if (n === 2) return true;
+            if (n % 2 === 0) return false;
+            for (let i = 3; i * i <= n; i += 2) {
+                if (n % i === 0) return false;
+            }
+            return true;
+        }
+
+        function getPrimes(count) {
+            const primes = [];
+            let n = 3;
+            while (primes.length < count) {
+                if (isPrime(n)) primes.push(n);
+                n += 2;
+            }
+            return primes;
+        }
+
+        const primesSlider = document.getElementById('primesSlider');
+        const primesValue = document.getElementById('primesValue');
+        let twinPrimeChart;
+
+        function updateTwinPrime() {
+            const numPrimes = parseInt(primesSlider.value);
+            primesValue.textContent = numPrimes;
+            
+            const primes = getPrimes(numPrimes);
+            const partialProducts = [2];
+            
+            // Sample points for visualization to maintain performance
+            const step = numPrimes > 50 ? Math.ceil(numPrimes / 50) : 1;
+            const sampledLabels = ['p=2'];
+            const sampledProducts = [2];
+            
+            let product = 2;
+            for (let i = 0; i < primes.length; i++) {
+                const p = primes[i];
+                product *= (p * (p - 2)) / ((p - 1) * (p - 1));
+                
+                if (i % step === 0 || i === primes.length - 1) {
+                    sampledLabels.push(`p=${p}`);
+                    sampledProducts.push(product);
+                }
+            }
+            
+            const finalValue = product;
+            const trueC2 = 0.6601618158468695739278121100145557784326;
+            const relativeError = Math.abs(finalValue - trueC2) / trueC2;
+            
+            // Calculate convergence rate
+            const convergenceDigits = -Math.log10(Math.abs(finalValue - trueC2));
+            
+            document.getElementById('twinPrimeOutput').innerHTML = `
+Partial Euler product using first ${numPrimes} odd primes:
+C_2 ≈ ${finalValue.toFixed(16)}
+True value: ${trueC2.toFixed(16)}
+Absolute error: ${Math.abs(finalValue - trueC2).toExponential(6)}
+Relative error: ${(relativeError * 100).toFixed(8)}%
+Correct digits: ~${Math.max(0, convergenceDigits).toFixed(1)}
+Largest prime: p = ${primes[primes.length - 1]}
+            `;
+            
+            const ctx = document.getElementById('twinPrimeChart').getContext('2d');
+            
+            if (twinPrimeChart) twinPrimeChart.destroy();
+            
+            twinPrimeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sampledLabels,
+                    datasets: [{
+                        label: 'Partial Product (C_2 approximation)',
+                        data: sampledProducts,
+                        borderColor: '#9b59b6',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        tension: 0.1,
+                        pointRadius: numPrimes > 50 ? 0 : 3
+                    }, {
+                        label: 'True C_2',
+                        data: Array(sampledProducts.length).fill(trueC2),
+                        borderColor: '#e74c3c',
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Convergence of Twin-Prime Constant C₂',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Primes included in product',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Value',
+                                font: {
+                                    size: 14
+                                }
+                            },
+                            min: 0.64,
+                            max: 0.68
+                        }
+                    }
+                }
+            });
+        }
+
+        primesSlider.addEventListener('input', updateTwinPrime);
+        updateTwinPrime();
+
+        // General modular sieve calculator
+        let admissibleChart;
+        
+        function computeModularSieve() {
+            const M = parseInt(document.getElementById('modulusSlider').value);
+            
+            // Compute coprime residues (Euler's totient)
+            const coprimes = [];
+            for (let r = 0; r < M; r++) {
+                if (gcd(r, M) === 1) {
+                    coprimes.push(r);
+                }
+            }
+            
+            // Find admissible twin pairs
+            const twinPairs = [];
+            const admissibleResidues = [];
+            for (let r of coprimes) {
+                const r2 = (r + 2) % M;
+                if (coprimes.includes(r2)) {
+                    twinPairs.push([r, r2]);
+                    admissibleResidues.push(r);
+                }
+            }
+            
+            // Calculate density
+            const density = twinPairs.length / M;
+            const phi = coprimes.length;
+            
+            // Factor M to show prime factorization
+            const factors = primeFactorization(M);
+            const factorStr = factors.map(([p, e]) => e > 1 ? `${p}^${e}` : `${p}`).join(' × ');
+            
+            // Compute theoretical Euler product for this M
+            const eulerProduct = computeLocalEulerProduct(factors);
+            
+            // Display statistics
+            document.getElementById('modulusStats').innerHTML = `
+Modulus M = ${M} = ${factorStr}
+φ(${M}) = ${phi} (coprime residues)
+Admissible twin pairs: ${twinPairs.length}
+Admissible density δ_${M} = ${twinPairs.length}/${M} = ${density.toFixed(6)}
+
+Local Euler product approximation:
+∏_{p|M} (1 - 2/p)/(1 - 1/p)² ≈ ${eulerProduct.toFixed(8)}
+Normalized density: ${(density * M / phi).toFixed(6)}
+            `;
+            
+            // Create detailed table
+            createDetailedModularTable(M, coprimes, twinPairs);
+            
+            // Visualize admissible residues
+            visualizeAdmissibleResidues(M, admissibleResidues, coprimes);
+        }
+        
+        function primeFactorization(n) {
+            const factors = [];
+            let d = 2;
+            let temp = n;
+            
+            while (d * d <= temp) {
+                let count = 0;
+                while (temp % d === 0) {
+                    count++;
+                    temp /= d;
+                }
+                if (count > 0) {
+                    factors.push([d, count]);
+                }
+                d++;
+            }
+            
+            if (temp > 1) {
+                factors.push([temp, 1]);
+            }
+            
+            return factors;
+        }
+        
+        function computeLocalEulerProduct(factors) {
+            let product = 1;
+            for (let [p, exp] of factors) {
+                // Only use odd primes in the Euler product for twin primes
+                if (p === 2) {
+                    product *= 2; // The factor of 2 from parity
+                } else {
+                    product *= (1 - 2/p) / ((1 - 1/p) * (1 - 1/p));
+                }
+            }
+            return product;
+        }
+        
+        function createDetailedModularTable(M, coprimes, twinPairs) {
+            let html = '<h4>Residue Analysis Modulo ' + M + '</h4>';
+            html += '<div style="max-height: 400px; overflow-y: auto;">';
+            html += '<table><thead><tr><th>Residue r</th><th>Coprime to M?</th><th>r+2 (mod M)</th><th>Forms twin pair?</th></tr></thead><tbody>';
+            
+            const displayLimit = Math.min(M, 50); // Show max 50 rows
+            const step = M > 50 ? Math.ceil(M / 50) : 1;
+            
+            for (let r = 0; r < M; r += step) {
+                const isCoprime = coprimes.includes(r);
+                const r2 = (r + 2) % M;
+                const isTwin = twinPairs.some(pair => pair[0] === r);
+                
+                html += `<tr style="${isTwin ? 'background: #d5f4e6; font-weight: bold;' : ''}">`;
+                html += `<td>${r}</td>`;
+                html += `<td>${isCoprime ? '✓' : '✗'}</td>`;
+                html += `<td>${r2}</td>`;
+                html += `<td>${isTwin ? `✓ (${r}, ${r2})` : '✗'}</td>`;
+                html += '</tr>';
+            }
+            
+            if (M > 50) {
+                html += '<tr><td colspan="4" style="text-align: center; font-style: italic; background: #f8f9fa;">Showing sampled residues (M > 50)</td></tr>';
+            }
+            
+            html += '</tbody></table></div>';
+            
+            // List all twin pairs
+            if (twinPairs.length > 0 && twinPairs.length <= 20) {
+                html += '<p style="margin-top: 15px;"><strong>All admissible twin pairs:</strong></p>';
+                html += '<p style="font-family: monospace;">';
+                html += twinPairs.map(pair => `(${pair[0]}, ${pair[1]})`).join(', ');
+                html += '</p>';
+            }
+            
+            document.getElementById('modulusTable').innerHTML = html;
+        }
+        
+        function visualizeAdmissibleResidues(M, admissible, coprimes) {
+            const ctx = document.getElementById('admissibleChart').getContext('2d');
+            
+            // Create distribution data
+            const labels = [];
+            const admissibleData = [];
+            const coprimeData = [];
+            
+            const step = M > 100 ? Math.ceil(M / 100) : 1;
+            
+            for (let r = 0; r < M; r += step) {
+                labels.push(r);
+                admissibleData.push(admissible.includes(r) ? 1 : 0);
+                coprimeData.push(coprimes.includes(r) ? 0.5 : 0);
+            }
+            
+            if (admissibleChart) admissibleChart.destroy();
+            
+            admissibleChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Admissible (twin pair start)',
+                        data: admissibleData,
+                        backgroundColor: 'rgba(22, 160, 133, 0.7)',
+                        borderColor: '#16a085',
+                        borderWidth: 1
+                    }, {
+                        label: 'Coprime only',
+                        data: coprimeData,
+                        backgroundColor: 'rgba(52, 152, 219, 0.4)',
+                        borderColor: '#3498db',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Admissible Residues Distribution (mod ${M})`,
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Residue class r',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Indicator',
+                                font: {
+                                    size: 14
+                                }
+                            },
+                            max: 1.2
+                        }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('modulusSlider').addEventListener('input', function() {
+            document.getElementById('modulusValue').textContent = this.value;
+        });
+        
+        // Initialize with M=30
+        computeModularSieve();
+
+        // Mertens' Theorem Calculator
+        let mertensChart;
+        
+        function updateMertens() {
+            const x = parseInt(document.getElementById('mertensSlider').value);
+            document.getElementById('mertensValue').textContent = x;
+            
+            const primes = [];
+            for (let i = 2; i <= x; i++) {
+                if (isPrime(i)) primes.push(i);
+            }
+            
+            // Compute cumulative sum of 1/p
+            const cumSum = [];
+            const loglogApprox = [];
+            const labels = [];
+            const M = 0.2614972128; // Meissel-Mertens constant
+            
+            let sum = 0;
+            for (let i = 0; i < primes.length; i++) {
+                sum += 1 / primes[i];
+                const p = primes[i];
+                labels.push(p);
+                cumSum.push(sum);
+                loglogApprox.push(Math.log(Math.log(p)) + M);
+            }
+            
+            const finalSum = sum;
+            const finalApprox = Math.log(Math.log(x)) + M;
+            const error = Math.abs(finalSum - finalApprox);
+            
+            document.getElementById('mertensOutput').innerHTML = `
+Computed sum ∑(1/p) for p ≤ ${x}:
+Actual sum: ${finalSum.toFixed(8)}
+ln(ln(${x})) + M ≈ ${finalApprox.toFixed(8)}
+Meissel-Mertens constant M ≈ 0.2614972128
+Error: ${error.toFixed(8)}
+Number of primes: ${primes.length}
+            `;
+            
+            const ctx = document.getElementById('mertensChart').getContext('2d');
+            if (mertensChart) mertensChart.destroy();
+            
+            const step = primes.length > 100 ? Math.ceil(primes.length / 100) : 1;
+            const sampledLabels = labels.filter((_, i) => i % step === 0);
+            const sampledCum = cumSum.filter((_, i) => i % step === 0);
+            const sampledApprox = loglogApprox.filter((_, i) => i % step === 0);
+            
+            mertensChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sampledLabels,
+                    datasets: [{
+                        label: '∑(1/p) for p ≤ x',
+                        data: sampledCum,
+                        borderColor: '#16a085',
+                        backgroundColor: 'rgba(22, 160, 133, 0.1)',
+                        tension: 0.1,
+                        pointRadius: 0
+                    }, {
+                        label: 'ln(ln(x)) + M',
+                        data: sampledApprox,
+                        borderColor: '#e74c3c',
+                        borderDash: [5, 5],
+                        tension: 0.1,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: "Mertens' Second Theorem: ∑(1/p) ≈ ln(ln(x)) + M",
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Prime p' } },
+                        y: { title: { display: true, text: 'Value' } }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('mertensSlider').addEventListener('input', updateMertens);
+        updateMertens();
+
+        // Goldbach Conjecture Calculator
+        let goldbachChart;
+        
+        function computeGoldbach() {
+            const n = parseInt(document.getElementById('goldbachSlider').value);
+            
+            // Find all primes up to n
+            const primes = [];
+            for (let i = 2; i <= n; i++) {
+                if (isPrime(i)) primes.push(i);
+            }
+            
+            // Find all ways to write n as p + q
+            const representations = [];
+            const primeCounts = {};
+            
+            for (let i = 0; i < primes.length; i++) {
+                const p = primes[i];
+                const q = n - p;
+                if (q >= p && isPrime(q)) {
+                    representations.push([p, q]);
+                    primeCounts[p] = (primeCounts[p] || 0) + 1;
+                    if (p !== q) primeCounts[q] = (primeCounts[q] || 0) + 1;
+                }
+            }
+            
+            const repCount = representations.length;
+            const hlPrediction = n / (Math.log(n) * Math.log(n));
+            
+            let output = `
+Even number: ${n}
+Goldbach representations: ${repCount}
+Hardy-Littlewood prediction: ~${hlPrediction.toFixed(2)}
+
+First 10 representations:
+`;
+            
+            representations.slice(0, 10).forEach(([p, q]) => {
+                output += `\n${n} = ${p} + ${q}`;
+            });
+            
+            if (repCount > 10) output += `\n... and ${repCount - 10} more`;
+            
+            document.getElementById('goldbachOutput').innerHTML = output;
+            
+            // Visualize distribution
+            const ctx = document.getElementById('goldbachChart').getContext('2d');
+            if (goldbachChart) goldbachChart.destroy();
+            
+            const labels = Object.keys(primeCounts).map(Number).sort((a,b) => a-b);
+            const data = labels.map(p => primeCounts[p]);
+            
+            goldbachChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Usage frequency of prime in representations',
+                        data: data,
+                        backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                        borderColor: '#9b59b6',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Goldbach Representation Distribution for ${n}`,
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Prime p' } },
+                        y: { title: { display: true, text: 'Frequency' } }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('goldbachSlider').addEventListener('input', function() {
+            document.getElementById('goldbachValue').textContent = this.value;
+        });
+
+        // Prime Race Visualizer
+        let primeRaceChart;
+        
+        function computePrimeRace() {
+            const limit = parseInt(document.getElementById('primeRaceSlider').value);
+            const modulo = parseInt(document.getElementById('moduloSelect').value);
+            
+            // Count primes in each residue class
+            const counts = {};
+            const cumulative = {};
+            const labels = [];
+            
+            // Initialize
+            for (let r = 0; r < modulo; r++) {
+                if (gcd(r, modulo) === 1) {
+                    counts[r] = 0;
+                    cumulative[r] = [];
+                }
+            }
+            
+            // Count primes
+            for (let p = 2; p <= limit; p++) {
+                if (isPrime(p)) {
+                    const residue = p % modulo;
+                    if (residue in counts) {
+                        counts[residue]++;
+                    }
+                }
+                
+                // Record cumulative
+                if (p % 10 === 0 || p === 2 || p === 3 || p === 5 || p === 7) {
+                    labels.push(p);
+                    for (let r in counts) {
+                        if (!cumulative[r]) cumulative[r] = [];
+                        cumulative[r].push(counts[r]);
+                    }
+                }
+            }
+            
+            // Create output
+            let output = `Prime race modulo ${modulo} up to ${limit}:\n\n`;
+            const sortedResidues = Object.keys(counts).map(Number).sort((a,b) => counts[b] - counts[a]);
+            
+            for (let r of sortedResidues) {
+                output += `Primes ≡ ${r} (mod ${modulo}): ${counts[r]}\n`;
+            }
+            
+            const leader = sortedResidues[0];
+            output += `\nLeading residue class: ${leader} (mod ${modulo})`;
+            
+            document.getElementById('primeRaceOutput').innerHTML = output;
+            
+            // Visualize
+            const ctx = document.getElementById('primeRaceChart').getContext('2d');
+            if (primeRaceChart) primeRaceChart.destroy();
+            
+            const datasets = [];
+            const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#34495e', '#e67e22'];
+            
+            let colorIdx = 0;
+            for (let r in cumulative) {
+                datasets.push({
+                    label: `p ≡ ${r} (mod ${modulo})`,
+                    data: cumulative[r],
+                    borderColor: colors[colorIdx % colors.length],
+                    backgroundColor: colors[colorIdx % colors.length] + '20',
+                    tension: 0.1,
+                    pointRadius: 0,
+                    borderWidth: 2
+                });
+                colorIdx++;
+            }
+            
+            primeRaceChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels, datasets: datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Prime Race (mod ${modulo})`,
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'x' } },
+                        y: { title: { display: true, text: 'π(x; mod, r)' } }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('primeRaceSlider').addEventListener('input', function() {
+            document.getElementById('primeRaceValue').textContent = this.value;
+        });
+
+        // Farey Sequence Explorer
+        let fareyChart;
+        
+        function updateFarey() {
+            const n = parseInt(document.getElementById('fareySlider').value);
+            document.getElementById('fareyValue').textContent = n;
+            
+            // Generate Farey sequence
+            const farey = [];
+            for (let q = 1; q <= n; q++) {
+                for (let p = 0; p <= q; p++) {
+                    if (gcd(p, q) === 1) {
+                        farey.push({ p: p, q: q, val: p / q });
+                    }
+                }
+            }
+            
+            farey.sort((a, b) => a.val - b.val);
+            
+            const length = farey.length;
+            const predicted = 1 + (3 * n * n) / (Math.PI * Math.PI);
+            
+            let output = `Farey sequence F_${n}:\n`;
+            output += `Length: ${length}\n`;
+            output += `Predicted (3n²/π²): ${predicted.toFixed(2)}\n`;
+            output += `Error: ${Math.abs(length - predicted).toFixed(2)}\n\n`;
+            
+            if (n <= 10) {
+                output += 'Sequence: ';
+                output += farey.map(f => `${f.p}/${f.q}`).join(', ');
+            } else {
+                output += `First 20: ${farey.slice(0, 20).map(f => `${f.p}/${f.q}`).join(', ')}...`;
+            }
+            
+            document.getElementById('fareyOutput').innerHTML = output;
+            
+            // Visualize spacing
+            const ctx = document.getElementById('fareyChart').getContext('2d');
+            if (fareyChart) fareyChart.destroy();
+            
+            const spacings = [];
+            for (let i = 1; i < farey.length; i++) {
+                spacings.push(farey[i].val - farey[i-1].val);
+            }
+            
+            fareyChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Farey sequence points',
+                        data: farey.map((f, i) => ({ x: f.val, y: 1/f.q })),
+                        backgroundColor: 'rgba(22, 160, 133, 0.6)',
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Farey Sequence F_${n} (value vs 1/denominator)`,
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'p/q' }, min: 0, max: 1 },
+                        y: { title: { display: true, text: '1/q' }, type: 'logarithmic' }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('fareySlider').addEventListener('input', updateFarey);
+        updateFarey();
+
+        // Primorial Comparison
+        let primorialChart;
+        
+        function comparePrimorials() {
+            const primorials = [
+                { p: 2, val: 2 },
+                { p: 3, val: 6 },
+                { p: 5, val: 30 },
+                { p: 7, val: 210 }
+            ];
+            
+            let output = 'Primorial Moduli Twin Pair Densities:\n\n';
+            const labels = [];
+            const densities = [];
+            const eulerProducts = [];
+            
+            for (let primorial of primorials) {
+                const M = primorial.val;
+                const p = primorial.p;
+                
+                // Compute admissible pairs
+                const coprimes = [];
+                for (let r = 0; r < M; r++) {
+                    if (gcd(r, M) === 1) coprimes.push(r);
+                }
+                
+                let twinCount = 0;
+                for (let r of coprimes) {
+                    if (coprimes.includes((r + 2) % M)) twinCount++;
+                }
+                
+                const density = twinCount / M;
+                const factors = primeFactorization(M);
+                const euler = computeLocalEulerProduct(factors);
+                
+                labels.push(`${p}# = ${M}`);
+                densities.push(density);
+                eulerProducts.push(euler);
+                
+                output += `${p}# = ${M}: δ = ${density.toFixed(6)}, Euler ≈ ${euler.toFixed(6)}\n`;
+            }
+            
+            document.getElementById('primorialOutput').innerHTML = output;
+            
+            const ctx = document.getElementById('primorialChart').getContext('2d');
+            if (primorialChart) primorialChart.destroy();
+            
+            primorialChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Admissible density δ_M',
+                        data: densities,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: '#3498db',
+                        borderWidth: 2
+                    }, {
+                        label: 'Local Euler product',
+                        data: eulerProducts,
+                        backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                        borderColor: '#e74c3c',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Primorial Moduli: Density Comparison',
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Primorial p#' } },
+                        y: { title: { display: true, text: 'Density' }, max: 0.2 }
+                    }
+                }
+            });
+        }
+
+        // Data export functions
+        function exportAllData() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                harmonicNumbers: { n: parseInt(document.getElementById('nSlider').value) },
+                modulusSieve: { M: parseInt(document.getElementById('modulusSlider').value) },
+                note: 'Interactive Number Theory Explorer Data Export'
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'number_theory_data.json';
+            a.click();
+            
+            document.getElementById('exportOutput').innerHTML = 'Data exported as JSON!';
+        }
+        
+        function exportAsCSV() {
+            document.getElementById('exportOutput').innerHTML = 'CSV export: Implement specific dataset selection';
+        }
+
+        // Prime Gap Analysis
+        let gapChart;
+        
+        function analyzeGaps() {
+            const limit = parseInt(document.getElementById('gapSlider').value);
+            const primes = [];
+            
+            for (let i = 2; i <= limit; i++) {
+                if (isPrime(i)) primes.push(i);
+            }
+            
+            const gaps = [];
+            for (let i = 1; i < primes.length; i++) {
+                gaps.push(primes[i] - primes[i-1]);
+            }
+            
+            const maxGap = Math.max(...gaps);
+            const avgGap = gaps.reduce((a,b) => a+b, 0) / gaps.length;
+            const predictedAvg = Math.log(limit);
+            
+            // Gap distribution
+            const gapCounts = {};
+            for (let g of gaps) {
+                gapCounts[g] = (gapCounts[g] || 0) + 1;
+            }
+            
+            const twinPrimeGaps = gaps.filter(g => g === 2).length;
+            
+            document.getElementById('gapOutput').innerHTML = `
+Prime gaps up to ${limit}:
+Total primes: ${primes.length}
+Total gaps: ${gaps.length}
+Maximum gap: ${maxGap}
+Average gap: ${avgGap.toFixed(4)}
+Predicted average (ln x): ${predictedAvg.toFixed(4)}
+Twin prime gaps (g=2): ${twinPrimeGaps}
+Cramér ratio (max/ln²): ${(maxGap / (Math.log(limit) ** 2)).toFixed(4)}
+            `;
+            
+            const ctx = document.getElementById('gapChart').getContext('2d');
+            if (gapChart) gapChart.destroy();
+            
+            const gapLabels = Object.keys(gapCounts).map(Number).sort((a,b) => a-b);
+            const gapData = gapLabels.map(g => gapCounts[g]);
+            
+            gapChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: gapLabels,
+                    datasets: [{
+                        label: 'Frequency of gap size',
+                        data: gapData,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: '#3498db',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Prime Gap Distribution',
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Gap size' } },
+                        y: { title: { display: true, text: 'Frequency' } }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('gapSlider').addEventListener('input', function() {
+            document.getElementById('gapValue').textContent = this.value;
+        });
+
+        // Möbius Function
+        let mobiusChart;
+        
+        function mobius(n) {
+            if (n === 1) return 1;
+            const factors = primeFactorization(n);
+            for (let [p, e] of factors) {
+                if (e > 1) return 0;
+            }
+            return factors.length % 2 === 0 ? 1 : -1;
+        }
+        
+        function computeMobius() {
+            const limit = parseInt(document.getElementById('mobiusSlider').value);
+            const values = [];
+            const cumulative = [];
+            const labels = [];
+            
+            let sum = 0;
+            for (let n = 1; n <= limit; n++) {
+                const mu = mobius(n);
+                values.push(mu);
+                sum += mu;
+                if (n % 5 === 0 || n <= 20) {
+                    labels.push(n);
+                    cumulative.push(sum);
+                }
+            }
+            
+            const zeros = values.filter(v => v === 0).length;
+            const ones = values.filter(v => v === 1).length;
+            const negOnes = values.filter(v => v === -1).length;
+            
+            document.getElementById('mobiusOutput').innerHTML = `
+Möbius function μ(n) for n ≤ ${limit}:
+μ(n) = 1: ${ones} (${(ones/limit*100).toFixed(2)}%)
+μ(n) = -1: ${negOnes} (${(negOnes/limit*100).toFixed(2)}%)
+μ(n) = 0: ${zeros} (${(zeros/limit*100).toFixed(2)}%)
+Mertens function M(${limit}) = ${sum}
+|M(${limit})|/√${limit} ≈ ${Math.abs(sum)/Math.sqrt(limit).toFixed(4)}
+            `;
+            
+            const ctx = document.getElementById('mobiusChart').getContext('2d');
+            if (mobiusChart) mobiusChart.destroy();
+            
+            mobiusChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'M(x) = Σ μ(n)',
+                        data: cumulative,
+                        borderColor: '#9b59b6',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        tension: 0.1,
+                        pointRadius: 0
+                    }, {
+                        label: '±√x bounds',
+                        data: labels.map(x => Math.sqrt(x)),
+                        borderColor: '#e74c3c',
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        fill: false
+                    }, {
+                        label: '-√x',
+                        data: labels.map(x => -Math.sqrt(x)),
+                        borderColor: '#e74c3c',
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Mertens Function M(x) and Riemann Hypothesis Bound',
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'n' } },
+                        y: { title: { display: true, text: 'M(n)' } }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('mobiusSlider').addEventListener('input', function() {
+            document.getElementById('mobiusValue').textContent = this.value;
+        });
+
+        // π(x) vs Li(x) comparison
+        let piChart;
+        
+        function Li(x) {
+            // Approximation of logarithmic integral using numerical integration
+            let sum = 0;
+            const step = Math.max(0.1, (x - 2) / 1000);
+            for (let t = 2; t < x; t += step) {
+                sum += step / Math.log(t);
+            }
+            return sum;
+        }
+        
+        function comparePiLi() {
+            const limit = parseInt(document.getElementById('piSlider').value);
+            const primes = [];
+            
+            for (let i = 2; i <= limit; i++) {
+                if (isPrime(i)) primes.push(i);
+            }
+            
+            const labels = [];
+            const piData = [];
+            const liData = [];
+            const errorData = [];
+            
+            const step = Math.max(10, Math.floor(limit / 100));
+            
+            let primeCount = 0;
+            let primeIdx = 0;
+            
+            for (let x = 10; x <= limit; x += step) {
+                while (primeIdx < primes.length && primes[primeIdx] <= x) {
+                    primeCount++;
+                    primeIdx++;
+                }
+                
+                const liVal = Li(x);
+                labels.push(x);
+                piData.push(primeCount);
+                liData.push(liVal);
+                errorData.push(liVal - primeCount);
+            }
+            
+            const finalPi = primes.length;
+            const finalLi = Li(limit);
+            const finalError = finalLi - finalPi;
+            
+            document.getElementById('piOutput').innerHTML = `
+Prime counting function comparison at x = ${limit}:
+π(${limit}) = ${finalPi}
+Li(${limit}) ≈ ${finalLi.toFixed(2)}
+Error Li(x) - π(x) = ${finalError.toFixed(2)}
+x/ln(x) ≈ ${(limit/Math.log(limit)).toFixed(2)}
+RH bound: O(√x ln x) ≈ ${(Math.sqrt(limit) * Math.log(limit)).toFixed(2)}
+            `;
+            
+            const ctx = document.getElementById('piChart').getContext('2d');
+            if (piChart) piChart.destroy();
+            
+            piChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'π(x)',
+                        data: piData,
+                        borderColor: '#16a085',
+                        backgroundColor: 'rgba(22, 160, 133, 0.1)',
+                        tension: 0.1,
+                        pointRadius: 0,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Li(x)',
+                        data: liData,
+                        borderColor: '#e74c3c',
+                        borderDash: [5, 5],
+                        tension: 0.1,
+                        pointRadius: 0,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Li(x) - π(x)',
+                        data: errorData,
+                        borderColor: '#f39c12',
+                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                        tension: 0.1,
+                        pointRadius: 0,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Prime Counting Function π(x) vs Logarithmic Integral Li(x)',
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'x' } },
+                        y: {
+                            title: { display: true, text: 'Count' },
+                            position: 'left'
+                        },
+                        y1: {
+                            title: { display: true, text: 'Error' },
+                            position: 'right',
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('piSlider').addEventListener('input', function() {
+            document.getElementById('piValue').textContent = this.value;
+        });
+
+        // Euler Product for ζ(s)
+        let eulerProductChart;
+        
+        function computeEulerProduct() {
+            const s = parseFloat(document.getElementById('zetaSSlider').value);
+            const numPrimes = parseInt(document.getElementById('eulerProductSlider').value);
+            
+            const primes = getPrimes(numPrimes);
+            const partialProducts = [];
+            const directSums = [];
+            const labels = [];
+            
+            let product = 1;
+            let directSum = 0;
+            
+            for (let i = 0; i < primes.length; i++) {
+                const p = primes[i];
+                product *= 1 / (1 - Math.pow(p, -s));
+                
+                // Direct sum approximation
+                for (let n = 1; n <= 1000; n++) {
+                    directSum = 0;
+                    for (let k = 1; k <= n; k++) {
+                        directSum += Math.pow(k, -s);
+                    }
+                }
+                
+                if (i % Math.max(1, Math.floor(numPrimes / 50)) === 0 || i === primes.length - 1) {
+                    labels.push(p);
+                    partialProducts.push(product);
+                }
+            }
+            
+            // True zeta value
+            let trueZeta = 0;
+            for (let n = 1; n <= 10000; n++) {
+                trueZeta += Math.pow(n, -s);
+            }
+            
+            document.getElementById('eulerProductOutput').innerHTML = `
+Euler product for ζ(${s.toFixed(1)}):
+Using first ${numPrimes} primes (up to ${primes[primes.length-1]})
+Partial product: ${product.toFixed(10)}
+Direct sum (n≤10000): ${trueZeta.toFixed(10)}
+Error: ${Math.abs(product - trueZeta).toFixed(10)}
+            `;
+            
+            const ctx = document.getElementById('eulerProductChart').getContext('2d');
+            if (eulerProductChart) eulerProductChart.destroy();
+            
+            eulerProductChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `∏(1-p^(-${s.toFixed(1)}))^(-1)`,
+                        data: partialProducts,
+                        borderColor: '#9b59b6',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        tension: 0.1,
+                        pointRadius: 0
+                    }, {
+                        label: `ζ(${s.toFixed(1)}) reference`,
+                        data: Array(labels.length).fill(trueZeta),
+                        borderColor: '#e74c3c',
+                        borderDash: [5, 5],
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Convergence of Euler Product to ζ(${s.toFixed(1)})`,
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Prime p' } },
+                        y: { title: { display: true, text: 'Value' } }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('zetaSSlider').addEventListener('input', function() {
+            document.getElementById('zetaSValue').textContent = parseFloat(this.value).toFixed(1);
+        });
+        
+        document.getElementById('eulerProductSlider').addEventListener('input', function() {
+            document.getElementById('eulerProductValue').textContent = this.value;
+        });
+
+        // Sieve comparison
+        let sieveChart;
+        
+        function runSieveComparison() {
+            const n = parseInt(document.getElementById('sieveSlider').value);
+            
+            const startTime = performance.now();
+            const sieve = new Array(n + 1).fill(true);
+            sieve[0] = sieve[1] = false;
+            
+            for (let i = 2; i * i <= n; i++) {
+                if (sieve[i]) {
+                    for (let j = i * i; j <= n; j += i) {
+                        sieve[j] = false;
+                    }
+                }
+            }
+            
+            const endTime = performance.now();
+            const primeCount = sieve.filter(x => x).length;
+            const time = endTime - startTime;
+            
+            const predicted = n / Math.log(n);
+            const liPredicted = Li(n);
+            
+            document.getElementById('sieveOutput').innerHTML = `
+Sieve of Eratosthenes up to ${n.toLocaleString()}:
+Primes found: ${primeCount.toLocaleString()}
+Time: ${time.toFixed(2)} ms
+PNT prediction (n/ln n): ${predicted.toFixed(0)}
+Li(n) prediction: ${liPredicted.toFixed(0)}
+Memory used: ~${(n / 8192).toFixed(2)} KB
+Complexity: O(n log log n) ≈ ${(n * Math.log(Math.log(n))).toExponential(2)}
+            `;
+            
+            // Prime density chart
+            const ctx = document.getElementById('sieveChart').getContext('2d');
+            if (sieveChart) sieveChart.destroy();
+            
+            const segments = 20;
+            const segmentSize = Math.floor(n / segments);
+            const labels = [];
+            const densities = [];
+            
+            for (let i = 0; i < segments; i++) {
+                const start = i * segmentSize;
+                const end = Math.min((i + 1) * segmentSize, n);
+                let count = 0;
+                
+                for (let j = start; j < end; j++) {
+                    if (sieve[j]) count++;
+                }
+                
+                labels.push(`${start}-${end}`);
+                densities.push(count / segmentSize);
+            }
+            
+            sieveChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Prime density by segment',
+                        data: densities,
+                        backgroundColor: 'rgba(22, 160, 133, 0.7)',
+                        borderColor: '#16a085',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Prime Density Across Segments',
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Range' } },
+                        y: { title: { display: true, text: 'Density' } }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('sieveSlider').addEventListener('input', function() {
+            document.getElementById('sieveValue').textContent = this.value;
+        });
+
+        // Bertrand interval analysis
+        let intervalChart;
+        
+        function analyzeIntervals() {
+            const n = parseInt(document.getElementById('intervalSlider').value);
+            const intervals = [
+                { mult: 2, label: '(n, 2n)' },
+                { mult: 1.5, label: '(n, 1.5n)' },
+                { mult: 1.2, label: '(n, 1.2n)' },
+                { mult: 1.1, label: '(n, 1.1n)' }
+            ];
+            
+            let output = `Prime counts in intervals starting at n = ${n}:\n\n`;
+            const labels = [];
+            const counts = [];
+            
+            for (let interval of intervals) {
+                const upper = Math.floor(n * interval.mult);
+                let count = 0;
+                
+                for (let i = n + 1; i <= upper; i++) {
+                    if (isPrime(i)) count++;
+                }
+                
+                labels.push(interval.label);
+                counts.push(count);
+                output += `${interval.label}: ${count} primes\n`;
+            }
+            
+            output += `\nBertrand's postulate guarantees ≥1 prime in (n, 2n)`;
+            
+            document.getElementById('intervalOutput').innerHTML = output;
+            
+            const ctx = document.getElementById('intervalChart').getContext('2d');
+            if (intervalChart) intervalChart.destroy();
+            
+            intervalChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Prime count',
+                        data: counts,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: '#3498db',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Prime Counts in Intervals Starting at ${n}`,
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Interval' } },
+                        y: { title: { display: true, text: 'Prime count' } }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('intervalSlider').addEventListener('input', function() {
+            document.getElementById('intervalValue').textContent = this.value;
+        });
+
+        // Ulam Spiral Visualization
+        function generateUlamSpiral() {
+            const size = parseInt(document.getElementById('ulamSlider').value);
+            const canvas = document.getElementById('ulamCanvas');
+            const ctx = canvas.getContext('2d');
+            const colorScheme = document.getElementById('ulamColorScheme').value;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Generate spiral coordinates
+            const spiral = [];
+            let x = Math.floor(size / 2), y = Math.floor(size / 2);
+            let dx = 0, dy = -1;
+            
+            for (let i = 0; i < size * size; i++) {
+                if (x >= 0 && x < size && y >= 0 && y < size) {
+                    spiral.push({ x, y, num: i + 1 });
+                }
+                
+                if (x === y || (x < 0 && x === -y) || (x > 0 && x === 1 - y)) {
+                    const temp = dx;
+                    dx = -dy;
+                    dy = temp;
+                }
+                
+                x += dx;
+                y += dy;
+            }
+            
+            const pixelSize = Math.floor(canvas.width / size);
+            let primeCount = 0;
+            
+            for (let point of spiral) {
+                if (isPrime(point.num)) {
+                    primeCount++;
+                    let color;
+                    
+                    switch(colorScheme) {
+                        case 'heatmap':
+                            const intensity = Math.min(255, point.num % 255);
+                            color = `rgb(${intensity}, ${255-intensity}, 100)`;
+                            break;
+                        case 'rainbow':
+                            const hue = (point.num * 137.508) % 360;
+                            color = `hsl(${hue}, 100%, 50%)`;
+                            break;
+                        case 'neon':
+                            color = point.num % 6 === 1 ? '#0ff' : point.num % 6 === 5 ? '#f0f' : '#0f0';
+                            break;
+                        default:
+                            color = '#fff';
+                    }
+                    
+                    ctx.fillStyle = color;
+                    ctx.fillRect(point.x * pixelSize, point.y * pixelSize, pixelSize, pixelSize);
+                }
+            }
+            
+            document.getElementById('ulamOutput').innerHTML = `
+Ulam Spiral ${size}×${size}:
+Total numbers: ${size * size}
+Primes found: ${primeCount}
+Prime density: ${(primeCount / (size * size) * 100).toFixed(2)}%
+            `;
+        }
+        
+        document.getElementById('ulamSlider').addEventListener('input', function() {
+            document.getElementById('ulamValue').textContent = this.value;
+        });
+
+        // Zeta Landscape
+        function zetaValue(sigma, t) {
+            // Simplified approximation using Euler product
+            let product = 1;
+            const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
+            
+            for (let p of primes) {
+                const real = 1 - Math.pow(p, -sigma) * Math.cos(t * Math.log(p));
+                const imag = Math.pow(p, -sigma) * Math.sin(t * Math.log(p));
+                const denom = real * real + imag * imag;
+                product /= Math.sqrt(denom);
+            }
+            
+            return Math.min(product, 10);
+        }
+        
+        function generateZetaLandscape() {
+            const canvas = document.getElementById('zetaLandscape');
+            const ctx = canvas.getContext('2d');
+            const res = parseInt(document.getElementById('zetaResSlider').value);
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            const pixelWidth = width / res;
+            const pixelHeight = height / res;
+            
+            let maxVal = 0;
+            const values = [];
+            
+            for (let i = 0; i < res; i++) {
+                values[i] = [];
+                for (let j = 0; j < res; j++) {
+                    const sigma = i / res * 2;
+                    const t = (j / res - 0.5) * 40;
+                    const val = zetaValue(sigma, t);
+                    values[i][j] = val;
+                    maxVal = Math.max(maxVal, val);
+                }
+            }
+            
+            for (let i = 0; i < res; i++) {
+                for (let j = 0; j < res; j++) {
+                    const normalized = values[i][j] / maxVal;
+                    const hue = (1 - normalized) * 240;
+                    ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+                    ctx.fillRect(i * pixelWidth, j * pixelHeight, pixelWidth, pixelHeight);
+                }
+            }
+            
+            // Draw critical line
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(width * 0.25, 0);
+            ctx.lineTo(width * 0.25, height);
+            ctx.stroke();
+            
+            document.getElementById('zetaOutput').innerHTML = `
+Zeta landscape visualization:
+Horizontal: σ (real part) from 0 to 2
+Vertical: t (imaginary part) from -20 to 20
+White line: Critical line σ = 1/2
+Colors: Blue (high |ζ|) → Red (low |ζ|)
+            `;
+        }
+        
+        document.getElementById('zetaResSlider').addEventListener('input', function() {
+            document.getElementById('zetaResValue').textContent = this.value;
+        });
+
+        // Prime Constellation Finder
+        let constellationChart;
+        
+        function findConstellations() {
+            const limit = parseInt(document.getElementById('constellationSlider').value);
+            const primes = [];
+            
+            for (let i = 2; i <= limit; i++) {
+                if (isPrime(i)) primes.push(i);
+            }
+            
+            const twins = [];
+            const triplets = [];
+            const quadruplets = [];
+            const sexy = [];
+            const cousin = [];
+            
+            for (let i = 0; i < primes.length - 1; i++) {
+                const p = primes[i];
+                
+                if (primes[i+1] === p + 2) twins.push(p);
+                if (primes[i+1] === p + 4) cousin.push(p);
+                if (primes[i+1] === p + 6) sexy.push(p);
+                
+                if (i < primes.length - 2) {
+                    if (primes[i+1] === p + 2 && primes[i+2] === p + 6) triplets.push(p);
+                    if (primes[i+1] === p + 4 && primes[i+2] === p + 6) triplets.push(p);
+                }
+                
+                if (i < primes.length - 3) {
+                    if (primes[i+1] === p + 2 && primes[i+2] === p + 6 && primes[i+3] === p + 8) {
+                        quadruplets.push(p);
+                    }
+                }
+            }
+            
+            document.getElementById('constellationOutput').innerHTML = `
+Prime Constellation Census up to ${limit.toLocaleString()}:
+
+Twin primes (p, p+2): ${twins.length}
+Cousin primes (p, p+4): ${cousin.length}
+Sexy primes (p, p+6): ${sexy.length}
+Prime triplets: ${triplets.length}
+Prime quadruplets: ${quadruplets.length}
+
+Largest twin prime: ${twins[twins.length-1]}
+Largest quadruplet: ${quadruplets.length > 0 ? quadruplets[quadruplets.length-1] : 'None found'}
+            `;
+            
+            const ctx = document.getElementById('constellationChart').getContext('2d');
+            if (constellationChart) constellationChart.destroy();
+            
+            constellationChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Twin', 'Cousin', 'Sexy', 'Triplet', 'Quadruplet'],
+                    datasets: [{
+                        label: 'Count',
+                        data: [twins.length, cousin.length, sexy.length, triplets.length, quadruplets.length],
+                        backgroundColor: [
+                            'rgba(231, 76, 60, 0.7)',
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(155, 89, 182, 0.7)',
+                            'rgba(46, 204, 113, 0.7)',
+                            'rgba(241, 196, 15, 0.7)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Prime Constellation Distribution',
+                            font: { size: 18 }
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Count (log scale)' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('constellationSlider').addEventListener('input', function() {
+            document.getElementById('constellationValue').textContent = this.value;
+        });
+
+        // Animated Sieve
+        let sieveAnimInterval;
+        let sieveAnimState = null;
+        
+        function startSieveAnimation() {
+            const n = parseInt(document.getElementById('animSieveSlider').value);
+            const speed = parseInt(document.getElementById('animSpeedSlider').value);
+            const canvas = document.getElementById('sieveAnimCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            const cols = Math.floor(Math.sqrt(n));
+            const rows = Math.ceil(n / cols);
+            const cellWidth = canvas.width / cols;
+            const cellHeight = canvas.height / rows;
+            
+            sieveAnimState = {
+                sieve: new Array(n + 1).fill(true),
+                currentPrime: 2,
+                n: n,
+                cols: cols,
+                rows: rows,
+                cellWidth: cellWidth,
+                cellHeight: cellHeight
+            };
+            
+            sieveAnimState.sieve[0] = sieveAnimState.sieve[1] = false;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Initial draw
+            for (let i = 0; i <= n; i++) {
+                const row = Math.floor(i / cols);
+                const col = i % cols;
+                ctx.fillStyle = '#34495e';
+                ctx.fillRect(col * cellWidth, row * cellHeight, cellWidth - 1, cellHeight - 1);
+            }
+            
+            sieveAnimInterval = setInterval(() => animateSieveStep(ctx), speed);
+        }
+        
+        function animateSieveStep(ctx) {
+            if (!sieveAnimState) return;
+            
+            const { sieve, currentPrime, n, cols, cellWidth, cellHeight } = sieveAnimState;
+            
+            if (currentPrime * currentPrime > n) {
+                stopSieveAnimation();
+                
+                // Final render showing primes
+                let primeCount = 0;
+                for (let i = 2; i <= n; i++) {
+                    if (sieve[i]) {
+                        primeCount++;
+                        const row = Math.floor(i / cols);
+                        const col = i % cols;
+                        ctx.fillStyle = '#0ff';
+                        ctx.fillRect(col * cellWidth, row * cellHeight, cellWidth - 1, cellHeight - 1);
+                    }
+                }
+                
+                document.getElementById('sieveAnimOutput').innerHTML = `
+Animation complete!
+Primes found: ${primeCount}
+                `;
+                return;
+            }
+            
+            if (sieve[currentPrime]) {
+                // Mark current prime
+                const row = Math.floor(currentPrime / cols);
+                const col = currentPrime % cols;
+                ctx.fillStyle = '#f39c12';
+                ctx.fillRect(col * cellWidth, row * cellHeight, cellWidth - 1, cellHeight - 1);
+                
+                // Cross out multiples
+                for (let j = currentPrime * currentPrime; j <= n; j += currentPrime) {
+                    if (sieve[j]) {
+                        sieve[j] = false;
+                        const mRow = Math.floor(j / cols);
+                        const mCol = j % cols;
+                        ctx.fillStyle = '#e74c3c';
+                        ctx.fillRect(mCol * cellWidth, mRow * cellHeight, cellWidth - 1, cellHeight - 1);
+                    }
+                }
+            }
+            
+            sieveAnimState.currentPrime++;
+            
+            document.getElementById('sieveAnimOutput').innerHTML = `
+Sieving with prime: ${currentPrime}
+            `;
+        }
+        
+        function stopSieveAnimation() {
+            if (sieveAnimInterval) {
+                clearInterval(sieveAnimInterval);
+                sieveAnimInterval = null;
+            }
+        }
+        
+        document.getElementById('animSieveSlider').addEventListener('input', function() {
+            document.getElementById('animSieveValue').textContent = this.value;
+        });
+        
+        document.getElementById('animSpeedSlider').addEventListener('input', function() {
+            document.getElementById('animSpeedValue').textContent = this.value;
+        });
+
+        // Goldbach Comet
+        function generateGoldbachComet() {
+            const limit = parseInt(document.getElementById('cometSlider').value);
+            const canvas = document.getElementById('cometCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const maxReps = 1000;
+            const points = [];
+            
+            for (let n = 4; n <= limit; n += 2) {
+                let count = 0;
+                for (let p = 2; p <= n/2; p++) {
+                    if (isPrime(p) && isPrime(n - p)) count++;
+                }
+                points.push({ n: n, count: count });
+            }
+            
+            const maxCount = Math.max(...points.map(p => p.count));
+            
+            for (let point of points) {
+                const x = (point.n / limit) * canvas.width;
+                const y = canvas.height - (point.count / maxCount) * canvas.height;
+                
+                const hue = (point.count / maxCount) * 240;
+                ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+                ctx.fillRect(x, y, 2, 2);
+            }
+            
+            document.getElementById('cometOutput').innerHTML = `
+Goldbach Comet up to ${limit}:
+Maximum partitions: ${maxCount}
+Points plotted: ${points.length}
+Ray structure clearly visible!
+            `;
+        }
+        
+        document.getElementById('cometSlider').addEventListener('input', function() {
+            document.getElementById('cometValue').textContent = this.value;
+        });
+
+        // Prime Race Animation
+        let primeRaceInterval;
+        let primeRaceData = { x: 10, primes: [], piVals: [], liVals: [], pntVals: [] };
+        let primeRaceChartObj;
+        
+        function startPrimeRace() {
+            primeRaceData = { x: 10, primes: [], piVals: [], liVals: [], pntVals: [] };
+            
+            for (let i = 2; i <= 10; i++) {
+                if (isPrime(i)) primeRaceData.primes.push(i);
+            }
+            
+            primeRaceInterval = setInterval(updatePrimeRace, 100);
+        }
+        
+        function updatePrimeRace() {
+            const x = primeRaceData.x;
+            
+            while (primeRaceData.primes.length > 0 && primeRaceData.primes[primeRaceData.primes.length - 1] < x) {
+                const nextPrime = primeRaceData.primes[primeRaceData.primes.length - 1] + 1;
+                for (let i = nextPrime; i <= x + 100; i++) {
+                    if (isPrime(i)) {
+                        primeRaceData.primes.push(i);
+                        break;
+                    }
+                }
+            }
+            
+            const pi = primeRaceData.primes.filter(p => p <= x).length;
+            const li = Li(x);
+            const pnt = x / Math.log(x);
+            
+            primeRaceData.piVals.push(pi);
+            primeRaceData.liVals.push(li);
+            primeRaceData.pntVals.push(pnt);
+            
+            if (x > 10000) {
+                stopPrimeRace();
+                return;
+            }
+            
+            primeRaceData.x = Math.floor(x * 1.05);
+            
+            renderPrimeRace();
+        }
+        
+        function renderPrimeRace() {
+            const ctx = document.getElementById('primeRaceCanvas').getContext('2d');
+            
+            if (primeRaceChartObj) primeRaceChartObj.destroy();
+            
+            const labels = primeRaceData.piVals.map((_, i) => Math.floor(10 * Math.pow(1.05, i)));
+            
+            primeRaceChartObj = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'π(x)',
+                        data: primeRaceData.piVals,
+                        borderColor: '#16a085',
+                        borderWidth: 3,
+                        pointRadius: 0
+                    }, {
+                        label: 'Li(x)',
+                        data: primeRaceData.liVals,
+                        borderColor: '#e74c3c',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointRadius: 0
+                    }, {
+                        label: 'x/ln(x)',
+                        data: primeRaceData.pntVals,
+                        borderColor: '#f39c12',
+                        borderWidth: 2,
+                        borderDash: [2, 2],
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Live Prime Number Theorem Race',
+                            font: { size: 18 }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'x' } },
+                        y: { title: { display: true, text: 'Count' } }
+                    }
+                }
+            });
+            
+            document.getElementById('primeRaceAnimOutput').innerHTML = `
+Current x: ${primeRaceData.x}
+π(x): ${primeRaceData.piVals[primeRaceData.piVals.length - 1]}
+            `;
+        }
+        
+        function stopPrimeRace() {
+            if (primeRaceInterval) {
+                clearInterval(primeRaceInterval);
+                primeRaceInterval = null;
+            }
+        }
+        
+        function resetPrimeRace() {
+            stopPrimeRace();
+            primeRaceData = { x: 10, primes: [], piVals: [], liVals: [], pntVals: [] };
+            if (primeRaceChartObj) primeRaceChartObj.destroy();
+        }
+
+        // Modular Circle
+        let modCircleAnimInterval;
+        
+        function generateModCircle() {
+            const n = parseInt(document.getElementById('modCirclePoints').value);
+            const mult = parseFloat(document.getElementById('modCircleMult').value);
+            const canvas = document.getElementById('modCircleCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const radius = Math.min(cx, cy) * 0.9;
+            
+            // Draw points
+            ctx.fillStyle = '#fff';
+            for (let i = 0; i < n; i++) {
+                const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
+                const x = cx + radius * Math.cos(angle);
+                const y = cy + radius * Math.sin(angle);
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            // Draw connections
+            ctx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
+            ctx.lineWidth = 0.5;
+            
+            for (let i = 0; i < n; i++) {
+                const j = (i * mult) % n;
+                const angle1 = (i / n) * 2 * Math.PI - Math.PI / 2;
+                const angle2 = (j / n) * 2 * Math.PI - Math.PI / 2;
+                
+                const x1 = cx + radius * Math.cos(angle1);
+                const y1 = cy + radius * Math.sin(angle1);
+                const x2 = cx + radius * Math.cos(angle2);
+                const y2 = cy + radius * Math.sin(angle2);
+                
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+            
+            document.getElementById('modCircleOutput').innerHTML = `
+Modular multiplication: ${mult}×i mod ${n}
+Pattern: ${mult === 2 ? 'Cardioid' : mult === 3 ? 'Nephroid' : 'Complex curve'}
+            `;
+        }
+        
+        function animateModCircle() {
+            let mult = 2;
+            modCircleAnimInterval = setInterval(() => {
+                document.getElementById('modCircleMult').value = mult;
+                document.getElementById('modCircleMultValue').textContent = mult.toFixed(1);
+                generateModCircle();
+                mult += 0.1;
+                if (mult > 10) mult = 2;
+            }, 100);
+            
+            setTimeout(() => clearInterval(modCircleAnimInterval), 10000);
+        }
+        
+        document.getElementById('modCirclePoints').addEventListener('input', function() {
+            document.getElementById('modCirclePointsValue').textContent = this.value;
+        });
+        
+        document.getElementById('modCircleMult').addEventListener('input', function() {
+            document.getElementById('modCircleMultValue').textContent = parseFloat(this.value).toFixed(1);
+        });
+
+        // Prime Gap Galaxy
+        function generateGapGalaxy() {
+            const n = parseInt(document.getElementById('galaxySlider').value);
+            const canvas = document.getElementById('galaxyCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const primes = [];
+            for (let i = 2; i <= n; i++) {
+                if (isPrime(i)) primes.push(i);
+            }
+            
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            
+            for (let i = 1; i < primes.length; i++) {
+                const gap = primes[i] - primes[i-1];
+                const angle = (i / primes.length) * 6 * Math.PI;
+                const r = gap * 20;
+                
+                const x = cx + r * Math.cos(angle);
+                const y = cy + r * Math.sin(angle);
+                
+                const hue = (gap * 50) % 360;
+                ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+                ctx.beginPath();
+                ctx.arc(x, y, Math.min(gap, 5), 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            const maxGap = Math.max(...primes.slice(1).map((p, i) => p - primes[i]));
+            
+            document.getElementById('galaxyOutput').innerHTML = `
+Prime Gap Galaxy:
+Primes analyzed: ${primes.length}
+Maximum gap: ${maxGap}
+Colors represent gap sizes
+            `;
+        }
+        
+        document.getElementById('galaxySlider').addEventListener('input', function() {
+            document.getElementById('galaxyValue').textContent = this.value;
+        });
+
+        // Open first section by default
+        document.querySelector('h2').click();
+
+        // ==================== EULER ORBIT VISUALIZATION ====================
+        
+        let orbitAnimationId = null;
+        let orbitStep = 0;
+
+        function updateEulerDisplay() {
+            document.getElementById('eulerMaxVal').textContent = document.getElementById('eulerMaxMod').value;
+            document.getElementById('eulerModVal').textContent = document.getElementById('eulerOrbitMod').value;
+            document.getElementById('eulerBaseVal').textContent = document.getElementById('eulerBase').value;
+            drawEulerVisualization();
+        }
+
+        function drawEulerVisualization() {
+            const canvas = document.getElementById('eulerOrbitCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+            const cx = W/2, cy = H/2;
+            
+            const maxM = parseInt(document.getElementById('eulerMaxMod').value);
+            const orbitM = parseInt(document.getElementById('eulerOrbitMod').value);
+            const base = parseInt(document.getElementById('eulerBase').value);
+            const primesOnly = document.getElementById('eulerPrimesOnly').checked;
+            const showOrbit = document.getElementById('eulerShowOrbit').checked;
+            const showLabels = document.getElementById('eulerShowLabels').checked;
+            const showConn = document.getElementById('eulerShowConnections').checked;
+            
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, W, H);
+            
+            const moduli = [];
+            for (let m = 2; m <= maxM; m++) {
+                if (!primesOnly || isPrime(m)) moduli.push(m);
+            }
+            
+            const maxR = Math.min(W, H) * 0.42;
+            let totalGCD1 = 0, primes = 0;
+            
+            moduli.forEach((m, idx) => {
+                const r = (idx + 1) * (maxR / moduli.length);
+                const prime = isPrime(m);
+                if (prime) primes++;
+                
+                ctx.strokeStyle = prime ? 'rgba(78,205,196,0.3)' : 'rgba(150,150,150,0.15)';
+                ctx.lineWidth = prime ? 1.5 : 0.5;
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, 2*Math.PI);
+                ctx.stroke();
+                
+                const phi = totient(m);
+                totalGCD1 += phi;
+                
+                for (let res = 0; res < m; res++) {
+                    if (gcd(res, m) !== 1) continue;
+                    const theta = (2*Math.PI*res)/m - Math.PI/2;
+                    const x = cx + r*Math.cos(theta);
+                    const y = cy + r*Math.sin(theta);
+                    
+                    ctx.fillStyle = prime ? '#4ecdc4' : '#95a5a6';
+                    ctx.beginPath();
+                    ctx.arc(x, y, prime ? 2.5 : 1.5, 0, 2*Math.PI);
+                    ctx.fill();
+                }
+                
+                if (showLabels && prime && m <= 23) {
+                    ctx.fillStyle = '#4ecdc4';
+                    ctx.font = '11px Arial';
+                    ctx.fillText(`p=${m}`, cx + r + 5, cy);
+                }
+            });
+            
+            if (showOrbit && moduli.includes(orbitM) && gcd(base, orbitM) === 1) {
+                const mIdx = moduli.indexOf(orbitM);
+                const r = (mIdx + 1) * (maxR / moduli.length);
+                const phi = totient(orbitM);
+                
+                let curr = 1;
+                const pts = [];
+                for (let k = 0; k < phi; k++) {
+                    const theta = (2*Math.PI*curr)/orbitM - Math.PI/2;
+                    pts.push({x: cx + r*Math.cos(theta), y: cy + r*Math.sin(theta)});
+                    curr = (curr * base) % orbitM;
+                }
+                
+                if (showConn && pts.length > 1) {
+                    ctx.strokeStyle = 'rgba(255,200,0,0.5)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    pts.forEach((p, i) => {
+                        if (i === 0) ctx.moveTo(p.x, p.y);
+                        else ctx.lineTo(p.x, p.y);
+                    });
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+                
+                pts.forEach((p, i) => {
+                    ctx.fillStyle = i === 0 ? '#ff3860' : '#ffdd57';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, 2*Math.PI);
+                    ctx.fill();
+                });
+            }
+            
+            ctx.fillStyle = '#ecf0f1';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Euler Orbits: GCD=1 Rings & Cyclic Groups', cx, 30);
+            
+            const stats = document.getElementById('eulerStats');
+            if (stats) {
+                const avgPhi = moduli.length > 0 ? (totalGCD1/moduli.length).toFixed(1) : 0;
+                stats.innerHTML = `
+                    <strong>Moduli:</strong> ${moduli.length} | 
+                    <strong>Primes:</strong> ${primes} | 
+                    <strong>Total GCD=1:</strong> ${totalGCD1} | 
+                    <strong>Avg φ(m):</strong> ${avgPhi}
+                    ${showOrbit ? ` | <strong>Orbit:</strong> m=${orbitM}, a=${base}, φ(${orbitM})=${totient(orbitM)} steps` : ''}
+                `;
+            }
+        }
+
+        function animateOrbit() {
+            stopOrbitAnimation();
+            orbitStep = 0;
+            const orbitM = parseInt(document.getElementById('eulerOrbitMod').value);
+            const base = parseInt(document.getElementById('eulerBase').value);
+            
+            if (gcd(base, orbitM) !== 1) {
+                alert('Base a must be coprime to m!');
+                return;
+            }
+            
+            function step() {
+                drawEulerVisualization();
+                
+                const canvas = document.getElementById('eulerOrbitCanvas');
+                const ctx = canvas.getContext('2d');
+                const W = canvas.width, H = canvas.height;
+                const cx = W/2, cy = H/2;
+                
+                const maxM = parseInt(document.getElementById('eulerMaxMod').value);
+                const primesOnly = document.getElementById('eulerPrimesOnly').checked;
+                
+                const moduli = [];
+                for (let m = 2; m <= maxM; m++) {
+                    if (!primesOnly || isPrime(m)) moduli.push(m);
+                }
+                
+                if (!moduli.includes(orbitM)) return;
+                
+                const maxR = Math.min(W, H) * 0.42;
+                const mIdx = moduli.indexOf(orbitM);
+                const r = (mIdx + 1) * (maxR / moduli.length);
+                
+                let curr = 1;
+                for (let k = 0; k < orbitStep; k++) {
+                    curr = (curr * base) % orbitM;
+                }
+                
+                const theta = (2*Math.PI*curr)/orbitM - Math.PI/2;
+                const x = cx + r*Math.cos(theta);
+                const y = cy + r*Math.sin(theta);
+                
+                ctx.fillStyle = '#ff3860';
+                ctx.beginPath();
+                ctx.arc(x, y, 7, 0, 2*Math.PI);
+                ctx.fill();
+                
+                ctx.fillStyle = '#ffdd57';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(`Step ${orbitStep + 1}/${totient(orbitM)}: r=${curr}`, 20, H - 20);
+                
+                orbitStep = (orbitStep + 1) % totient(orbitM);
+                orbitAnimationId = setTimeout(step, 500);
+            }
+            step();
+        }
+
+        function stopOrbitAnimation() {
+            if (orbitAnimationId) {
+                clearTimeout(orbitAnimationId);
+                orbitAnimationId = null;
+            }
+        }
+
+        // ==================== CONCENTRIC RINGS VISUALIZATION ====================
+        
+        let trackedGCD1 = [];
+
+        function updateConcentricDisplay() {
+            document.getElementById('concMinVal').textContent = document.getElementById('concMinMod').value;
+            document.getElementById('concMaxVal').textContent = document.getElementById('concMaxMod').value;
+            document.getElementById('concPointVal').textContent = document.getElementById('concPointSize').value;
+            drawConcentricVisualization();
+        }
+
+        function drawConcentricVisualization() {
+            const canvas = document.getElementById('concentricCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+            const cx = W/2, cy = H/2;
+            
+            const minM = parseInt(document.getElementById('concMinMod').value);
+            const maxM = parseInt(document.getElementById('concMaxMod').value);
+            const pointSize = parseFloat(document.getElementById('concPointSize').value);
+            const colorMode = document.getElementById('concColorMode').value;
+            const showRings = document.getElementById('concShowRings').checked;
+            const showLabels = document.getElementById('concShowLabels').checked;
+            const showAxes = document.getElementById('concShowAxes').checked;
+            const onlyGCD1 = document.getElementById('showOnlyGCD1').checked;
+            
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, W, H);
+            
+            if (showAxes) {
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(0, cy); ctx.lineTo(W, cy);
+                ctx.moveTo(cx, 0); ctx.lineTo(cx, H);
+                ctx.stroke();
+            }
+            
+            const maxR = Math.min(W, H) * 0.45;
+            const step = maxR / (maxM - minM + 1);
+            
+            let totalPts = 0, openPts = 0;
+            
+            for (let m = minM; m <= maxM; m++) {
+                const r = step * (m - minM + 1);
+                const prime = isPrime(m);
+                
+                if (showRings) {
+                    ctx.strokeStyle = prime ? 'rgba(39,174,96,0.3)' : 'rgba(149,165,166,0.2)';
+                    ctx.lineWidth = prime ? 2 : 1;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, r, 0, 2*Math.PI);
+                    ctx.stroke();
+                }
+                
+                if (showLabels) {
+                    ctx.fillStyle = prime ? '#27ae60' : '#95a5a6';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillText(`m=${m}`, cx + r + 5, cy);
+                }
+                
+                for (let res = 1; res < m; res++) {
+                    const g = gcd(res, m);
+                    const isOpen = g === 1;
+                    
+                    if (onlyGCD1 && !isOpen) continue;
+                    
+                    totalPts++;
+                    if (isOpen) openPts++;
+                    
+                    const theta = (2*Math.PI*res)/m;
+                    const x = cx + r*Math.cos(theta);
+                    const y = cy - r*Math.sin(theta);
+                    
+                    let color;
+                    if (colorMode === 'binary') {
+                        color = isOpen ? '#27ae60' : '#e74c3c';
+                    } else if (colorMode === 'gcd-gradient') {
+                        const intensity = g / m;
+                        const hue = 120 * (1 - intensity);
+                        color = `hsl(${hue}, 70%, 50%)`;
+                    } else if (colorMode === 'gcd-global') {
+                        const colors = ['#2ecc71','#e74c3c','#3498db','#f39c12','#9b59b6','#1abc9c'];
+                        color = colors[Math.min(g-1, colors.length-1)];
+                    } else if (colorMode === 'prime-factor') {
+                        const spf = g > 1 ? smallestPrimeFactor(g) : 1;
+                        const hue = (spf * 40) % 360;
+                        color = `hsl(${hue}, 70%, 50%)`;
+                    } else { // angular
+                        const hue = (theta / (2*Math.PI)) * 360;
+                        const light = isOpen ? 50 : 30;
+                        color = `hsl(${hue}, 70%, ${light}%)`;
+                    }
+                    
+                    const highlighted = trackedGCD1.includes(res);
+                    if (highlighted) color = '#FFD700';
+                    
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(x, y, highlighted ? pointSize*2 : pointSize, 0, 2*Math.PI);
+                    ctx.fill();
+                }
+            }
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Concentric Farey Rings: m ∈ [${minM}, ${maxM}]`, cx, 35);
+            
+            const stats = document.getElementById('concentricStats');
+            if (stats) {
+                const density = totalPts > 0 ? (openPts/totalPts*100).toFixed(1) : 0;
+                stats.innerHTML = `
+                    <strong>Total Points:</strong> ${totalPts} | 
+                    <strong>GCD=1:</strong> ${openPts} (${density}%) | 
+                    <strong>Blocked:</strong> ${totalPts - openPts}
+                `;
+            }
+        }
+
+        function trackGCD1Values() {
+            const n = parseInt(document.getElementById('gcdTrackMod').value);
+            if (isNaN(n) || n < 2) return;
+            
+            trackedGCD1 = [];
+            for (let r = 1; r < n; r++) {
+                if (gcd(r, n) === 1) trackedGCD1.push(r);
+            }
+            
+            const info = document.getElementById('gcdTrackInfo');
+            info.style.display = 'block';
+            info.innerHTML = `
+                <strong>GCD(r, ${n}) = 1:</strong> r ∈ {${trackedGCD1.join(', ')}}<br>
+                <strong>φ(${n}) =</strong> ${trackedGCD1.length} coprime values
+            `;
+            
+            drawConcentricVisualization();
+        }
+
+        function exportConcentric4K() {
+            const canvas = document.getElementById('concentricCanvas');
+            const link = document.createElement('a');
+            link.download = `concentric-farey-rings-4k-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Initialize
+        setTimeout(() => {
+            if (document.getElementById('eulerOrbitCanvas')) drawEulerVisualization();
+            if (document.getElementById('concentricCanvas')) drawConcentricVisualization();
+        }, 100);
+    </script>
+</body>
+</html>
