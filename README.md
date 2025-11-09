@@ -918,6 +918,73 @@
                     </div>
 
                     <div class="control-section">
+                        <h3>Label Display</h3>
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="showLabels">
+                                Show Point Labels
+                            </label>
+                        </div>
+                        <div class="control-group">
+                            <label>Label Type</label>
+                            <select id="labelType">
+                                <option value="residue">Residue (r)</option>
+                                <option value="farey">Farey Fraction (r/m)</option>
+                                <option value="theta">Angle θ (degrees)</option>
+                                <option value="theta-rad">Angle θ (radians)</option>
+                                <option value="modulus">Modulus (m)</option>
+                                <option value="gcd">GCD(r,m)</option>
+                                <option value="pair">(m,r)</option>
+                                <option value="farey-reduced">Reduced Fraction</option>
+                                <option value="euler-phi">φ(m)</option>
+                                <option value="totient-index">Totient Index</option>
+                                <option value="prime-factorization">Prime Factors</option>
+                                <option value="coprime-status">Coprime Status</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Label Filter</label>
+                            <select id="labelFilter">
+                                <option value="all">All Points</option>
+                                <option value="open-only">Open Channels Only</option>
+                                <option value="closed-only">Closed Channels Only</option>
+                                <option value="admissible">Gap Admissible Only</option>
+                                <option value="primes">Prime Residues Only</option>
+                                <option value="mod-specific">Specific Modulus</option>
+                                <option value="gcd-specific">Specific GCD Value</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Filter Value (if applicable)</label>
+                            <input type="number" id="labelFilterValue" value="30" min="1">
+                        </div>
+                        <div class="control-group">
+                            <label>Label Size <span class="range-display" id="labelSizeDisplay">10</span></label>
+                            <div class="dual-input">
+                                <input type="range" id="labelSize" min="6" max="20" step="1" value="10">
+                                <input type="number" id="labelSizeNum" min="6" max="30" step="1" value="10">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label>Label Color</label>
+                            <input type="color" id="labelColor" value="#ffffff">
+                        </div>
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="labelBackground" checked>
+                                Label Background
+                            </label>
+                        </div>
+                        <div class="control-group">
+                            <label>Label Spacing <span class="range-display" id="labelSpacingDisplay">12</span></label>
+                            <div class="dual-input">
+                                <input type="range" id="labelSpacing" min="8" max="30" step="1" value="12">
+                                <input type="number" id="labelSpacingNum" min="8" max="50" step="1" value="12">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-section">
                         <h3>Gap Analysis</h3>
                         <div class="control-row">
                             <div class="control-group">
@@ -1215,6 +1282,98 @@
             document.getElementById('themeText').textContent = 'Light Mode';
         }
 
+        function isPrime(n) {
+            if (n < 2) return false;
+            if (n === 2) return true;
+            if (n % 2 === 0) return false;
+            for (let i = 3; i * i <= n; i += 2) {
+                if (n % i === 0) return false;
+            }
+            return true;
+        }
+
+        function primeFactorization(n) {
+            if (n <= 1) return '';
+            const factors = [];
+            let temp = n;
+            for (let i = 2; i * i <= temp; i++) {
+                let count = 0;
+                while (temp % i === 0) {
+                    count++;
+                    temp /= i;
+                }
+                if (count > 0) {
+                    factors.push(count === 1 ? `${i}` : `${i}^${count}`);
+                }
+            }
+            if (temp > 1) factors.push(`${temp}`);
+            return factors.join('×') || `${n}`;
+        }
+
+        function reduceFraction(num, den) {
+            const g = gcd(num, den);
+            return [num / g, den / g];
+        }
+
+        function getPointLabel(point, labelType) {
+            switch(labelType) {
+                case 'residue':
+                    return `${point.r}`;
+                case 'farey':
+                    return `${point.r}/${point.m}`;
+                case 'farey-reduced':
+                    const [num, den] = reduceFraction(point.r, point.m);
+                    return `${num}/${den}`;
+                case 'theta':
+                    return `${(point.angle * 180 / Math.PI).toFixed(1)}°`;
+                case 'theta-rad':
+                    return `${(point.angle / Math.PI).toFixed(3)}π`;
+                case 'modulus':
+                    return `${point.m}`;
+                case 'gcd':
+                    return `${point.gcd}`;
+                case 'pair':
+                    return `(${point.m},${point.r})`;
+                case 'euler-phi':
+                    return `φ=${point.phiM}`;
+                case 'totient-index':
+                    // Index of this residue among totatives of m
+                    const totatives = [];
+                    for (let i = 0; i < point.m; i++) {
+                        if (gcd(i, point.m) === 1) totatives.push(i);
+                    }
+                    const idx = totatives.indexOf(point.r);
+                    return idx >= 0 ? `#${idx + 1}` : 'N/A';
+                case 'prime-factorization':
+                    return point.r === 0 ? '0' : primeFactorization(point.r);
+                case 'coprime-status':
+                    return point.isOpen ? '✓' : '✗';
+                default:
+                    return `${point.r}`;
+            }
+        }
+
+        function shouldShowLabel(point, filter, filterValue) {
+            switch(filter) {
+                case 'all':
+                    return true;
+                case 'open-only':
+                    return point.isOpen;
+                case 'closed-only':
+                    return !point.isOpen;
+                case 'admissible':
+                    return point.isAdmissible;
+                case 'primes':
+                    return isPrime(point.r);
+                case 'mod-specific':
+                    return point.m === filterValue;
+                case 'gcd-specific':
+                    return point.gcd === filterValue;
+                default:
+                    return true;
+            }
+        }
+
         function gcd(a, b) {
             a = Math.abs(a);
             b = Math.abs(b);
@@ -1312,6 +1471,9 @@
         syncInputs('pointSize', 'pointSizeNum');
         syncInputs('connOpacity', 'connOpacityNum');
 
+        syncInputs('labelSize', 'labelSizeNum');
+        syncInputs('labelSpacing', 'labelSpacingNum');
+
         // Auto-start animation when rotation values change
         function autoStartAnimation() {
             const globalSpeed = parseFloat(document.getElementById('globalSpeed').value);
@@ -1334,6 +1496,8 @@
             document.getElementById('pointSizeDisplay').textContent = document.getElementById('pointSize').value;
             document.getElementById('trackerSizeDisplay').textContent = document.getElementById('trackerSize').value;
             document.getElementById('connOpacityDisplay').textContent = document.getElementById('connOpacity').value;
+            document.getElementById('labelSizeDisplay').textContent = document.getElementById('labelSize').value;
+            document.getElementById('labelSpacingDisplay').textContent = document.getElementById('labelSpacing').value;
         }
 
         document.querySelectorAll('input[type="range"]').forEach(input => {
@@ -1606,6 +1770,57 @@
                     ctx.fill();
                     ctx.stroke();
                     ctx.globalAlpha = 1.0;
+                });
+            }
+
+            // Draw labels
+            const showLabels = document.getElementById('showLabels').checked;
+            if (showLabels) {
+                const labelType = document.getElementById('labelType').value;
+                const labelFilter = document.getElementById('labelFilter').value;
+                const labelFilterValue = parseInt(document.getElementById('labelFilterValue').value);
+                const labelSize = parseFloat(document.getElementById('labelSize').value);
+                const labelColor = document.getElementById('labelColor').value;
+                const labelBg = document.getElementById('labelBackground').checked;
+                const labelSpacing = parseFloat(document.getElementById('labelSpacing').value);
+
+                ctx.font = `${labelSize / transform.scale}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                pointsData.forEach(point => {
+                    if (!shouldShowLabel(point, labelFilter, labelFilterValue)) return;
+                    if (!showOpen && point.isOpen) return;
+                    if (!showClosed && !point.isOpen) return;
+
+                    const modRot = modRotations[point.m] || 0;
+                    const totalAngle = point.angle + (modRot * Math.PI / 180);
+                    const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
+                    const x = r * Math.cos(totalAngle);
+                    const y = r * Math.sin(totalAngle);
+
+                    const labelText = getPointLabel(point, labelType);
+                    const labelOffset = (pointSize + labelSpacing) / transform.scale;
+                    const labelX = x + labelOffset * Math.cos(totalAngle);
+                    const labelY = y + labelOffset * Math.sin(totalAngle);
+
+                    if (labelBg) {
+                        const metrics = ctx.measureText(labelText);
+                        const padding = 2 / transform.scale;
+                        const bgHeight = labelSize / transform.scale + 2 * padding;
+                        const bgWidth = metrics.width + 2 * padding;
+
+                        ctx.fillStyle = currentTheme === 'dark' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)';
+                        ctx.fillRect(
+                            labelX - bgWidth / 2,
+                            labelY - bgHeight / 2,
+                            bgWidth,
+                            bgHeight
+                        );
+                    }
+
+                    ctx.fillStyle = labelColor;
+                    ctx.fillText(labelText, labelX, labelY);
                 });
             }
 
