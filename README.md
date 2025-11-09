@@ -759,41 +759,96 @@
 
                     <div class="control-section">
                         <h3>Rotation Controls</h3>
-                        <div class="control-group">
-                            <label>Global Rotation <span class="range-display" id="globalSpeedDisplay">0</span> deg/frame</label>
-                            <div class="dual-input">
-                                <input type="range" id="globalSpeed" min="0" max="360" step="0.5" value="0">
-                                <input type="number" id="globalSpeedNum" min="0" max="360" step="0.5" value="0">
+                        
+                        <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 12px; margin-bottom: 15px;">
+                            <h4 style="font-size: 12px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Static Rotation (Applied Once)</h4>
+                            
+                            <div class="control-group">
+                                <label>Global Static Rotation (degrees)</label>
+                                <div class="dual-input">
+                                    <input type="number" id="staticGlobalRotation" value="0" step="1">
+                                    <button onclick="applyStaticGlobalRotation()" style="padding: 8px;">Apply</button>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Individual Mod Static Rotation (degrees)</label>
+                                <div class="dual-input">
+                                    <input type="number" id="staticModRotation" value="0" step="1">
+                                    <button onclick="applyStaticModRotation()" style="padding: 8px;">Apply</button>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Differential Rotation Mode</label>
+                                <select id="staticDifferentialMode">
+                                    <option value="none">Uniform (All Same)</option>
+                                    <option value="inner-faster">Inner Faster than Outer</option>
+                                    <option value="outer-faster">Outer Faster than Inner</option>
+                                </select>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Differential Factor <span class="range-display" id="staticDiffFactorDisplay">2.0</span></label>
+                                <div class="dual-input">
+                                    <input type="range" id="staticDiffFactor" min="1" max="5" step="0.1" value="2.0">
+                                    <input type="number" id="staticDiffFactorNum" min="1" max="10" step="0.1" value="2.0">
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <button onclick="applyDifferentialRotation()" style="width: 100%;">Apply Differential Rotation</button>
+                            </div>
+
+                            <div class="control-group">
+                                <button onclick="resetAllRotations()" style="width: 100%; background: var(--bg-primary); color: var(--text-primary);">Reset All Rotations</button>
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label>Individual Mod <span class="range-display" id="modRotSpeedDisplay">0</span> deg/frame</label>
-                            <div class="dual-input">
-                                <input type="range" id="modRotSpeed" min="0" max="360" step="0.5" value="0">
-                                <input type="number" id="modRotSpeedNum" min="0" max="360" step="0.5" value="0">
+
+                        <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 12px;">
+                            <h4 style="font-size: 12px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Animated Rotation (Continuous)</h4>
+                            
+                            <div class="control-group">
+                                <label>Global Rotation <span class="range-display" id="globalSpeedDisplay">0</span> deg/frame</label>
+                                <div class="dual-input">
+                                    <input type="range" id="globalSpeed" min="0" max="360" step="0.5" value="0">
+                                    <input type="number" id="globalSpeedNum" min="0" max="360" step="0.5" value="0">
+                                </div>
                             </div>
-                        </div>
-                        <div class="control-group">
-                            <label>Speed Gradient</label>
-                            <select id="speedGradient">
-                                <option value="none">No Gradient</option>
-                                <option value="inner-to-outer">Inner to Outer</option>
-                                <option value="outer-to-inner">Outer to Inner</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label>Gradient Strength <span class="range-display" id="gradientStrengthDisplay">1.0</span></label>
-                            <div class="dual-input">
-                                <input type="range" id="gradientStrength" min="0" max="3" step="0.1" value="1.0">
-                                <input type="number" id="gradientStrengthNum" min="0" max="5" step="0.1" value="1.0">
+                            
+                            <div class="control-group">
+                                <label>Individual Mod <span class="range-display" id="modRotSpeedDisplay">0</span> deg/frame</label>
+                                <div class="dual-input">
+                                    <input type="range" id="modRotSpeed" min="0" max="360" step="0.5" value="0">
+                                    <input type="number" id="modRotSpeedNum" min="0" max="360" step="0.5" value="0">
+                                </div>
                             </div>
-                        </div>
-                        <div class="button-group">
-                            <button id="playButton" onclick="startAnimation()" style="background: #00ff00; color: #000000;">Play</button>
-                            <button id="pauseButton" onclick="stopAnimation()" style="background: #ff0000; color: #ffffff;">Pause</button>
-                        </div>
-                        <div class="info-box" id="animationStatus">
-                            Status: Stopped
+                            
+                            <div class="control-group">
+                                <label>Speed Gradient</label>
+                                <select id="speedGradient">
+                                    <option value="none">No Gradient</option>
+                                    <option value="inner-to-outer">Inner to Outer</option>
+                                    <option value="outer-to-inner">Outer to Inner</option>
+                                </select>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label>Gradient Strength <span class="range-display" id="gradientStrengthDisplay">1.0</span></label>
+                                <div class="dual-input">
+                                    <input type="range" id="gradientStrength" min="0" max="3" step="0.1" value="1.0">
+                                    <input type="number" id="gradientStrengthNum" min="0" max="5" step="0.1" value="1.0">
+                                </div>
+                            </div>
+                            
+                            <div class="button-group">
+                                <button id="playButton" onclick="startAnimation()" style="background: #00ff00; color: #000000;">Play</button>
+                                <button id="pauseButton" onclick="stopAnimation()" style="background: #ff0000; color: #ffffff;">Pause</button>
+                            </div>
+                            
+                            <div class="info-box" id="animationStatus">
+                                Status: Stopped
+                            </div>
                         </div>
                     </div>
 
@@ -806,11 +861,12 @@
                             </label>
                         </div>
                         <div class="control-group">
-                            <label>Track Residue (r)</label>
-                            <div class="dual-input">
-                                <input type="range" id="trackedResidue" min="0" max="100" step="1" value="1">
-                                <input type="number" id="trackedResidueNum" min="0" max="10000" step="1" value="1">
-                            </div>
+                            <label>Track Residues (comma-separated)</label>
+                            <input type="text" id="trackedResidues" value="1" placeholder="e.g., 1,7,13,19">
+                        </div>
+                        <div class="control-group">
+                            <label>Filter by Modulus (optional)</label>
+                            <input type="number" id="trackerModFilter" placeholder="Leave empty for all">
                         </div>
                         <div class="control-group">
                             <label>Tracker Color</label>
@@ -824,7 +880,7 @@
                             </div>
                         </div>
                         <div class="tracker-display" id="trackerInfo" style="display: none;">
-                            <h4>Tracked Residue Info</h4>
+                            <h4>Tracked Residues Info</h4>
                             <div class="tracker-info" id="trackerInfoContent"></div>
                         </div>
                     </div>
@@ -835,7 +891,7 @@
                             <label>Open Channel Mode</label>
                             <select id="openColorMode">
                                 <option value="solid">Solid Color</option>
-                                <option value="by-residue">By Residue (r)</option>
+                                <option value="by-residue" selected>By Residue (r)</option>
                                 <option value="by-modulus">By Modulus (m)</option>
                                 <option value="by-integer">By Integer Value</option>
                                 <option value="by-spf">By Smallest Prime Factor</option>
@@ -880,7 +936,7 @@
                                     <option value="standard">Standard: 2πr/m</option>
                                     <option value="half">Half: πr/m</option>
                                     <option value="inverted">Inverted: 2π(m-r)/m</option>
-                                    <option value="negative">Negative: -2πr/m</option>
+                                    <option value="negative" selected>Negative: -2πr/m</option>
                                 </select>
                             </div>
                             <div class="control-group">
@@ -986,17 +1042,63 @@
 
                     <div class="control-section">
                         <h3>Gap Analysis</h3>
-                        <div class="control-row">
-                            <div class="control-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="enableGapAnalysis">
-                                    Enable
-                                </label>
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableGapAnalysis">
+                                Enable Gap Analysis
+                            </label>
+                        </div>
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="showGapLines">
+                                Show Gap Connection Lines
+                            </label>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Gap Configuration</label>
+                            <select id="gapPreset" onchange="applyGapPreset()">
+                                <option value="custom">Custom</option>
+                                <option value="twin">Twin Primes (2)</option>
+                                <option value="cousin">Cousin Primes (4)</option>
+                                <option value="sexy">Sexy Primes (6)</option>
+                                <option value="twin-cousin">Twin + Cousin (2,4)</option>
+                                <option value="twin-sexy">Twin + Sexy (2,6)</option>
+                                <option value="prime-triplet">Prime Triplet (2,4)</option>
+                                <option value="prime-quadruplet">Prime Quadruplet (2,4,6)</option>
+                                <option value="first-hardy">First Hardy-Littlewood (2,6,8)</option>
+                                <option value="admissible-5">Admissible 5-tuple (2,6,8,12)</option>
+                                <option value="sexy-pair">Sexy Pair (6,12)</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label>Gap Values (comma-separated)</label>
+                            <input type="text" id="gapValues" value="2" placeholder="e.g., 2,4,6">
+                        </div>
+
+                        <div class="control-group">
+                            <label>Gap Line Opacity <span class="range-display" id="gapOpacityDisplay">0.5</span></label>
+                            <div class="dual-input">
+                                <input type="range" id="gapOpacity" min="0.1" max="1" step="0.1" value="0.5">
+                                <input type="number" id="gapOpacityNum" min="0" max="1" step="0.1" value="0.5">
                             </div>
-                            <div class="control-group">
-                                <label>Gap Value (g)</label>
-                                <input type="number" id="gapValue" value="2" min="1" max="1000">
+                        </div>
+
+                        <div class="control-group">
+                            <label>Gap Line Width <span class="range-display" id="gapLineWidthDisplay">1.5</span></label>
+                            <div class="dual-input">
+                                <input type="range" id="gapLineWidth" min="0.5" max="5" step="0.5" value="1.5">
+                                <input type="number" id="gapLineWidthNum" min="0.5" max="10" step="0.5" value="1.5">
                             </div>
+                        </div>
+
+                        <div id="gapColorPickers" style="margin-top: 10px;">
+                            <!-- Will be populated dynamically -->
+                        </div>
+
+                        <div class="info-box" id="gapInfo" style="margin-top: 10px;">
+                            <strong>Active Gaps:</strong> <span id="activeGapsDisplay">None</span>
                         </div>
                     </div>
 
@@ -1263,7 +1365,7 @@
         let globalRotation = 0;
         let modRotations = {};
         let animationId = null;
-        let currentTheme = 'dark';
+        let currentTheme = 'light';
 
         function toggleTheme() {
             currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -1278,8 +1380,9 @@
 
         // Initialize dark theme
         function initializeTheme() {
-            document.body.className = 'dark-theme';
-            document.getElementById('themeText').textContent = 'Light Mode';
+            document.body.className = 'light-theme';
+            document.getElementById('themeText').textContent = 'Dark Mode';
+            currentTheme = 'light';
         }
 
         function isPrime(n) {
@@ -1466,13 +1569,106 @@
         syncInputs('globalSpeed', 'globalSpeedNum');
         syncInputs('modRotSpeed', 'modRotSpeedNum');
         syncInputs('gradientStrength', 'gradientStrengthNum');
-        syncInputs('trackedResidue', 'trackedResidueNum');
         syncInputs('trackerSize', 'trackerSizeNum');
         syncInputs('pointSize', 'pointSizeNum');
         syncInputs('connOpacity', 'connOpacityNum');
 
         syncInputs('labelSize', 'labelSizeNum');
         syncInputs('labelSpacing', 'labelSpacingNum');
+        syncInputs('gapOpacity', 'gapOpacityNum');
+        syncInputs('gapLineWidth', 'gapLineWidthNum');
+        syncInputs('staticDiffFactor', 'staticDiffFactorNum');
+
+        const gapColorScheme = [
+            '#ff0080', // Hot pink for gap 2
+            '#00ffff', // Cyan for gap 4
+            '#ffff00', // Yellow for gap 6
+            '#ff8000', // Orange for gap 8
+            '#00ff00', // Green for gap 10
+            '#ff00ff', // Magenta for gap 12
+            '#8080ff', // Light blue for gap 14
+            '#ff0000', // Red for gap 16
+            '#00ff80', // Spring green for gap 18
+            '#ff80ff'  // Light magenta for gap 20
+        ];
+
+        function applyGapPreset() {
+            const preset = document.getElementById('gapPreset').value;
+            let gaps = [];
+            
+            switch(preset) {
+                case 'twin':
+                    gaps = [2];
+                    break;
+                case 'cousin':
+                    gaps = [4];
+                    break;
+                case 'sexy':
+                    gaps = [6];
+                    break;
+                case 'twin-cousin':
+                    gaps = [2, 4];
+                    break;
+                case 'twin-sexy':
+                    gaps = [2, 6];
+                    break;
+                case 'prime-triplet':
+                    gaps = [2, 4];
+                    break;
+                case 'prime-quadruplet':
+                    gaps = [2, 4, 6];
+                    break;
+                case 'first-hardy':
+                    gaps = [2, 6, 8];
+                    break;
+                case 'admissible-5':
+                    gaps = [2, 6, 8, 12];
+                    break;
+                case 'sexy-pair':
+                    gaps = [6, 12];
+                    break;
+                case 'custom':
+                default:
+                    return; // Don't override custom values
+            }
+            
+            document.getElementById('gapValues').value = gaps.join(',');
+            updateGapColorPickers();
+        }
+
+        function updateGapColorPickers() {
+            const gapInput = document.getElementById('gapValues').value;
+            const gaps = gapInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g > 0);
+            
+            const container = document.getElementById('gapColorPickers');
+            container.innerHTML = '';
+            
+            gaps.forEach((gap, idx) => {
+                const colorDiv = document.createElement('div');
+                colorDiv.className = 'control-group';
+                colorDiv.style.marginBottom = '8px';
+                
+                const label = document.createElement('label');
+                label.textContent = `Gap ${gap} Color`;
+                label.style.fontSize = '11px';
+                
+                const colorInput = document.createElement('input');
+                colorInput.type = 'color';
+                colorInput.id = `gapColor${idx}`;
+                colorInput.value = gapColorScheme[idx % gapColorScheme.length];
+                colorInput.style.width = '100%';
+                colorInput.style.height = '35px';
+                
+                colorDiv.appendChild(label);
+                colorDiv.appendChild(colorInput);
+                container.appendChild(colorDiv);
+            });
+            
+            document.getElementById('activeGapsDisplay').textContent = gaps.join(', ') || 'None';
+        }
+
+        document.getElementById('gapValues').addEventListener('input', updateGapColorPickers);
+        document.getElementById('enableGapAnalysis').addEventListener('change', updateGapColorPickers);
 
         // Auto-start animation when rotation values change
         function autoStartAnimation() {
@@ -1498,6 +1694,8 @@
             document.getElementById('connOpacityDisplay').textContent = document.getElementById('connOpacity').value;
             document.getElementById('labelSizeDisplay').textContent = document.getElementById('labelSize').value;
             document.getElementById('labelSpacingDisplay').textContent = document.getElementById('labelSpacing').value;
+            document.getElementById('gapOpacityDisplay').textContent = document.getElementById('gapOpacity').value;
+            document.getElementById('gapLineWidthDisplay').textContent = document.getElementById('gapLineWidth').value;
         }
 
         document.querySelectorAll('input[type="range"]').forEach(input => {
@@ -1509,7 +1707,8 @@
             const modMax = parseInt(document.getElementById('modMax').value);
             const modStep = parseInt(document.getElementById('modStep').value);
             const enableGap = document.getElementById('enableGapAnalysis').checked;
-            const gapValue = parseInt(document.getElementById('gapValue').value);
+            const gapInput = document.getElementById('gapValues').value;
+            const gaps = gapInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g > 0);
             const angularMapping = document.getElementById('angularMapping').value;
 
             pointsData = [];
@@ -1517,8 +1716,21 @@
             let totalClosed = 0;
             let sumPhiOverM = 0;
             let countModuli = 0;
-
+            
+            // Generate list of moduli - filter to only M_n = 30×2^n sequence
+            let moduli = [];
             for (let m = modMin; m <= modMax; m += modStep) {
+                // Check if m is of form 30×2^n
+                if (m >= 30 && m % 30 === 0) {
+                    const ratio = m / 30;
+                    // Check if ratio is a power of 2
+                    if (Math.log2(ratio) % 1 === 0) {
+                        moduli.push(m);
+                    }
+                }
+            }
+
+            for (let m of moduli) {
                 if (!modRotations[m]) modRotations[m] = 0;
                 
                 const phiM = phi(m);
@@ -1532,10 +1744,15 @@
                     if (isOpen) totalOpen++;
                     else totalClosed++;
 
-                    let isAdmissible = false;
+                    // Check admissibility for ALL gaps
+                    let admissibleGaps = [];
                     if (enableGap && isOpen) {
-                        const rPlusG = (r + gapValue) % m;
-                        isAdmissible = gcd(rPlusG, m) === 1;
+                        gaps.forEach(gap => {
+                            const rPlusG = (r + gap) % m;
+                            if (gcd(rPlusG, m) === 1) {
+                                admissibleGaps.push(gap);
+                            }
+                        });
                     }
 
                     // Calculate angle based on mapping mode
@@ -1564,13 +1781,14 @@
                         isOpen: isOpen,
                         angle: angle,
                         phiM: phiM,
-                        isAdmissible: isAdmissible
+                        isAdmissible: admissibleGaps.length > 0,
+                        admissibleGaps: admissibleGaps // Store which gaps are admissible
                     });
                 }
             }
 
-            const avgPhiOverM = sumPhiOverM / countModuli;
-            const openRatio = totalOpen / (totalOpen + totalClosed);
+            const avgPhiOverM = countModuli > 0 ? sumPhiOverM / countModuli : 0;
+            const openRatio = (totalOpen + totalClosed) > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
 
             document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
             document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
@@ -1583,16 +1801,31 @@
 
         function updateTrackerInfo() {
             const enabled = document.getElementById('enableTracker').checked;
-            const trackedR = parseInt(document.getElementById('trackedResidue').value);
+            const trackedInput = document.getElementById('trackedResidues').value;
+            const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
+            const modFilter = document.getElementById('trackerModFilter').value;
+            const filterMod = modFilter ? parseInt(modFilter) : null;
             const trackerInfo = document.getElementById('trackerInfo');
             
-            if (enabled) {
+            if (enabled && trackedRs.length > 0) {
                 trackerInfo.style.display = 'block';
-                const trackedPoints = pointsData.filter(p => p.r === trackedR);
-                let infoHTML = `Residue r = ${trackedR}<br>`;
-                infoHTML += `Appears in ${trackedPoints.length} moduli<br>`;
-                const openCount = trackedPoints.filter(p => p.isOpen).length;
-                infoHTML += `Open: ${openCount}, Closed: ${trackedPoints.length - openCount}`;
+                let infoHTML = '';
+                
+                trackedRs.forEach(trackedR => {
+                    let trackedPoints = pointsData.filter(p => p.r === trackedR);
+                    if (filterMod !== null) {
+                        trackedPoints = trackedPoints.filter(p => p.m === filterMod);
+                    }
+                    
+                    const openCount = trackedPoints.filter(p => p.isOpen).length;
+                    infoHTML += `<strong>r = ${trackedR}</strong>`;
+                    if (filterMod !== null) {
+                        infoHTML += ` (m = ${filterMod})`;
+                    }
+                    infoHTML += `<br>Appears: ${trackedPoints.length} times<br>`;
+                    infoHTML += `Open: ${openCount}, Closed: ${trackedPoints.length - openCount}<br><br>`;
+                });
+                
                 document.getElementById('trackerInfoContent').innerHTML = infoHTML;
             } else {
                 trackerInfo.style.display = 'none';
@@ -1600,7 +1833,8 @@
         }
 
         document.getElementById('enableTracker').addEventListener('change', updateTrackerInfo);
-        document.getElementById('trackedResidue').addEventListener('input', updateTrackerInfo);
+        document.getElementById('trackedResidues').addEventListener('input', updateTrackerInfo);
+        document.getElementById('trackerModFilter').addEventListener('input', updateTrackerInfo);
 
         function drawVisualization() {
             const width = canvas.width;
@@ -1609,8 +1843,8 @@
             const centerY = height / 2;
             const maxRadius = Math.min(width, height) * 0.4;
 
-            // Get theme-aware background color
-            const bgColor = currentTheme === 'dark' ? '#000000' : '#ffffff';
+            // Always use black background for canvas
+            const bgColor = '#000000';
             ctx.clearRect(0, 0, width, height);
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, width, height);
@@ -1629,7 +1863,6 @@
             const modMin = parseInt(document.getElementById('modMin').value);
             const modStep = parseInt(document.getElementById('modStep').value);
             const enableTracker = document.getElementById('enableTracker').checked;
-            const trackedResidue = parseInt(document.getElementById('trackedResidue').value);
             const trackerColor = document.getElementById('trackerColor').value;
             const trackerSize = parseFloat(document.getElementById('trackerSize').value);
             const enableConnections = document.getElementById('enableConnections').checked;
@@ -1639,18 +1872,18 @@
 
             const radiusScale = displayMode === 'unit' ? maxRadius : maxRadius / modMax;
 
-            // Theme-aware line color
-            const lineColor = currentTheme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)';
-            const connectionLineColor = currentTheme === 'dark' ? `rgba(255, 255, 255, ${connOpacity})` : `rgba(0, 0, 0, ${connOpacity})`;
+            // Always use white/light colors for lines on black background
+            const lineColor = 'rgba(255, 255, 255, 0.2)';
+            const connectionLineColor = `rgba(255, 255, 255, ${connOpacity})`;
 
             // Function to get proper radius for each modulus
             function getRadius(m) {
                 if (displayMode === 'unit') {
-                    // All points on the same unit circle
+                    // In unit circle mode, all gcd(r,m)=1 points map to the outer circle
                     return maxRadius;
                 }
-                // Rings mode - scale by modulus, but ensure m=1 is visible
-                if (m === 1) return maxRadius * 0.05;
+                // Rings mode - scale by modulus
+                // m=1 is innermost, starting point
                 return m * radiusScale;
             }
 
@@ -1754,22 +1987,34 @@
 
             // Draw tracker
             if (enableTracker) {
-                pointsData.filter(p => p.r === trackedResidue).forEach(point => {
-                    const modRot = modRotations[point.m] || 0;
-                    const totalAngle = point.angle + (modRot * Math.PI / 180);
-                    const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
-                    const x = r * Math.cos(totalAngle);
-                    const y = r * Math.sin(totalAngle);
+                const trackedInput = document.getElementById('trackedResidues').value;
+                const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
+                const modFilter = document.getElementById('trackerModFilter').value;
+                const filterMod = modFilter ? parseInt(modFilter) : null;
+                
+                trackedRs.forEach(trackedResidue => {
+                    let filteredPoints = pointsData.filter(p => p.r === trackedResidue);
+                    if (filterMod !== null) {
+                        filteredPoints = filteredPoints.filter(p => p.m === filterMod);
+                    }
+                    
+                    filteredPoints.forEach(point => {
+                        const modRot = modRotations[point.m] || 0;
+                        const totalAngle = point.angle + (modRot * Math.PI / 180);
+                        const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
+                        const x = r * Math.cos(totalAngle);
+                        const y = r * Math.sin(totalAngle);
 
-                    ctx.strokeStyle = trackerColor;
-                    ctx.lineWidth = 2 / transform.scale;
-                    ctx.fillStyle = trackerColor;
-                    ctx.globalAlpha = 0.9;
-                    ctx.beginPath();
-                    ctx.arc(x, y, trackerSize / transform.scale, 0, 2 * Math.PI);
-                    ctx.fill();
-                    ctx.stroke();
-                    ctx.globalAlpha = 1.0;
+                        ctx.strokeStyle = trackerColor;
+                        ctx.lineWidth = 2 / transform.scale;
+                        ctx.fillStyle = trackerColor;
+                        ctx.globalAlpha = 0.9;
+                        ctx.beginPath();
+                        ctx.arc(x, y, trackerSize / transform.scale, 0, 2 * Math.PI);
+                        ctx.fill();
+                        ctx.stroke();
+                        ctx.globalAlpha = 1.0;
+                    });
                 });
             }
 
@@ -1821,6 +2066,62 @@
 
                     ctx.fillStyle = labelColor;
                     ctx.fillText(labelText, labelX, labelY);
+                });
+            }
+
+            // Draw gap connection lines
+            const showGapLines = document.getElementById('showGapLines').checked;
+            const enableGap = document.getElementById('enableGapAnalysis').checked;
+            if (showGapLines && enableGap) {
+                const gapInput = document.getElementById('gapValues').value;
+                const gaps = gapInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g > 0);
+                const gapOpacity = parseFloat(document.getElementById('gapOpacity').value);
+                const gapLineWidth = parseFloat(document.getElementById('gapLineWidth').value);
+
+                gaps.forEach((gap, gapIdx) => {
+                    const gapColorInput = document.getElementById(`gapColor${gapIdx}`);
+                    const gapColor = gapColorInput ? gapColorInput.value : gapColorScheme[gapIdx % gapColorScheme.length];
+                    
+                    ctx.strokeStyle = gapColor;
+                    ctx.globalAlpha = gapOpacity;
+                    ctx.lineWidth = gapLineWidth / transform.scale;
+
+                    // Group points by modulus for efficient lookup
+                    const pointsByMod = {};
+                    pointsData.forEach(p => {
+                        if (!pointsByMod[p.m]) pointsByMod[p.m] = {};
+                        pointsByMod[p.m][p.r] = p;
+                    });
+
+                    // Draw lines for this gap
+                    pointsData.forEach(point => {
+                        if (!point.isOpen) return;
+                        if (!point.admissibleGaps.includes(gap)) return;
+
+                        const rPlusG = (point.r + gap) % point.m;
+                        const targetPoint = pointsByMod[point.m] && pointsByMod[point.m][rPlusG];
+                        
+                        if (targetPoint && targetPoint.isOpen) {
+                            const modRot = modRotations[point.m] || 0;
+                            
+                            const angle1 = point.angle + (modRot * Math.PI / 180);
+                            const r1 = displayMode === 'unit' ? maxRadius : getRadius(point.m);
+                            const x1 = r1 * Math.cos(angle1);
+                            const y1 = r1 * Math.sin(angle1);
+
+                            const angle2 = targetPoint.angle + (modRot * Math.PI / 180);
+                            const r2 = displayMode === 'unit' ? maxRadius : getRadius(targetPoint.m);
+                            const x2 = r2 * Math.cos(angle2);
+                            const y2 = r2 * Math.sin(angle2);
+
+                            ctx.beginPath();
+                            ctx.moveTo(x1, y1);
+                            ctx.lineTo(x2, y2);
+                            ctx.stroke();
+                        }
+                    });
+                    
+                    ctx.globalAlpha = 1.0;
                 });
             }
 
@@ -2243,13 +2544,23 @@
 
         function setPreset(n) {
             const m = 30 * Math.pow(2, n);
-            document.getElementById('modMin').value = m;
-            document.getElementById('modMax').value = m;
-            document.getElementById('modStep').value = 1;
             
-            // Enable connections for nested visualization
-            document.getElementById('enableConnections').checked = false;
-            document.getElementById('connectionMode').value = 'none';
+            // Set range from 30 to the target modulus, showing nested structure
+            document.getElementById('modMin').value = 30;
+            document.getElementById('modMax').value = m;
+            
+            // Use custom step to show only the M_n sequence: 30, 60, 120, 240, 480, 960
+            // We'll set step to 30, but need to ensure we only get powers of 2 multiples
+            document.getElementById('modStep').value = 30;
+            
+            // Enable connections to show nested lifting structure
+            document.getElementById('enableConnections').checked = true;
+            document.getElementById('connectionMode').value = 'double-lift';
+            document.getElementById('displayMode').value = 'rings';
+            
+            // Show only open channels (gcd = 1)
+            document.getElementById('showOpen').checked = true;
+            document.getElementById('showClosed').checked = false;
             
             updateVisualization();
         }
@@ -2325,6 +2636,7 @@
         window.addEventListener('load', () => {
             initializeTheme();
             updateRangeDisplays();
+            updateGapColorPickers();
             updateVisualization();
         });
     </script>
