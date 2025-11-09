@@ -1379,8 +1379,12 @@
 
             // Function to get proper radius for each modulus
             function getRadius(m) {
-                if (displayMode === 'unit') return maxRadius;
-                if (m === 1) return maxRadius * 0.1; // Unit circle for mod 1
+                if (displayMode === 'unit') {
+                    // All points on the same unit circle
+                    return maxRadius;
+                }
+                // Rings mode - scale by modulus, but ensure m=1 is visible
+                if (m === 1) return maxRadius * 0.05;
                 return m * radiusScale;
             }
 
@@ -1555,24 +1559,148 @@
             }
         }
 
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            lastMouseX = e.clientX;
-            lastMouseY = e.clientY;
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                transform.x += e.clientX - lastMouseX;
-                transform.y += e.clientY - lastMouseY;
-                lastMouseX = e.clientX;
-                lastMouseY = e.clientY;
-                drawVisualization();
+        // Mouse and touch events
+        let touchStartDist = 0;
+        
+        function getEventCoords(e) {
+            if (e.touches) {
+                return { x: e.touches[0].clientX, y: e.touches[0].clientY };
             }
-        });
+            return { x: e.clientX, y: e.clientY };
+        }
 
-        canvas.addEventListener('mouseup', () => { isDragging = false; });
-        canvas.addEventListener('mouseleave', () => { isDragging = false; });
+        function handleStart(e) {
+            if (e.touches && e.touches.length === 2) {
+                // Pinch zoom start
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                touchStartDist = Math.sqrt(dx * dx + dy * dy);
+            } else {
+                // Pan start or click
+                const coords = getEventCoords(e);
+                isDragging = true;
+                lastMouseX = coords.x;
+                lastMouseY = coords.y;
+            }
+        }
+
+        function handleMove(e) {
+            if (e.touches && e.touches.length === 2) {
+                // Pinch zoom
+                e.preventDefault();
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const delta = dist / touchStartDist;
+                touchStartDist = dist;
+                
+                const rect = canvas.getBoundingClientRect();
+                const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left - canvas.width / 2;
+                const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top - canvas.height / 2;
+                
+                transform.x = centerX - (centerX - transform.x) * delta;
+                transform.y = centerY - (centerY - transform.y) * delta;
+                transform.scale *= delta;
+                transform.scale = Math.max(0.1, Math.min(20, transform.scale));
+                
+                drawVisualization();
+            } else if (isDragging) {
+                // Pan
+                const coords = getEventCoords(e);
+                transform.x += coords.x - lastMouseX;
+                transform.y += coords.y - lastMouseY;
+                lastMouseX = coords.x;
+                lastMouseY = coords.y;
+                drawVisualization();
+            } else {
+                // Hover for tooltip
+                const coords = getEventCoords(e);
+                const rect = canvas.getBoundingClientRect();
+                const x = (coords.x - rect.left - canvas.width / 2 - transform.x) / transform.scale;
+                const y = (coords.y - rect.top - canvas.height / 2 - transform.y) / transform.scale;
+                
+                // Rotate back to find point
+                const angle = -globalRotation * Math.PI / 180;
+                const rx = x * Math.cos(angle) - y * Math.sin(angle);
+                const ry = x * Math.sin(angle) + y * Math.cos(angle);
+                
+                let foundPoint = null;
+                let minDist = Infinity;
+                
+                pointsData.forEach(point => {
+                    if (point.screenX !== undefined) {
+                        const dx = rx - point.screenX;
+                        const dy = ry - point.screenY;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < point.screenRadius * 2 && dist < minDist) {
+                            minDist = dist;
+                            foundPoint = point;
+                        }
+                    }
+                });
+                
+                if (foundPoint) {
+                    tooltip.style.opacity = '1';
+                    tooltip.style.left = (coords.x + 15) + 'px';
+                    tooltip.style.top = (coords.y + 15) + 'px';
+                    tooltip.innerHTML = `
+                        <strong>m = ${foundPoint.m}, r = ${foundPoint.r}</strong><br>
+                        gcd(${foundPoint.r}, ${foundPoint.m}) = ${foundPoint.gcd}<br>
+                        Channel: ${foundPoint.isOpen ? 'OPEN' : 'CLOSED'}<br>
+                        φ(${foundPoint.m}) = ${foundPoint.phiM}<br>
+                        Angle: ${(foundPoint.angle * 180 / Math.PI).toFixed(2)}°
+                        ${foundPoint.isAdmissible ? '<br><strong>GAP ADMISSIBLE</strong>' : ''}
+                    `;
+                    canvas.style.cursor = 'pointer';
+                } else {
+                    tooltip.style.opacity = '0';
+                    canvas.style.cursor = isDragging ? 'grabbing' : 'grab';
+                }
+            }
+        }
+
+        function handleEnd(e) {
+            if (!isDragging) {
+                // Click detected
+                const coords = e.changedTouches ? 
+                    { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY } :
+                    { x: e.clientX, y: e.clientY };
+                    
+                const rect = canvas.getBoundingClientRect();
+                const x = (coords.x - rect.left - canvas.width / 2 - transform.x) / transform.scale;
+                const y = (coords.y - rect.top - canvas.height / 2 - transform.y) / transform.scale;
+                
+                const angle = -globalRotation * Math.PI / 180;
+                const rx = x * Math.cos(angle) - y * Math.sin(angle);
+                const ry = x * Math.sin(angle) + y * Math.cos(angle);
+                
+                pointsData.forEach(point => {
+                    if (point.screenX !== undefined) {
+                        const dx = rx - point.screenX;
+                        const dy = ry - point.screenY;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < point.screenRadius * 2) {
+                            alert(`Point Details:\n\nModulus m = ${point.m}\nResidue r = ${point.r}\ngcd(${point.r}, ${point.m}) = ${point.gcd}\nChannel: ${point.isOpen ? 'OPEN' : 'CLOSED'}\nφ(${point.m}) = ${point.phiM}\nAngle: ${(point.angle * 180 / Math.PI).toFixed(2)}°${point.isAdmissible ? '\n\nGAP ADMISSIBLE' : ''}`);
+                        }
+                    }
+                });
+            }
+            isDragging = false;
+            touchStartDist = 0;
+        }
+
+        canvas.addEventListener('mousedown', handleStart);
+        canvas.addEventListener('mousemove', handleMove);
+        canvas.addEventListener('mouseup', handleEnd);
+        canvas.addEventListener('mouseleave', () => { 
+            isDragging = false; 
+            tooltip.style.opacity = '0';
+        });
+        
+        canvas.addEventListener('touchstart', handleStart, { passive: true });
+        canvas.addEventListener('touchmove', handleMove, { passive: false });
+        canvas.addEventListener('touchend', handleEnd);
+        canvas.addEventListener('touchcancel', () => { isDragging = false; touchStartDist = 0; });
 
         canvas.addEventListener('wheel', (e) => {
             e.preventDefault();
