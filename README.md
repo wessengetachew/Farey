@@ -1716,21 +1716,8 @@
             let totalClosed = 0;
             let sumPhiOverM = 0;
             let countModuli = 0;
-            
-            // Generate list of moduli - filter to only M_n = 30×2^n sequence
-            let moduli = [];
-            for (let m = modMin; m <= modMax; m += modStep) {
-                // Check if m is of form 30×2^n
-                if (m >= 30 && m % 30 === 0) {
-                    const ratio = m / 30;
-                    // Check if ratio is a power of 2
-                    if (Math.log2(ratio) % 1 === 0) {
-                        moduli.push(m);
-                    }
-                }
-            }
 
-            for (let m of moduli) {
+            for (let m = modMin; m <= modMax; m += modStep) {
                 if (!modRotations[m]) modRotations[m] = 0;
                 
                 const phiM = phi(m);
@@ -1787,8 +1774,8 @@
                 }
             }
 
-            const avgPhiOverM = countModuli > 0 ? sumPhiOverM / countModuli : 0;
-            const openRatio = (totalOpen + totalClosed) > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
+            const avgPhiOverM = sumPhiOverM / countModuli;
+            const openRatio = totalOpen / (totalOpen + totalClosed);
 
             document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
             document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
@@ -2544,23 +2531,13 @@
 
         function setPreset(n) {
             const m = 30 * Math.pow(2, n);
-            
-            // Set range from 30 to the target modulus, showing nested structure
-            document.getElementById('modMin').value = 30;
+            document.getElementById('modMin').value = m;
             document.getElementById('modMax').value = m;
+            document.getElementById('modStep').value = 1;
             
-            // Use custom step to show only the M_n sequence: 30, 60, 120, 240, 480, 960
-            // We'll set step to 30, but need to ensure we only get powers of 2 multiples
-            document.getElementById('modStep').value = 30;
-            
-            // Enable connections to show nested lifting structure
-            document.getElementById('enableConnections').checked = true;
-            document.getElementById('connectionMode').value = 'double-lift';
-            document.getElementById('displayMode').value = 'rings';
-            
-            // Show only open channels (gcd = 1)
-            document.getElementById('showOpen').checked = true;
-            document.getElementById('showClosed').checked = false;
+            // Enable connections for nested visualization
+            document.getElementById('enableConnections').checked = false;
+            document.getElementById('connectionMode').value = 'none';
             
             updateVisualization();
         }
