@@ -787,11 +787,12 @@
                                 <input type="number" id="gradientStrengthNum" min="0" max="5" step="0.1" value="1.0">
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="animateRotation">
-                                Enable Animation
-                            </label>
+                        <div class="button-group">
+                            <button id="playButton" onclick="startAnimation()" style="background: #00ff00; color: #000000;">Play</button>
+                            <button id="pauseButton" onclick="stopAnimation()" style="background: #ff0000; color: #ffffff;">Pause</button>
+                        </div>
+                        <div class="info-box" id="animationStatus">
+                            Status: Stopped
                         </div>
                     </div>
 
@@ -870,6 +871,15 @@
                                 <select id="displayMode">
                                     <option value="rings">Concentric Rings</option>
                                     <option value="unit">Unit Circle</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Angular Mapping</label>
+                                <select id="angularMapping">
+                                    <option value="standard">Standard: 2πr/m</option>
+                                    <option value="half">Half: πr/m</option>
+                                    <option value="inverted">Inverted: 2π(m-r)/m</option>
+                                    <option value="negative">Negative: -2πr/m</option>
                                 </select>
                             </div>
                             <div class="control-group">
@@ -1200,6 +1210,21 @@
         syncInputs('pointSize', 'pointSizeNum');
         syncInputs('connOpacity', 'connOpacityNum');
 
+        // Auto-start animation when rotation values change
+        function autoStartAnimation() {
+            const globalSpeed = parseFloat(document.getElementById('globalSpeed').value);
+            const modRotSpeed = parseFloat(document.getElementById('modRotSpeed').value);
+            
+            if ((globalSpeed > 0 || modRotSpeed > 0) && !animationId) {
+                startAnimation();
+            }
+        }
+
+        document.getElementById('globalSpeed').addEventListener('input', autoStartAnimation);
+        document.getElementById('globalSpeedNum').addEventListener('input', autoStartAnimation);
+        document.getElementById('modRotSpeed').addEventListener('input', autoStartAnimation);
+        document.getElementById('modRotSpeedNum').addEventListener('input', autoStartAnimation);
+
         function updateRangeDisplays() {
             document.getElementById('globalSpeedDisplay').textContent = document.getElementById('globalSpeed').value;
             document.getElementById('modRotSpeedDisplay').textContent = document.getElementById('modRotSpeed').value;
@@ -1219,6 +1244,7 @@
             const modStep = parseInt(document.getElementById('modStep').value);
             const enableGap = document.getElementById('enableGapAnalysis').checked;
             const gapValue = parseInt(document.getElementById('gapValue').value);
+            const angularMapping = document.getElementById('angularMapping').value;
 
             pointsData = [];
             let totalOpen = 0;
@@ -1246,7 +1272,24 @@
                         isAdmissible = gcd(rPlusG, m) === 1;
                     }
 
-                    const angle = (2 * Math.PI * r) / m;
+                    // Calculate angle based on mapping mode
+                    let angle;
+                    switch(angularMapping) {
+                        case 'standard':
+                            angle = (2 * Math.PI * r) / m;
+                            break;
+                        case 'half':
+                            angle = (Math.PI * r) / m;
+                            break;
+                        case 'inverted':
+                            angle = (2 * Math.PI * (m - r)) / m;
+                            break;
+                        case 'negative':
+                            angle = -(2 * Math.PI * r) / m;
+                            break;
+                        default:
+                            angle = (2 * Math.PI * r) / m;
+                    }
 
                     pointsData.push({
                         m: m,
@@ -1464,10 +1507,7 @@
         }
 
         function animate() {
-            if (!document.getElementById('animateRotation').checked) {
-                animationId = null;
-                return;
-            }
+            if (!animationId) return;
 
             const globalSpeed = parseFloat(document.getElementById('globalSpeed').value);
             const modRotSpeed = parseFloat(document.getElementById('modRotSpeed').value);
@@ -1498,9 +1538,22 @@
             animationId = requestAnimationFrame(animate);
         }
 
-        document.getElementById('animateRotation').addEventListener('change', (e) => {
-            if (e.target.checked && !animationId) animate();
-        });
+        function startAnimation() {
+            if (!animationId) {
+                document.getElementById('animationStatus').textContent = 'Status: Playing';
+                document.getElementById('animationStatus').style.background = '#1a4d1a';
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+
+        function stopAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+                document.getElementById('animationStatus').textContent = 'Status: Stopped';
+                document.getElementById('animationStatus').style.background = 'var(--bg-secondary)';
+            }
+        }
 
         canvas.addEventListener('mousedown', (e) => {
             isDragging = true;
@@ -1601,7 +1654,7 @@
             globalRotation = 0;
             modRotations = {};
             transform = { x: 0, y: 0, scale: 1 };
-            if (animationId) cancelAnimationFrame(animationId);
+            stopAnimation();
             updateRangeDisplays();
             updateVisualization();
         }
