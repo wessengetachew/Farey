@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Modular Rings - Complete Control Suite</title>
+    <title>Modular Rings: GCD Channels & Farey Sequences</title>
     <style>
         * {
             margin: 0;
@@ -12,43 +12,106 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: #333;
-            padding: 10px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        body.dark-theme {
+            --bg-primary: #000000;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #ffffff;
+            --border-subtle: #333333;
+            --accent-color: #ffffff;
+            --hover-bg: #ffffff;
+            --hover-text: #000000;
+            --ring-line-color: rgba(255, 255, 255, 0.2);
+            --connection-line-color: rgba(255, 255, 255, 0.3);
+            --tooltip-bg: rgba(255, 255, 255, 0.95);
+            --tooltip-text: #000000;
+        }
+
+        body.light-theme {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text-primary: #000000;
+            --text-secondary: #333333;
+            --border-color: #000000;
+            --border-subtle: #cccccc;
+            --accent-color: #000000;
+            --hover-bg: #000000;
+            --hover-text: #ffffff;
+            --ring-line-color: rgba(0, 0, 0, 0.2);
+            --connection-line-color: rgba(0, 0, 0, 0.3);
+            --tooltip-bg: rgba(0, 0, 0, 0.95);
+            --tooltip-text: #ffffff;
         }
 
         .container {
             max-width: 1900px;
             margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            overflow: hidden;
+            background: var(--bg-primary);
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 40px 20px;
             text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
         }
 
         .header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 6px;
+            font-size: 36px;
+            font-weight: 400;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .header .subtitle {
+            font-size: 18px;
+            font-style: italic;
+            opacity: 0.9;
+            margin-bottom: 10px;
         }
 
         .header .author {
-            font-size: 13px;
-            opacity: 0.95;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 15px;
+            letter-spacing: 1px;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+            color: var(--hover-text);
         }
 
         .tabs {
             display: flex;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e0e0e0;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .tab {
@@ -56,18 +119,28 @@
             padding: 15px;
             text-align: center;
             cursor: pointer;
-            background: #f8f9fa;
+            background: var(--bg-primary);
             border: none;
             font-size: 14px;
             font-weight: 600;
-            color: #666;
+            color: var(--text-secondary);
             transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-right: 1px solid var(--border-subtle);
+        }
+
+        .tab:last-child {
+            border-right: none;
         }
 
         .tab.active {
-            background: white;
-            color: #667eea;
-            border-bottom: 3px solid #667eea;
+            background: var(--hover-bg);
+            color: var(--hover-text);
+        }
+
+        .tab:hover:not(.active) {
+            color: var(--text-primary);
         }
 
         .tab-content {
@@ -78,34 +151,97 @@
             display: block;
         }
 
+        .intro-page {
+            padding: 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .intro-page h2 {
+            font-size: 28px;
+            font-weight: 400;
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            letter-spacing: 1px;
+        }
+
+        .intro-page h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 25px 0 10px 0;
+            color: var(--text-primary);
+        }
+
+        .intro-page p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .intro-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0;
+        }
+
+        .starter-toolkit {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .toolkit-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+        }
+
+        .toolkit-card h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .toolkit-card ol {
+            margin-left: 20px;
+        }
+
+        .toolkit-card li {
+            margin-bottom: 8px;
+        }
+
         .main-content {
             display: flex;
             flex-direction: column;
         }
 
         .control-panel {
-            background: #f8f9fa;
-            border-bottom: 2px solid #e0e0e0;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
             padding: 20px;
             max-height: 70vh;
             overflow-y: auto;
         }
 
         .control-section {
-            background: white;
-            border-radius: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             padding: 15px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .control-section h3 {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
-            color: #667eea;
+            color: var(--text-primary);
             margin-bottom: 12px;
             padding-bottom: 8px;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .control-row {
@@ -121,10 +257,12 @@
 
         .control-group label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
-            color: #555;
+            color: var(--text-primary);
             margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .control-group input[type="number"],
@@ -132,15 +270,18 @@
         .control-group select {
             width: 100%;
             padding: 8px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-radius: 0;
             font-size: 13px;
         }
 
         .control-group input:focus,
         .control-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--border-color);
+            box-shadow: 0 0 5px var(--border-color);
         }
 
         .control-group input[type="range"] {
@@ -154,12 +295,22 @@
             cursor: pointer;
         }
 
+        .control-group input[type="color"] {
+            width: 100%;
+            height: 35px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            cursor: pointer;
+        }
+
         .checkbox-label {
             display: flex;
             align-items: center;
-            font-size: 12px;
-            color: #555;
+            font-size: 11px;
+            color: var(--text-primary);
             cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .dual-input {
@@ -170,19 +321,21 @@
 
         button {
             padding: 10px 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 13px;
+            background: var(--hover-bg);
+            color: var(--hover-text);
+            border: 1px solid var(--border-color);
+            border-radius: 0;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            background: var(--bg-primary);
+            color: var(--text-primary);
         }
 
         .button-group {
@@ -193,7 +346,7 @@
 
         .canvas-container {
             padding: 20px;
-            background: #1a1a2e;
+            background: var(--bg-primary);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -201,10 +354,10 @@
         }
 
         #mainCanvas {
-            border: 2px solid #444;
-            border-radius: 8px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-            background: black;
+            border: 1px solid var(--border-color);
+            border-radius: 0;
+            box-shadow: 0 0 20px var(--border-subtle);
+            background: var(--bg-primary);
             cursor: move;
             touch-action: none;
         }
@@ -212,26 +365,26 @@
         .tooltip {
             position: absolute;
             padding: 12px;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            border-radius: 6px;
+            background: var(--tooltip-bg);
+            color: var(--tooltip-text);
+            border: 1px solid var(--border-color);
             pointer-events: none;
-            font-size: 12px;
+            font-size: 11px;
             line-height: 1.6;
             opacity: 0;
             transition: opacity 0.2s;
             z-index: 1000;
             max-width: 300px;
+            font-family: 'Courier New', monospace;
         }
 
         .stats-panel {
             width: 100%;
             max-width: 1000px;
             margin-top: 20px;
-            background: white;
-            border-radius: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             padding: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .stats-grid {
@@ -242,21 +395,22 @@
 
         .stat-item {
             padding: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            border-left: 4px solid #667eea;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
         }
 
         .stat-label {
-            font-size: 11px;
-            color: #666;
+            font-size: 10px;
+            color: var(--text-primary);
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-value {
             font-size: 16px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-primary);
             margin-top: 4px;
         }
 
@@ -264,18 +418,17 @@
             display: inline-block;
             margin-left: 8px;
             font-weight: 600;
-            color: #667eea;
+            color: var(--text-primary);
             font-size: 11px;
         }
 
         .info-box {
-            background: #e8f4f8;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             padding: 10px;
-            border-radius: 6px;
             font-size: 11px;
-            color: #555;
+            color: var(--text-primary);
             margin-top: 10px;
-            border-left: 4px solid #667eea;
         }
 
         .preset-grid {
@@ -284,45 +437,84 @@
             gap: 6px;
         }
 
-        .color-legend {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .color-legend-item {
-            display: flex;
-            align-items: center;
-            font-size: 11px;
-        }
-
-        .color-box {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            margin-right: 6px;
-            border: 1px solid #ddd;
-        }
-
         .tracker-display {
-            background: #f0f4ff;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             padding: 12px;
-            border-radius: 8px;
             margin-top: 10px;
-            border-left: 4px solid #8b5cf6;
         }
 
         .tracker-display h4 {
-            color: #8b5cf6;
-            font-size: 13px;
+            color: var(--text-primary);
+            font-size: 12px;
             margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .tracker-info {
-            font-size: 12px;
+            font-size: 11px;
             line-height: 1.6;
-            color: #555;
+            color: var(--text-primary);
+        }
+
+        .theory-section {
+            padding: 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .theory-section h2 {
+            font-size: 28px;
+            font-weight: 400;
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            letter-spacing: 1px;
+        }
+
+        .theory-section h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 25px 0 10px 0;
+        }
+
+        .theory-section p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .formula {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .formula-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .example-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
         }
 
         @media (max-width: 768px) {
@@ -332,22 +524,176 @@
             .preset-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+            .starter-toolkit {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Advanced Modular Rings - Complete Control Suite</h1>
-            <div class="author">Interactive Visualization by Wessen Getachew</div>
+            <h1>Modular Rings</h1>
+            <div class="subtitle">GCD Channels, Farey Sequences & Prime Distribution</div>
+            <div class="author">By Wessen Getachew</div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="themeText">Light Mode</span>
+            </button>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('visualization')">Visualization</button>
-            <button class="tab" onclick="switchTab('theory')">Mathematical Theory</button>
+            <button class="tab active" onclick="switchTab('introduction')">Introduction</button>
+            <button class="tab" onclick="switchTab('visualization')">Visualization</button>
+            <button class="tab" onclick="switchTab('theory')">Theory</button>
+            <button class="tab" onclick="switchTab('references')">References</button>
         </div>
 
-        <div id="visualizationTab" class="tab-content active">
+        <div id="introductionTab" class="tab-content active">
+            <div class="intro-page">
+                <h2>Introduction</h2>
+                <p>
+                    This interactive tool provides a geometric visualization of modular arithmetic, coprimality patterns, and their deep connections to prime number theory. By representing residues as points on concentric rings, we reveal the elegant structure underlying Euler's totient function, Farey sequences, and the distribution of prime numbers.
+                </p>
+
+                <div class="intro-box">
+                    <h3>What You Will Explore</h3>
+                    <p>
+                        For each modulus m, we map every residue r (where 0 ≤ r < m) to a point at angle 2πr/m on a circle of radius m. Points are classified as <strong>open channels</strong> (where gcd(r,m) = 1, indicating coprimality) or <strong>closed channels</strong> (where gcd(r,m) > 1). This simple geometric construction reveals profound mathematical patterns.
+                    </p>
+                    <p>
+                        The visualization demonstrates how the density of open channels converges to 6/π² ≈ 0.6079, the Euler product formula, and connections to the Riemann zeta function ζ(2) = π²/6. You can track individual residues across moduli, analyze prime gaps, and explore various coloring schemes based on prime factorization.
+                    </p>
+                </div>
+
+                <h2>Getting Started: Quick Walkthrough</h2>
+
+                <div class="starter-toolkit">
+                    <div class="toolkit-card">
+                        <h4>Step 1: Basic Setup</h4>
+                        <ol>
+                            <li>Navigate to the <strong>Visualization</strong> tab</li>
+                            <li>Start with default settings (m=1 to 60)</li>
+                            <li>Click <strong>Update Display</strong></li>
+                            <li>Observe concentric rings with colored points</li>
+                            <li>Green points = open channels (coprime)</li>
+                            <li>Red points = closed channels (not coprime)</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 2: Navigation</h4>
+                        <ol>
+                            <li><strong>Pan:</strong> Click and drag on canvas</li>
+                            <li><strong>Zoom:</strong> Scroll wheel or pinch</li>
+                            <li><strong>Hover:</strong> Mouse over points for details</li>
+                            <li><strong>Click:</strong> Click points for full information</li>
+                            <li><strong>Reset View:</strong> Double-click canvas</li>
+                            <li><strong>Export:</strong> Use PNG or CSV buttons</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 3: Preset Sequences</h4>
+                        <ol>
+                            <li>Try preset M_n = 30×2^n buttons</li>
+                            <li>n=0: View m=30 (single ring)</li>
+                            <li>n=1: View m=60</li>
+                            <li>Progress through n=2,3,4,5</li>
+                            <li>Click "All: 30 to 960" for full range</li>
+                            <li>Observe binary lifting structure</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 4: Rotation Effects</h4>
+                        <ol>
+                            <li>Enable <strong>Animation</strong> checkbox</li>
+                            <li>Set <strong>Global Rotation</strong> to 1-5 deg/frame</li>
+                            <li>Try <strong>Individual Mod Rotation</strong></li>
+                            <li>Select <strong>Speed Gradient</strong>: Inner-to-Outer</li>
+                            <li>Adjust <strong>Gradient Strength</strong></li>
+                            <li>Observe spiraling patterns</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 5: Coloring Schemes</h4>
+                        <ol>
+                            <li>Change <strong>Open Channel Color Mode</strong></li>
+                            <li>Try "By Smallest Prime Factor"</li>
+                            <li>Groups: 2→red, 3→orange, 5→yellow</li>
+                            <li>Try "By Residue" for rainbow patterns</li>
+                            <li>Adjust <strong>Saturation</strong> and <strong>Lightness</strong></li>
+                            <li>Compare different prime factorizations</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 6: Residue Tracker</h4>
+                        <ol>
+                            <li>Enable <strong>Residue Tracker</strong></li>
+                            <li>Set <strong>Track Residue</strong> to 7</li>
+                            <li>Observe where r=7 appears across rings</li>
+                            <li>Note coprimality patterns</li>
+                            <li>Try tracking r=1, r=11, r=13</li>
+                            <li>Check statistics in tracker display</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 7: Connection Lines</h4>
+                        <ol>
+                            <li>Enable <strong>Connect Residues</strong></li>
+                            <li>Try "r to r (Next Mod)" mode</li>
+                            <li>Shows how residues connect between rings</li>
+                            <li>Try "r to r+M×2^n" for binary lifting</li>
+                            <li>Visualizes the lifting theorem</li>
+                            <li>Adjust connection opacity</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 8: Gap Analysis</h4>
+                        <ol>
+                            <li>Enable <strong>Gap Analysis</strong></li>
+                            <li>Set <strong>Gap Value</strong> to 2 (twin primes)</li>
+                            <li>Purple points = admissible pairs</li>
+                            <li>These satisfy: gcd(r,m)=1 and gcd(r+2,m)=1</li>
+                            <li>Try gaps: 4, 6, 30</li>
+                            <li>Compare admissibility counts</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="intro-box">
+                    <h3>Key Insights to Discover</h3>
+                    <ul>
+                        <li><strong>Density Convergence:</strong> Watch the Open Channel Ratio approach 6/π² ≈ 0.6079 as you increase the modulus range</li>
+                        <li><strong>Binary Lifting:</strong> Each open channel at M_n spawns exactly two open channels at M_{n+1}</li>
+                        <li><strong>Farey Structure:</strong> Enable radial lines to see the spoke pattern of reduced fractions</li>
+                        <li><strong>Prime Factorization:</strong> Color by smallest/largest prime factor to reveal divisibility patterns</li>
+                        <li><strong>Gap Patterns:</strong> Admissible residues predict where prime pairs can occur</li>
+                    </ul>
+                </div>
+
+                <h2>Mathematical Context</h2>
+                <p>
+                    This framework connects several fundamental areas of number theory: Euler's totient function φ(m) counts the open channels for each modulus. The average value of φ(m)/m equals 6/π², which appears in the Riemann zeta function as 1/ζ(2). The Farey sequence F_m consists of all reduced fractions with denominator at most m, corresponding to the angular positions of open channels on the unit circle.
+                </p>
+                <p>
+                    The gap admissibility conditions determine which residue classes can contain prime pairs (p, p+g). The Hardy-Littlewood conjecture predicts the density of such pairs based on these modular constraints. By visualizing these patterns geometrically, we gain intuition about prime distribution and the deep structure of multiplicative number theory.
+                </p>
+
+                <div class="intro-box">
+                    <h3>Recommended Exploration Paths</h3>
+                    <p><strong>For Beginners:</strong> Start with Steps 1-3, explore presets, and observe the basic open/closed channel distinction.</p>
+                    <p><strong>For Intermediate Users:</strong> Complete Steps 4-6, experiment with coloring schemes, and track specific residues like prime numbers.</p>
+                    <p><strong>For Advanced Users:</strong> Master Steps 7-8, analyze connection patterns, study gap admissibility, and cross-reference with the Theory tab.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="visualizationTab" class="tab-content">
             <div class="main-content">
                 <div class="control-panel">
                     <div class="control-section">
@@ -379,27 +725,59 @@
                     </div>
 
                     <div class="control-section">
+                        <h3>Connection Lines</h3>
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableConnections">
+                                Enable Connections
+                            </label>
+                        </div>
+                        <div class="control-group">
+                            <label>Connection Mode</label>
+                            <select id="connectionMode">
+                                <option value="none">None</option>
+                                <option value="next-mod">r to r (Next Modulus)</option>
+                                <option value="binary-lift">r to r+M (Binary Lift)</option>
+                                <option value="double-lift">r to r+M×2^n</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Connection Opacity <span class="range-display" id="connOpacityDisplay">0.3</span></label>
+                            <div class="dual-input">
+                                <input type="range" id="connOpacity" min="0.1" max="1" step="0.1" value="0.3">
+                                <input type="number" id="connOpacityNum" min="0" max="1" step="0.1" value="0.3">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="onlyOpenConn" checked>
+                                Only Connect Open Channels
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="control-section">
                         <h3>Rotation Controls</h3>
                         <div class="control-group">
-                            <label>Global Rotation Speed <span class="range-display" id="globalSpeedDisplay">0</span> deg/frame</label>
+                            <label>Global Rotation <span class="range-display" id="globalSpeedDisplay">0</span> deg/frame</label>
                             <div class="dual-input">
                                 <input type="range" id="globalSpeed" min="0" max="360" step="0.5" value="0">
                                 <input type="number" id="globalSpeedNum" min="0" max="360" step="0.5" value="0">
                             </div>
                         </div>
                         <div class="control-group">
-                            <label>Individual Mod Rotation <span class="range-display" id="modRotSpeedDisplay">0</span> deg/frame</label>
+                            <label>Individual Mod <span class="range-display" id="modRotSpeedDisplay">0</span> deg/frame</label>
                             <div class="dual-input">
                                 <input type="range" id="modRotSpeed" min="0" max="360" step="0.5" value="0">
                                 <input type="number" id="modRotSpeedNum" min="0" max="360" step="0.5" value="0">
                             </div>
                         </div>
                         <div class="control-group">
-                            <label>Speed Gradient Direction</label>
+                            <label>Speed Gradient</label>
                             <select id="speedGradient">
                                 <option value="none">No Gradient</option>
-                                <option value="inner-to-outer">Inner to Outer (Faster)</option>
-                                <option value="outer-to-inner">Outer to Inner (Faster)</option>
+                                <option value="inner-to-outer">Inner to Outer</option>
+                                <option value="outer-to-inner">Outer to Inner</option>
                             </select>
                         </div>
                         <div class="control-group">
@@ -418,7 +796,7 @@
                     </div>
 
                     <div class="control-section">
-                        <h3>Individual Residue Tracker</h3>
+                        <h3>Residue Tracker</h3>
                         <div class="control-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="enableTracker">
@@ -434,7 +812,7 @@
                         </div>
                         <div class="control-group">
                             <label>Tracker Color</label>
-                            <input type="color" id="trackerColor" value="#ff00ff">
+                            <input type="color" id="trackerColor" value="#ffffff">
                         </div>
                         <div class="control-group">
                             <label>Tracker Size <span class="range-display" id="trackerSizeDisplay">8</span></label>
@@ -444,7 +822,7 @@
                             </div>
                         </div>
                         <div class="tracker-display" id="trackerInfo" style="display: none;">
-                            <h4>Tracked Residue Information</h4>
+                            <h4>Tracked Residue Info</h4>
                             <div class="tracker-info" id="trackerInfoContent"></div>
                         </div>
                     </div>
@@ -452,49 +830,35 @@
                     <div class="control-section">
                         <h3>Coloring Schemes</h3>
                         <div class="control-group">
-                            <label>Open Channel Color Mode</label>
+                            <label>Open Channel Mode</label>
                             <select id="openColorMode">
                                 <option value="solid">Solid Color</option>
-                                <option value="by-residue">Color by Residue (r)</option>
-                                <option value="by-modulus">Color by Modulus (m)</option>
-                                <option value="by-integer">Color by Integer Value</option>
-                                <option value="by-spf">Color by Smallest Prime Factor</option>
-                                <option value="by-lpf">Color by Largest Prime Factor</option>
-                                <option value="by-prime-power">Color by Prime Power</option>
-                                <option value="by-angle">Color by Angle</option>
+                                <option value="by-residue">By Residue (r)</option>
+                                <option value="by-modulus">By Modulus (m)</option>
+                                <option value="by-integer">By Integer Value</option>
+                                <option value="by-spf">By Smallest Prime Factor</option>
+                                <option value="by-lpf">By Largest Prime Factor</option>
+                                <option value="by-prime-power">By Prime Power</option>
+                                <option value="by-angle">By Angle</option>
                             </select>
                         </div>
                         <div class="control-group">
-                            <label>Closed Channel Color Mode</label>
+                            <label>Closed Channel Mode</label>
                             <select id="closedColorMode">
                                 <option value="solid">Solid Color</option>
-                                <option value="by-gcd">Color by GCD Value</option>
-                                <option value="by-spf">Color by Smallest Prime Factor</option>
-                                <option value="by-lpf">Color by Largest Prime Factor</option>
-                                <option value="by-modulus">Color by Modulus (m)</option>
+                                <option value="by-gcd">By GCD Value</option>
+                                <option value="by-spf">By Smallest Prime Factor</option>
+                                <option value="by-lpf">By Largest Prime Factor</option>
+                                <option value="by-modulus">By Modulus (m)</option>
                             </select>
                         </div>
                         <div class="control-group">
-                            <label>Base Open Color (for solid mode)</label>
-                            <input type="color" id="baseOpenColor" value="#4ade80">
+                            <label>Base Open Color</label>
+                            <input type="color" id="baseOpenColor" value="#00ff00">
                         </div>
                         <div class="control-group">
-                            <label>Base Closed Color (for solid mode)</label>
-                            <input type="color" id="baseClosedColor" value="#f87171">
-                        </div>
-                        <div class="control-group">
-                            <label>Color Saturation <span class="range-display" id="colorSatDisplay">80</span>%</label>
-                            <div class="dual-input">
-                                <input type="range" id="colorSat" min="30" max="100" step="5" value="80">
-                                <input type="number" id="colorSatNum" min="0" max="100" step="5" value="80">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label>Color Lightness <span class="range-display" id="colorLightDisplay">60</span>%</label>
-                            <div class="dual-input">
-                                <input type="range" id="colorLight" min="30" max="90" step="5" value="60">
-                                <input type="number" id="colorLightNum" min="0" max="100" step="5" value="60">
-                            </div>
+                            <label>Base Closed Color</label>
+                            <input type="color" id="baseClosedColor" value="#ff0000">
                         </div>
                     </div>
 
@@ -522,39 +886,21 @@
                                 <input type="color" id="bgColor" value="#000000">
                             </div>
                             <div class="control-group">
-                                <label>Background Preset</label>
-                                <select id="bgPreset">
-                                    <option value="#000000" selected>Black</option>
-                                    <option value="#ffffff">White</option>
-                                    <option value="#1a1a2e">Dark Blue</option>
-                                    <option value="#0f0f23">Deep Space</option>
-                                    <option value="#2d3436">Charcoal</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="control-row">
-                            <div class="control-group">
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="showOpen" checked>
-                                    Show Open Channels
+                                    Show Open
                                 </label>
                             </div>
                             <div class="control-group">
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="showClosed" checked>
-                                    Show Closed Channels
+                                    Show Closed
                                 </label>
                             </div>
                             <div class="control-group">
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="showRingLines" checked>
-                                    Show Ring Lines
-                                </label>
-                            </div>
-                            <div class="control-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="showRadialLines">
-                                    Show Radial Lines
+                                    Ring Lines
                                 </label>
                             </div>
                         </div>
@@ -566,7 +912,7 @@
                             <div class="control-group">
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="enableGapAnalysis">
-                                    Enable Gap Analysis
+                                    Enable
                                 </label>
                             </div>
                             <div class="control-group">
@@ -578,13 +924,13 @@
 
                     <div class="button-group">
                         <button onclick="updateVisualization()">Update</button>
-                        <button onclick="exportImage()">Export PNG</button>
-                        <button onclick="exportCSV()">Export CSV</button>
+                        <button onclick="exportImage()">PNG</button>
+                        <button onclick="exportCSV()">CSV</button>
                         <button onclick="resetSettings()">Reset</button>
                     </div>
 
                     <div class="info-box">
-                        Controls: Drag to pan, scroll to zoom, hover for info, click for details
+                        Drag to pan • Scroll to zoom • Hover for details • Click for info
                     </div>
                 </div>
 
@@ -593,7 +939,7 @@
                     <div class="tooltip" id="tooltip"></div>
                     
                     <div class="stats-panel">
-                        <h3 style="margin-bottom: 12px; color: #667eea; font-size: 15px;">Statistics</h3>
+                        <h3 style="margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Statistics</h3>
                         <div class="stats-grid">
                             <div class="stat-item">
                                 <div class="stat-label">Total Points</div>
@@ -616,7 +962,7 @@
                                 <div class="stat-value" id="statAvgPhi">0.00</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-label">Theoretical (6/π²)</div>
+                                <div class="stat-label">Limit (6/π²)</div>
                                 <div class="stat-value">0.6079</div>
                             </div>
                         </div>
@@ -626,271 +972,100 @@
         </div>
 
         <div id="theoryTab" class="tab-content">
-            <div style="padding: 30px; max-width: 1200px; margin: 0 auto;">
-                <h2 style="color: #667eea; font-size: 22px; margin: 25px 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #667eea;">Mathematical Framework</h2>
+            <div class="theory-section">
+                <h2>Mathematical Theory</h2>
                 
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">1. Modular Sequence Definition</h3>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">We study the sequence of moduli:</p>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; font-family: 'Courier New', monospace; font-size: 14px;">
-                    <div style="font-weight: 600; color: #667eea; margin-bottom: 8px;">Modular Sequence:</div>
-                    M_n = 30 × 2^n, where n ∈ ℤ≥0
-                </div>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">This generates the sequence: 30, 60, 120, 240, 480, 960, 1920, ...</p>
+                <h3>1. Modular Sequence Definition</h3>
+                <p>We study the sequence of moduli M_n = 30 × 2^n where n ∈ ℤ≥0, generating: 30, 60, 120, 240, 480, 960, ...</p>
 
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">2. Open and Closed Channels</h3>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">For any modulus m, each residue r mod m is classified based on coprimality:</p>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; font-family: 'Courier New', monospace; font-size: 14px;">
-                    <div style="font-weight: 600; color: #667eea; margin-bottom: 8px;">Channel Classification:</div>
-                    • Open Channel: gcd(r,m) = 1 (r is a totative of m)<br>
-                    • Closed Channel: gcd(r,m) > 1 (r shares a common factor with m)
-                </div>
-                
-                <div style="background: #e8f4f8; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #4ade80;">
-                    <strong>Example (m = 30):</strong><br>
-                    Open channels: {1, 7, 11, 13, 17, 19, 23, 29}<br>
-                    Total: φ(30) = 8 open channels<br>
-                    Fraction: 8/30 ≈ 0.2667
+                <h3>2. Open and Closed Channels</h3>
+                <div class="formula">
+                    <div class="formula-title">Channel Classification</div>
+                    Open Channel: gcd(r,m) = 1 (totative)<br>
+                    Closed Channel: gcd(r,m) > 1 (non-totative)
                 </div>
 
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">3. Euler's Totient Function</h3>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">The number of open channels for modulus m is given by Euler's totient function:</p>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; font-family: 'Courier New', monospace; font-size: 14px;">
-                    <div style="font-weight: 600; color: #667eea; margin-bottom: 8px;">Totient Formula:</div>
-                    φ(m) = m × ∏(1 - 1/p) for all primes p dividing m
+                <h3>3. Euler's Totient Function</h3>
+                <div class="formula">
+                    <div class="formula-title">Totient Formula</div>
+                    φ(m) = m × ∏(1 - 1/p) for all primes p|m
                 </div>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">The fraction of open channels approaches a fundamental constant:</p>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; font-family: 'Courier New', monospace; font-size: 14px;">
-                    <div style="font-weight: 600; color: #667eea; margin-bottom: 8px;">Density Theorem:</div>
+
+                <div class="formula">
+                    <div class="formula-title">Density Theorem</div>
                     lim(M→∞) [1/M × Σ(m=1 to M) φ(m)/m] = 6/π² ≈ 0.6079
                 </div>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">This equals the probability that two random integers are coprime, and connects to the Riemann zeta function: ζ(2) = π²/6.</p>
 
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">4. Geometric Mapping: Concentric Rings</h3>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">Each modulus m corresponds to a ring of radius R(m) = m in the plane. Each residue r maps to:</p>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; font-family: 'Courier New', monospace; font-size: 14px;">
-                    <div style="font-weight: 600; color: #667eea; margin-bottom: 8px;">Point Coordinates:</div>
-                    P(m,r) = (R(m) × cos(2πr/m), R(m) × sin(2πr/m))<br>
-                    where angle θ = 2πr/m radians
+                <p>This connects to the Riemann zeta function: ζ(2) = π²/6.</p>
+
+                <h3>4. Geometric Mapping</h3>
+                <div class="formula">
+                    <div class="formula-title">Point Coordinates</div>
+                    P(m,r) = (m·cos(2πr/m), m·sin(2πr/m))
                 </div>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">Open channels appear as bright points; closed channels as dim points. This creates a visual representation of coprimality patterns.</p>
 
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">5. Unit Circle Projection</h3>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">Projecting all points radially onto the unit circle maps open channels to angles 2πr/m. As m increases, these angles become dense in [0, 2π), corresponding to reduced fractions in the Farey sequence.</p>
-
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">6. Farey Sequences and Fractional Channels</h3>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">The reduced fractions a/m with gcd(a,m) = 1 form the Farey sequence F_m:</p>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; font-family: 'Courier New', monospace; font-size: 14px;">
-                    <div style="font-weight: 600; color: #667eea; margin-bottom: 8px;">Farey Sequence:</div>
-                    F_m = {a/m : 0 ≤ a ≤ m, gcd(a,m) = 1}
-                </div>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">These fractions correspond to "spoke-like" channels radiating from the origin, creating a tessellation pattern on the unit circle.</p>
-
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">7. Binary Lifting Property</h3>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">For the sequence M_n = 30 × 2^n, we have a preservation theorem:</p>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; font-family: 'Courier New', monospace; font-size: 14px;">
-                    <div style="font-weight: 600; color: #667eea; margin-bottom: 8px;">Lifting Theorem:</div>
+                <h3>5. Binary Lifting Theorem</h3>
+                <div class="formula">
+                    <div class="formula-title">Lifting Property</div>
                     If gcd(r, M_n) = 1, then:<br>
                     • gcd(r, M_(n+1)) = 1<br>
                     • gcd(r + M_n, M_(n+1)) = 1
                 </div>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">This creates a binary tree structure where each open channel at level n splits into two open channels at level n+1.</p>
 
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">8. Gap Admissibility</h3>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">For studying prime gaps, we define admissible residue pairs:</p>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; font-family: 'Courier New', monospace; font-size: 14px;">
-                    <div style="font-weight: 600; color: #667eea; margin-bottom: 8px;">Admissibility Condition:</div>
-                    Residue r is g-admissible if:<br>
+                <h3>6. Connection Lines</h3>
+                <p><strong>r to r (Next Modulus):</strong> Connects residue r on ring m to residue r on ring m+step, showing how the same residue appears across scales.</p>
+                <p><strong>r to r+M (Binary Lift):</strong> Visualizes the binary lifting theorem by connecting r at M_n to both r and r+M_n at M_(n+1).</p>
+                <p><strong>r to r+M×2^n:</strong> Generalizes binary lifting to show the full tree structure of open channel propagation.</p>
+
+                <h3>7. Gap Admissibility</h3>
+                <div class="formula">
+                    <div class="formula-title">Admissibility Condition</div>
+                    r is g-admissible if:<br>
                     gcd(r, M) = 1 AND gcd(r+g, M) = 1
                 </div>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">The count of admissible residues for gap g is:</p>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; font-family: 'Courier New', monospace; font-size: 14px;">
-                    <div style="font-weight: 600; color: #667eea; margin-bottom: 8px;">Admissible Count:</div>
+
+                <div class="formula">
+                    <div class="formula-title">Admissible Count</div>
                     N_M(g) = ∏(p|M) (p - f_p)<br>
                     where f_p = 1 if p|g, else f_p = 2
                 </div>
-                
-                <div style="background: #e8f4f8; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #4ade80;">
-                    <strong>Example (Twin Primes, g=2, M=30):</strong><br>
-                    Primes dividing 30: {2, 3, 5}<br>
-                    Since 2|2: f_2 = 1<br>
-                    Since 3∤2: f_3 = 2<br>
-                    Since 5∤2: f_5 = 2<br>
-                    Count: (2-1)(3-2)(5-2) = 1 × 1 × 3 = 3<br>
-                    Admissible residues mod 30: {11, 17, 29}
+            </div>
+        </div>
+
+        <div id="referencesTab" class="tab-content">
+            <div class="theory-section">
+                <h2>References</h2>
+
+                <h3>Foundational Number Theory</h3>
+                <div class="example-box">
+                    <p><strong>Hardy, G. H., & Wright, E. M.</strong> (2008). <em>An Introduction to the Theory of Numbers</em> (6th ed.). Oxford University Press.</p>
+                    <p><strong>Apostol, T. M.</strong> (1976). <em>Introduction to Analytic Number Theory</em>. Springer-Verlag.</p>
                 </div>
 
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">9. Connection to Prime Distribution</h3>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">The admissible residues mod M correspond to potential prime pairs (p, p+g). The Hardy-Littlewood conjecture predicts:</p>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; font-family: 'Courier New', monospace; font-size: 14px;">
-                    <div style="font-weight: 600; color: #667eea; margin-bottom: 8px;">Twin Prime Constant:</div>
-                    π_2(x) ~ 2C_2 × ∫(2 to x) dt/(ln t)²<br>
-                    where C_2 = ∏(p>2) [1 - 1/(p-1)²] ≈ 0.6601
+                <h3>Prime Gaps and Twin Primes</h3>
+                <div class="example-box">
+                    <p><strong>Hardy, G. H., & Littlewood, J. E.</strong> (1923). "Some Problems of 'Partitio Numerorum' III." <em>Acta Mathematica</em>, 44(1), 1-70.</p>
+                    <p><strong>Zhang, Y.</strong> (2014). "Bounded gaps between primes." <em>Annals of Mathematics</em>, 179(3), 1121-1174.</p>
                 </div>
 
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">10. Euler Product Connection</h3>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">The density of coprime pairs connects to the Euler product:</p>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; font-family: 'Courier New', monospace; font-size: 14px;">
-                    <div style="font-weight: 600; color: #667eea; margin-bottom: 8px;">Euler Product for ζ(2):</div>
-                    6/π² = ∏(p prime) (1 - 1/p²) = 1/ζ(2)
-                </div>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">This fundamental constant appears in:</p>
-                <ul style="margin-left: 25px; margin-bottom: 15px; line-height: 1.6;">
-                    <li style="margin-bottom: 8px;">Probability two random integers are coprime</li>
-                    <li style="margin-bottom: 8px;">Density of visible lattice points in ℤ²</li>
-                    <li style="margin-bottom: 8px;">Average value of φ(m)/m</li>
-                    <li style="margin-bottom: 8px;">Asymptotic density of squarefree integers</li>
-                </ul>
-
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">11. Advanced Visualization Features</h3>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">
-                    <strong>Rotation Mechanics:</strong><br>
-                    • Global Rotation (0-360°): Rotates entire visualization uniformly<br>
-                    • Individual Mod Rotation (0-360°): Each modulus ring rotates independently<br>
-                    • Speed Gradients: Creates differential rotation where inner rings rotate faster than outer (or vice versa), producing hypnotic spiraling patterns
-                </p>
-
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">
-                    <strong>Coloring Schemes:</strong><br>
-                    • By Residue (r): Hue = 360° × (r / max_r). Shows periodic patterns across rings<br>
-                    • By Modulus (m): Hue = 360° × (m / max_m). Distinguishes different rings<br>
-                    • By Integer Value: Colors based on the actual integer r + m×k<br>
-                    • By Smallest Prime Factor: Groups points by their smallest prime divisor<br>
-                    • By Largest Prime Factor: Groups points by their largest prime divisor<br>
-                    • By Prime Power: Colors based on highest prime power dividing the number<br>
-                    • By Angle: Hue = angle in degrees. Creates rainbow wheel effect<br>
-                    • By GCD: For closed channels, colors by gcd(r,m) value
-                </p>
-
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">
-                    <strong>Individual Residue Tracker:</strong><br>
-                    Highlights a specific residue r across all moduli, showing how that residue appears in different rings. Useful for studying whether r is coprime to various moduli, angular position of r across different scales, and prime residue patterns.
-                </p>
-
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">12. Research Applications</h3>
-                <p style="line-height: 1.8; margin-bottom: 15px; color: #444;">This framework provides tools for:</p>
-                <ul style="margin-left: 25px; margin-bottom: 15px; line-height: 1.6;">
-                    <li style="margin-bottom: 8px;">Visualizing prime distribution patterns</li>
-                    <li style="margin-bottom: 8px;">Studying gap admissibility and twin prime structures</li>
-                    <li style="margin-bottom: 8px;">Exploring connections between modular arithmetic and the Riemann Hypothesis</li>
-                    <li style="margin-bottom: 8px;">Analyzing Farey sequence properties geometrically</li>
-                    <li style="margin-bottom: 8px;">Investigating totient function behavior across moduli</li>
-                    <li style="margin-bottom: 8px;">Discovering patterns in prime factor distributions through color visualization</li>
-                </ul>
-
-                <h3 style="color: #764ba2; font-size: 18px; margin: 20px 0 10px 0;">13. References and Further Reading</h3>
-                
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea;">
-                    <h4 style="color: #667eea; font-size: 14px; margin-bottom: 10px;">Foundational Number Theory</h4>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Hardy, G. H., & Wright, E. M.</strong> (2008). <em>An Introduction to the Theory of Numbers</em> (6th ed.). Oxford University Press.
-                        <br><span style="color: #666;">Classic reference for Euler's totient function, coprimality, and the 6/π² constant.</span>
-                    </p>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Apostol, T. M.</strong> (1976). <em>Introduction to Analytic Number Theory</em>. Springer-Verlag.
-                        <br><span style="color: #666;">Comprehensive treatment of the Riemann zeta function and Euler products.</span>
-                    </p>
+                <h3>Riemann Hypothesis</h3>
+                <div class="example-box">
+                    <p><strong>Riemann, B.</strong> (1859). "Über die Anzahl der Primzahlen unter einer gegebenen Größe." <em>Monatsberichte der Berliner Akademie</em>.</p>
+                    <p><strong>Edwards, H. M.</strong> (1974). <em>Riemann's Zeta Function</em>. Academic Press.</p>
                 </div>
 
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea;">
-                    <h4 style="color: #667eea; font-size: 14px; margin-bottom: 10px;">Farey Sequences and Continued Fractions</h4>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Graham, R. L., Knuth, D. E., & Patashnik, O.</strong> (1994). <em>Concrete Mathematics</em> (2nd ed.). Addison-Wesley.
-                        <br><span style="color: #666;">Chapter on number theory includes extensive discussion of Farey sequences.</span>
-                    </p>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Hardy, G. H., & Wright, E. M.</strong> (2008). Chapter 3: Farey Series and Properties of Rational Fractions.
-                        <br><span style="color: #666;">Fundamental properties and applications of Farey sequences.</span>
-                    </p>
+                <h3>Euler Products</h3>
+                <div class="example-box">
+                    <p><strong>Euler, L.</strong> (1748). <em>Introductio in analysin infinitorum</em>.</p>
+                    <p><strong>Iwaniec, H., & Kowalski, E.</strong> (2004). <em>Analytic Number Theory</em>. American Mathematical Society.</p>
                 </div>
 
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea;">
-                    <h4 style="color: #667eea; font-size: 14px; margin-bottom: 10px;">Prime Gaps and Twin Primes</h4>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Hardy, G. H., & Littlewood, J. E.</strong> (1923). "Some Problems of 'Partitio Numerorum' III: On the Expression of a Number as a Sum of Primes." <em>Acta Mathematica</em>, 44(1), 1-70.
-                        <br><span style="color: #666;">Original paper introducing the Hardy-Littlewood conjectures for prime k-tuples.</span>
-                    </p>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Zhang, Y.</strong> (2014). "Bounded gaps between primes." <em>Annals of Mathematics</em>, 179(3), 1121-1174.
-                        <br><span style="color: #666;">Breakthrough result proving infinitely many primes with bounded gaps.</span>
-                    </p>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Polymath Project</strong> (2014). "New equidistribution estimates of Zhang type." <em>Algebra & Number Theory</em>, 8(9), 2067-2199.
-                        <br><span style="color: #666;">Collaborative improvement of Zhang's bound on prime gaps.</span>
-                    </p>
-                </div>
-
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea;">
-                    <h4 style="color: #667eea; font-size: 14px; margin-bottom: 10px;">Modular Arithmetic and Residue Systems</h4>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Ireland, K., & Rosen, M.</strong> (1990). <em>A Classical Introduction to Modern Number Theory</em> (2nd ed.). Springer-Verlag.
-                        <br><span style="color: #666;">Comprehensive treatment of modular arithmetic and primitive roots.</span>
-                    </p>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Niven, I., Zuckerman, H. S., & Montgomery, H. L.</strong> (1991). <em>An Introduction to the Theory of Numbers</em> (5th ed.). John Wiley & Sons.
-                        <br><span style="color: #666;">Clear exposition of congruences and totient function properties.</span>
-                    </p>
-                </div>
-
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea;">
-                    <h4 style="color: #667eea; font-size: 14px; margin-bottom: 10px;">Prime Distribution and the Riemann Hypothesis</h4>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Riemann, B.</strong> (1859). "Über die Anzahl der Primzahlen unter einer gegebenen Größe." <em>Monatsberichte der Berliner Akademie</em>.
-                        <br><span style="color: #666;">Original paper introducing the Riemann zeta function and hypothesis.</span>
-                    </p>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Edwards, H. M.</strong> (1974). <em>Riemann's Zeta Function</em>. Academic Press.
-                        <br><span style="color: #666;">Historical and mathematical development of zeta function theory.</span>
-                    </p>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Davenport, H.</strong> (2000). <em>Multiplicative Number Theory</em> (3rd ed.). Springer-Verlag.
-                        <br><span style="color: #666;">Advanced treatment of prime number theorem and Dirichlet characters.</span>
-                    </p>
-                </div>
-
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea;">
-                    <h4 style="color: #667eea; font-size: 14px; margin-bottom: 10px;">Euler Products and L-Functions</h4>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Euler, L.</strong> (1748). <em>Introductio in analysin infinitorum</em>.
-                        <br><span style="color: #666;">Original development of the Euler product formula and relation to ζ(s).</span>
-                    </p>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Iwaniec, H., & Kowalski, E.</strong> (2004). <em>Analytic Number Theory</em>. American Mathematical Society.
-                        <br><span style="color: #666;">Modern treatment of L-functions, Euler products, and applications.</span>
-                    </p>
-                </div>
-
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea;">
-                    <h4 style="color: #667eea; font-size: 14px; margin-bottom: 10px;">Probabilistic Number Theory</h4>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Tenenbaum, G.</strong> (1995). <em>Introduction to Analytic and Probabilistic Number Theory</em>. Cambridge University Press.
-                        <br><span style="color: #666;">Connection between probability and density results like 6/π².</span>
-                    </p>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Cesàro, E.</strong> (1883). "Sur le nombre des diviseurs d'un entier." <em>Comptes Rendus de l'Académie des Sciences</em>, 96, 175-177.
-                        <br><span style="color: #666;">Early probabilistic results on divisor distribution and coprimality.</span>
-                    </p>
-                </div>
-
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea;">
-                    <h4 style="color: #667eea; font-size: 14px; margin-bottom: 10px;">Computational and Visual Number Theory</h4>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Wagon, S.</strong> (1991). <em>Mathematica in Action</em>. W. H. Freeman.
-                        <br><span style="color: #666;">Examples of computational exploration in number theory.</span>
-                    </p>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 8px;">
-                        <strong>Soundararajan, K.</strong> (2006). "The distribution of prime numbers." <em>Handbook of Enumerative Combinatorics</em>. CRC Press.
-                        <br><span style="color: #666;">Modern survey of prime distribution patterns and visualization techniques.</span>
-                    </p>
-                </div>
-
-                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
-                    <h4 style="color: #856404; font-size: 14px; margin-bottom: 8px;">Online Resources</h4>
-                    <p style="font-size: 13px; line-height: 1.6; color: #856404;">
-                        • <strong>OEIS</strong> (Online Encyclopedia of Integer Sequences): oeis.org<br>
-                        • <strong>Prime Pages</strong> by Chris Caldwell: primes.utm.edu<br>
-                        • <strong>MathWorld</strong> - Wolfram: mathworld.wolfram.com<br>
-                        • <strong>arXiv Number Theory</strong>: arxiv.org/list/math.NT/recent
-                    </p>
+                <h3>Online Resources</h3>
+                <div class="example-box">
+                    <p>• OEIS (Online Encyclopedia of Integer Sequences): oeis.org</p>
+                    <p>• Prime Pages by Chris Caldwell: primes.utm.edu</p>
+                    <p>• MathWorld - Wolfram: mathworld.wolfram.com</p>
+                    <p>• arXiv Number Theory: arxiv.org/list/math.NT/recent</p>
                 </div>
             </div>
         </div>
@@ -909,6 +1084,24 @@
         let globalRotation = 0;
         let modRotations = {};
         let animationId = null;
+        let currentTheme = 'dark';
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.className = currentTheme + '-theme';
+            document.getElementById('themeText').textContent = currentTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+            
+            // Update canvas background immediately
+            if (pointsData.length > 0) {
+                drawVisualization();
+            }
+        }
+
+        // Initialize dark theme
+        function initializeTheme() {
+            document.body.className = 'dark-theme';
+            document.getElementById('themeText').textContent = 'Light Mode';
+        }
 
         function gcd(a, b) {
             a = Math.abs(a);
@@ -954,23 +1147,6 @@
             return largest;
         }
 
-        function highestPrimePower(n) {
-            if (n <= 1) return 1;
-            let maxPower = 1;
-            for (let p = 2; p * p <= n; p++) {
-                let power = 0;
-                while (n % p === 0) {
-                    power++;
-                    n /= p;
-                }
-                if (power > 0) {
-                    maxPower = Math.max(maxPower, Math.pow(p, power));
-                }
-            }
-            if (n > 1) maxPower = Math.max(maxPower, n);
-            return maxPower;
-        }
-
         function hslToRgb(h, s, l) {
             s /= 100;
             l /= 100;
@@ -981,36 +1157,23 @@
         }
 
         function getColorForPoint(point, isOpen) {
-            const sat = parseFloat(document.getElementById('colorSat').value);
-            const light = parseFloat(document.getElementById('colorLight').value);
-            
             if (isOpen) {
                 const mode = document.getElementById('openColorMode').value;
-                let hue = 0;
+                if (mode === 'solid') return document.getElementById('baseOpenColor').value;
                 
-                if (mode === 'solid') {
-                    const baseColor = document.getElementById('baseOpenColor').value;
-                    return baseColor;
-                } else if (mode === 'by-residue') {
+                let hue = 0;
+                const sat = 80, light = 60;
+                
+                if (mode === 'by-residue') {
                     const maxR = Math.max(...pointsData.map(p => p.r));
                     hue = (point.r / maxR) * 360;
                 } else if (mode === 'by-modulus') {
                     const maxM = Math.max(...pointsData.map(p => p.m));
                     hue = (point.m / maxM) * 360;
-                } else if (mode === 'by-integer') {
-                    const val = point.r;
-                    hue = (val * 137.5) % 360;
                 } else if (mode === 'by-spf') {
                     const spf = smallestPrimeFactor(point.r === 0 ? point.m : point.r);
-                    const primeMap = {2: 0, 3: 30, 5: 60, 7: 90, 11: 120, 13: 150, 17: 180, 19: 210, 23: 240, 29: 270, 31: 300};
+                    const primeMap = {2: 0, 3: 30, 5: 60, 7: 90, 11: 120, 13: 150, 17: 180};
                     hue = primeMap[spf] || ((spf * 13) % 360);
-                } else if (mode === 'by-lpf') {
-                    const lpf = largestPrimeFactor(point.r === 0 ? point.m : point.r);
-                    const primeMap = {2: 0, 3: 30, 5: 60, 7: 90, 11: 120, 13: 150, 17: 180, 19: 210, 23: 240, 29: 270, 31: 300};
-                    hue = primeMap[lpf] || ((lpf * 13) % 360);
-                } else if (mode === 'by-prime-power') {
-                    const pp = highestPrimePower(point.r === 0 ? point.m : point.r);
-                    hue = (Math.log2(pp) / 10) * 360;
                 } else if (mode === 'by-angle') {
                     hue = (point.angle / (2 * Math.PI)) * 360;
                 }
@@ -1018,44 +1181,15 @@
                 const [r, g, b] = hslToRgb(hue, sat, light);
                 return `rgb(${r},${g},${b})`;
             } else {
-                const mode = document.getElementById('closedColorMode').value;
-                let hue = 0;
-                
-                if (mode === 'solid') {
-                    return document.getElementById('baseClosedColor').value;
-                } else if (mode === 'by-gcd') {
-                    hue = (point.gcd / 10) * 360;
-                } else if (mode === 'by-spf') {
-                    const spf = smallestPrimeFactor(point.gcd);
-                    const primeMap = {2: 0, 3: 30, 5: 60, 7: 90, 11: 120, 13: 150, 17: 180, 19: 210, 23: 240, 29: 270, 31: 300};
-                    hue = primeMap[spf] || ((spf * 13) % 360);
-                } else if (mode === 'by-lpf') {
-                    const lpf = largestPrimeFactor(point.gcd);
-                    const primeMap = {2: 0, 3: 30, 5: 60, 7: 90, 11: 120, 13: 150, 17: 180, 19: 210, 23: 240, 29: 270, 31: 300};
-                    hue = primeMap[lpf] || ((lpf * 13) % 360);
-                } else if (mode === 'by-modulus') {
-                    const maxM = Math.max(...pointsData.map(p => p.m));
-                    hue = (point.m / maxM) * 360;
-                }
-                
-                const [r, g, b] = hslToRgb(hue, sat, light * 0.7);
-                return `rgb(${r},${g},${b})`;
+                return document.getElementById('baseClosedColor').value;
             }
         }
 
         function syncInputs(sliderId, numberId) {
             const slider = document.getElementById(sliderId);
             const number = document.getElementById(numberId);
-            
-            slider.addEventListener('input', () => {
-                number.value = slider.value;
-                updateRangeDisplays();
-            });
-            
-            number.addEventListener('input', () => {
-                slider.value = number.value;
-                updateRangeDisplays();
-            });
+            slider.addEventListener('input', () => { number.value = slider.value; updateRangeDisplays(); });
+            number.addEventListener('input', () => { slider.value = number.value; updateRangeDisplays(); });
         }
 
         syncInputs('globalSpeed', 'globalSpeedNum');
@@ -1064,8 +1198,7 @@
         syncInputs('trackedResidue', 'trackedResidueNum');
         syncInputs('trackerSize', 'trackerSizeNum');
         syncInputs('pointSize', 'pointSizeNum');
-        syncInputs('colorSat', 'colorSatNum');
-        syncInputs('colorLight', 'colorLightNum');
+        syncInputs('connOpacity', 'connOpacityNum');
 
         function updateRangeDisplays() {
             document.getElementById('globalSpeedDisplay').textContent = document.getElementById('globalSpeed').value;
@@ -1073,8 +1206,7 @@
             document.getElementById('gradientStrengthDisplay').textContent = document.getElementById('gradientStrength').value;
             document.getElementById('pointSizeDisplay').textContent = document.getElementById('pointSize').value;
             document.getElementById('trackerSizeDisplay').textContent = document.getElementById('trackerSize').value;
-            document.getElementById('colorSatDisplay').textContent = document.getElementById('colorSat').value;
-            document.getElementById('colorLightDisplay').textContent = document.getElementById('colorLight').value;
+            document.getElementById('connOpacityDisplay').textContent = document.getElementById('connOpacity').value;
         }
 
         document.querySelectorAll('input[type="range"]').forEach(input => {
@@ -1122,8 +1254,6 @@
                         gcd: g,
                         isOpen: isOpen,
                         angle: angle,
-                        angleDeg: (angle * 180 / Math.PI).toFixed(2),
-                        fraction: (r / m).toFixed(6),
                         phiM: phiM,
                         isAdmissible: isAdmissible
                     });
@@ -1150,10 +1280,10 @@
             if (enabled) {
                 trackerInfo.style.display = 'block';
                 const trackedPoints = pointsData.filter(p => p.r === trackedR);
-                let infoHTML = `<strong>Residue r = ${trackedR}</strong><br>`;
+                let infoHTML = `Residue r = ${trackedR}<br>`;
                 infoHTML += `Appears in ${trackedPoints.length} moduli<br>`;
                 const openCount = trackedPoints.filter(p => p.isOpen).length;
-                infoHTML += `Open in ${openCount} rings, Closed in ${trackedPoints.length - openCount} rings`;
+                infoHTML += `Open: ${openCount}, Closed: ${trackedPoints.length - openCount}`;
                 document.getElementById('trackerInfoContent').innerHTML = infoHTML;
             } else {
                 trackerInfo.style.display = 'none';
@@ -1162,21 +1292,6 @@
 
         document.getElementById('enableTracker').addEventListener('change', updateTrackerInfo);
         document.getElementById('trackedResidue').addEventListener('input', updateTrackerInfo);
-        document.getElementById('trackedResidueNum').addEventListener('input', updateTrackerInfo);
-
-        document.getElementById('bgPreset').addEventListener('change', (e) => {
-            document.getElementById('bgColor').value = e.target.value;
-        });
-
-        document.getElementById('bgColor').addEventListener('input', (e) => {
-            const value = e.target.value;
-            const preset = document.getElementById('bgPreset');
-            const options = Array.from(preset.options);
-            const match = options.find(opt => opt.value === value);
-            if (match) {
-                preset.value = value;
-            }
-        });
 
         function drawVisualization() {
             const width = canvas.width;
@@ -1185,7 +1300,8 @@
             const centerY = height / 2;
             const maxRadius = Math.min(width, height) * 0.4;
 
-            const bgColor = document.getElementById('bgColor').value;
+            // Get theme-aware background color
+            const bgColor = currentTheme === 'dark' ? '#000000' : '#ffffff';
             ctx.clearRect(0, 0, width, height);
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, width, height);
@@ -1199,7 +1315,6 @@
             const showOpen = document.getElementById('showOpen').checked;
             const showClosed = document.getElementById('showClosed').checked;
             const showRingLines = document.getElementById('showRingLines').checked;
-            const showRadialLines = document.getElementById('showRadialLines').checked;
             const pointSize = parseFloat(document.getElementById('pointSize').value);
             const modMax = parseInt(document.getElementById('modMax').value);
             const modMin = parseInt(document.getElementById('modMin').value);
@@ -1208,48 +1323,97 @@
             const trackedResidue = parseInt(document.getElementById('trackedResidue').value);
             const trackerColor = document.getElementById('trackerColor').value;
             const trackerSize = parseFloat(document.getElementById('trackerSize').value);
+            const enableConnections = document.getElementById('enableConnections').checked;
+            const connectionMode = document.getElementById('connectionMode').value;
+            const connOpacity = parseFloat(document.getElementById('connOpacity').value);
+            const onlyOpenConn = document.getElementById('onlyOpenConn').checked;
 
             const radiusScale = displayMode === 'unit' ? maxRadius : maxRadius / modMax;
 
+            // Theme-aware line color
+            const lineColor = currentTheme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)';
+            const connectionLineColor = currentTheme === 'dark' ? `rgba(255, 255, 255, ${connOpacity})` : `rgba(0, 0, 0, ${connOpacity})`;
+
+            // Function to get proper radius for each modulus
+            function getRadius(m) {
+                if (displayMode === 'unit') return maxRadius;
+                if (m === 1) return maxRadius * 0.1; // Unit circle for mod 1
+                return m * radiusScale;
+            }
+
+            // Draw ring lines
             if (showRingLines && displayMode === 'rings') {
-                ctx.strokeStyle = 'rgba(200, 200, 200, 0.3)';
+                ctx.strokeStyle = lineColor;
                 ctx.lineWidth = 1 / transform.scale;
                 for (let m = modMin; m <= modMax; m += modStep) {
                     ctx.beginPath();
-                    ctx.arc(0, 0, m * radiusScale, 0, 2 * Math.PI);
+                    ctx.arc(0, 0, getRadius(m), 0, 2 * Math.PI);
                     ctx.stroke();
                 }
             }
 
-            if (displayMode === 'unit') {
-                ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
-                ctx.lineWidth = 2 / transform.scale;
-                ctx.beginPath();
-                ctx.arc(0, 0, maxRadius, 0, 2 * Math.PI);
-                ctx.stroke();
-            }
-
-            if (showRadialLines && displayMode === 'rings') {
-                const uniqueAngles = [...new Set(pointsData.filter(p => p.isOpen).map(p => p.angle))];
-                ctx.strokeStyle = 'rgba(102, 126, 234, 0.15)';
+            // Draw connection lines
+            if (enableConnections && connectionMode !== 'none' && displayMode === 'rings') {
+                ctx.strokeStyle = connectionLineColor;
                 ctx.lineWidth = 0.5 / transform.scale;
-                uniqueAngles.forEach(angle => {
-                    const x = maxRadius * Math.cos(angle);
-                    const y = maxRadius * Math.sin(angle);
-                    ctx.beginPath();
-                    ctx.moveTo(0, 0);
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                });
+
+                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
+                
+                for (let i = 0; i < moduli.length - 1; i++) {
+                    const m1 = moduli[i];
+                    const m2 = moduli[i + 1];
+                    
+                    const points1 = pointsData.filter(p => p.m === m1);
+                    const points2 = pointsData.filter(p => p.m === m2);
+
+                    points1.forEach(p1 => {
+                        if (onlyOpenConn && !p1.isOpen) return;
+
+                        const modRot1 = modRotations[m1] || 0;
+                        const angle1 = p1.angle + (modRot1 * Math.PI / 180);
+                        const r1 = getRadius(m1);
+                        const x1 = r1 * Math.cos(angle1);
+                        const y1 = r1 * Math.sin(angle1);
+
+                        let targetPoints = [];
+                        
+                        if (connectionMode === 'next-mod') {
+                            targetPoints = points2.filter(p2 => p2.r === p1.r);
+                        } else if (connectionMode === 'binary-lift') {
+                            targetPoints = points2.filter(p2 => p2.r === p1.r || p2.r === (p1.r + m1) % m2);
+                        } else if (connectionMode === 'double-lift') {
+                            for (let n = 0; n < 5; n++) {
+                                const target = (p1.r + m1 * Math.pow(2, n)) % m2;
+                                targetPoints = targetPoints.concat(points2.filter(p2 => p2.r === target));
+                            }
+                        }
+
+                        targetPoints.forEach(p2 => {
+                            if (onlyOpenConn && !p2.isOpen) return;
+
+                            const modRot2 = modRotations[m2] || 0;
+                            const angle2 = p2.angle + (modRot2 * Math.PI / 180);
+                            const r2 = getRadius(m2);
+                            const x2 = r2 * Math.cos(angle2);
+                            const y2 = r2 * Math.sin(angle2);
+
+                            ctx.beginPath();
+                            ctx.moveTo(x1, y1);
+                            ctx.lineTo(x2, y2);
+                            ctx.stroke();
+                        });
+                    });
+                }
             }
 
+            // Draw points
             pointsData.forEach(point => {
                 if (!showOpen && point.isOpen) return;
                 if (!showClosed && !point.isOpen) return;
 
                 const modRot = modRotations[point.m] || 0;
                 const totalAngle = point.angle + (modRot * Math.PI / 180);
-                const r = displayMode === 'unit' ? maxRadius : point.m * radiusScale;
+                const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
                 const x = r * Math.cos(totalAngle);
                 const y = r * Math.sin(totalAngle);
 
@@ -1259,7 +1423,7 @@
 
                 if (point.isAdmissible) {
                     radius = pointSize * 1.2;
-                    color = '#8b5cf6';
+                    color = '#aa00ff';
                     opacity = 0.9;
                 }
 
@@ -1275,16 +1439,17 @@
                 point.screenRadius = radius / transform.scale;
             });
 
+            // Draw tracker
             if (enableTracker) {
                 pointsData.filter(p => p.r === trackedResidue).forEach(point => {
                     const modRot = modRotations[point.m] || 0;
                     const totalAngle = point.angle + (modRot * Math.PI / 180);
-                    const r = displayMode === 'unit' ? maxRadius : point.m * radiusScale;
+                    const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
                     const x = r * Math.cos(totalAngle);
                     const y = r * Math.sin(totalAngle);
 
                     ctx.strokeStyle = trackerColor;
-                    ctx.lineWidth = 3 / transform.scale;
+                    ctx.lineWidth = 2 / transform.scale;
                     ctx.fillStyle = trackerColor;
                     ctx.globalAlpha = 0.9;
                     ctx.beginPath();
@@ -1313,7 +1478,6 @@
 
             globalRotation += globalSpeed;
             if (globalRotation > 360) globalRotation -= 360;
-            if (globalRotation < 0) globalRotation += 360;
 
             Object.keys(modRotations).forEach(m => {
                 let speed = modRotSpeed;
@@ -1328,7 +1492,6 @@
                 
                 modRotations[m] += speed;
                 if (modRotations[m] > 360) modRotations[m] -= 360;
-                if (modRotations[m] < 0) modRotations[m] += 360;
             });
 
             drawVisualization();
@@ -1336,123 +1499,27 @@
         }
 
         document.getElementById('animateRotation').addEventListener('change', (e) => {
-            if (e.target.checked && !animationId) {
-                animate();
-            }
+            if (e.target.checked && !animationId) animate();
         });
-
-        function screenToCanvas(screenX, screenY) {
-            const rect = canvas.getBoundingClientRect();
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            const canvasX = screenX - rect.left;
-            const canvasY = screenY - rect.top;
-            
-            const worldX = (canvasX - centerX - transform.x) / transform.scale;
-            const worldY = (canvasY - centerY - transform.y) / transform.scale;
-            
-            return { x: worldX, y: worldY };
-        }
-
-        function findPointAtPosition(x, y) {
-            const pos = screenToCanvas(x, y);
-            
-            for (let i = pointsData.length - 1; i >= 0; i--) {
-                const point = pointsData[i];
-                if (!point.screenX) continue;
-                
-                const dx = pos.x - point.screenX;
-                const dy = pos.y - point.screenY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                
-                if (dist <= point.screenRadius * 2) {
-                    return point;
-                }
-            }
-            return null;
-        }
 
         canvas.addEventListener('mousedown', (e) => {
             isDragging = true;
             lastMouseX = e.clientX;
             lastMouseY = e.clientY;
-            canvas.style.cursor = 'grabbing';
         });
 
         canvas.addEventListener('mousemove', (e) => {
             if (isDragging) {
-                const dx = e.clientX - lastMouseX;
-                const dy = e.clientY - lastMouseY;
-                transform.x += dx;
-                transform.y += dy;
+                transform.x += e.clientX - lastMouseX;
+                transform.y += e.clientY - lastMouseY;
                 lastMouseX = e.clientX;
                 lastMouseY = e.clientY;
                 drawVisualization();
-            } else {
-                const point = findPointAtPosition(e.clientX, e.clientY);
-                if (point) {
-                    canvas.style.cursor = 'pointer';
-                    let tooltipHTML = `<strong>Modulus:</strong> ${point.m}<br>`;
-                    tooltipHTML += `<strong>Residue:</strong> ${point.r}<br>`;
-                    tooltipHTML += `<strong>GCD(r,m):</strong> ${point.gcd}<br>`;
-                    tooltipHTML += `<strong>Channel:</strong> ${point.isOpen ? 'OPEN' : 'CLOSED'}<br>`;
-                    tooltipHTML += `<strong>Fraction:</strong> ${point.fraction}<br>`;
-                    tooltipHTML += `<strong>Angle:</strong> ${point.angleDeg}°<br>`;
-                    tooltipHTML += `<strong>φ(m):</strong> ${point.phiM}`;
-                    
-                    if (point.r > 0) {
-                        tooltipHTML += `<br><strong>SPF(r):</strong> ${smallestPrimeFactor(point.r)}`;
-                        tooltipHTML += `<br><strong>LPF(r):</strong> ${largestPrimeFactor(point.r)}`;
-                    }
-                    
-                    if (point.isAdmissible) {
-                        const gap = document.getElementById('gapValue').value;
-                        tooltipHTML += `<br><strong style="color: #8b5cf6;">GAP ADMISSIBLE (g=${gap})</strong>`;
-                    }
-                    
-                    tooltip.innerHTML = tooltipHTML;
-                    tooltip.style.opacity = '1';
-                    tooltip.style.left = (e.clientX + 15) + 'px';
-                    tooltip.style.top = (e.clientY - 15) + 'px';
-                } else {
-                    canvas.style.cursor = 'move';
-                    tooltip.style.opacity = '0';
-                }
             }
         });
 
-        canvas.addEventListener('mouseup', () => {
-            isDragging = false;
-            canvas.style.cursor = 'move';
-        });
-
-        canvas.addEventListener('mouseleave', () => {
-            isDragging = false;
-            canvas.style.cursor = 'move';
-            tooltip.style.opacity = '0';
-        });
-
-        canvas.addEventListener('click', (e) => {
-            const point = findPointAtPosition(e.clientX, e.clientY);
-            if (point) {
-                let alertText = `Modulus: ${point.m}\n`;
-                alertText += `Residue: ${point.r}\n`;
-                alertText += `GCD(r,m): ${point.gcd}\n`;
-                alertText += `Channel: ${point.isOpen ? 'OPEN' : 'CLOSED'}\n`;
-                alertText += `Fraction: ${point.fraction}\n`;
-                alertText += `Angle: ${point.angleDeg}°\n`;
-                alertText += `φ(m): ${point.phiM}\n`;
-                alertText += `φ(m)/m: ${(point.phiM / point.m).toFixed(4)}`;
-                
-                if (point.r > 0) {
-                    alertText += `\nSmallest Prime Factor: ${smallestPrimeFactor(point.r)}`;
-                    alertText += `\nLargest Prime Factor: ${largestPrimeFactor(point.r)}`;
-                }
-                
-                alert(alertText);
-            }
-        });
+        canvas.addEventListener('mouseup', () => { isDragging = false; });
+        canvas.addEventListener('mouseleave', () => { isDragging = false; });
 
         canvas.addEventListener('wheel', (e) => {
             e.preventDefault();
@@ -1469,46 +1536,6 @@
             drawVisualization();
         });
 
-        let touchStartDist = 0;
-        let touchStartScale = 1;
-
-        canvas.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-                const dx = e.touches[0].clientX - e.touches[1].clientX;
-                const dy = e.touches[0].clientY - e.touches[1].clientY;
-                touchStartDist = Math.sqrt(dx * dx + dy * dy);
-                touchStartScale = transform.scale;
-            } else if (e.touches.length === 1) {
-                isDragging = true;
-                lastMouseX = e.touches[0].clientX;
-                lastMouseY = e.touches[0].clientY;
-            }
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (e.touches.length === 2) {
-                const dx = e.touches[0].clientX - e.touches[1].clientX;
-                const dy = e.touches[0].clientY - e.touches[1].clientY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                transform.scale = touchStartScale * (dist / touchStartDist);
-                transform.scale = Math.max(0.1, Math.min(20, transform.scale));
-                drawVisualization();
-            } else if (e.touches.length === 1 && isDragging) {
-                const dx = e.touches[0].clientX - lastMouseX;
-                const dy = e.touches[0].clientY - lastMouseY;
-                transform.x += dx;
-                transform.y += dy;
-                lastMouseX = e.touches[0].clientX;
-                lastMouseY = e.touches[0].clientY;
-                drawVisualization();
-            }
-        });
-
-        canvas.addEventListener('touchend', () => {
-            isDragging = false;
-        });
-
         function updateVisualization() {
             generatePointsData();
             drawVisualization();
@@ -1519,6 +1546,11 @@
             document.getElementById('modMin').value = m;
             document.getElementById('modMax').value = m;
             document.getElementById('modStep').value = 1;
+            
+            // Enable connections for nested visualization
+            document.getElementById('enableConnections').checked = false;
+            document.getElementById('connectionMode').value = 'none';
+            
             updateVisualization();
         }
 
@@ -1526,34 +1558,32 @@
             document.getElementById('modMin').value = 30;
             document.getElementById('modMax').value = 960;
             document.getElementById('modStep').value = 30;
+            
+            // Enable connections to show nested structure
+            document.getElementById('enableConnections').checked = true;
+            document.getElementById('connectionMode').value = 'binary-lift';
+            document.getElementById('displayMode').value = 'rings';
+            
             updateVisualization();
         }
 
         function exportImage() {
             const link = document.createElement('a');
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            link.download = `modular_rings_${timestamp}.png`;
+            link.download = `modular_rings_${new Date().toISOString().slice(0,10)}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
         }
 
         function exportCSV() {
-            let csv = 'Modulus,Residue,GCD,Channel_Type,Angle_Radians,Angle_Degrees,Fraction,Phi_m,Phi_m_over_m,SPF,LPF,Is_Admissible\n';
-            
-            pointsData.forEach(point => {
-                csv += `${point.m},${point.r},${point.gcd},${point.isOpen ? 'Open' : 'Closed'},`;
-                csv += `${point.angle.toFixed(6)},${point.angleDeg},${point.fraction},`;
-                csv += `${point.phiM},${(point.phiM / point.m).toFixed(6)},`;
-                csv += `${point.r > 0 ? smallestPrimeFactor(point.r) : 'N/A'},`;
-                csv += `${point.r > 0 ? largestPrimeFactor(point.r) : 'N/A'},`;
-                csv += `${point.isAdmissible ? 'Yes' : 'No'}\n`;
+            let csv = 'Modulus,Residue,GCD,Channel,Angle_Rad,Phi_m,Admissible\n';
+            pointsData.forEach(p => {
+                csv += `${p.m},${p.r},${p.gcd},${p.isOpen ? 'Open' : 'Closed'},`;
+                csv += `${p.angle.toFixed(6)},${p.phiM},${p.isAdmissible ? 'Yes' : 'No'}\n`;
             });
-
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            link.download = `modular_rings_data_${timestamp}.csv`;
+            link.download = `modular_rings_data_${new Date().toISOString().slice(0,10)}.csv`;
             link.href = url;
             link.click();
             URL.revokeObjectURL(url);
@@ -1563,37 +1593,15 @@
             document.getElementById('modMin').value = '1';
             document.getElementById('modMax').value = '60';
             document.getElementById('modStep').value = '1';
-            document.getElementById('displayMode').value = 'rings';
-            document.getElementById('showRingLines').checked = true;
-            document.getElementById('showRadialLines').checked = false;
-            document.getElementById('pointSize').value = '4';
-            document.getElementById('showOpen').checked = true;
-            document.getElementById('showClosed').checked = true;
-            document.getElementById('enableGapAnalysis').checked = false;
-            document.getElementById('gapValue').value = '2';
             document.getElementById('globalSpeed').value = '0';
             document.getElementById('modRotSpeed').value = '0';
-            document.getElementById('speedGradient').value = 'none';
-            document.getElementById('gradientStrength').value = '1.0';
-            document.getElementById('animateRotation').checked = false;
             document.getElementById('enableTracker').checked = false;
-            document.getElementById('trackedResidue').value = '1';
-            document.getElementById('openColorMode').value = 'solid';
-            document.getElementById('closedColorMode').value = 'solid';
-            document.getElementById('colorSat').value = '80';
-            document.getElementById('colorLight').value = '60';
+            document.getElementById('enableConnections').checked = false;
             document.getElementById('bgColor').value = '#000000';
-            document.getElementById('bgPreset').value = '#000000';
-            
             globalRotation = 0;
             modRotations = {};
             transform = { x: 0, y: 0, scale: 1 };
-            
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-                animationId = null;
-            }
-            
+            if (animationId) cancelAnimationFrame(animationId);
             updateRangeDisplays();
             updateVisualization();
         }
@@ -1602,24 +1610,21 @@
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             
-            if (tab === 'visualization') {
-                document.querySelector('.tab:nth-child(1)').classList.add('active');
-                document.getElementById('visualizationTab').classList.add('active');
-            } else {
-                document.querySelector('.tab:nth-child(2)').classList.add('active');
-                document.getElementById('theoryTab').classList.add('active');
-            }
+            const tabs = {
+                'introduction': [0, 'introductionTab'],
+                'visualization': [1, 'visualizationTab'],
+                'theory': [2, 'theoryTab'],
+                'references': [3, 'referencesTab']
+            };
+            
+            document.querySelectorAll('.tab')[tabs[tab][0]].classList.add('active');
+            document.getElementById(tabs[tab][1]).classList.add('active');
         }
 
         window.addEventListener('load', () => {
+            initializeTheme();
             updateRangeDisplays();
             updateVisualization();
-        });
-
-        window.addEventListener('resize', () => {
-            if (pointsData.length > 0) {
-                drawVisualization();
-            }
         });
     </script>
 </body>
