@@ -723,6 +723,11 @@
                             <button onclick="setPreset(5)">n=5 (960)</button>
                         </div>
                         <button onclick="setPresetRange()" style="width: 100%; margin-top: 8px;">All: 30 to 960</button>
+                        
+                        <div class="info-box" style="margin-top: 10px;">
+                            <strong>Performance Options:</strong><br>
+                            <button onclick="clearCache()" style="width: 100%; margin-top: 5px; padding: 8px; font-size: 11px;">Clear Cache</button>
+                        </div>
                     </div>
 
                     <div class="control-section">
@@ -1366,6 +1371,233 @@
         let modRotations = {};
         let animationId = null;
         let currentTheme = 'light';
+        let isComputing = false;
+        let progressiveRenderBatch = 0;
+        const PROGRESSIVE_BATCH_SIZE = 1000;
+        const COMPUTE_CHUNK_SIZE = 100; // Process this many residues before yielding
+
+        // Progressive computation without Web Worker
+        async function computePointsProgressive(modMin, modMax, modStep, gaps, angularMapping) {
+            pointsData = [];
+            let totalOpen = 0;
+            let totalClosed = 0;
+            let sumPhiOverM = 0;
+            let countModuli = 0;
+            let processedCount = 0;
+
+            for (let m = modMin; m <= modMax; m += modStep) {
+                if (!modRotations[m]) modRotations[m] = 0;
+                
+                const phiM = phi(m);
+                sumPhiOverM += phiM / m;
+                countModuli++;
+
+                for (let r = 0; r < m; r++) {
+                    const g = gcd(r, m);
+                    const isOpen = g === 1;
+                    
+                    if (isOpen) totalOpen++;
+                    else totalClosed++;
+
+                    let admissibleGaps = [];
+                    if (isOpen && gaps.length > 0) {
+                        gaps.forEach(gap => {
+                            const rPlusG = (r + gap) % m;
+                            if (gcd(rPlusG, m) === 1) {
+                                admissibleGaps.push(gap);
+                            }
+                        });
+                    }
+
+                    let angle;
+                    switch(angularMapping) {
+                        case 'standard':
+                            angle = (2 * Math.PI * r) / m;
+                            break;
+                        case 'half':
+                            angle = (Math.PI * r) / m;
+                            break;
+                        case 'inverted':
+                            angle = (2 * Math.PI * (m - r)) / m;
+                            break;
+                        case 'negative':
+                            angle = -(2 * Math.PI * r) / m;
+                            break;
+                        default:
+                            angle = (2 * Math.PI * r) / m;
+                    }
+
+                    pointsData.push({
+                        m: m,
+                        r: r,
+                        gcd: g,
+                        isOpen: isOpen,
+                        angle: angle,
+                        phiM: phiM,
+                        isAdmissible: admissibleGaps.length > 0,
+                        admissibleGaps: admissibleGaps
+                    });
+
+                    processedCount++;
+
+                    // Yield to UI every COMPUTE_CHUNK_SIZE items
+                    if (processedCount % COMPUTE_CHUNK_SIZE === 0) {
+                        updateProgressDisplay(processedCount, m, modMax);
+                        await new Promise(resolve => setTimeout(resolve, 0));
+                    }
+                }
+            }
+
+            const avgPhiOverM = countModuli > 0 ? sumPhiOverM / countModuli : 0;
+            const openRatio = (totalOpen + totalClosed) > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
+
+            document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
+            document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
+            document.getElementById('statClosed').textContent = totalClosed.toLocaleString();
+            document.getElementById('statRatio').textContent = openRatio.toFixed(4);
+            document.getElementById('statAvgPhi').textContent = avgPhiOverM.toFixed(4);
+
+            return { totalOpen, totalClosed, avgPhiOverM, countModuli };
+        }
+
+        function updateProgressDisplay(count, currentMod, maxMod) {
+            const modMin = parseInt(document.getElementById('modMin').value);
+            const percent = ((currentMod - modMin) / (maxMod - modMin) * 100).toFixed(1);
+            document.getElementById('animationStatus').textContent = 
+                `Computing: ${count.toLocaleString()} points (${percent}% - m=${currentMod})`;
+            document.getElementById('animationStatus').style.background = '#1a4d4d';
+        }
+
+        function hideProgressDisplay() {
+            document.getElementById('animationStatus').textContent = 'Status: Stopped';
+            document.getElementById('animationStatus').style.background = 'var(--bg-secondary)';
+        }
+
+        function getCacheKey() {
+            return `modular_rings_${document.getElementById('modMin').value}_${document.getElementById('modMax').value}_${document.getElementById('modStep').value}_${document.getElementById('angularMapping').value}`;
+        }
+
+        function saveToCache() {
+            try {
+                const cacheKey = getCacheKey();
+                const cacheData = {
+                    pointsData: pointsData,
+                    timestamp: Date.now(),
+                    settings: {
+                        modMin: document.getElementById('modMin').value,
+                        modMax: document.getElementById('modMax').value,
+                        modStep: document.getElementById('modStep').value,
+                        angularMapping: document.getElementById('angularMapping').value
+                    }
+                };
+                
+                // Only cache if dataset is reasonable size (< 50MB estimated)
+                const dataSize = JSON.stringify(cacheData).length;
+                if (dataSize < 50000000) {
+                    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+                    console.log(`Cached ${pointsData.length} points (${(dataSize/1024/1024).toFixed(2)} MB)`);
+                }
+            } catch (e) {
+                console.warn('Cache save failed:', e);
+            }
+        }
+
+        function loadFromCache() {
+            try {
+                const cacheKey = getCacheKey();
+                const cached = localStorage.getItem(cacheKey);
+                
+                if (cached) {
+                    const cacheData = JSON.parse(cached);
+                    const age = Date.now() - cacheData.timestamp;
+                    
+                    // Cache valid for 1 hour
+                    if (age < 3600000) {
+                        pointsData = cacheData.pointsData;
+                        console.log(`Loaded ${pointsData.length} points from cache`);
+                        
+                        // Restore modRotations
+                        pointsData.forEach(p => {
+                            if (!modRotations[p.m]) modRotations[p.m] = 0;
+                        });
+                        
+                        // Update stats
+                        const totalOpen = pointsData.filter(p => p.isOpen).length;
+                        const totalClosed = pointsData.length - totalOpen;
+                        const moduli = [...new Set(pointsData.map(p => p.m))];
+                        const sumPhiOverM = moduli.reduce((sum, m) => {
+                            const phiM = pointsData.find(p => p.m === m).phiM;
+                            return sum + phiM / m;
+                        }, 0);
+                        
+                        const openRatio = totalClosed > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
+                        document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
+                        document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
+                        document.getElementById('statClosed').textContent = totalClosed.toLocaleString();
+                        document.getElementById('statRatio').textContent = openRatio.toFixed(4);
+                        document.getElementById('statAvgPhi').textContent = (sumPhiOverM / moduli.length).toFixed(4);
+                        
+                        return true;
+                    }
+                }
+            } catch (e) {
+                console.warn('Cache load failed:', e);
+            }
+            return false;
+        }
+
+        function clearCache() {
+            try {
+                const keys = Object.keys(localStorage);
+                let count = 0;
+                keys.forEach(key => {
+                    if (key.startsWith('modular_rings_')) {
+                        localStorage.removeItem(key);
+                        count++;
+                    }
+                });
+                alert(`Cache cleared! Removed ${count} cached dataset(s).`);
+            } catch (e) {
+                alert('Failed to clear cache: ' + e.message);
+            }
+        }
+
+        function progressiveRender() {
+            if (pointsData.length === 0) {
+                drawVisualization();
+                return;
+            }
+
+            // For small datasets, render immediately
+            if (pointsData.length < 5000) {
+                drawVisualization();
+                updateTrackerInfo();
+                return;
+            }
+
+            // For large datasets, render progressively
+            progressiveRenderBatch = 0;
+            progressiveRenderNext();
+        }
+
+        function progressiveRenderNext() {
+            const batchStart = progressiveRenderBatch * PROGRESSIVE_BATCH_SIZE;
+            const batchEnd = Math.min(batchStart + PROGRESSIVE_BATCH_SIZE, pointsData.length);
+            
+            if (batchStart >= pointsData.length) {
+                updateTrackerInfo();
+                return;
+            }
+
+            drawVisualization();
+            progressiveRenderBatch++;
+            
+            if (batchEnd < pointsData.length) {
+                requestAnimationFrame(progressiveRenderNext);
+            } else {
+                updateTrackerInfo();
+            }
+        }
 
         function toggleTheme() {
             currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -1703,6 +1935,12 @@
         });
 
         function generatePointsData() {
+            // Check if we can load from cache first
+            if (loadFromCache()) {
+                progressiveRender();
+                return;
+            }
+
             const modMin = parseInt(document.getElementById('modMin').value);
             const modMax = parseInt(document.getElementById('modMax').value);
             const modStep = parseInt(document.getElementById('modStep').value);
@@ -1711,13 +1949,42 @@
             const gaps = gapInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g > 0);
             const angularMapping = document.getElementById('angularMapping').value;
 
+            // Calculate total expected points
+            let totalExpectedPoints = 0;
+            for (let m = modMin; m <= modMax; m += modStep) {
+                totalExpectedPoints += m;
+            }
+
+            // Use progressive computation for large datasets
+            if (totalExpectedPoints > 5000) {
+                isComputing = true;
+                document.getElementById('animationStatus').textContent = 'Computing: Starting...';
+                document.getElementById('animationStatus').style.background = '#1a4d4d';
+                
+                computePointsProgressive(modMin, modMax, modStep, enableGap ? gaps : [], angularMapping)
+                    .then(() => {
+                        isComputing = false;
+                        hideProgressDisplay();
+                        saveToCache();
+                        progressiveRender();
+                    });
+                return;
+            }
+
+            // Fallback: compute directly (for small datasets)
             pointsData = [];
             let totalOpen = 0;
             let totalClosed = 0;
             let sumPhiOverM = 0;
             let countModuli = 0;
-
+            
+            // Generate list of moduli - use all moduli in range
+            let moduli = [];
             for (let m = modMin; m <= modMax; m += modStep) {
+                moduli.push(m);
+            }
+
+            for (let m of moduli) {
                 if (!modRotations[m]) modRotations[m] = 0;
                 
                 const phiM = phi(m);
@@ -1774,8 +2041,8 @@
                 }
             }
 
-            const avgPhiOverM = sumPhiOverM / countModuli;
-            const openRatio = totalOpen / (totalOpen + totalClosed);
+            const avgPhiOverM = countModuli > 0 ? sumPhiOverM / countModuli : 0;
+            const openRatio = (totalOpen + totalClosed) > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
 
             document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
             document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
@@ -1783,6 +2050,7 @@
             document.getElementById('statRatio').textContent = openRatio.toFixed(4);
             document.getElementById('statAvgPhi').textContent = avgPhiOverM.toFixed(4);
 
+            saveToCache();
             updateTrackerInfo();
         }
 
@@ -2524,20 +2792,36 @@
         }
 
         function updateVisualization() {
+            if (isComputing) {
+                alert('Computation already in progress. Please wait...');
+                return;
+            }
             generatePointsData();
-            drawVisualization();
-            updateBridgeAnalysis();
+            if (!isComputing) {
+                drawVisualization();
+                updateBridgeAnalysis();
+            }
         }
 
         function setPreset(n) {
             const m = 30 * Math.pow(2, n);
-            document.getElementById('modMin').value = m;
-            document.getElementById('modMax').value = m;
-            document.getElementById('modStep').value = 1;
             
-            // Enable connections for nested visualization
-            document.getElementById('enableConnections').checked = false;
-            document.getElementById('connectionMode').value = 'none';
+            // Set range from 30 to the target modulus, showing nested structure
+            document.getElementById('modMin').value = 30;
+            document.getElementById('modMax').value = m;
+            
+            // Use custom step to show only the M_n sequence: 30, 60, 120, 240, 480, 960
+            // We'll set step to 30, but need to ensure we only get powers of 2 multiples
+            document.getElementById('modStep').value = 30;
+            
+            // Enable connections to show nested lifting structure
+            document.getElementById('enableConnections').checked = true;
+            document.getElementById('connectionMode').value = 'double-lift';
+            document.getElementById('displayMode').value = 'rings';
+            
+            // Show only open channels (gcd = 1)
+            document.getElementById('showOpen').checked = true;
+            document.getElementById('showClosed').checked = false;
             
             updateVisualization();
         }
