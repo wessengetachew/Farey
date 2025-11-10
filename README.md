@@ -745,13 +745,39 @@
                                 <option value="next-mod">r to r (Next Modulus)</option>
                                 <option value="binary-lift">r to r+M (Binary Lift)</option>
                                 <option value="double-lift">r to r+M×2^n</option>
+                                <option value="same-mod">Same Modulus Connections</option>
+                                <option value="specific-mod">Specific Modulus Only</option>
                             </select>
+                        </div>
+                        <div class="control-group" id="specificModGroup" style="display: none;">
+                            <label>Specific Modulus Value</label>
+                            <input type="number" id="specificModValue" value="30" min="1">
+                        </div>
+                        <div class="control-group" id="sameModOptionsGroup" style="display: none;">
+                            <label>Same-Mod Pattern</label>
+                            <select id="sameModPattern">
+                                <option value="all">All Points Connected</option>
+                                <option value="sequential">Sequential (r to r+1)</option>
+                                <option value="open-only">Open Channels Only</option>
+                                <option value="by-gap">By Gap Interval</option>
+                            </select>
+                        </div>
+                        <div class="control-group" id="sameModGapGroup" style="display: none;">
+                            <label>Connection Gap</label>
+                            <input type="number" id="sameModGap" value="1" min="1">
                         </div>
                         <div class="control-group">
                             <label>Connection Opacity <span class="range-display" id="connOpacityDisplay">0.3</span></label>
                             <div class="dual-input">
                                 <input type="range" id="connOpacity" min="0.1" max="1" step="0.1" value="0.3">
                                 <input type="number" id="connOpacityNum" min="0" max="1" step="0.1" value="0.3">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label>Connection Line Width <span class="range-display" id="connLineWidthDisplay">1</span></label>
+                            <div class="dual-input">
+                                <input type="range" id="connLineWidth" min="0.5" max="5" step="0.5" value="1">
+                                <input type="number" id="connLineWidthNum" min="0.5" max="10" step="0.5" value="1">
                             </div>
                         </div>
                         <div class="control-group">
@@ -765,95 +791,46 @@
                     <div class="control-section">
                         <h3>Rotation Controls</h3>
                         
-                        <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 12px; margin-bottom: 15px;">
-                            <h4 style="font-size: 12px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Static Rotation (Applied Once)</h4>
-                            
-                            <div class="control-group">
-                                <label>Global Static Rotation (degrees)</label>
-                                <div class="dual-input">
-                                    <input type="number" id="staticGlobalRotation" value="0" step="1">
-                                    <button onclick="applyStaticGlobalRotation()" style="padding: 8px;">Apply</button>
-                                </div>
-                            </div>
-
-                            <div class="control-group">
-                                <label>Individual Mod Static Rotation (degrees)</label>
-                                <div class="dual-input">
-                                    <input type="number" id="staticModRotation" value="0" step="1">
-                                    <button onclick="applyStaticModRotation()" style="padding: 8px;">Apply</button>
-                                </div>
-                            </div>
-
-                            <div class="control-group">
-                                <label>Differential Rotation Mode</label>
-                                <select id="staticDifferentialMode">
-                                    <option value="none">Uniform (All Same)</option>
-                                    <option value="inner-faster">Inner Faster than Outer</option>
-                                    <option value="outer-faster">Outer Faster than Inner</option>
-                                </select>
-                            </div>
-
-                            <div class="control-group">
-                                <label>Differential Factor <span class="range-display" id="staticDiffFactorDisplay">2.0</span></label>
-                                <div class="dual-input">
-                                    <input type="range" id="staticDiffFactor" min="1" max="5" step="0.1" value="2.0">
-                                    <input type="number" id="staticDiffFactorNum" min="1" max="10" step="0.1" value="2.0">
-                                </div>
-                            </div>
-
-                            <div class="control-group">
-                                <button onclick="applyDifferentialRotation()" style="width: 100%;">Apply Differential Rotation</button>
-                            </div>
-
-                            <div class="control-group">
-                                <button onclick="resetAllRotations()" style="width: 100%; background: var(--bg-primary); color: var(--text-primary);">Reset All Rotations</button>
+                        <div class="control-group">
+                            <label>Global Rotation <span class="range-display" id="globalSpeedDisplay">0</span> deg/frame</label>
+                            <div class="dual-input">
+                                <input type="range" id="globalSpeed" min="0" max="360" step="0.5" value="0">
+                                <input type="number" id="globalSpeedNum" min="0" max="360" step="0.5" value="0">
                             </div>
                         </div>
-
-                        <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 12px;">
-                            <h4 style="font-size: 12px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Animated Rotation (Continuous)</h4>
-                            
-                            <div class="control-group">
-                                <label>Global Rotation <span class="range-display" id="globalSpeedDisplay">0</span> deg/frame</label>
-                                <div class="dual-input">
-                                    <input type="range" id="globalSpeed" min="0" max="360" step="0.5" value="0">
-                                    <input type="number" id="globalSpeedNum" min="0" max="360" step="0.5" value="0">
-                                </div>
+                        
+                        <div class="control-group">
+                            <label>Individual Mod <span class="range-display" id="modRotSpeedDisplay">0</span> deg/frame</label>
+                            <div class="dual-input">
+                                <input type="range" id="modRotSpeed" min="0" max="360" step="0.5" value="0">
+                                <input type="number" id="modRotSpeedNum" min="0" max="360" step="0.5" value="0">
                             </div>
-                            
-                            <div class="control-group">
-                                <label>Individual Mod <span class="range-display" id="modRotSpeedDisplay">0</span> deg/frame</label>
-                                <div class="dual-input">
-                                    <input type="range" id="modRotSpeed" min="0" max="360" step="0.5" value="0">
-                                    <input type="number" id="modRotSpeedNum" min="0" max="360" step="0.5" value="0">
-                                </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Speed Gradient</label>
+                            <select id="speedGradient">
+                                <option value="none">No Gradient</option>
+                                <option value="inner-to-outer">Inner to Outer</option>
+                                <option value="outer-to-inner">Outer to Inner</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Gradient Strength <span class="range-display" id="gradientStrengthDisplay">1.0</span></label>
+                            <div class="dual-input">
+                                <input type="range" id="gradientStrength" min="0" max="3" step="0.1" value="1.0">
+                                <input type="number" id="gradientStrengthNum" min="0" max="5" step="0.1" value="1.0">
                             </div>
-                            
-                            <div class="control-group">
-                                <label>Speed Gradient</label>
-                                <select id="speedGradient">
-                                    <option value="none">No Gradient</option>
-                                    <option value="inner-to-outer">Inner to Outer</option>
-                                    <option value="outer-to-inner">Outer to Inner</option>
-                                </select>
-                            </div>
-                            
-                            <div class="control-group">
-                                <label>Gradient Strength <span class="range-display" id="gradientStrengthDisplay">1.0</span></label>
-                                <div class="dual-input">
-                                    <input type="range" id="gradientStrength" min="0" max="3" step="0.1" value="1.0">
-                                    <input type="number" id="gradientStrengthNum" min="0" max="5" step="0.1" value="1.0">
-                                </div>
-                            </div>
-                            
-                            <div class="button-group">
-                                <button id="playButton" onclick="startAnimation()" style="background: #00ff00; color: #000000;">Play</button>
-                                <button id="pauseButton" onclick="stopAnimation()" style="background: #ff0000; color: #ffffff;">Pause</button>
-                            </div>
-                            
-                            <div class="info-box" id="animationStatus">
-                                Status: Stopped
-                            </div>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button id="playButton" onclick="startAnimation()" style="background: #00ff00; color: #000000;">Play</button>
+                            <button id="pauseButton" onclick="stopAnimation()" style="background: #ff0000; color: #ffffff;">Pause</button>
+                        </div>
+                        
+                        <div class="info-box" id="animationStatus">
+                            Status: Stopped
                         </div>
                     </div>
 
@@ -1781,7 +1758,31 @@
         syncInputs('labelSpacing', 'labelSpacingNum');
         syncInputs('gapOpacity', 'gapOpacityNum');
         syncInputs('gapLineWidth', 'gapLineWidthNum');
-        syncInputs('staticDiffFactor', 'staticDiffFactorNum');
+        syncInputs('connLineWidth', 'connLineWidthNum');
+
+        // Show/hide connection mode options
+        document.getElementById('connectionMode').addEventListener('change', function() {
+            const mode = this.value;
+            const specificModGroup = document.getElementById('specificModGroup');
+            const sameModOptionsGroup = document.getElementById('sameModOptionsGroup');
+            const sameModGapGroup = document.getElementById('sameModGapGroup');
+            
+            specificModGroup.style.display = mode === 'specific-mod' ? 'block' : 'none';
+            sameModOptionsGroup.style.display = mode === 'same-mod' ? 'block' : 'none';
+            
+            if (mode === 'same-mod') {
+                const pattern = document.getElementById('sameModPattern').value;
+                sameModGapGroup.style.display = pattern === 'by-gap' ? 'block' : 'none';
+            } else {
+                sameModGapGroup.style.display = 'none';
+            }
+        });
+
+        document.getElementById('sameModPattern').addEventListener('change', function() {
+            const pattern = this.value;
+            const sameModGapGroup = document.getElementById('sameModGapGroup');
+            sameModGapGroup.style.display = pattern === 'by-gap' ? 'block' : 'none';
+        });
 
         const gapColorScheme = [
             '#ff0080', // Hot pink for gap 2
@@ -1900,6 +1901,7 @@
             document.getElementById('labelSpacingDisplay').textContent = document.getElementById('labelSpacing').value;
             document.getElementById('gapOpacityDisplay').textContent = document.getElementById('gapOpacity').value;
             document.getElementById('gapLineWidthDisplay').textContent = document.getElementById('gapLineWidth').value;
+            document.getElementById('connLineWidthDisplay').textContent = document.getElementById('connLineWidth').value;
         }
 
         document.querySelectorAll('input[type="range"]').forEach(input => {
@@ -2128,55 +2130,143 @@
 
             // Draw connection lines
             if (enableConnections && connectionMode !== 'none' && displayMode === 'rings') {
+                const connLineWidth = parseFloat(document.getElementById('connLineWidth').value);
                 ctx.strokeStyle = connectionLineColor;
-                ctx.lineWidth = 0.5 / transform.scale;
+                ctx.lineWidth = connLineWidth / transform.scale;
 
-                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
-                
-                for (let i = 0; i < moduli.length - 1; i++) {
-                    const m1 = moduli[i];
-                    const m2 = moduli[i + 1];
+                if (connectionMode === 'same-mod') {
+                    // Same modulus connections
+                    const sameModPattern = document.getElementById('sameModPattern').value;
+                    const sameModGap = parseInt(document.getElementById('sameModGap').value);
                     
-                    const points1 = pointsData.filter(p => p.m === m1);
-                    const points2 = pointsData.filter(p => p.m === m2);
-
-                    points1.forEach(p1 => {
-                        if (onlyOpenConn && !p1.isOpen) return;
-
-                        const modRot1 = modRotations[m1] || 0;
-                        const angle1 = p1.angle + (modRot1 * Math.PI / 180);
-                        const r1 = getRadius(m1);
-                        const x1 = r1 * Math.cos(angle1);
-                        const y1 = r1 * Math.sin(angle1);
-
-                        let targetPoints = [];
+                    const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
+                    
+                    moduli.forEach(m => {
+                        const pointsInMod = pointsData.filter(p => p.m === m);
                         
-                        if (connectionMode === 'next-mod') {
-                            targetPoints = points2.filter(p2 => p2.r === p1.r);
-                        } else if (connectionMode === 'binary-lift') {
-                            targetPoints = points2.filter(p2 => p2.r === p1.r || p2.r === (p1.r + m1) % m2);
-                        } else if (connectionMode === 'double-lift') {
-                            for (let n = 0; n < 5; n++) {
-                                const target = (p1.r + m1 * Math.pow(2, n)) % m2;
-                                targetPoints = targetPoints.concat(points2.filter(p2 => p2.r === target));
+                        pointsInMod.forEach((p1, idx) => {
+                            if (onlyOpenConn && !p1.isOpen) return;
+                            
+                            let targetPoints = [];
+                            
+                            if (sameModPattern === 'all') {
+                                // Connect to all other points in same modulus
+                                targetPoints = pointsInMod.filter(p2 => p2.r !== p1.r);
+                            } else if (sameModPattern === 'sequential') {
+                                // Connect to next point (r to r+1)
+                                const nextR = (p1.r + 1) % m;
+                                targetPoints = pointsInMod.filter(p2 => p2.r === nextR);
+                            } else if (sameModPattern === 'open-only') {
+                                // Connect all open channels in this modulus
+                                if (p1.isOpen) {
+                                    targetPoints = pointsInMod.filter(p2 => p2.isOpen && p2.r !== p1.r);
+                                }
+                            } else if (sameModPattern === 'by-gap') {
+                                // Connect by gap interval
+                                const targetR = (p1.r + sameModGap) % m;
+                                targetPoints = pointsInMod.filter(p2 => p2.r === targetR);
                             }
-                        }
-
-                        targetPoints.forEach(p2 => {
+                            
+                            targetPoints.forEach(p2 => {
+                                if (onlyOpenConn && !p2.isOpen) return;
+                                
+                                const modRot = modRotations[m] || 0;
+                                
+                                const angle1 = p1.angle + (modRot * Math.PI / 180);
+                                const r1 = getRadius(m);
+                                const x1 = r1 * Math.cos(angle1);
+                                const y1 = r1 * Math.sin(angle1);
+                                
+                                const angle2 = p2.angle + (modRot * Math.PI / 180);
+                                const r2 = getRadius(m);
+                                const x2 = r2 * Math.cos(angle2);
+                                const y2 = r2 * Math.sin(angle2);
+                                
+                                ctx.beginPath();
+                                ctx.moveTo(x1, y1);
+                                ctx.lineTo(x2, y2);
+                                ctx.stroke();
+                            });
+                        });
+                    });
+                } else if (connectionMode === 'specific-mod') {
+                    // Specific modulus only
+                    const specificMod = parseInt(document.getElementById('specificModValue').value);
+                    const pointsInMod = pointsData.filter(p => p.m === specificMod);
+                    
+                    pointsInMod.forEach((p1, idx) => {
+                        if (onlyOpenConn && !p1.isOpen) return;
+                        if (idx < pointsInMod.length - 1) {
+                            const p2 = pointsInMod[idx + 1];
                             if (onlyOpenConn && !p2.isOpen) return;
-
-                            const modRot2 = modRotations[m2] || 0;
-                            const angle2 = p2.angle + (modRot2 * Math.PI / 180);
-                            const r2 = getRadius(m2);
+                            
+                            const modRot = modRotations[specificMod] || 0;
+                            
+                            const angle1 = p1.angle + (modRot * Math.PI / 180);
+                            const r1 = getRadius(specificMod);
+                            const x1 = r1 * Math.cos(angle1);
+                            const y1 = r1 * Math.sin(angle1);
+                            
+                            const angle2 = p2.angle + (modRot * Math.PI / 180);
+                            const r2 = getRadius(specificMod);
                             const x2 = r2 * Math.cos(angle2);
                             const y2 = r2 * Math.sin(angle2);
-
+                            
                             ctx.beginPath();
                             ctx.moveTo(x1, y1);
                             ctx.lineTo(x2, y2);
                             ctx.stroke();
-                        });
+                        }
                     });
+                } else {
+                    // Cross-modulus connections
+                    const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
+                    
+                    for (let i = 0; i < moduli.length - 1; i++) {
+                        const m1 = moduli[i];
+                        const m2 = moduli[i + 1];
+                        
+                        const points1 = pointsData.filter(p => p.m === m1);
+                        const points2 = pointsData.filter(p => p.m === m2);
+
+                        points1.forEach(p1 => {
+                            if (onlyOpenConn && !p1.isOpen) return;
+
+                            const modRot1 = modRotations[m1] || 0;
+                            const angle1 = p1.angle + (modRot1 * Math.PI / 180);
+                            const r1 = getRadius(m1);
+                            const x1 = r1 * Math.cos(angle1);
+                            const y1 = r1 * Math.sin(angle1);
+
+                            let targetPoints = [];
+                            
+                            if (connectionMode === 'next-mod') {
+                                targetPoints = points2.filter(p2 => p2.r === p1.r);
+                            } else if (connectionMode === 'binary-lift') {
+                                targetPoints = points2.filter(p2 => p2.r === p1.r || p2.r === (p1.r + m1) % m2);
+                            } else if (connectionMode === 'double-lift') {
+                                for (let n = 0; n < 5; n++) {
+                                    const target = (p1.r + m1 * Math.pow(2, n)) % m2;
+                                    targetPoints = targetPoints.concat(points2.filter(p2 => p2.r === target));
+                                }
+                            }
+
+                            targetPoints.forEach(p2 => {
+                                if (onlyOpenConn && !p2.isOpen) return;
+
+                                const modRot2 = modRotations[m2] || 0;
+                                const angle2 = p2.angle + (modRot2 * Math.PI / 180);
+                                const r2 = getRadius(m2);
+                                const x2 = r2 * Math.cos(angle2);
+                                const y2 = r2 * Math.sin(angle2);
+
+                                ctx.beginPath();
+                                ctx.moveTo(x1, y1);
+                                ctx.lineTo(x2, y2);
+                                ctx.stroke();
+                            });
+                        });
+                    }
                 }
             }
 
@@ -2847,7 +2937,6 @@
             modRotations = {};
             transform = { x: 0, y: 0, scale: 1 };
             stopAnimation();
-            updateRangeDisplays();
             updateVisualization();
         }
 
