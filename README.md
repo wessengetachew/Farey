@@ -431,6 +431,36 @@
             margin-top: 10px;
         }
 
+        .floating-update-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            padding: 15px 25px;
+            background: var(--hover-bg);
+            color: var(--hover-text);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .floating-update-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .floating-update-btn:active {
+            transform: translateY(-1px);
+        }
+
         .preset-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -1193,6 +1223,11 @@
                         Drag to pan • Scroll to zoom • Hover for details • Click for info
                     </div>
                 </div>
+
+                <!-- Floating Update Button -->
+                <button class="floating-update-btn" onclick="updateVisualization()" title="Update Visualization">
+                    ⟳ Update
+                </button>
 
                 <div class="canvas-container">
                     <canvas id="mainCanvas" width="1000" height="800"></canvas>
