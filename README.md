@@ -817,6 +817,24 @@
                         </div>
                         
                         <div class="control-group">
+                            <label>Per-Ring Spiral <span class="range-display" id="perRingRotDisplay">0</span>° per ring</label>
+                            <div class="dual-input">
+                                <input type="range" id="perRingRot" min="-360" max="360" step="1" value="0">
+                                <input type="number" id="perRingRotNum" min="-720" max="720" step="1" value="0">
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Spiral Mode</label>
+                            <select id="spiralMode">
+                                <option value="linear">Linear (Constant Step)</option>
+                                <option value="fibonacci">Fibonacci (Golden Spiral)</option>
+                                <option value="logarithmic">Logarithmic (Exponential)</option>
+                                <option value="sine-wave">Sine Wave</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
                             <label>Speed Gradient</label>
                             <select id="speedGradient">
                                 <option value="none">No Gradient</option>
@@ -836,6 +854,15 @@
                         <div class="button-group">
                             <button id="playButton" onclick="toggleAnimation()" style="background: #00ff00; color: #000000;">Play</button>
                             <button onclick="resetRotations()" style="background: var(--bg-secondary); color: var(--text-primary);">Reset</button>
+                        </div>
+                        
+                        <div class="preset-grid" style="margin-top: 10px;">
+                            <button onclick="setSpiralPreset('gentle')">Gentle Spiral</button>
+                            <button onclick="setSpiralPreset('moderate')">Moderate</button>
+                            <button onclick="setSpiralPreset('strong')">Strong Twist</button>
+                            <button onclick="setSpiralPreset('golden')">Golden Ratio</button>
+                            <button onclick="setSpiralPreset('galaxy')">Galaxy</button>
+                            <button onclick="setSpiralPreset('helix')">DNA Helix</button>
                         </div>
                         
                         <div class="info-box" id="animationStatus">
@@ -1617,6 +1644,7 @@
         syncInputs('trackerSize', 'trackerSizeNum');
         syncInputs('pointSize', 'pointSizeNum');
         syncInputs('connOpacity', 'connOpacityNum');
+        syncInputs('perRingRot', 'perRingRotNum');
 
         syncInputs('labelSize', 'labelSizeNum');
         syncInputs('labelSpacing', 'labelSpacingNum');
@@ -1759,6 +1787,45 @@
         document.getElementById('gapValues').addEventListener('input', updateGapColorPickers);
         document.getElementById('enableGapAnalysis').addEventListener('change', updateGapColorPickers);
 
+        // Spiral presets
+        function setSpiralPreset(preset) {
+            switch(preset) {
+                case 'gentle':
+                    document.getElementById('perRingRot').value = 5;
+                    document.getElementById('perRingRotNum').value = 5;
+                    document.getElementById('spiralMode').value = 'linear';
+                    break;
+                case 'moderate':
+                    document.getElementById('perRingRot').value = 15;
+                    document.getElementById('perRingRotNum').value = 15;
+                    document.getElementById('spiralMode').value = 'linear';
+                    break;
+                case 'strong':
+                    document.getElementById('perRingRot').value = 30;
+                    document.getElementById('perRingRotNum').value = 30;
+                    document.getElementById('spiralMode').value = 'linear';
+                    break;
+                case 'golden':
+                    document.getElementById('perRingRot').value = 20;
+                    document.getElementById('perRingRotNum').value = 20;
+                    document.getElementById('spiralMode').value = 'fibonacci';
+                    break;
+                case 'galaxy':
+                    document.getElementById('perRingRot').value = 45;
+                    document.getElementById('perRingRotNum').value = 45;
+                    document.getElementById('spiralMode').value = 'logarithmic';
+                    break;
+                case 'helix':
+                    document.getElementById('perRingRot').value = 25;
+                    document.getElementById('perRingRotNum').value = 25;
+                    document.getElementById('spiralMode').value = 'sine-wave';
+                    break;
+            }
+            updateRangeDisplays();
+            needsFullRedraw = true;
+            drawVisualization();
+        }
+
         // Auto-start animation when rotation values change (if auto-rotate enabled)
         function autoStartAnimation() {
             const autoRotate = document.getElementById('autoRotate').checked;
@@ -1798,6 +1865,18 @@
         document.getElementById('globalSpeedNum').addEventListener('input', autoStartAnimation);
         document.getElementById('modRotSpeed').addEventListener('input', autoStartAnimation);
         document.getElementById('modRotSpeedNum').addEventListener('input', autoStartAnimation);
+        document.getElementById('perRingRot').addEventListener('input', () => {
+            needsFullRedraw = true;
+            drawVisualization();
+        });
+        document.getElementById('perRingRotNum').addEventListener('input', () => {
+            needsFullRedraw = true;
+            drawVisualization();
+        });
+        document.getElementById('spiralMode').addEventListener('change', () => {
+            needsFullRedraw = true;
+            drawVisualization();
+        });
 
         document.getElementById('invertModOrder').addEventListener('change', () => {
             drawVisualization();
@@ -1810,6 +1889,7 @@
             document.getElementById('pointSizeDisplay').textContent = document.getElementById('pointSize').value;
             document.getElementById('trackerSizeDisplay').textContent = document.getElementById('trackerSize').value;
             document.getElementById('connOpacityDisplay').textContent = document.getElementById('connOpacity').value;
+            document.getElementById('perRingRotDisplay').textContent = document.getElementById('perRingRot').value;
             document.getElementById('labelSizeDisplay').textContent = document.getElementById('labelSize').value;
             document.getElementById('labelSpacingDisplay').textContent = document.getElementById('labelSpacing').value;
             document.getElementById('gapOpacityDisplay').textContent = document.getElementById('gapOpacity').value;
@@ -2185,6 +2265,47 @@
             return m * radiusScale;
         }
 
+        // Helper function to get ring index for a modulus
+        function getRingIndex(m) {
+            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+            const invertOrder = document.getElementById('invertModOrder').checked;
+            
+            if (invertOrder) {
+                return moduli.length - 1 - moduli.indexOf(m);
+            }
+            
+            return moduli.indexOf(m);
+        }
+
+        // Calculate per-ring rotation based on spiral mode
+        function getPerRingRotation(ringIndex, totalRings) {
+            const perRingRot = parseFloat(document.getElementById('perRingRot').value);
+            const spiralMode = document.getElementById('spiralMode').value;
+            
+            if (perRingRot === 0) return 0;
+            
+            switch(spiralMode) {
+                case 'linear':
+                    return perRingRot * ringIndex;
+                    
+                case 'fibonacci':
+                    // Golden ratio spiral: φ ≈ 1.618
+                    const phi = (1 + Math.sqrt(5)) / 2;
+                    return perRingRot * Math.log(ringIndex + 1) * phi;
+                    
+                case 'logarithmic':
+                    // Natural logarithmic spiral
+                    return perRingRot * Math.log(ringIndex + 1) * 2;
+                    
+                case 'sine-wave':
+                    // Sinusoidal modulation
+                    return perRingRot * ringIndex * (1 + 0.5 * Math.sin(ringIndex * Math.PI / 4));
+                    
+                default:
+                    return perRingRot * ringIndex;
+            }
+        }
+
         function drawVisualizationOptimized() {
             const width = canvas.width;
             const height = canvas.height;
@@ -2339,14 +2460,19 @@
         }
 
         function drawBatchedPoints(batches, pointSize, displayMode, radiusScale, showOpen, showClosed) {
+            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+            const totalRings = moduli.length;
+            
             batches.forEach((pointTypes, color) => {
                 // Draw closed points
                 if (showClosed && pointTypes.closed.length > 0) {
                     ctx.globalAlpha = 0.3;
                     ctx.fillStyle = color;
                     pointTypes.closed.forEach(point => {
+                        const ringIndex = getRingIndex(point.m);
+                        const perRingRotation = getPerRingRotation(ringIndex, totalRings);
                         const modRot = modRotations[point.m] || 0;
-                        const totalAngle = point.angle + (modRot * Math.PI / 180);
+                        const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
                         const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
                         const x = r * Math.cos(totalAngle);
                         const y = r * Math.sin(totalAngle);
@@ -2366,8 +2492,10 @@
                     ctx.globalAlpha = 0.8;
                     ctx.fillStyle = color;
                     pointTypes.open.forEach(point => {
+                        const ringIndex = getRingIndex(point.m);
+                        const perRingRotation = getPerRingRotation(ringIndex, totalRings);
                         const modRot = modRotations[point.m] || 0;
-                        const totalAngle = point.angle + (modRot * Math.PI / 180);
+                        const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
                         const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
                         const x = r * Math.cos(totalAngle);
                         const y = r * Math.sin(totalAngle);
@@ -2387,8 +2515,10 @@
                     ctx.globalAlpha = 0.9;
                     ctx.fillStyle = '#aa00ff';
                     pointTypes.admissible.forEach(point => {
+                        const ringIndex = getRingIndex(point.m);
+                        const perRingRotation = getPerRingRotation(ringIndex, totalRings);
                         const modRot = modRotations[point.m] || 0;
-                        const totalAngle = point.angle + (modRot * Math.PI / 180);
+                        const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
                         const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
                         const x = r * Math.cos(totalAngle);
                         const y = r * Math.sin(totalAngle);
@@ -2510,14 +2640,21 @@
         }
 
         function drawLineBetweenPoints(p1, p2, m1, m2, radiusScale, displayMode) {
+            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+            const totalRings = moduli.length;
+            
+            const ringIndex1 = getRingIndex(m1);
+            const perRingRot1 = getPerRingRotation(ringIndex1, totalRings);
             const modRot1 = modRotations[m1] || 0;
-            const angle1 = p1.angle + (modRot1 * Math.PI / 180);
+            const angle1 = p1.angle + (modRot1 * Math.PI / 180) + (perRingRot1 * Math.PI / 180);
             const r1 = displayMode === 'unit' ? radiusScale : getRadius(m1);
             const x1 = r1 * Math.cos(angle1);
             const y1 = r1 * Math.sin(angle1);
 
+            const ringIndex2 = getRingIndex(m2);
+            const perRingRot2 = getPerRingRotation(ringIndex2, totalRings);
             const modRot2 = modRotations[m2] || 0;
-            const angle2 = p2.angle + (modRot2 * Math.PI / 180);
+            const angle2 = p2.angle + (modRot2 * Math.PI / 180) + (perRingRot2 * Math.PI / 180);
             const r2 = displayMode === 'unit' ? radiusScale : getRadius(m2);
             const x2 = r2 * Math.cos(angle2);
             const y2 = r2 * Math.sin(angle2);
@@ -2572,6 +2709,9 @@
             const trackerColor = document.getElementById('trackerColor').value;
             const trackerSize = parseFloat(document.getElementById('trackerSize').value);
             
+            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+            const totalRings = moduli.length;
+            
             trackedRs.forEach(trackedResidue => {
                 let filteredPoints = pointsData.filter(p => p.r === trackedResidue);
                 if (filterMod !== null) {
@@ -2579,8 +2719,10 @@
                 }
                 
                 filteredPoints.forEach(point => {
+                    const ringIndex = getRingIndex(point.m);
+                    const perRingRotation = getPerRingRotation(ringIndex, totalRings);
                     const modRot = modRotations[point.m] || 0;
-                    const totalAngle = point.angle + (modRot * Math.PI / 180);
+                    const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
                     const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
                     const x = r * Math.cos(totalAngle);
                     const y = r * Math.sin(totalAngle);
@@ -2607,6 +2749,9 @@
             const labelBg = document.getElementById('labelBackground').checked;
             const labelSpacing = parseFloat(document.getElementById('labelSpacing').value);
 
+            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+            const totalRings = moduli.length;
+
             ctx.font = `${labelSize / transform.scale}px Arial`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -2616,8 +2761,10 @@
                 if (!showOpen && point.isOpen) return;
                 if (!showClosed && !point.isOpen) return;
 
+                const ringIndex = getRingIndex(point.m);
+                const perRingRotation = getPerRingRotation(ringIndex, totalRings);
                 const modRot = modRotations[point.m] || 0;
-                const totalAngle = point.angle + (modRot * Math.PI / 180);
+                const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
                 const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
                 const x = r * Math.cos(totalAngle);
                 const y = r * Math.sin(totalAngle);
