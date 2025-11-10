@@ -461,6 +461,79 @@
             transform: translateY(-1px);
         }
 
+        .floating-center-btn {
+            position: fixed;
+            bottom: 90px;
+            right: 30px;
+            z-index: 9999;
+            padding: 15px 25px;
+            background: #4CAF50;
+            color: #ffffff;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .floating-center-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            background: #45a049;
+        }
+
+        .floating-center-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .floating-export-btn {
+            position: fixed;
+            right: 30px;
+            z-index: 9999;
+            padding: 12px 20px;
+            background: #2196F3;
+            color: #ffffff;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .export-png {
+            bottom: 150px;
+        }
+
+        .export-csv {
+            bottom: 210px;
+            background: #FF9800;
+        }
+
+        .floating-export-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .export-png:hover {
+            background: #1976D2;
+        }
+
+        .export-csv:hover {
+            background: #F57C00;
+        }
+
+        .floating-export-btn:active {
+            transform: translateY(-1px);
+        }
+
         .preset-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -562,7 +635,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
+                    <div class="header">
             <h1>Modular Rings</h1>
             <div class="subtitle">GCD Channels, Farey Sequences & Prime Distribution</div>
             <div class="author">By Wessen Getachew</div>
@@ -571,161 +644,7 @@
             </button>
         </div>
 
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('introduction')">Introduction</button>
-            <button class="tab" onclick="switchTab('visualization')">Visualization</button>
-            <button class="tab" onclick="switchTab('bridge')">Euler-Maclaurin Bridge</button>
-            <button class="tab" onclick="switchTab('theory')">Theory</button>
-            <button class="tab" onclick="switchTab('references')">References</button>
-        </div>
-
-        <div id="introductionTab" class="tab-content active">
-            <div class="intro-page">
-                <h2>Introduction</h2>
-                <p>
-                    This interactive tool provides a geometric visualization of modular arithmetic, coprimality patterns, and their deep connections to prime number theory. By representing residues as points on concentric rings, we reveal the elegant structure underlying Euler's totient function, Farey sequences, and the distribution of prime numbers.
-                </p>
-
-                <div class="intro-box">
-                    <h3>What You Will Explore</h3>
-                    <p>
-                        For each modulus m, we map every residue r (where 0 ≤ r < m) to a point at angle 2πr/m on a circle of radius m. Points are classified as <strong>open channels</strong> (where gcd(r,m) = 1, indicating coprimality) or <strong>closed channels</strong> (where gcd(r,m) > 1). This simple geometric construction reveals profound mathematical patterns.
-                    </p>
-                    <p>
-                        The visualization demonstrates how the density of open channels converges to 6/π² ≈ 0.6079, the Euler product formula, and connections to the Riemann zeta function ζ(2) = π²/6. You can track individual residues across moduli, analyze prime gaps, and explore various coloring schemes based on prime factorization.
-                    </p>
-                </div>
-
-                <h2>Getting Started: Quick Walkthrough</h2>
-
-                <div class="starter-toolkit">
-                    <div class="toolkit-card">
-                        <h4>Step 1: Basic Setup</h4>
-                        <ol>
-                            <li>Navigate to the <strong>Visualization</strong> tab</li>
-                            <li>Start with default settings (m=1 to 60)</li>
-                            <li>Click <strong>Update Display</strong></li>
-                            <li>Observe concentric rings with colored points</li>
-                            <li>Green points = open channels (coprime)</li>
-                            <li>Red points = closed channels (not coprime)</li>
-                        </ol>
-                    </div>
-
-                    <div class="toolkit-card">
-                        <h4>Step 2: Navigation</h4>
-                        <ol>
-                            <li><strong>Pan:</strong> Click and drag on canvas</li>
-                            <li><strong>Zoom:</strong> Scroll wheel or pinch</li>
-                            <li><strong>Hover:</strong> Mouse over points for details</li>
-                            <li><strong>Click:</strong> Click points for full information</li>
-                            <li><strong>Reset View:</strong> Double-click canvas</li>
-                            <li><strong>Export:</strong> Use PNG or CSV buttons</li>
-                        </ol>
-                    </div>
-
-                    <div class="toolkit-card">
-                        <h4>Step 3: Preset Sequences</h4>
-                        <ol>
-                            <li>Try preset M_n = 30×2^n buttons</li>
-                            <li>n=0: View m=30 (single ring)</li>
-                            <li>n=1: View m=60</li>
-                            <li>Progress through n=2,3,4,5</li>
-                            <li>Click "All: 30 to 960" for full range</li>
-                            <li>Observe binary lifting structure</li>
-                        </ol>
-                    </div>
-
-                    <div class="toolkit-card">
-                        <h4>Step 4: Rotation Effects</h4>
-                        <ol>
-                            <li>Enable <strong>Animation</strong> checkbox</li>
-                            <li>Set <strong>Global Rotation</strong> to 1-5 deg/frame</li>
-                            <li>Try <strong>Individual Mod Rotation</strong></li>
-                            <li>Select <strong>Speed Gradient</strong>: Inner-to-Outer</li>
-                            <li>Adjust <strong>Gradient Strength</strong></li>
-                            <li>Observe spiraling patterns</li>
-                        </ol>
-                    </div>
-
-                    <div class="toolkit-card">
-                        <h4>Step 5: Coloring Schemes</h4>
-                        <ol>
-                            <li>Change <strong>Open Channel Color Mode</strong></li>
-                            <li>Try "By Smallest Prime Factor"</li>
-                            <li>Groups: 2→red, 3→orange, 5→yellow</li>
-                            <li>Try "By Residue" for rainbow patterns</li>
-                            <li>Adjust <strong>Saturation</strong> and <strong>Lightness</strong></li>
-                            <li>Compare different prime factorizations</li>
-                        </ol>
-                    </div>
-
-                    <div class="toolkit-card">
-                        <h4>Step 6: Residue Tracker</h4>
-                        <ol>
-                            <li>Enable <strong>Residue Tracker</strong></li>
-                            <li>Set <strong>Track Residue</strong> to 7</li>
-                            <li>Observe where r=7 appears across rings</li>
-                            <li>Note coprimality patterns</li>
-                            <li>Try tracking r=1, r=11, r=13</li>
-                            <li>Check statistics in tracker display</li>
-                        </ol>
-                    </div>
-
-                    <div class="toolkit-card">
-                        <h4>Step 7: Connection Lines</h4>
-                        <ol>
-                            <li>Enable <strong>Connect Residues</strong></li>
-                            <li>Try "r to r (Next Mod)" mode</li>
-                            <li>Shows how residues connect between rings</li>
-                            <li>Try "r to r+M×2^n" for binary lifting</li>
-                            <li>Visualizes the lifting theorem</li>
-                            <li>Adjust connection opacity</li>
-                        </ol>
-                    </div>
-
-                    <div class="toolkit-card">
-                        <h4>Step 8: Gap Analysis</h4>
-                        <ol>
-                            <li>Enable <strong>Gap Analysis</strong></li>
-                            <li>Set <strong>Gap Value</strong> to 2 (twin primes)</li>
-                            <li>Purple points = admissible pairs</li>
-                            <li>These satisfy: gcd(r,m)=1 and gcd(r+2,m)=1</li>
-                            <li>Try gaps: 4, 6, 30</li>
-                            <li>Compare admissibility counts</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <div class="intro-box">
-                    <h3>Key Insights to Discover</h3>
-                    <ul>
-                        <li><strong>Density Convergence:</strong> Watch the Open Channel Ratio approach 6/π² ≈ 0.6079 as you increase the modulus range</li>
-                        <li><strong>Binary Lifting:</strong> Each open channel at M_n spawns exactly two open channels at M_{n+1}</li>
-                        <li><strong>Farey Structure:</strong> Enable radial lines to see the spoke pattern of reduced fractions</li>
-                        <li><strong>Prime Factorization:</strong> Color by smallest/largest prime factor to reveal divisibility patterns</li>
-                        <li><strong>Gap Patterns:</strong> Admissible residues predict where prime pairs can occur</li>
-                    </ul>
-                </div>
-
-                <h2>Mathematical Context</h2>
-                <p>
-                    This framework connects several fundamental areas of number theory: Euler's totient function φ(m) counts the open channels for each modulus. The average value of φ(m)/m equals 6/π², which appears in the Riemann zeta function as 1/ζ(2). The Farey sequence F_m consists of all reduced fractions with denominator at most m, corresponding to the angular positions of open channels on the unit circle.
-                </p>
-                <p>
-                    The gap admissibility conditions determine which residue classes can contain prime pairs (p, p+g). The Hardy-Littlewood conjecture predicts the density of such pairs based on these modular constraints. By visualizing these patterns geometrically, we gain intuition about prime distribution and the deep structure of multiplicative number theory.
-                </p>
-
-                <div class="intro-box">
-                    <h3>Recommended Exploration Paths</h3>
-                    <p><strong>For Beginners:</strong> Start with Steps 1-3, explore presets, and observe the basic open/closed channel distinction.</p>
-                    <p><strong>For Intermediate Users:</strong> Complete Steps 4-6, experiment with coloring schemes, and track specific residues like prime numbers.</p>
-                    <p><strong>For Advanced Users:</strong> Master Steps 7-8, analyze connection patterns, study gap admissibility, and cross-reference with the Theory tab.</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="visualizationTab" class="tab-content">
-            <div class="main-content">
+        <div class="main-content">
                 <div class="control-panel">
                     <div class="control-section">
                         <h3>Modulus Configuration</h3>
@@ -767,7 +686,7 @@
                             </div>
                             <div class="control-group">
                                 <label>Number of Terms</label>
-                                <input type="number" id="sequenceTerms" value="10" min="1" max="50">
+                                <input type="number" id="sequenceTerms" value="5" min="1" max="50">
                             </div>
                         </div>
 
@@ -1190,15 +1109,6 @@
                         </div>
                         
                         <div class="control-group">
-                            <label>Legend Position</label>
-                            <select id="legendPosition">
-                                <option value="top">Top</option>
-                                <option value="bottom">Bottom</option>
-                                <option value="right">Right Side</option>
-                            </select>
-                        </div>
-                        
-                        <div class="control-group">
                             <label>Export Resolution</label>
                             <select id="exportResolution">
                                 <option value="1">Current (1000×800)</option>
@@ -1265,230 +1175,6 @@
                 </div>
             </div>
         </div>
-
-        <div id="bridgeTab" class="tab-content">
-            <div class="theory-section">
-                <h2>Euler-Maclaurin Bridge Analysis</h2>
-                
-                <div class="intro-box">
-                    <h3>The Discrete-Continuous Duality</h3>
-                    <p>
-                        The Euler-Maclaurin formula bridges discrete summation and continuous integration through Bernoulli number corrections. 
-                        This framework reveals an analogous structure in modular arithmetic: the <strong>Modular Pair Combinatorics</strong> 
-                        framework provides a discrete-modular continuation where residue transitions replace Bernoulli corrections.
-                    </p>
-                </div>
-
-                <h3>Core Correspondence</h3>
-                <div class="formula">
-                    <div class="formula-title">Classical Euler-Maclaurin</div>
-                    Σf(n) = ∫f(x)dx + [f(a)+f(b)]/2 + Σ[B₂ₙ/(2n)!](f^(2n-1)(b) - f^(2n-1)(a))
-                </div>
-
-                <div class="formula">
-                    <div class="formula-title">Modular Continuation Analogue</div>
-                    Σ_{r∈Φ(M)} f(r) = ∫_{Φ(M)} f(x)dx + C_mod(M_n)
-                </div>
-
-                <h3>Computational Algorithm</h3>
-                <div class="example-box">
-                    <p><strong>1. Count Open Channels per Level:</strong> For each modulus M_n in the sequence, compute φ(M_n), the Euler totient function.</p>
-                    <p><strong>2. Compute Transition Counts:</strong> T(M_n) measures the number of new open channels appearing when moving from M_{n-1} to M_n.</p>
-                    <p><strong>3. Calculate Correction Coefficients:</strong> 𝕋₂ₙ = ΔT/T(M_n) where ΔT = T(M_n) - T(M_{n-1})</p>
-                    <p><strong>4. Track Cumulative Corrections:</strong> Sum all correction terms to obtain the total modular curvature adjustment.</p>
-                    <p><strong>5. Compare to Limit:</strong> The density φ(M_n)/M_n converges to 6/π² ≈ 0.6079 as n→∞.</p>
-                </div>
-
-                <h3>Live Computation Results</h3>
-                <div class="stats-panel" style="max-width: 100%; margin-bottom: 20px;">
-                    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-                        <div class="stat-item">
-                            <div class="stat-label">Observed φ(m)/m Average</div>
-                            <div class="stat-value" id="bridgeAvgPhi">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Theoretical Limit (6/π²)</div>
-                            <div class="stat-value">0.607927</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Convergence Error</div>
-                            <div class="stat-value" id="bridgeError">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Modular Levels</div>
-                            <div class="stat-value" id="bridgeLevels">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Total Open Channels</div>
-                            <div class="stat-value" id="bridgeTransitions">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Sequence Type</div>
-                            <div class="stat-value" id="bridgeSequenceType">--</div>
-                        </div>
-                    </div>
-                </div>
-
-                <h3>Modular Correction Series 𝕋₂ₖ(Mₖ)</h3>
-                <div id="correctionSeriesDisplay" class="tracker-display">
-                    <div class="tracker-info" id="correctionSeriesContent">
-                        Generate visualization data to compute correction series...
-                    </div>
-                </div>
-
-                <h3>Convergence Visualization</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
-                    <div>
-                        <canvas id="convergenceChart" width="500" height="300" style="border: 1px solid var(--border-color);"></canvas>
-                        <p style="text-align: center; font-size: 11px; margin-top: 5px;">Density φ(m)/m Convergence to 6/π²</p>
-                    </div>
-                    <div>
-                        <canvas id="correctionChart" width="500" height="300" style="border: 1px solid var(--border-color);"></canvas>
-                        <p style="text-align: center; font-size: 11px; margin-top: 5px;">Correction Amplitudes 𝕋₂ₙ per Level</p>
-                    </div>
-                </div>
-
-                <h3>Transition Dynamics Table</h3>
-                <div id="transitionAnalysis" class="tracker-display">
-                    <div class="tracker-info" id="transitionContent">
-                        <div id="transitionTable"></div>
-                    </div>
-                </div>
-
-                <h3>Modular Curvature Coefficients</h3>
-                <div class="example-box">
-                    <p><strong>For M_n = 30 × 2^n:</strong> The modular correction amplitude follows:</p>
-                    <div class="formula" style="margin: 10px 0;">
-                        𝕋₂ₙ(M_n) = [T(M_n) - T(M_{n-1})]/T(M_n) = [3×2^n - 3×2^(n-1)]/(3×2^n) = 1/2
-                    </div>
-                    <p>This constant halving matches the decay structure of Bernoulli corrections in classical Euler-Maclaurin.</p>
-                    
-                    <p style="margin-top: 15px;"><strong>For Fibonacci Sequence:</strong> Correction amplitudes vary irregularly, reflecting the non-multiplicative growth of Fibonacci numbers.</p>
-                    
-                    <p style="margin-top: 15px;"><strong>For Prime Sequence:</strong> Corrections show oscillatory behavior tied to the irregular gaps between consecutive primes.</p>
-                </div>
-
-                <h3>Interpretation: Dual Curvature Structures</h3>
-                <div class="intro-box">
-                    <p><strong>Analytic Domain (Bernoulli):</strong> B₂ₙ encode oscillatory curvature corrections that exponentially decay, balancing discrete sums against continuous integrals.</p>
-                    <p><strong>Modular Domain (Residue Doubling):</strong> T(M_n) encode combinatorial transition corrections that geometrically decay (for doubling sequences), balancing discrete residue counts against continuous coprime densities.</p>
-                    <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
-                        <strong>Unified Principle:</strong> Both frameworks exhibit layered refinement through hierarchical correction patterns, 
-                        revealing that <em>modular arithmetic realizes Euler-Maclaurin structure in purely combinatorial form</em>.
-                    </p>
-                    <p style="margin-top: 15px;">
-                        <strong>Sequence-Dependent Behavior:</strong> The correction pattern 𝕋₂ₙ depends on the growth rate of the modulus sequence. 
-                        Regular doubling (M_n = 30×2^n) produces constant corrections. Fibonacci sequences produce golden-ratio scaled corrections. 
-                        Prime sequences produce irregular corrections reflecting prime gaps.
-                    </p>
-                </div>
-
-                <div class="info-box" style="margin-top: 20px; padding: 15px;">
-                    <strong>Note:</strong> Analysis updates automatically when visualization data is generated in the Visualization tab. 
-                    Different modulus sequences (Fibonacci, Primes, Powers of 2) produce distinct correction patterns.
-                </div>
-            </div>
-        </div>
-
-        <div id="theoryTab" class="tab-content">
-            <div class="theory-section">
-                <h2>Mathematical Theory</h2>
-                
-                <h3>1. Modular Sequence Definition</h3>
-                <p>We study the sequence of moduli M_n = 30 × 2^n where n ∈ ℤ≥0, generating: 30, 60, 120, 240, 480, 960, ...</p>
-
-                <h3>2. Open and Closed Channels</h3>
-                <div class="formula">
-                    <div class="formula-title">Channel Classification</div>
-                    Open Channel: gcd(r,m) = 1 (totative)<br>
-                    Closed Channel: gcd(r,m) > 1 (non-totative)
-                </div>
-
-                <h3>3. Euler's Totient Function</h3>
-                <div class="formula">
-                    <div class="formula-title">Totient Formula</div>
-                    φ(m) = m × ∏(1 - 1/p) for all primes p|m
-                </div>
-
-                <div class="formula">
-                    <div class="formula-title">Density Theorem</div>
-                    lim(M→∞) [1/M × Σ(m=1 to M) φ(m)/m] = 6/π² ≈ 0.6079
-                </div>
-
-                <p>This connects to the Riemann zeta function: ζ(2) = π²/6.</p>
-
-                <h3>4. Geometric Mapping</h3>
-                <div class="formula">
-                    <div class="formula-title">Point Coordinates</div>
-                    P(m,r) = (m·cos(2πr/m), m·sin(2πr/m))
-                </div>
-
-                <h3>5. Binary Lifting Theorem</h3>
-                <div class="formula">
-                    <div class="formula-title">Lifting Property</div>
-                    If gcd(r, M_n) = 1, then:<br>
-                    • gcd(r, M_(n+1)) = 1<br>
-                    • gcd(r + M_n, M_(n+1)) = 1
-                </div>
-
-                <h3>6. Connection Lines</h3>
-                <p><strong>r to r (Next Modulus):</strong> Connects residue r on ring m to residue r on ring m+step, showing how the same residue appears across scales.</p>
-                <p><strong>r to r+M (Binary Lift):</strong> Visualizes the binary lifting theorem by connecting r at M_n to both r and r+M_n at M_(n+1).</p>
-                <p><strong>r to r+M×2^n:</strong> Generalizes binary lifting to show the full tree structure of open channel propagation.</p>
-
-                <h3>7. Gap Admissibility</h3>
-                <div class="formula">
-                    <div class="formula-title">Admissibility Condition</div>
-                    r is g-admissible if:<br>
-                    gcd(r, M) = 1 AND gcd(r+g, M) = 1
-                </div>
-
-                <div class="formula">
-                    <div class="formula-title">Admissible Count</div>
-                    N_M(g) = ∏(p|M) (p - f_p)<br>
-                    where f_p = 1 if p|g, else f_p = 2
-                </div>
-            </div>
-        </div>
-
-        <div id="referencesTab" class="tab-content">
-            <div class="theory-section">
-                <h2>References</h2>
-
-                <h3>Foundational Number Theory</h3>
-                <div class="example-box">
-                    <p><strong>Hardy, G. H., & Wright, E. M.</strong> (2008). <em>An Introduction to the Theory of Numbers</em> (6th ed.). Oxford University Press.</p>
-                    <p><strong>Apostol, T. M.</strong> (1976). <em>Introduction to Analytic Number Theory</em>. Springer-Verlag.</p>
-                </div>
-
-                <h3>Prime Gaps and Twin Primes</h3>
-                <div class="example-box">
-                    <p><strong>Hardy, G. H., & Littlewood, J. E.</strong> (1923). "Some Problems of 'Partitio Numerorum' III." <em>Acta Mathematica</em>, 44(1), 1-70.</p>
-                    <p><strong>Zhang, Y.</strong> (2014). "Bounded gaps between primes." <em>Annals of Mathematics</em>, 179(3), 1121-1174.</p>
-                </div>
-
-                <h3>Riemann Hypothesis</h3>
-                <div class="example-box">
-                    <p><strong>Riemann, B.</strong> (1859). "Über die Anzahl der Primzahlen unter einer gegebenen Größe." <em>Monatsberichte der Berliner Akademie</em>.</p>
-                    <p><strong>Edwards, H. M.</strong> (1974). <em>Riemann's Zeta Function</em>. Academic Press.</p>
-                </div>
-
-                <h3>Euler Products</h3>
-                <div class="example-box">
-                    <p><strong>Euler, L.</strong> (1748). <em>Introductio in analysin infinitorum</em>.</p>
-                    <p><strong>Iwaniec, H., & Kowalski, E.</strong> (2004). <em>Analytic Number Theory</em>. American Mathematical Society.</p>
-                </div>
-
-                <h3>Online Resources</h3>
-                <div class="example-box">
-                    <p>• OEIS (Online Encyclopedia of Integer Sequences): oeis.org</p>
-                    <p>• Prime Pages by Chris Caldwell: primes.utm.edu</p>
-                    <p>• MathWorld - Wolfram: mathworld.wolfram.com</p>
-                    <p>• arXiv Number Theory: arxiv.org/list/math.NT/recent</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script>
         const canvas = document.getElementById('mainCanvas');
@@ -3050,22 +2736,8 @@
         });
 
         function updateBridgeAnalysis() {
-            if (pointsData.length === 0) {
-                return; // Silent return if no data
-            }
-
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
-            const mode = document.getElementById('modSelectionMode').value;
-            
-            // Update sequence type display
-            let seqType = 'Custom';
-            if (mode === 'range') seqType = 'Linear Range';
-            else if (mode === 'fibonacci') seqType = 'Fibonacci';
-            else if (mode === 'primes') seqType = 'Prime Moduli';
-            else if (mode === 'powers-of-2') seqType = 'Powers of 2';
-            else if (mode === 'powers-of-3') seqType = 'Powers of 3';
-            else if (mode === 'M30-sequence') seqType = 'M₃₀ = 30×2ⁿ';
-            document.getElementById('bridgeSequenceType').textContent = seqType;
+            // Function disabled - bridge analysis tab removed
+            return;
             
             // Build correction series table
             let correctionHTML = '<table style="width: 100%; font-size: 11px; border-collapse: collapse;">';
@@ -3401,7 +3073,6 @@
         function exportImage() {
             const includeLegend = document.getElementById('includeLegend').checked;
             const exportTitle = document.getElementById('exportTitle').value;
-            const legendPosition = document.getElementById('legendPosition').value;
             const resolution = parseFloat(document.getElementById('exportResolution').value);
             
             // Create temporary canvas at higher resolution
@@ -3412,18 +3083,12 @@
             let exportWidth = baseWidth * resolution;
             let exportHeight = baseHeight * resolution;
             
-            // Calculate legend dimensions
-            let legendHeight = 0;
+            // Calculate legend dimensions - always on right
             let legendWidth = 0;
             
             if (includeLegend) {
-                if (legendPosition === 'top' || legendPosition === 'bottom') {
-                    legendHeight = 250 * resolution;
-                    exportHeight += legendHeight;
-                } else {
-                    legendWidth = 400 * resolution;
-                    exportWidth += legendWidth;
-                }
+                legendWidth = 400 * resolution;
+                exportWidth += legendWidth;
             }
             
             tempCanvas.width = exportWidth;
@@ -3436,32 +3101,15 @@
             tempCtx.fillStyle = bgColor;
             tempCtx.fillRect(0, 0, exportWidth, exportHeight);
             
-            // Calculate canvas position based on legend
-            let canvasX = 0;
-            let canvasY = 0;
-            
-            if (legendPosition === 'top') {
-                canvasY = legendHeight;
-            } else if (legendPosition === 'right') {
-                canvasX = 0;
-            }
-            
-            // Draw main visualization scaled up
+            // Draw main visualization scaled up on the left
             tempCtx.save();
             tempCtx.scale(resolution, resolution);
-            
-            // Temporarily draw to the temp context
-            const originalCtx = ctx;
-            const originalCanvas = canvas;
-            
-            // Create a scaled version of the current canvas
-            tempCtx.drawImage(canvas, canvasX / resolution, canvasY / resolution);
-            
+            tempCtx.drawImage(canvas, 0, 0);
             tempCtx.restore();
             
-            // Draw legend if enabled
+            // Draw legend if enabled - always on right, title always top center
             if (includeLegend) {
-                drawLegend(tempCtx, exportTitle, legendPosition, legendHeight, legendWidth, exportWidth, exportHeight, resolution, textColor, bgColor);
+                drawLegend(tempCtx, exportTitle, legendWidth, exportWidth, exportHeight, resolution, textColor, bgColor);
             }
             
             // Export
@@ -3472,7 +3120,7 @@
             link.click();
         }
 
-        function drawLegend(ctx, title, position, legendHeight, legendWidth, totalWidth, totalHeight, resolution, textColor, bgColor) {
+        function drawLegend(ctx, title, legendWidth, totalWidth, totalHeight, resolution, textColor, bgColor) {
             const moduli = getSelectedModuli();
             const mode = document.getElementById('modSelectionMode').value;
             const displayMode = document.getElementById('displayMode').value;
@@ -3487,33 +3135,23 @@
             const enableConnections = document.getElementById('enableConnections').checked;
             const connectionMode = document.getElementById('connectionMode').value;
             
-            ctx.fillStyle = textColor;
             const fontSize = 14 * resolution;
             const lineHeight = 20 * resolution;
             const padding = 20 * resolution;
             
-            let startX, startY, maxWidth;
+            // Legend is always on the right
+            const startX = totalWidth - legendWidth + padding;
+            const maxWidth = legendWidth - 2 * padding;
             
-            if (position === 'top') {
-                startX = padding;
-                startY = padding;
-                maxWidth = totalWidth - 2 * padding;
-            } else if (position === 'bottom') {
-                startX = padding;
-                startY = totalHeight - legendHeight + padding;
-                maxWidth = totalWidth - 2 * padding;
-            } else {
-                startX = totalWidth - legendWidth + padding;
-                startY = padding;
-                maxWidth = legendWidth - 2 * padding;
-            }
+            // Title at top center of entire image
+            ctx.fillStyle = textColor;
+            ctx.font = `bold ${fontSize * 1.8}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(title, totalWidth / 2, padding + fontSize * 1.5);
             
-            let y = startY;
-            
-            // Title
-            ctx.font = `bold ${fontSize * 1.5}px Arial`;
-            ctx.fillText(title, startX, y);
-            y += lineHeight * 1.8;
+            // Start legend content
+            let y = padding * 3;
+            ctx.textAlign = 'left';
             
             // Draw separator
             ctx.strokeStyle = textColor;
@@ -3523,9 +3161,9 @@
             ctx.lineTo(startX + maxWidth * 0.8, y);
             ctx.stroke();
             y += lineHeight;
-            
             // Parameters
             ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = textColor;
             
             // Modulus configuration
             let moduliText = '';
@@ -3622,6 +3260,22 @@
             ctx.fillText('By Wessen Getachew', startX, y);
         }
 
+        function resetSettings() {
+            document.getElementById('modMin').value = '1';
+            document.getElementById('modMax').value = '60';
+            document.getElementById('modStep').value = '1';
+            document.getElementById('globalSpeed').value = '0';
+            document.getElementById('modRotSpeed').value = '0';
+            document.getElementById('enableTracker').checked = false;
+            document.getElementById('enableConnections').checked = false;
+            document.getElementById('bgColor').value = '#000000';
+            globalRotation = 0;
+            modRotations = {};
+            transform = { x: 0, y: 0, scale: 1 };
+            stopAnimation();
+            updateVisualization();
+        }
+
         function exportCSV() {
             let csv = 'Modulus,Residue,GCD,Channel,Angle_Rad,Phi_m,Admissible\n';
             pointsData.forEach(p => {
@@ -3637,20 +3291,29 @@
             URL.revokeObjectURL(url);
         }
 
-        function resetSettings() {
-            document.getElementById('modMin').value = '1';
-            document.getElementById('modMax').value = '60';
-            document.getElementById('modStep').value = '1';
-            document.getElementById('globalSpeed').value = '0';
-            document.getElementById('modRotSpeed').value = '0';
-            document.getElementById('enableTracker').checked = false;
-            document.getElementById('enableConnections').checked = false;
-            document.getElementById('bgColor').value = '#000000';
-            globalRotation = 0;
-            modRotations = {};
+        function centerAndFit() {
+            // Reset transform
             transform = { x: 0, y: 0, scale: 1 };
-            stopAnimation();
-            updateVisualization();
+            
+            // Auto-fit to canvas based on the actual moduli range
+            if (pointsData.length > 0) {
+                const moduli = [...new Set(pointsData.map(p => p.m))];
+                const maxMod = Math.max(...moduli);
+                const minMod = Math.min(...moduli);
+                
+                const canvasSize = Math.min(canvas.width, canvas.height);
+                const maxRadius = canvasSize * 0.4;
+                const dataRadius = maxMod * (maxRadius / maxMod);
+                
+                // Calculate optimal scale to fit with some padding
+                const padding = 0.9; // 90% of canvas size
+                transform.scale = (canvasSize / 2 * padding) / (maxMod * (maxRadius / maxMod));
+                
+                // Ensure minimum scale
+                transform.scale = Math.max(0.5, Math.min(2, transform.scale));
+            }
+            
+            drawVisualization();
         }
 
         function switchTab(tab) {
