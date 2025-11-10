@@ -1575,7 +1575,11 @@
         }
 
         function getCacheKey() {
-            return `modular_rings_${document.getElementById('modMin').value}_${document.getElementById('modMax').value}_${document.getElementById('modStep').value}_${document.getElementById('angularMapping').value}`;
+            const mode = document.getElementById('modSelectionMode').value;
+            const moduli = getSelectedModuli();
+            const moduliHash = moduli.join('_');
+            const angularMapping = document.getElementById('angularMapping').value;
+            return `modular_rings_${mode}_${moduliHash}_${angularMapping}`;
         }
 
         function saveToCache() {
@@ -2214,7 +2218,7 @@
             } else if (mode === 'fibonacci') {
                 const maxVal = parseInt(document.getElementById('sequenceMax').value);
                 let a = 1, b = 1;
-                moduli.push(a);
+                if (a <= maxVal) moduli.push(a);
                 while (b <= maxVal) {
                     moduli.push(b);
                     let temp = a + b;
@@ -2231,17 +2235,20 @@
             } else if (mode === 'powers-of-2') {
                 const numTerms = parseInt(document.getElementById('sequenceTerms').value);
                 for (let i = 0; i < numTerms; i++) {
-                    moduli.push(Math.pow(2, i));
+                    const val = Math.pow(2, i);
+                    if (val >= 1) moduli.push(val);
                 }
             } else if (mode === 'powers-of-3') {
                 const numTerms = parseInt(document.getElementById('sequenceTerms').value);
                 for (let i = 0; i < numTerms; i++) {
-                    moduli.push(Math.pow(3, i));
+                    const val = Math.pow(3, i);
+                    if (val >= 1) moduli.push(val);
                 }
             } else if (mode === 'M30-sequence') {
                 const numTerms = parseInt(document.getElementById('sequenceTerms').value);
                 for (let n = 0; n < numTerms; n++) {
-                    moduli.push(30 * Math.pow(2, n));
+                    const val = 30 * Math.pow(2, n);
+                    moduli.push(val);
                 }
             } else if (mode === 'custom') {
                 const customInput = document.getElementById('customModuli').value;
