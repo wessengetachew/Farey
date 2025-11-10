@@ -699,19 +699,63 @@
                 <div class="control-panel">
                     <div class="control-section">
                         <h3>Modulus Configuration</h3>
-                        <div class="control-row">
+                        
+                        <div class="control-group">
+                            <label>Modulus Selection Mode</label>
+                            <select id="modSelectionMode">
+                                <option value="range">Range (Start to End)</option>
+                                <option value="fibonacci">Fibonacci Sequence</option>
+                                <option value="primes">Prime Moduli Only</option>
+                                <option value="powers-of-2">Powers of 2</option>
+                                <option value="powers-of-3">Powers of 3</option>
+                                <option value="M30-sequence">M_n = 30×2^n</option>
+                                <option value="custom">Custom List</option>
+                            </select>
+                        </div>
+
+                        <div id="rangeInputs">
+                            <div class="control-row">
+                                <div class="control-group">
+                                    <label>Start Modulus</label>
+                                    <input type="number" id="modMin" value="1" min="1" max="10000">
+                                </div>
+                                <div class="control-group">
+                                    <label>End Modulus</label>
+                                    <input type="number" id="modMax" value="60" min="1" max="10000">
+                                </div>
+                                <div class="control-group">
+                                    <label>Step</label>
+                                    <input type="number" id="modStep" value="1" min="1" max="100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="sequenceInputs" style="display: none;">
                             <div class="control-group">
-                                <label>Start Modulus</label>
-                                <input type="number" id="modMin" value="1" min="1" max="10000">
+                                <label>Maximum Value</label>
+                                <input type="number" id="sequenceMax" value="100" min="1" max="10000">
                             </div>
                             <div class="control-group">
-                                <label>End Modulus</label>
-                                <input type="number" id="modMax" value="60" min="1" max="10000">
+                                <label>Number of Terms</label>
+                                <input type="number" id="sequenceTerms" value="10" min="1" max="50">
                             </div>
+                        </div>
+
+                        <div id="customInputs" style="display: none;">
                             <div class="control-group">
-                                <label>Step</label>
-                                <input type="number" id="modStep" value="1" min="1" max="100">
+                                <label>Custom Moduli (comma-separated)</label>
+                                <input type="text" id="customModuli" value="1,2,3,5,8,13,21,34" placeholder="e.g., 1,6,10,15,21,28">
                             </div>
+                            <div class="info-box">
+                                Enter any sequence of moduli. If 1 is included, the unit circle will be shown.
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="includeUnitCircle" checked>
+                                Always Include Unit Circle (m=1)
+                            </label>
                         </div>
                         
                         <div class="preset-grid">
@@ -725,7 +769,9 @@
                         <button onclick="setPresetRange()" style="width: 100%; margin-top: 8px;">All: 30 to 960</button>
                         
                         <div class="info-box" style="margin-top: 10px;">
-                            <strong>Performance Options:</strong><br>
+                            <div id="selectedModuliDisplay" style="font-size: 11px;">
+                                <strong>Selected Moduli:</strong> <span id="moduliList">1 to 60 (step 1)</span>
+                            </div>
                             <button onclick="clearCache()" style="width: 100%; margin-top: 5px; padding: 8px; font-size: 11px;">Clear Cache</button>
                         </div>
                     </div>
@@ -792,6 +838,20 @@
                         <h3>Rotation Controls</h3>
                         
                         <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="invertModOrder">
+                                Invert Modulus Order (Outer↔Inner)
+                            </label>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="autoRotate" checked>
+                                Auto-Rotate on Slider Change
+                            </label>
+                        </div>
+                        
+                        <div class="control-group">
                             <label>Global Rotation <span class="range-display" id="globalSpeedDisplay">0</span> deg/frame</label>
                             <div class="dual-input">
                                 <input type="range" id="globalSpeed" min="0" max="360" step="0.5" value="0">
@@ -825,8 +885,8 @@
                         </div>
                         
                         <div class="button-group">
-                            <button id="playButton" onclick="startAnimation()" style="background: #00ff00; color: #000000;">Play</button>
-                            <button id="pauseButton" onclick="stopAnimation()" style="background: #ff0000; color: #ffffff;">Pause</button>
+                            <button id="playButton" onclick="toggleAnimation()" style="background: #00ff00; color: #000000;">Play</button>
+                            <button onclick="resetRotations()" style="background: var(--bg-secondary); color: var(--text-primary);">Reset</button>
                         </div>
                         
                         <div class="info-box" id="animationStatus">
@@ -1157,49 +1217,17 @@
                     Σ_{r∈Φ(M)} f(r) = ∫_{Φ(M)} f(x)dx + C_mod(M_n)
                 </div>
 
-                <h3>Live Correction Series</h3>
-                <div id="correctionSeriesDisplay" class="tracker-display">
-                    <h4>Modular Bernoulli Analogues 𝕋₂ₖ(Mₖ)</h4>
-                    <div class="tracker-info" id="correctionSeriesContent">
-                        Click "Update Display" in Visualization tab to compute...
-                    </div>
-                </div>
-
-                <h3>Convergence Analysis</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
-                    <canvas id="convergenceChart" width="500" height="300" style="border: 1px solid var(--border-color);"></canvas>
-                    <canvas id="correctionChart" width="500" height="300" style="border: 1px solid var(--border-color);"></canvas>
-                </div>
-
-                <h3>Modular Curvature Coefficients</h3>
+                <h3>Computational Algorithm</h3>
                 <div class="example-box">
-                    <p><strong>Theoretical Result:</strong> For M_n = 30 × 2^n, the modular correction amplitude follows:</p>
-                    <div class="formula" style="margin: 10px 0;">
-                        𝕋₂ₙ(M_n) ∝ [T(M_n) - T(M_{n-1})]/T(M_n) = [3×2^n - 3×2^(n-1)]/(3×2^n) = 1/2
-                    </div>
-                    <p>This constant halving matches the decay structure of Bernoulli corrections in classical Euler-Maclaurin.</p>
+                    <p><strong>1. Count Open Channels per Level:</strong> For each modulus M_n in the sequence, compute φ(M_n), the Euler totient function.</p>
+                    <p><strong>2. Compute Transition Counts:</strong> T(M_n) measures the number of new open channels appearing when moving from M_{n-1} to M_n.</p>
+                    <p><strong>3. Calculate Correction Coefficients:</strong> 𝕋₂ₙ = ΔT/T(M_n) where ΔT = T(M_n) - T(M_{n-1})</p>
+                    <p><strong>4. Track Cumulative Corrections:</strong> Sum all correction terms to obtain the total modular curvature adjustment.</p>
+                    <p><strong>5. Compare to Limit:</strong> The density φ(M_n)/M_n converges to 6/π² ≈ 0.6079 as n→∞.</p>
                 </div>
 
-                <h3>Residue Transition Dynamics</h3>
-                <div id="transitionAnalysis" class="tracker-display">
-                    <h4>Doubling Transition Law: T(M_n) = 3 × 2^n</h4>
-                    <div class="tracker-info" id="transitionContent">
-                        <div id="transitionTable"></div>
-                    </div>
-                </div>
-
-                <h3>Interpretation: Dual Curvature Structures</h3>
-                <div class="intro-box">
-                    <p><strong>Analytic Domain (Bernoulli):</strong> B₂ₙ encode oscillatory curvature corrections that exponentially decay, balancing discrete sums against continuous integrals.</p>
-                    <p><strong>Modular Domain (Residue Doubling):</strong> T(M_n) encode combinatorial transition corrections that geometrically decay (halving at each level), balancing discrete residue counts against continuous coprime densities.</p>
-                    <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
-                        <strong>Unified Principle:</strong> Both frameworks exhibit layered refinement through hierarchical correction patterns, 
-                        revealing that <em>modular arithmetic realizes Euler-Maclaurin structure in purely combinatorial form</em>.
-                    </p>
-                </div>
-
-                <h3>Key Observations from Visualization Data</h3>
-                <div class="stats-panel" style="max-width: 100%;">
+                <h3>Live Computation Results</h3>
+                <div class="stats-panel" style="max-width: 100%; margin-bottom: 20px;">
                     <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
                         <div class="stat-item">
                             <div class="stat-label">Observed φ(m)/m Average</div>
@@ -1214,23 +1242,78 @@
                             <div class="stat-value" id="bridgeError">--</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">Modular Levels (n)</div>
+                            <div class="stat-label">Modular Levels</div>
                             <div class="stat-value" id="bridgeLevels">--</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">Total Transitions</div>
+                            <div class="stat-label">Total Open Channels</div>
                             <div class="stat-value" id="bridgeTransitions">--</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">Doubling Ratio</div>
-                            <div class="stat-value" id="bridgeRatio">2.000</div>
+                            <div class="stat-label">Sequence Type</div>
+                            <div class="stat-value" id="bridgeSequenceType">--</div>
                         </div>
                     </div>
                 </div>
 
-                <button onclick="updateBridgeAnalysis()" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 14px;">
-                    Refresh Bridge Analysis
-                </button>
+                <h3>Modular Correction Series 𝕋₂ₖ(Mₖ)</h3>
+                <div id="correctionSeriesDisplay" class="tracker-display">
+                    <div class="tracker-info" id="correctionSeriesContent">
+                        Generate visualization data to compute correction series...
+                    </div>
+                </div>
+
+                <h3>Convergence Visualization</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                    <div>
+                        <canvas id="convergenceChart" width="500" height="300" style="border: 1px solid var(--border-color);"></canvas>
+                        <p style="text-align: center; font-size: 11px; margin-top: 5px;">Density φ(m)/m Convergence to 6/π²</p>
+                    </div>
+                    <div>
+                        <canvas id="correctionChart" width="500" height="300" style="border: 1px solid var(--border-color);"></canvas>
+                        <p style="text-align: center; font-size: 11px; margin-top: 5px;">Correction Amplitudes 𝕋₂ₙ per Level</p>
+                    </div>
+                </div>
+
+                <h3>Transition Dynamics Table</h3>
+                <div id="transitionAnalysis" class="tracker-display">
+                    <div class="tracker-info" id="transitionContent">
+                        <div id="transitionTable"></div>
+                    </div>
+                </div>
+
+                <h3>Modular Curvature Coefficients</h3>
+                <div class="example-box">
+                    <p><strong>For M_n = 30 × 2^n:</strong> The modular correction amplitude follows:</p>
+                    <div class="formula" style="margin: 10px 0;">
+                        𝕋₂ₙ(M_n) = [T(M_n) - T(M_{n-1})]/T(M_n) = [3×2^n - 3×2^(n-1)]/(3×2^n) = 1/2
+                    </div>
+                    <p>This constant halving matches the decay structure of Bernoulli corrections in classical Euler-Maclaurin.</p>
+                    
+                    <p style="margin-top: 15px;"><strong>For Fibonacci Sequence:</strong> Correction amplitudes vary irregularly, reflecting the non-multiplicative growth of Fibonacci numbers.</p>
+                    
+                    <p style="margin-top: 15px;"><strong>For Prime Sequence:</strong> Corrections show oscillatory behavior tied to the irregular gaps between consecutive primes.</p>
+                </div>
+
+                <h3>Interpretation: Dual Curvature Structures</h3>
+                <div class="intro-box">
+                    <p><strong>Analytic Domain (Bernoulli):</strong> B₂ₙ encode oscillatory curvature corrections that exponentially decay, balancing discrete sums against continuous integrals.</p>
+                    <p><strong>Modular Domain (Residue Doubling):</strong> T(M_n) encode combinatorial transition corrections that geometrically decay (for doubling sequences), balancing discrete residue counts against continuous coprime densities.</p>
+                    <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                        <strong>Unified Principle:</strong> Both frameworks exhibit layered refinement through hierarchical correction patterns, 
+                        revealing that <em>modular arithmetic realizes Euler-Maclaurin structure in purely combinatorial form</em>.
+                    </p>
+                    <p style="margin-top: 15px;">
+                        <strong>Sequence-Dependent Behavior:</strong> The correction pattern 𝕋₂ₙ depends on the growth rate of the modulus sequence. 
+                        Regular doubling (M_n = 30×2^n) produces constant corrections. Fibonacci sequences produce golden-ratio scaled corrections. 
+                        Prime sequences produce irregular corrections reflecting prime gaps.
+                    </p>
+                </div>
+
+                <div class="info-box" style="margin-top: 20px; padding: 15px;">
+                    <strong>Note:</strong> Analysis updates automatically when visualization data is generated in the Visualization tab. 
+                    Different modulus sequences (Fibonacci, Primes, Powers of 2) produce distinct correction patterns.
+                </div>
             </div>
         </div>
 
@@ -1784,6 +1867,26 @@
             sameModGapGroup.style.display = pattern === 'by-gap' ? 'block' : 'none';
         });
 
+        // Show/hide modulus configuration inputs based on mode
+        document.getElementById('modSelectionMode').addEventListener('change', function() {
+            const mode = this.value;
+            const rangeInputs = document.getElementById('rangeInputs');
+            const sequenceInputs = document.getElementById('sequenceInputs');
+            const customInputs = document.getElementById('customInputs');
+            
+            rangeInputs.style.display = 'none';
+            sequenceInputs.style.display = 'none';
+            customInputs.style.display = 'none';
+            
+            if (mode === 'range') {
+                rangeInputs.style.display = 'block';
+            } else if (mode === 'custom') {
+                customInputs.style.display = 'block';
+            } else if (mode === 'fibonacci' || mode === 'primes' || mode === 'powers-of-2' || mode === 'powers-of-3') {
+                sequenceInputs.style.display = 'block';
+            }
+        });
+
         const gapColorScheme = [
             '#ff0080', // Hot pink for gap 2
             '#00ffff', // Cyan for gap 4
@@ -1875,20 +1978,49 @@
         document.getElementById('gapValues').addEventListener('input', updateGapColorPickers);
         document.getElementById('enableGapAnalysis').addEventListener('change', updateGapColorPickers);
 
-        // Auto-start animation when rotation values change
+        // Auto-start animation when rotation values change (if auto-rotate enabled)
         function autoStartAnimation() {
+            const autoRotate = document.getElementById('autoRotate').checked;
             const globalSpeed = parseFloat(document.getElementById('globalSpeed').value);
             const modRotSpeed = parseFloat(document.getElementById('modRotSpeed').value);
             
-            if ((globalSpeed > 0 || modRotSpeed > 0) && !animationId) {
-                startAnimation();
+            if (autoRotate && (globalSpeed > 0 || modRotSpeed > 0)) {
+                if (!animationId) {
+                    startAnimation();
+                }
             }
+        }
+
+        function toggleAnimation() {
+            if (animationId) {
+                stopAnimation();
+                document.getElementById('playButton').textContent = 'Play';
+                document.getElementById('playButton').style.background = '#00ff00';
+                document.getElementById('playButton').style.color = '#000000';
+            } else {
+                startAnimation();
+                document.getElementById('playButton').textContent = 'Pause';
+                document.getElementById('playButton').style.background = '#ff0000';
+                document.getElementById('playButton').style.color = '#ffffff';
+            }
+        }
+
+        function resetRotations() {
+            globalRotation = 0;
+            Object.keys(modRotations).forEach(m => {
+                modRotations[m] = 0;
+            });
+            drawVisualization();
         }
 
         document.getElementById('globalSpeed').addEventListener('input', autoStartAnimation);
         document.getElementById('globalSpeedNum').addEventListener('input', autoStartAnimation);
         document.getElementById('modRotSpeed').addEventListener('input', autoStartAnimation);
         document.getElementById('modRotSpeedNum').addEventListener('input', autoStartAnimation);
+
+        document.getElementById('invertModOrder').addEventListener('change', () => {
+            drawVisualization();
+        });
 
         function updateRangeDisplays() {
             document.getElementById('globalSpeedDisplay').textContent = document.getElementById('globalSpeed').value;
@@ -1912,12 +2044,17 @@
             // Check if we can load from cache first
             if (loadFromCache()) {
                 progressiveRender();
+                updateModuliDisplay();
                 return;
             }
 
-            const modMin = parseInt(document.getElementById('modMin').value);
-            const modMax = parseInt(document.getElementById('modMax').value);
-            const modStep = parseInt(document.getElementById('modStep').value);
+            const moduli = getSelectedModuli();
+            
+            if (moduli.length === 0) {
+                alert('No valid moduli selected. Please check your input.');
+                return;
+            }
+
             const enableGap = document.getElementById('enableGapAnalysis').checked;
             const gapInput = document.getElementById('gapValues').value;
             const gaps = gapInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g > 0);
@@ -1925,9 +2062,11 @@
 
             // Calculate total expected points
             let totalExpectedPoints = 0;
-            for (let m = modMin; m <= modMax; m += modStep) {
+            moduli.forEach(m => {
                 totalExpectedPoints += m;
-            }
+            });
+
+            updateModuliDisplay();
 
             // Use progressive computation for large datasets
             if (totalExpectedPoints > 10000) {
@@ -1935,7 +2074,7 @@
                 document.getElementById('animationStatus').textContent = 'Computing: Starting...';
                 document.getElementById('animationStatus').style.background = '#1a4d4d';
                 
-                computePointsProgressive(modMin, modMax, modStep, enableGap ? gaps : [], angularMapping)
+                computePointsProgressiveFromList(moduli, enableGap ? gaps : [], angularMapping)
                     .then(() => {
                         isComputing = false;
                         hideProgressDisplay();
@@ -1952,12 +2091,6 @@
             let totalClosed = 0;
             let sumPhiOverM = 0;
             let countModuli = 0;
-            
-            // Generate list of moduli - use all moduli in range
-            let moduli = [];
-            for (let m = modMin; m <= modMax; m += modStep) {
-                moduli.push(m);
-            }
 
             for (let m of moduli) {
                 if (!modRotations[m]) modRotations[m] = 0;
@@ -1973,7 +2106,6 @@
                     if (isOpen) totalOpen++;
                     else totalClosed++;
 
-                    // Check admissibility for ALL gaps
                     let admissibleGaps = [];
                     if (enableGap && isOpen) {
                         gaps.forEach(gap => {
@@ -1984,7 +2116,6 @@
                         });
                     }
 
-                    // Calculate angle based on mapping mode
                     let angle;
                     switch(angularMapping) {
                         case 'standard':
@@ -2011,7 +2142,7 @@
                         angle: angle,
                         phiM: phiM,
                         isAdmissible: admissibleGaps.length > 0,
-                        admissibleGaps: admissibleGaps // Store which gaps are admissible
+                        admissibleGaps: admissibleGaps
                     });
                 }
             }
@@ -2027,6 +2158,175 @@
 
             saveToCache();
             updateTrackerInfo();
+        }
+
+        function getSelectedModuli() {
+            const mode = document.getElementById('modSelectionMode').value;
+            const includeUnit = document.getElementById('includeUnitCircle').checked;
+            let moduli = [];
+
+            if (mode === 'range') {
+                const modMin = parseInt(document.getElementById('modMin').value);
+                const modMax = parseInt(document.getElementById('modMax').value);
+                const modStep = parseInt(document.getElementById('modStep').value);
+                
+                for (let m = modMin; m <= modMax; m += modStep) {
+                    moduli.push(m);
+                }
+            } else if (mode === 'fibonacci') {
+                const maxVal = parseInt(document.getElementById('sequenceMax').value);
+                let a = 1, b = 1;
+                moduli.push(a);
+                while (b <= maxVal) {
+                    moduli.push(b);
+                    let temp = a + b;
+                    a = b;
+                    b = temp;
+                }
+            } else if (mode === 'primes') {
+                const maxVal = parseInt(document.getElementById('sequenceMax').value);
+                for (let n = 2; n <= maxVal; n++) {
+                    if (isPrime(n)) {
+                        moduli.push(n);
+                    }
+                }
+            } else if (mode === 'powers-of-2') {
+                const numTerms = parseInt(document.getElementById('sequenceTerms').value);
+                for (let i = 0; i < numTerms; i++) {
+                    moduli.push(Math.pow(2, i));
+                }
+            } else if (mode === 'powers-of-3') {
+                const numTerms = parseInt(document.getElementById('sequenceTerms').value);
+                for (let i = 0; i < numTerms; i++) {
+                    moduli.push(Math.pow(3, i));
+                }
+            } else if (mode === 'M30-sequence') {
+                const numTerms = parseInt(document.getElementById('sequenceTerms').value);
+                for (let n = 0; n < numTerms; n++) {
+                    moduli.push(30 * Math.pow(2, n));
+                }
+            } else if (mode === 'custom') {
+                const customInput = document.getElementById('customModuli').value;
+                moduli = customInput.split(',')
+                    .map(m => parseInt(m.trim()))
+                    .filter(m => !isNaN(m) && m > 0);
+            }
+
+            // Add unit circle if requested and not already present
+            if (includeUnit && !moduli.includes(1)) {
+                moduli.unshift(1);
+            }
+
+            // Remove duplicates and sort
+            moduli = [...new Set(moduli)].sort((a, b) => a - b);
+
+            return moduli;
+        }
+
+        async function computePointsProgressiveFromList(moduli, gaps, angularMapping) {
+            pointsData = [];
+            let totalOpen = 0;
+            let totalClosed = 0;
+            let sumPhiOverM = 0;
+            let countModuli = 0;
+            let processedCount = 0;
+
+            for (let m of moduli) {
+                if (!modRotations[m]) modRotations[m] = 0;
+                
+                const phiM = phi(m);
+                sumPhiOverM += phiM / m;
+                countModuli++;
+
+                for (let r = 0; r < m; r++) {
+                    const g = gcd(r, m);
+                    const isOpen = g === 1;
+                    
+                    if (isOpen) totalOpen++;
+                    else totalClosed++;
+
+                    let admissibleGaps = [];
+                    if (isOpen && gaps.length > 0) {
+                        gaps.forEach(gap => {
+                            const rPlusG = (r + gap) % m;
+                            if (gcd(rPlusG, m) === 1) {
+                                admissibleGaps.push(gap);
+                            }
+                        });
+                    }
+
+                    let angle;
+                    switch(angularMapping) {
+                        case 'standard':
+                            angle = (2 * Math.PI * r) / m;
+                            break;
+                        case 'half':
+                            angle = (Math.PI * r) / m;
+                            break;
+                        case 'inverted':
+                            angle = (2 * Math.PI * (m - r)) / m;
+                            break;
+                        case 'negative':
+                            angle = -(2 * Math.PI * r) / m;
+                            break;
+                        default:
+                            angle = (2 * Math.PI * r) / m;
+                    }
+
+                    pointsData.push({
+                        m: m,
+                        r: r,
+                        gcd: g,
+                        isOpen: isOpen,
+                        angle: angle,
+                        phiM: phiM,
+                        isAdmissible: admissibleGaps.length > 0,
+                        admissibleGaps: admissibleGaps
+                    });
+
+                    processedCount++;
+
+                    if (processedCount % COMPUTE_CHUNK_SIZE === 0) {
+                        updateProgressDisplay(processedCount, m, moduli[moduli.length - 1]);
+                        if (processedCount > 20000) {
+                            await new Promise(resolve => setTimeout(resolve, 0));
+                        }
+                    }
+                }
+            }
+
+            const avgPhiOverM = countModuli > 0 ? sumPhiOverM / countModuli : 0;
+            const openRatio = (totalOpen + totalClosed) > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
+
+            document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
+            document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
+            document.getElementById('statClosed').textContent = totalClosed.toLocaleString();
+            document.getElementById('statRatio').textContent = openRatio.toFixed(4);
+            document.getElementById('statAvgPhi').textContent = avgPhiOverM.toFixed(4);
+
+            return { totalOpen, totalClosed, avgPhiOverM, countModuli };
+        }
+
+        function updateModuliDisplay() {
+            const moduli = getSelectedModuli();
+            const mode = document.getElementById('modSelectionMode').value;
+            let displayText = '';
+
+            if (moduli.length === 0) {
+                displayText = 'None selected';
+            } else if (moduli.length <= 10) {
+                displayText = moduli.join(', ');
+            } else {
+                displayText = `${moduli[0]}, ${moduli[1]}, ..., ${moduli[moduli.length-1]} (${moduli.length} total)`;
+            }
+
+            if (mode === 'fibonacci') displayText = 'Fibonacci: ' + displayText;
+            else if (mode === 'primes') displayText = 'Primes: ' + displayText;
+            else if (mode === 'powers-of-2') displayText = 'Powers of 2: ' + displayText;
+            else if (mode === 'powers-of-3') displayText = 'Powers of 3: ' + displayText;
+            else if (mode === 'M30-sequence') displayText = 'M₃₀ = 30×2ⁿ: ' + displayText;
+
+            document.getElementById('moduliList').textContent = displayText;
         }
 
         function updateTrackerInfo() {
@@ -2108,12 +2408,22 @@
 
             // Function to get proper radius for each modulus
             function getRadius(m) {
+                const invertOrder = document.getElementById('invertModOrder').checked;
+                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+                
                 if (displayMode === 'unit') {
-                    // In unit circle mode, all gcd(r,m)=1 points map to the outer circle
                     return maxRadius;
                 }
-                // Rings mode - scale by modulus
-                // m=1 is innermost, starting point
+                
+                if (invertOrder) {
+                    // Map largest modulus to innermost, smallest to outermost
+                    const maxMod = Math.max(...moduli);
+                    const minMod = Math.min(...moduli);
+                    const inverted = maxMod - (m - minMod);
+                    return inverted * radiusScale;
+                }
+                
+                // Normal: m=1 is innermost
                 return m * radiusScale;
             }
 
@@ -2482,6 +2792,9 @@
             if (!animationId) {
                 document.getElementById('animationStatus').textContent = 'Status: Playing';
                 document.getElementById('animationStatus').style.background = '#1a4d1a';
+                document.getElementById('playButton').textContent = 'Pause';
+                document.getElementById('playButton').style.background = '#ff0000';
+                document.getElementById('playButton').style.color = '#ffffff';
                 animationId = requestAnimationFrame(animate);
             }
         }
@@ -2492,6 +2805,9 @@
                 animationId = null;
                 document.getElementById('animationStatus').textContent = 'Status: Stopped';
                 document.getElementById('animationStatus').style.background = 'var(--bg-secondary)';
+                document.getElementById('playButton').textContent = 'Play';
+                document.getElementById('playButton').style.background = '#00ff00';
+                document.getElementById('playButton').style.color = '#000000';
             }
         }
 
@@ -2655,82 +2971,115 @@
 
         function updateBridgeAnalysis() {
             if (pointsData.length === 0) {
-                alert('Please generate visualization data first by clicking "Update Display" in the Visualization tab.');
-                return;
+                return; // Silent return if no data
             }
 
-            // Compute modular correction series
             const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
-            const M30Sequence = moduli.filter(m => m >= 30 && (m % 30 === 0) && Math.log2(m/30) % 1 === 0);
+            const mode = document.getElementById('modSelectionMode').value;
             
+            // Update sequence type display
+            let seqType = 'Custom';
+            if (mode === 'range') seqType = 'Linear Range';
+            else if (mode === 'fibonacci') seqType = 'Fibonacci';
+            else if (mode === 'primes') seqType = 'Prime Moduli';
+            else if (mode === 'powers-of-2') seqType = 'Powers of 2';
+            else if (mode === 'powers-of-3') seqType = 'Powers of 3';
+            else if (mode === 'M30-sequence') seqType = 'M₃₀ = 30×2ⁿ';
+            document.getElementById('bridgeSequenceType').textContent = seqType;
+            
+            // Build correction series table
             let correctionHTML = '<table style="width: 100%; font-size: 11px; border-collapse: collapse;">';
-            correctionHTML += '<tr style="border-bottom: 1px solid var(--border-color);"><th>n</th><th>M_n</th><th>T(M_n)</th><th>ΔT</th><th>𝕋₂ₙ = ΔT/T(M_n)</th><th>Cumulative</th></tr>';
+            correctionHTML += '<tr style="border-bottom: 1px solid var(--border-color);"><th>Level</th><th>Modulus M</th><th>φ(M)</th><th>φ(M)/M</th><th>ΔT (New Opens)</th><th>Correction 𝕋</th><th>Cumulative</th></tr>';
             
             let cumulativeCorrection = 0;
             let correctionData = [];
+            let phiData = [];
             
-            M30Sequence.forEach((m, idx) => {
-                const n = Math.log2(m / 30);
-                const T_n = 3 * Math.pow(2, n);
-                const T_prev = idx === 0 ? 0 : 3 * Math.pow(2, n-1);
-                const deltaT = T_n - T_prev;
-                const coefficient = T_prev === 0 ? 1 : deltaT / T_n;
+            moduli.forEach((m, idx) => {
+                const phiM = phi(m);
+                const ratio = phiM / m;
+                phiData.push({m, ratio});
+                
+                const T_curr = phiM;
+                const T_prev = idx === 0 ? 0 : phi(moduli[idx - 1]);
+                const deltaT = T_curr - T_prev;
+                const coefficient = T_curr === 0 ? 0 : deltaT / T_curr;
                 cumulativeCorrection += coefficient;
                 
-                correctionData.push({n, M: m, T: T_n, coeff: coefficient, cumul: cumulativeCorrection});
+                correctionData.push({
+                    level: idx,
+                    M: m,
+                    phi: phiM,
+                    ratio: ratio,
+                    deltaT: deltaT,
+                    coeff: coefficient,
+                    cumul: cumulativeCorrection
+                });
                 
-                correctionHTML += `<tr style="border-bottom: 1px solid var(--border-subtle);">`;
-                correctionHTML += `<td style="padding: 5px;">${n}</td>`;
-                correctionHTML += `<td>${m}</td>`;
-                correctionHTML += `<td>${T_n}</td>`;
-                correctionHTML += `<td>${deltaT}</td>`;
-                correctionHTML += `<td><strong>${coefficient.toFixed(4)}</strong></td>`;
-                correctionHTML += `<td>${cumulativeCorrection.toFixed(4)}</td>`;
-                correctionHTML += `</tr>`;
+                // Show first 20 and last 5 entries if too many
+                const showEntry = moduli.length <= 25 || idx < 20 || idx >= moduli.length - 5;
+                
+                if (showEntry) {
+                    correctionHTML += `<tr style="border-bottom: 1px solid var(--border-subtle);">`;
+                    correctionHTML += `<td style="padding: 5px;">${idx}</td>`;
+                    correctionHTML += `<td>${m}</td>`;
+                    correctionHTML += `<td>${phiM}</td>`;
+                    correctionHTML += `<td>${ratio.toFixed(6)}</td>`;
+                    correctionHTML += `<td>${deltaT}</td>`;
+                    correctionHTML += `<td><strong>${coefficient.toFixed(6)}</strong></td>`;
+                    correctionHTML += `<td>${cumulativeCorrection.toFixed(6)}</td>`;
+                    correctionHTML += `</tr>`;
+                } else if (idx === 20) {
+                    correctionHTML += `<tr><td colspan="7" style="text-align: center; padding: 8px; font-style: italic;">... ${moduli.length - 25} more entries ...</td></tr>`;
+                }
             });
             correctionHTML += '</table>';
             document.getElementById('correctionSeriesContent').innerHTML = correctionHTML;
 
-            // Transition table
+            // Transition table - show detailed view
             let transitionHTML = '<table style="width: 100%; font-size: 11px; border-collapse: collapse;">';
-            transitionHTML += '<tr style="border-bottom: 1px solid var(--border-color);"><th>Level n</th><th>M_n = 30×2^n</th><th>T(M_n) = 3×2^n</th><th>φ(M_n)</th><th>φ(M_n)/M_n</th></tr>';
+            transitionHTML += '<tr style="border-bottom: 1px solid var(--border-color);"><th>Level</th><th>Modulus M</th><th>φ(M)</th><th>φ(M)/M</th><th>Error from 6/π²</th></tr>';
             
-            M30Sequence.forEach(m => {
-                const n = Math.log2(m / 30);
-                const T_n = 3 * Math.pow(2, n);
+            const theoretical = 6 / (Math.PI * Math.PI);
+            
+            moduli.forEach((m, idx) => {
                 const phiM = phi(m);
                 const ratio = phiM / m;
+                const error = Math.abs(ratio - theoretical);
                 
-                transitionHTML += `<tr style="border-bottom: 1px solid var(--border-subtle);">`;
-                transitionHTML += `<td style="padding: 5px;">${n}</td>`;
-                transitionHTML += `<td>${m}</td>`;
-                transitionHTML += `<td>${T_n}</td>`;
-                transitionHTML += `<td>${phiM}</td>`;
-                transitionHTML += `<td>${ratio.toFixed(6)}</td>`;
-                transitionHTML += `</tr>`;
+                const showEntry = moduli.length <= 25 || idx < 20 || idx >= moduli.length - 5;
+                
+                if (showEntry) {
+                    transitionHTML += `<tr style="border-bottom: 1px solid var(--border-subtle);">`;
+                    transitionHTML += `<td style="padding: 5px;">${idx}</td>`;
+                    transitionHTML += `<td>${m}</td>`;
+                    transitionHTML += `<td>${phiM}</td>`;
+                    transitionHTML += `<td>${ratio.toFixed(6)}</td>`;
+                    transitionHTML += `<td>${error.toFixed(6)}</td>`;
+                    transitionHTML += `</tr>`;
+                } else if (idx === 20) {
+                    transitionHTML += `<tr><td colspan="5" style="text-align: center; padding: 8px; font-style: italic;">... ${moduli.length - 25} more entries ...</td></tr>`;
+                }
             });
             transitionHTML += '</table>';
             document.getElementById('transitionTable').innerHTML = transitionHTML;
 
             // Update bridge statistics
             const avgPhi = parseFloat(document.getElementById('statAvgPhi').textContent);
-            const theoretical = 6 / (Math.PI * Math.PI);
             const error = Math.abs(avgPhi - theoretical);
+            const totalOpen = pointsData.filter(p => p.isOpen).length;
             
             document.getElementById('bridgeAvgPhi').textContent = avgPhi.toFixed(6);
             document.getElementById('bridgeError').textContent = error.toFixed(6);
-            document.getElementById('bridgeLevels').textContent = M30Sequence.length;
-            document.getElementById('bridgeTransitions').textContent = M30Sequence.length > 0 ? 
-                (3 * Math.pow(2, M30Sequence.length - 1)).toFixed(0) : '0';
+            document.getElementById('bridgeLevels').textContent = moduli.length;
+            document.getElementById('bridgeTransitions').textContent = totalOpen.toLocaleString();
 
-            // Draw convergence chart
-            drawConvergenceChart(correctionData, avgPhi, theoretical);
-            
-            // Draw correction amplitude chart
+            // Draw charts with updated data
+            drawConvergenceChart(phiData, avgPhi, theoretical);
             drawCorrectionChart(correctionData);
         }
 
-        function drawConvergenceChart(correctionData, observed, theoretical) {
+        function drawConvergenceChart(phiData, observed, theoretical) {
             const canvas = document.getElementById('convergenceChart');
             if (!canvas) return;
             
@@ -2739,13 +3088,46 @@
             const height = canvas.height;
             const padding = 50;
             
-            // Clear and setup
             const bgColor = currentTheme === 'dark' ? '#000000' : '#ffffff';
             const lineColor = currentTheme === 'dark' ? '#ffffff' : '#000000';
             const gridColor = currentTheme === 'dark' ? '#333333' : '#cccccc';
             
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, width, height);
+            
+            if (phiData.length === 0) {
+                ctx.fillStyle = lineColor;
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data to display', width/2, height/2);
+                return;
+            }
+            
+            // Find min/max for scaling
+            const ratios = phiData.map(d => d.ratio);
+            const minRatio = Math.min(...ratios, theoretical);
+            const maxRatio = Math.max(...ratios, theoretical);
+            const range = maxRatio - minRatio;
+            const yMin = minRatio - range * 0.1;
+            const yMax = maxRatio + range * 0.1;
+            const yRange = yMax - yMin;
+            
+            // Draw grid
+            ctx.strokeStyle = gridColor;
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (i / 5) * (height - 2 * padding);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+                
+                const value = yMax - (i / 5) * yRange;
+                ctx.fillStyle = lineColor;
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(value.toFixed(4), padding - 5, y + 4);
+            }
             
             // Draw axes
             ctx.strokeStyle = lineColor;
@@ -2760,7 +3142,7 @@
             ctx.strokeStyle = '#00ff00';
             ctx.lineWidth = 2;
             ctx.setLineDash([5, 5]);
-            const yTheory = height - padding - ((theoretical - 0.5) / 0.15) * (height - 2 * padding);
+            const yTheory = height - padding - ((theoretical - yMin) / yRange) * (height - 2 * padding);
             ctx.beginPath();
             ctx.moveTo(padding, yTheory);
             ctx.lineTo(width - padding, yTheory);
@@ -2768,31 +3150,40 @@
             ctx.setLineDash([]);
             
             // Plot observed convergence
-            if (correctionData.length > 0) {
-                ctx.strokeStyle = '#ff0000';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
+            ctx.strokeStyle = '#ff0000';
+            ctx.fillStyle = '#ff0000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            phiData.forEach((d, i) => {
+                const x = padding + (i / (phiData.length - 1)) * (width - 2 * padding);
+                const y = height - padding - ((d.ratio - yMin) / yRange) * (height - 2 * padding);
                 
-                correctionData.forEach((d, i) => {
-                    const x = padding + (i / (correctionData.length - 1)) * (width - 2 * padding);
-                    const y = height - padding - ((observed - 0.5) / 0.15) * (height - 2 * padding);
-                    
-                    if (i === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                });
-                ctx.stroke();
-            }
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+                
+                // Draw point
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+            ctx.stroke();
             
             // Labels
             ctx.fillStyle = lineColor;
-            ctx.font = '11px Arial';
-            ctx.fillText('φ(m)/m Convergence', width / 2 - 60, 20);
-            ctx.fillText('0.50', padding - 35, height - padding + 5);
-            ctx.fillText('0.65', padding - 35, padding + 5);
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Level Index', width / 2, height - 10);
+            
+            ctx.save();
+            ctx.translate(15, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('φ(M)/M', 0, 0);
+            ctx.restore();
+            
             ctx.fillStyle = '#00ff00';
-            ctx.fillText('6/π² limit', width - padding + 5, yTheory + 5);
-            ctx.fillStyle = '#ff0000';
-            ctx.fillText('Observed', width - padding + 5, height - padding - 20);
+            ctx.font = '10px Arial';
+            ctx.fillText(`6/π² = ${theoretical.toFixed(6)}`, width - padding - 60, yTheory - 5);
         }
 
         function drawCorrectionChart(correctionData) {
@@ -2804,12 +3195,22 @@
             const height = canvas.height;
             const padding = 50;
             
-            // Clear and setup
             const bgColor = currentTheme === 'dark' ? '#000000' : '#ffffff';
             const lineColor = currentTheme === 'dark' ? '#ffffff' : '#000000';
             
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, width, height);
+            
+            if (correctionData.length === 0) {
+                ctx.fillStyle = lineColor;
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data to display', width/2, height/2);
+                return;
+            }
+            
+            // Find max coefficient for scaling
+            const maxCoeff = Math.max(...correctionData.map(d => d.coeff), 1);
             
             // Draw axes
             ctx.strokeStyle = lineColor;
@@ -2820,38 +3221,59 @@
             ctx.lineTo(width - padding, height - padding);
             ctx.stroke();
             
-            // Draw expected 1/2 line
-            ctx.strokeStyle = '#0080ff';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            const yHalf = height - padding - (0.5 / 1.0) * (height - 2 * padding);
-            ctx.beginPath();
-            ctx.moveTo(padding, yHalf);
-            ctx.lineTo(width - padding, yHalf);
-            ctx.stroke();
-            ctx.setLineDash([]);
+            // Y-axis labels
+            ctx.fillStyle = lineColor;
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (i / 5) * (height - 2 * padding);
+                const value = maxCoeff * (1 - i / 5);
+                ctx.fillText(value.toFixed(3), padding - 5, y + 4);
+                
+                // Grid line
+                ctx.strokeStyle = currentTheme === 'dark' ? '#333333' : '#cccccc';
+                ctx.lineWidth = 0.5;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
             
-            // Plot correction coefficients
+            // Plot bars
             if (correctionData.length > 0) {
-                ctx.fillStyle = '#ff0000';
+                const barWidth = Math.min((width - 2 * padding) / correctionData.length * 0.8, 30);
                 
                 correctionData.forEach((d, i) => {
-                    const x = padding + (i / (correctionData.length - 1)) * (width - 2 * padding);
-                    const y = height - padding - (d.coeff / 1.0) * (height - 2 * padding);
-                    const barWidth = (width - 2 * padding) / correctionData.length * 0.6;
+                    const x = padding + (i + 0.5) / correctionData.length * (width - 2 * padding);
+                    const barHeight = (d.coeff / maxCoeff) * (height - 2 * padding);
+                    const y = height - padding - barHeight;
                     
-                    ctx.fillRect(x - barWidth / 2, y, barWidth, height - padding - y);
+                    // Color bars by magnitude
+                    const intensity = d.coeff / maxCoeff;
+                    const r = Math.round(255 * intensity);
+                    const b = Math.round(255 * (1 - intensity));
+                    ctx.fillStyle = `rgb(${r}, 100, ${b})`;
+                    
+                    ctx.fillRect(x - barWidth / 2, y, barWidth, barHeight);
+                    
+                    // Border
+                    ctx.strokeStyle = lineColor;
+                    ctx.lineWidth = 0.5;
+                    ctx.strokeRect(x - barWidth / 2, y, barWidth, barHeight);
                 });
             }
             
             // Labels
             ctx.fillStyle = lineColor;
-            ctx.font = '11px Arial';
-            ctx.fillText('Correction Coefficients 𝕋₂ₙ', width / 2 - 70, 20);
-            ctx.fillText('0', padding - 15, height - padding + 5);
-            ctx.fillText('1', padding - 15, padding + 5);
-            ctx.fillStyle = '#0080ff';
-            ctx.fillText('Expected: 1/2', width - padding + 5, yHalf + 5);
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Level Index', width / 2, height - 10);
+            
+            ctx.save();
+            ctx.translate(15, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Correction 𝕋₂ₙ', 0, 0);
+            ctx.restore();
         }
 
         function updateVisualization() {
@@ -2862,7 +3284,7 @@
             generatePointsData();
             if (!isComputing) {
                 drawVisualization();
-                updateBridgeAnalysis();
+                updateBridgeAnalysis(); // Auto-update bridge analysis
             }
         }
 
