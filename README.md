@@ -723,6 +723,11 @@
                             <button onclick="setPreset(5)">n=5 (960)</button>
                         </div>
                         <button onclick="setPresetRange()" style="width: 100%; margin-top: 8px;">All: 30 to 960</button>
+                        
+                        <div class="info-box" style="margin-top: 10px;">
+                            <strong>Performance Options:</strong><br>
+                            <button onclick="clearCache()" style="width: 100%; margin-top: 5px; padding: 8px; font-size: 11px;">Clear Cache</button>
+                        </div>
                     </div>
 
                     <div class="control-section">
@@ -861,11 +866,12 @@
                             </label>
                         </div>
                         <div class="control-group">
-                            <label>Track Residue (r)</label>
-                            <div class="dual-input">
-                                <input type="range" id="trackedResidue" min="0" max="100" step="1" value="1">
-                                <input type="number" id="trackedResidueNum" min="0" max="10000" step="1" value="1">
-                            </div>
+                            <label>Track Residues (comma-separated)</label>
+                            <input type="text" id="trackedResidues" value="1" placeholder="e.g., 1,7,13,19">
+                        </div>
+                        <div class="control-group">
+                            <label>Filter by Modulus (optional)</label>
+                            <input type="number" id="trackerModFilter" placeholder="Leave empty for all">
                         </div>
                         <div class="control-group">
                             <label>Tracker Color</label>
@@ -879,7 +885,7 @@
                             </div>
                         </div>
                         <div class="tracker-display" id="trackerInfo" style="display: none;">
-                            <h4>Tracked Residue Info</h4>
+                            <h4>Tracked Residues Info</h4>
                             <div class="tracker-info" id="trackerInfoContent"></div>
                         </div>
                     </div>
@@ -890,7 +896,7 @@
                             <label>Open Channel Mode</label>
                             <select id="openColorMode">
                                 <option value="solid">Solid Color</option>
-                                <option value="by-residue">By Residue (r)</option>
+                                <option value="by-residue" selected>By Residue (r)</option>
                                 <option value="by-modulus">By Modulus (m)</option>
                                 <option value="by-integer">By Integer Value</option>
                                 <option value="by-spf">By Smallest Prime Factor</option>
@@ -935,7 +941,7 @@
                                     <option value="standard">Standard: 2πr/m</option>
                                     <option value="half">Half: πr/m</option>
                                     <option value="inverted">Inverted: 2π(m-r)/m</option>
-                                    <option value="negative">Negative: -2πr/m</option>
+                                    <option value="negative" selected>Negative: -2πr/m</option>
                                 </select>
                             </div>
                             <div class="control-group">
@@ -1364,7 +1370,206 @@
         let globalRotation = 0;
         let modRotations = {};
         let animationId = null;
-        let currentTheme = 'dark';
+        let currentTheme = 'light';
+        let isComputing = false;
+        let progressiveRenderBatch = 0;
+        const PROGRESSIVE_BATCH_SIZE = 1000;
+        const COMPUTE_CHUNK_SIZE = 500; // Process this many residues before yielding (increased from 100)
+
+        // Progressive computation without Web Worker
+        async function computePointsProgressive(modMin, modMax, modStep, gaps, angularMapping) {
+            pointsData = [];
+            let totalOpen = 0;
+            let totalClosed = 0;
+            let sumPhiOverM = 0;
+            let countModuli = 0;
+            let processedCount = 0;
+
+            for (let m = modMin; m <= modMax; m += modStep) {
+                if (!modRotations[m]) modRotations[m] = 0;
+                
+                const phiM = phi(m);
+                sumPhiOverM += phiM / m;
+                countModuli++;
+
+                for (let r = 0; r < m; r++) {
+                    const g = gcd(r, m);
+                    const isOpen = g === 1;
+                    
+                    if (isOpen) totalOpen++;
+                    else totalClosed++;
+
+                    let admissibleGaps = [];
+                    if (isOpen && gaps.length > 0) {
+                        gaps.forEach(gap => {
+                            const rPlusG = (r + gap) % m;
+                            if (gcd(rPlusG, m) === 1) {
+                                admissibleGaps.push(gap);
+                            }
+                        });
+                    }
+
+                    let angle;
+                    switch(angularMapping) {
+                        case 'standard':
+                            angle = (2 * Math.PI * r) / m;
+                            break;
+                        case 'half':
+                            angle = (Math.PI * r) / m;
+                            break;
+                        case 'inverted':
+                            angle = (2 * Math.PI * (m - r)) / m;
+                            break;
+                        case 'negative':
+                            angle = -(2 * Math.PI * r) / m;
+                            break;
+                        default:
+                            angle = (2 * Math.PI * r) / m;
+                    }
+
+                    pointsData.push({
+                        m: m,
+                        r: r,
+                        gcd: g,
+                        isOpen: isOpen,
+                        angle: angle,
+                        phiM: phiM,
+                        isAdmissible: admissibleGaps.length > 0,
+                        admissibleGaps: admissibleGaps
+                    });
+
+                    processedCount++;
+
+                    // Yield to UI every COMPUTE_CHUNK_SIZE items
+                    if (processedCount % COMPUTE_CHUNK_SIZE === 0) {
+                        updateProgressDisplay(processedCount, m, modMax);
+                        // Only yield for very large datasets
+                        if (processedCount > 20000) {
+                            await new Promise(resolve => setTimeout(resolve, 0));
+                        }
+                    }
+                }
+            }
+
+            const avgPhiOverM = countModuli > 0 ? sumPhiOverM / countModuli : 0;
+            const openRatio = (totalOpen + totalClosed) > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
+
+            document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
+            document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
+            document.getElementById('statClosed').textContent = totalClosed.toLocaleString();
+            document.getElementById('statRatio').textContent = openRatio.toFixed(4);
+            document.getElementById('statAvgPhi').textContent = avgPhiOverM.toFixed(4);
+
+            return { totalOpen, totalClosed, avgPhiOverM, countModuli };
+        }
+
+        function updateProgressDisplay(count, currentMod, maxMod) {
+            const modMin = parseInt(document.getElementById('modMin').value);
+            const percent = ((currentMod - modMin) / (maxMod - modMin) * 100).toFixed(1);
+            document.getElementById('animationStatus').textContent = 
+                `Computing: ${count.toLocaleString()} points (${percent}% - m=${currentMod})`;
+            document.getElementById('animationStatus').style.background = '#1a4d4d';
+        }
+
+        function hideProgressDisplay() {
+            document.getElementById('animationStatus').textContent = 'Status: Stopped';
+            document.getElementById('animationStatus').style.background = 'var(--bg-secondary)';
+        }
+
+        function getCacheKey() {
+            return `modular_rings_${document.getElementById('modMin').value}_${document.getElementById('modMax').value}_${document.getElementById('modStep').value}_${document.getElementById('angularMapping').value}`;
+        }
+
+        function saveToCache() {
+            try {
+                const cacheKey = getCacheKey();
+                const cacheData = {
+                    pointsData: pointsData,
+                    timestamp: Date.now(),
+                    settings: {
+                        modMin: document.getElementById('modMin').value,
+                        modMax: document.getElementById('modMax').value,
+                        modStep: document.getElementById('modStep').value,
+                        angularMapping: document.getElementById('angularMapping').value
+                    }
+                };
+                
+                // Only cache if dataset is reasonable size (< 50MB estimated)
+                const dataSize = JSON.stringify(cacheData).length;
+                if (dataSize < 50000000) {
+                    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+                    console.log(`Cached ${pointsData.length} points (${(dataSize/1024/1024).toFixed(2)} MB)`);
+                }
+            } catch (e) {
+                console.warn('Cache save failed:', e);
+            }
+        }
+
+        function loadFromCache() {
+            try {
+                const cacheKey = getCacheKey();
+                const cached = localStorage.getItem(cacheKey);
+                
+                if (cached) {
+                    const cacheData = JSON.parse(cached);
+                    const age = Date.now() - cacheData.timestamp;
+                    
+                    // Cache valid for 1 hour
+                    if (age < 3600000) {
+                        pointsData = cacheData.pointsData;
+                        console.log(`Loaded ${pointsData.length} points from cache`);
+                        
+                        // Restore modRotations
+                        pointsData.forEach(p => {
+                            if (!modRotations[p.m]) modRotations[p.m] = 0;
+                        });
+                        
+                        // Update stats
+                        const totalOpen = pointsData.filter(p => p.isOpen).length;
+                        const totalClosed = pointsData.length - totalOpen;
+                        const moduli = [...new Set(pointsData.map(p => p.m))];
+                        const sumPhiOverM = moduli.reduce((sum, m) => {
+                            const phiM = pointsData.find(p => p.m === m).phiM;
+                            return sum + phiM / m;
+                        }, 0);
+                        
+                        const openRatio = totalClosed > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
+                        document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
+                        document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
+                        document.getElementById('statClosed').textContent = totalClosed.toLocaleString();
+                        document.getElementById('statRatio').textContent = openRatio.toFixed(4);
+                        document.getElementById('statAvgPhi').textContent = (sumPhiOverM / moduli.length).toFixed(4);
+                        
+                        return true;
+                    }
+                }
+            } catch (e) {
+                console.warn('Cache load failed:', e);
+            }
+            return false;
+        }
+
+        function clearCache() {
+            try {
+                const keys = Object.keys(localStorage);
+                let count = 0;
+                keys.forEach(key => {
+                    if (key.startsWith('modular_rings_')) {
+                        localStorage.removeItem(key);
+                        count++;
+                    }
+                });
+                alert(`Cache cleared! Removed ${count} cached dataset(s).`);
+            } catch (e) {
+                alert('Failed to clear cache: ' + e.message);
+            }
+        }
+
+        function progressiveRender() {
+            // Always render immediately - removed progressive rendering complexity
+            drawVisualization();
+            updateTrackerInfo();
+        }
 
         function toggleTheme() {
             currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -1379,8 +1584,9 @@
 
         // Initialize dark theme
         function initializeTheme() {
-            document.body.className = 'dark-theme';
-            document.getElementById('themeText').textContent = 'Light Mode';
+            document.body.className = 'light-theme';
+            document.getElementById('themeText').textContent = 'Dark Mode';
+            currentTheme = 'light';
         }
 
         function isPrime(n) {
@@ -1567,7 +1773,6 @@
         syncInputs('globalSpeed', 'globalSpeedNum');
         syncInputs('modRotSpeed', 'modRotSpeedNum');
         syncInputs('gradientStrength', 'gradientStrengthNum');
-        syncInputs('trackedResidue', 'trackedResidueNum');
         syncInputs('trackerSize', 'trackerSizeNum');
         syncInputs('pointSize', 'pointSizeNum');
         syncInputs('connOpacity', 'connOpacityNum');
@@ -1702,6 +1907,12 @@
         });
 
         function generatePointsData() {
+            // Check if we can load from cache first
+            if (loadFromCache()) {
+                progressiveRender();
+                return;
+            }
+
             const modMin = parseInt(document.getElementById('modMin').value);
             const modMax = parseInt(document.getElementById('modMax').value);
             const modStep = parseInt(document.getElementById('modStep').value);
@@ -1710,13 +1921,43 @@
             const gaps = gapInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g > 0);
             const angularMapping = document.getElementById('angularMapping').value;
 
+            // Calculate total expected points
+            let totalExpectedPoints = 0;
+            for (let m = modMin; m <= modMax; m += modStep) {
+                totalExpectedPoints += m;
+            }
+
+            // Use progressive computation for large datasets
+            if (totalExpectedPoints > 10000) {
+                isComputing = true;
+                document.getElementById('animationStatus').textContent = 'Computing: Starting...';
+                document.getElementById('animationStatus').style.background = '#1a4d4d';
+                
+                computePointsProgressive(modMin, modMax, modStep, enableGap ? gaps : [], angularMapping)
+                    .then(() => {
+                        isComputing = false;
+                        hideProgressDisplay();
+                        saveToCache();
+                        drawVisualization();
+                        updateTrackerInfo();
+                    });
+                return;
+            }
+
+            // Fallback: compute directly (for small datasets)
             pointsData = [];
             let totalOpen = 0;
             let totalClosed = 0;
             let sumPhiOverM = 0;
             let countModuli = 0;
-
+            
+            // Generate list of moduli - use all moduli in range
+            let moduli = [];
             for (let m = modMin; m <= modMax; m += modStep) {
+                moduli.push(m);
+            }
+
+            for (let m of moduli) {
                 if (!modRotations[m]) modRotations[m] = 0;
                 
                 const phiM = phi(m);
@@ -1773,8 +2014,8 @@
                 }
             }
 
-            const avgPhiOverM = sumPhiOverM / countModuli;
-            const openRatio = totalOpen / (totalOpen + totalClosed);
+            const avgPhiOverM = countModuli > 0 ? sumPhiOverM / countModuli : 0;
+            const openRatio = (totalOpen + totalClosed) > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
 
             document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
             document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
@@ -1782,21 +2023,37 @@
             document.getElementById('statRatio').textContent = openRatio.toFixed(4);
             document.getElementById('statAvgPhi').textContent = avgPhiOverM.toFixed(4);
 
+            saveToCache();
             updateTrackerInfo();
         }
 
         function updateTrackerInfo() {
             const enabled = document.getElementById('enableTracker').checked;
-            const trackedR = parseInt(document.getElementById('trackedResidue').value);
+            const trackedInput = document.getElementById('trackedResidues').value;
+            const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
+            const modFilter = document.getElementById('trackerModFilter').value;
+            const filterMod = modFilter ? parseInt(modFilter) : null;
             const trackerInfo = document.getElementById('trackerInfo');
             
-            if (enabled) {
+            if (enabled && trackedRs.length > 0) {
                 trackerInfo.style.display = 'block';
-                const trackedPoints = pointsData.filter(p => p.r === trackedR);
-                let infoHTML = `Residue r = ${trackedR}<br>`;
-                infoHTML += `Appears in ${trackedPoints.length} moduli<br>`;
-                const openCount = trackedPoints.filter(p => p.isOpen).length;
-                infoHTML += `Open: ${openCount}, Closed: ${trackedPoints.length - openCount}`;
+                let infoHTML = '';
+                
+                trackedRs.forEach(trackedR => {
+                    let trackedPoints = pointsData.filter(p => p.r === trackedR);
+                    if (filterMod !== null) {
+                        trackedPoints = trackedPoints.filter(p => p.m === filterMod);
+                    }
+                    
+                    const openCount = trackedPoints.filter(p => p.isOpen).length;
+                    infoHTML += `<strong>r = ${trackedR}</strong>`;
+                    if (filterMod !== null) {
+                        infoHTML += ` (m = ${filterMod})`;
+                    }
+                    infoHTML += `<br>Appears: ${trackedPoints.length} times<br>`;
+                    infoHTML += `Open: ${openCount}, Closed: ${trackedPoints.length - openCount}<br><br>`;
+                });
+                
                 document.getElementById('trackerInfoContent').innerHTML = infoHTML;
             } else {
                 trackerInfo.style.display = 'none';
@@ -1804,7 +2061,8 @@
         }
 
         document.getElementById('enableTracker').addEventListener('change', updateTrackerInfo);
-        document.getElementById('trackedResidue').addEventListener('input', updateTrackerInfo);
+        document.getElementById('trackedResidues').addEventListener('input', updateTrackerInfo);
+        document.getElementById('trackerModFilter').addEventListener('input', updateTrackerInfo);
 
         function drawVisualization() {
             const width = canvas.width;
@@ -1813,8 +2071,8 @@
             const centerY = height / 2;
             const maxRadius = Math.min(width, height) * 0.4;
 
-            // Get theme-aware background color
-            const bgColor = currentTheme === 'dark' ? '#000000' : '#ffffff';
+            // Always use black background for canvas
+            const bgColor = '#000000';
             ctx.clearRect(0, 0, width, height);
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, width, height);
@@ -1833,7 +2091,6 @@
             const modMin = parseInt(document.getElementById('modMin').value);
             const modStep = parseInt(document.getElementById('modStep').value);
             const enableTracker = document.getElementById('enableTracker').checked;
-            const trackedResidue = parseInt(document.getElementById('trackedResidue').value);
             const trackerColor = document.getElementById('trackerColor').value;
             const trackerSize = parseFloat(document.getElementById('trackerSize').value);
             const enableConnections = document.getElementById('enableConnections').checked;
@@ -1843,9 +2100,9 @@
 
             const radiusScale = displayMode === 'unit' ? maxRadius : maxRadius / modMax;
 
-            // Theme-aware line color
-            const lineColor = currentTheme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)';
-            const connectionLineColor = currentTheme === 'dark' ? `rgba(255, 255, 255, ${connOpacity})` : `rgba(0, 0, 0, ${connOpacity})`;
+            // Always use white/light colors for lines on black background
+            const lineColor = 'rgba(255, 255, 255, 0.2)';
+            const connectionLineColor = `rgba(255, 255, 255, ${connOpacity})`;
 
             // Function to get proper radius for each modulus
             function getRadius(m) {
@@ -1958,22 +2215,34 @@
 
             // Draw tracker
             if (enableTracker) {
-                pointsData.filter(p => p.r === trackedResidue).forEach(point => {
-                    const modRot = modRotations[point.m] || 0;
-                    const totalAngle = point.angle + (modRot * Math.PI / 180);
-                    const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
-                    const x = r * Math.cos(totalAngle);
-                    const y = r * Math.sin(totalAngle);
+                const trackedInput = document.getElementById('trackedResidues').value;
+                const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
+                const modFilter = document.getElementById('trackerModFilter').value;
+                const filterMod = modFilter ? parseInt(modFilter) : null;
+                
+                trackedRs.forEach(trackedResidue => {
+                    let filteredPoints = pointsData.filter(p => p.r === trackedResidue);
+                    if (filterMod !== null) {
+                        filteredPoints = filteredPoints.filter(p => p.m === filterMod);
+                    }
+                    
+                    filteredPoints.forEach(point => {
+                        const modRot = modRotations[point.m] || 0;
+                        const totalAngle = point.angle + (modRot * Math.PI / 180);
+                        const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
+                        const x = r * Math.cos(totalAngle);
+                        const y = r * Math.sin(totalAngle);
 
-                    ctx.strokeStyle = trackerColor;
-                    ctx.lineWidth = 2 / transform.scale;
-                    ctx.fillStyle = trackerColor;
-                    ctx.globalAlpha = 0.9;
-                    ctx.beginPath();
-                    ctx.arc(x, y, trackerSize / transform.scale, 0, 2 * Math.PI);
-                    ctx.fill();
-                    ctx.stroke();
-                    ctx.globalAlpha = 1.0;
+                        ctx.strokeStyle = trackerColor;
+                        ctx.lineWidth = 2 / transform.scale;
+                        ctx.fillStyle = trackerColor;
+                        ctx.globalAlpha = 0.9;
+                        ctx.beginPath();
+                        ctx.arc(x, y, trackerSize / transform.scale, 0, 2 * Math.PI);
+                        ctx.fill();
+                        ctx.stroke();
+                        ctx.globalAlpha = 1.0;
+                    });
                 });
             }
 
@@ -2496,20 +2765,36 @@
         }
 
         function updateVisualization() {
+            if (isComputing) {
+                alert('Computation already in progress. Please wait...');
+                return;
+            }
             generatePointsData();
-            drawVisualization();
-            updateBridgeAnalysis();
+            if (!isComputing) {
+                drawVisualization();
+                updateBridgeAnalysis();
+            }
         }
 
         function setPreset(n) {
             const m = 30 * Math.pow(2, n);
-            document.getElementById('modMin').value = m;
-            document.getElementById('modMax').value = m;
-            document.getElementById('modStep').value = 1;
             
-            // Enable connections for nested visualization
-            document.getElementById('enableConnections').checked = false;
-            document.getElementById('connectionMode').value = 'none';
+            // Set range from 30 to the target modulus, showing nested structure
+            document.getElementById('modMin').value = 30;
+            document.getElementById('modMax').value = m;
+            
+            // Use custom step to show only the M_n sequence: 30, 60, 120, 240, 480, 960
+            // We'll set step to 30, but need to ensure we only get powers of 2 multiples
+            document.getElementById('modStep').value = 30;
+            
+            // Enable connections to show nested lifting structure
+            document.getElementById('enableConnections').checked = true;
+            document.getElementById('connectionMode').value = 'double-lift';
+            document.getElementById('displayMode').value = 'rings';
+            
+            // Show only open channels (gcd = 1)
+            document.getElementById('showOpen').checked = true;
+            document.getElementById('showClosed').checked = false;
             
             updateVisualization();
         }
