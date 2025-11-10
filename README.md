@@ -878,10 +878,28 @@
                                 Enable Tracker
                             </label>
                         </div>
+                        
                         <div class="control-group">
+                            <label>Track Mode</label>
+                            <select id="trackerMode">
+                                <option value="manual">Manual Input</option>
+                                <option value="slider">Slider (Single r)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group" id="manualTrackerGroup">
                             <label>Track Residues (comma-separated)</label>
                             <input type="text" id="trackedResidues" value="1" placeholder="e.g., 1,7,13,19">
                         </div>
+                        
+                        <div class="control-group" id="sliderTrackerGroup" style="display: none;">
+                            <label>Track Residue r = <span class="range-display" id="trackedRSliderDisplay">1</span></label>
+                            <div class="dual-input">
+                                <input type="range" id="trackedRSlider" min="0" max="100" step="1" value="1">
+                                <input type="number" id="trackedRSliderNum" min="0" max="10000" step="1" value="1">
+                            </div>
+                        </div>
+                        
                         <div class="control-group">
                             <label>Filter by Modulus (optional)</label>
                             <input type="number" id="trackerModFilter" placeholder="Leave empty for all">
@@ -1230,27 +1248,44 @@
         let animationId = null;
         let currentTheme = 'light';
         let isComputing = false;
-        let progressiveRenderBatch = 0;
-        const PROGRESSIVE_BATCH_SIZE = 1000;
-        const COMPUTE_CHUNK_SIZE = 500;
         
-        // Performance mode caching
-        let cachedStaticCanvas = null;
-        let cachedPointBatches = null;
-        let lastDrawSettings = null;
-        let needsFullRedraw = true;
+        // Advanced performance optimizations
+        let pointsByModulus = {}; // O(1) lookup by modulus
+        let ringMetadata = []; // Pre-computed ring properties
 
         // Progressive computation without Web Worker
         async function computePointsProgressive(modMin, modMax, modStep, gaps, angularMapping) {
             pointsData = [];
+            pointsByModulus = {}; // Reset lookup table
+            ringMetadata = [];
+            
             let totalOpen = 0;
             let totalClosed = 0;
             let sumPhiOverM = 0;
             let countModuli = 0;
             let processedCount = 0;
 
+            // Build moduli list
+            const moduli = [];
+            for (let m = modMin; m <= modMax; m += modStep) {
+                moduli.push(m);
+            }
+
+            // Pre-compute ring metadata
+            moduli.forEach((m, idx) => {
+                ringMetadata.push({
+                    modulus: m,
+                    index: idx,
+                    phiM: phi(m),
+                    totalPoints: m
+                });
+            });
+
             for (let m = modMin; m <= modMax; m += modStep) {
                 if (!modRotations[m]) modRotations[m] = 0;
+                
+                // Initialize modulus bucket for O(1) lookup
+                pointsByModulus[m] = {};
                 
                 const phiM = phi(m);
                 sumPhiOverM += phiM / m;
@@ -1291,7 +1326,7 @@
                             angle = (2 * Math.PI * r) / m;
                     }
 
-                    pointsData.push({
+                    const point = {
                         m: m,
                         r: r,
                         gcd: g,
@@ -1300,15 +1335,17 @@
                         phiM: phiM,
                         isAdmissible: admissibleGaps.length > 0,
                         admissibleGaps: admissibleGaps
-                    });
+                    };
+
+                    pointsData.push(point);
+                    pointsByModulus[m][r] = point;
 
                     processedCount++;
 
-                    // Yield to UI every COMPUTE_CHUNK_SIZE items
-                    if (processedCount % COMPUTE_CHUNK_SIZE === 0) {
+                    // Yield to UI periodically
+                    if (processedCount % 1000 === 0) {
                         updateProgressDisplay(processedCount, m, modMax);
-                        // Only yield for very large datasets
-                        if (processedCount > 20000) {
+                        if (processedCount > 50000) {
                             await new Promise(resolve => setTimeout(resolve, 0));
                         }
                     }
@@ -1645,12 +1682,65 @@
         syncInputs('pointSize', 'pointSizeNum');
         syncInputs('connOpacity', 'connOpacityNum');
         syncInputs('perRingRot', 'perRingRotNum');
+        syncInputs('trackedRSlider', 'trackedRSliderNum');
 
         syncInputs('labelSize', 'labelSizeNum');
         syncInputs('labelSpacing', 'labelSpacingNum');
         syncInputs('gapOpacity', 'gapOpacityNum');
         syncInputs('gapLineWidth', 'gapLineWidthNum');
         syncInputs('connLineWidth', 'connLineWidthNum');
+
+        // Show/hide tracker mode inputs
+        document.getElementById('trackerMode').addEventListener('change', function() {
+            const mode = this.value;
+            const manualGroup = document.getElementById('manualTrackerGroup');
+            const sliderGroup = document.getElementById('sliderTrackerGroup');
+            
+            if (mode === 'manual') {
+                manualGroup.style.display = 'block';
+                sliderGroup.style.display = 'none';
+            } else {
+                manualGroup.style.display = 'none';
+                sliderGroup.style.display = 'block';
+                updateSliderTrackerRange();
+            }
+        });
+
+        // Update slider range when moduli change
+        function updateSliderTrackerRange() {
+            const moduli = getSelectedModuli();
+            if (moduli.length === 0) return;
+            
+            const maxR = Math.max(...moduli) - 1;
+            const slider = document.getElementById('trackedRSlider');
+            const numberInput = document.getElementById('trackedRSliderNum');
+            
+            slider.max = maxR;
+            numberInput.max = maxR;
+            
+            // Clamp current value
+            if (parseInt(slider.value) > maxR) {
+                slider.value = maxR;
+                numberInput.value = maxR;
+            }
+        }
+
+        // Real-time slider update
+        document.getElementById('trackedRSlider').addEventListener('input', () => {
+            updateRangeDisplays();
+            if (document.getElementById('enableTracker').checked) {
+                drawVisualization();
+                updateTrackerInfo();
+            }
+        });
+        
+        document.getElementById('trackedRSliderNum').addEventListener('input', () => {
+            updateRangeDisplays();
+            if (document.getElementById('enableTracker').checked) {
+                drawVisualization();
+                updateTrackerInfo();
+            }
+        });
 
         // Show/hide connection mode options
         document.getElementById('connectionMode').addEventListener('change', function() {
@@ -2089,19 +2179,36 @@
 
         async function computePointsProgressiveFromList(moduli, gaps, angularMapping) {
             pointsData = [];
+            pointsByModulus = {}; // Reset lookup table
+            ringMetadata = [];
+            
             let totalOpen = 0;
             let totalClosed = 0;
             let sumPhiOverM = 0;
             let countModuli = 0;
             let processedCount = 0;
 
+            // Pre-compute ring metadata for O(1) access
+            moduli.forEach((m, idx) => {
+                ringMetadata.push({
+                    modulus: m,
+                    index: idx,
+                    phiM: phi(m),
+                    totalPoints: m
+                });
+            });
+
             for (let m of moduli) {
                 if (!modRotations[m]) modRotations[m] = 0;
+                
+                // Initialize modulus bucket for O(1) lookup
+                pointsByModulus[m] = {};
                 
                 const phiM = phi(m);
                 sumPhiOverM += phiM / m;
                 countModuli++;
 
+                // Single-pass computation with all properties
                 for (let r = 0; r < m; r++) {
                     const g = gcd(r, m);
                     const isOpen = g === 1;
@@ -2109,16 +2216,7 @@
                     if (isOpen) totalOpen++;
                     else totalClosed++;
 
-                    let admissibleGaps = [];
-                    if (isOpen && gaps.length > 0) {
-                        gaps.forEach(gap => {
-                            const rPlusG = (r + gap) % m;
-                            if (gcd(rPlusG, m) === 1) {
-                                admissibleGaps.push(gap);
-                            }
-                        });
-                    }
-
+                    // Pre-compute angle once
                     let angle;
                     switch(angularMapping) {
                         case 'standard':
@@ -2137,7 +2235,18 @@
                             angle = (2 * Math.PI * r) / m;
                     }
 
-                    pointsData.push({
+                    // Pre-compute admissible gaps (only if needed)
+                    let admissibleGaps = [];
+                    if (isOpen && gaps.length > 0) {
+                        gaps.forEach(gap => {
+                            const rPlusG = (r + gap) % m;
+                            if (gcd(rPlusG, m) === 1) {
+                                admissibleGaps.push(gap);
+                            }
+                        });
+                    }
+
+                    const point = {
                         m: m,
                         r: r,
                         gcd: g,
@@ -2146,13 +2255,18 @@
                         phiM: phiM,
                         isAdmissible: admissibleGaps.length > 0,
                         admissibleGaps: admissibleGaps
-                    });
+                    };
+
+                    pointsData.push(point);
+                    pointsByModulus[m][r] = point; // Store for O(1) lookup
 
                     processedCount++;
 
-                    if (processedCount % COMPUTE_CHUNK_SIZE === 0) {
+                    // Reduced yield frequency for better performance
+                    if (processedCount % (COMPUTE_CHUNK_SIZE * 2) === 0) {
                         updateProgressDisplay(processedCount, m, moduli[moduli.length - 1]);
-                        if (processedCount > 20000) {
+                        // Only yield for very large datasets
+                        if (processedCount > 50000) {
                             await new Promise(resolve => setTimeout(resolve, 0));
                         }
                     }
@@ -2434,8 +2548,30 @@
         function batchPointsByColor() {
             const batches = new Map();
             const openColorMode = document.getElementById('openColorMode').value;
-            const closedColorMode = document.getElementById('closedColorMode').value;
             
+            // Fast path for solid colors
+            if (openColorMode === 'solid') {
+                const openColor = document.getElementById('baseOpenColor').value;
+                const closedColor = document.getElementById('baseClosedColor').value;
+                
+                batches.set(openColor, { open: [], closed: [], admissible: [] });
+                batches.set(closedColor, { open: [], closed: [], admissible: [] });
+                batches.set('#aa00ff', { open: [], closed: [], admissible: [] });
+                
+                pointsData.forEach(point => {
+                    if (point.isAdmissible) {
+                        batches.get('#aa00ff').admissible.push(point);
+                    } else if (point.isOpen) {
+                        batches.get(openColor).open.push(point);
+                    } else {
+                        batches.get(closedColor).closed.push(point);
+                    }
+                });
+                
+                return batches;
+            }
+            
+            // Standard batching for other color modes
             pointsData.forEach(point => {
                 const color = getColorForPoint(point, point.isOpen);
                 
@@ -2463,11 +2599,19 @@
             const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
             const totalRings = moduli.length;
             
+            // Pre-compute scale factor once
+            const pointScale = 1 / transform.scale;
+            const scaledPointSize = pointSize * pointScale;
+            const scaledAdmissibleSize = pointSize * 1.2 * pointScale;
+            
             batches.forEach((pointTypes, color) => {
-                // Draw closed points
+                // Draw closed points in single batch
                 if (showClosed && pointTypes.closed.length > 0) {
                     ctx.globalAlpha = 0.3;
                     ctx.fillStyle = color;
+                    
+                    // Begin path once for entire batch
+                    ctx.beginPath();
                     pointTypes.closed.forEach(point => {
                         const ringIndex = getRingIndex(point.m);
                         const perRingRotation = getPerRingRotation(ringIndex, totalRings);
@@ -2477,20 +2621,25 @@
                         const x = r * Math.cos(totalAngle);
                         const y = r * Math.sin(totalAngle);
 
-                        ctx.beginPath();
-                        ctx.arc(x, y, pointSize / transform.scale, 0, 2 * Math.PI);
-                        ctx.fill();
+                        // Add to single path
+                        ctx.moveTo(x + scaledPointSize, y);
+                        ctx.arc(x, y, scaledPointSize, 0, 2 * Math.PI);
 
+                        // Cache screen position
                         point.screenX = x;
                         point.screenY = y;
-                        point.screenRadius = pointSize / transform.scale;
+                        point.screenRadius = scaledPointSize;
                     });
+                    // Fill entire batch at once
+                    ctx.fill();
                 }
                 
-                // Draw open points
+                // Draw open points in single batch
                 if (showOpen && pointTypes.open.length > 0) {
                     ctx.globalAlpha = 0.8;
                     ctx.fillStyle = color;
+                    
+                    ctx.beginPath();
                     pointTypes.open.forEach(point => {
                         const ringIndex = getRingIndex(point.m);
                         const perRingRotation = getPerRingRotation(ringIndex, totalRings);
@@ -2500,20 +2649,22 @@
                         const x = r * Math.cos(totalAngle);
                         const y = r * Math.sin(totalAngle);
 
-                        ctx.beginPath();
-                        ctx.arc(x, y, pointSize / transform.scale, 0, 2 * Math.PI);
-                        ctx.fill();
+                        ctx.moveTo(x + scaledPointSize, y);
+                        ctx.arc(x, y, scaledPointSize, 0, 2 * Math.PI);
 
                         point.screenX = x;
                         point.screenY = y;
-                        point.screenRadius = pointSize / transform.scale;
+                        point.screenRadius = scaledPointSize;
                     });
+                    ctx.fill();
                 }
                 
-                // Draw admissible points
+                // Draw admissible points in single batch
                 if (pointTypes.admissible.length > 0) {
                     ctx.globalAlpha = 0.9;
                     ctx.fillStyle = '#aa00ff';
+                    
+                    ctx.beginPath();
                     pointTypes.admissible.forEach(point => {
                         const ringIndex = getRingIndex(point.m);
                         const perRingRotation = getPerRingRotation(ringIndex, totalRings);
@@ -2523,14 +2674,14 @@
                         const x = r * Math.cos(totalAngle);
                         const y = r * Math.sin(totalAngle);
 
-                        ctx.beginPath();
-                        ctx.arc(x, y, (pointSize * 1.2) / transform.scale, 0, 2 * Math.PI);
-                        ctx.fill();
+                        ctx.moveTo(x + scaledAdmissibleSize, y);
+                        ctx.arc(x, y, scaledAdmissibleSize, 0, 2 * Math.PI);
 
                         point.screenX = x;
                         point.screenY = y;
-                        point.screenRadius = (pointSize * 1.2) / transform.scale;
+                        point.screenRadius = scaledAdmissibleSize;
                     });
+                    ctx.fill();
                 }
             });
             
@@ -2679,24 +2830,22 @@
                 ctx.globalAlpha = gapOpacity;
                 ctx.lineWidth = gapLineWidth / transform.scale;
 
-                const pointsByMod = {};
-                pointsData.forEach(p => {
-                    if (!pointsByMod[p.m]) pointsByMod[p.m] = {};
-                    pointsByMod[p.m][p.r] = p;
-                });
-
+                // Use pre-computed lookup table for O(1) access
+                ctx.beginPath();
+                
                 pointsData.forEach(point => {
                     if (!point.isOpen) return;
                     if (!point.admissibleGaps.includes(gap)) return;
 
                     const rPlusG = (point.r + gap) % point.m;
-                    const targetPoint = pointsByMod[point.m] && pointsByMod[point.m][rPlusG];
+                    const targetPoint = pointsByModulus[point.m] && pointsByModulus[point.m][rPlusG];
                     
                     if (targetPoint && targetPoint.isOpen) {
                         drawLineBetweenPoints(point, targetPoint, point.m, point.m, radiusScale, displayMode);
                     }
                 });
                 
+                ctx.stroke();
                 ctx.globalAlpha = 1.0;
             });
         }
