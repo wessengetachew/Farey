@@ -1144,10 +1144,48 @@
                         </div>
                     </div>
 
+                    <div class="control-section">
+                        <h3>Export Settings</h3>
+                        
+                        <div class="control-group">
+                            <label>Export Title</label>
+                            <input type="text" id="exportTitle" value="Modular Rings Visualization" placeholder="Enter title for export">
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="includeLegend" checked>
+                                Include Parameter Legend
+                            </label>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Legend Position</label>
+                            <select id="legendPosition">
+                                <option value="top">Top</option>
+                                <option value="bottom">Bottom</option>
+                                <option value="right">Right Side</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Export Resolution</label>
+                            <select id="exportResolution">
+                                <option value="1">Current (1000×800)</option>
+                                <option value="2">2× (2000×1600)</option>
+                                <option value="3">3× (3000×2400)</option>
+                                <option value="4">4× (4000×3200)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button onclick="exportImage()">Export PNG</button>
+                            <button onclick="exportCSV()">Export CSV</button>
+                        </div>
+                    </div>
+
                     <div class="button-group">
                         <button onclick="updateVisualization()">Update</button>
-                        <button onclick="exportImage()">PNG</button>
-                        <button onclick="exportCSV()">CSV</button>
                         <button onclick="resetSettings()">Reset</button>
                     </div>
 
@@ -3289,22 +3327,15 @@
         }
 
         function setPreset(n) {
-            const m = 30 * Math.pow(2, n);
+            document.getElementById('modSelectionMode').value = 'M30-sequence';
+            document.getElementById('sequenceInputs').style.display = 'block';
+            document.getElementById('rangeInputs').style.display = 'none';
+            document.getElementById('customInputs').style.display = 'none';
+            document.getElementById('sequenceTerms').value = n + 1;
             
-            // Set range from 30 to the target modulus, showing nested structure
-            document.getElementById('modMin').value = 30;
-            document.getElementById('modMax').value = m;
-            
-            // Use custom step to show only the M_n sequence: 30, 60, 120, 240, 480, 960
-            // We'll set step to 30, but need to ensure we only get powers of 2 multiples
-            document.getElementById('modStep').value = 30;
-            
-            // Enable connections to show nested lifting structure
             document.getElementById('enableConnections').checked = true;
             document.getElementById('connectionMode').value = 'double-lift';
             document.getElementById('displayMode').value = 'rings';
-            
-            // Show only open channels (gcd = 1)
             document.getElementById('showOpen').checked = true;
             document.getElementById('showClosed').checked = false;
             
@@ -3312,11 +3343,12 @@
         }
 
         function setPresetRange() {
-            document.getElementById('modMin').value = 30;
-            document.getElementById('modMax').value = 960;
-            document.getElementById('modStep').value = 30;
+            document.getElementById('modSelectionMode').value = 'M30-sequence';
+            document.getElementById('sequenceInputs').style.display = 'block';
+            document.getElementById('rangeInputs').style.display = 'none';
+            document.getElementById('customInputs').style.display = 'none';
+            document.getElementById('sequenceTerms').value = 6;
             
-            // Enable connections to show nested structure
             document.getElementById('enableConnections').checked = true;
             document.getElementById('connectionMode').value = 'binary-lift';
             document.getElementById('displayMode').value = 'rings';
@@ -3325,10 +3357,227 @@
         }
 
         function exportImage() {
+            const includeLegend = document.getElementById('includeLegend').checked;
+            const exportTitle = document.getElementById('exportTitle').value;
+            const legendPosition = document.getElementById('legendPosition').value;
+            const resolution = parseFloat(document.getElementById('exportResolution').value);
+            
+            // Create temporary canvas at higher resolution
+            const tempCanvas = document.createElement('canvas');
+            const baseWidth = canvas.width;
+            const baseHeight = canvas.height;
+            
+            let exportWidth = baseWidth * resolution;
+            let exportHeight = baseHeight * resolution;
+            
+            // Calculate legend dimensions
+            let legendHeight = 0;
+            let legendWidth = 0;
+            
+            if (includeLegend) {
+                if (legendPosition === 'top' || legendPosition === 'bottom') {
+                    legendHeight = 250 * resolution;
+                    exportHeight += legendHeight;
+                } else {
+                    legendWidth = 400 * resolution;
+                    exportWidth += legendWidth;
+                }
+            }
+            
+            tempCanvas.width = exportWidth;
+            tempCanvas.height = exportHeight;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Fill background
+            const bgColor = currentTheme === 'dark' ? '#000000' : '#ffffff';
+            const textColor = currentTheme === 'dark' ? '#ffffff' : '#000000';
+            tempCtx.fillStyle = bgColor;
+            tempCtx.fillRect(0, 0, exportWidth, exportHeight);
+            
+            // Calculate canvas position based on legend
+            let canvasX = 0;
+            let canvasY = 0;
+            
+            if (legendPosition === 'top') {
+                canvasY = legendHeight;
+            } else if (legendPosition === 'right') {
+                canvasX = 0;
+            }
+            
+            // Draw main visualization scaled up
+            tempCtx.save();
+            tempCtx.scale(resolution, resolution);
+            
+            // Temporarily draw to the temp context
+            const originalCtx = ctx;
+            const originalCanvas = canvas;
+            
+            // Create a scaled version of the current canvas
+            tempCtx.drawImage(canvas, canvasX / resolution, canvasY / resolution);
+            
+            tempCtx.restore();
+            
+            // Draw legend if enabled
+            if (includeLegend) {
+                drawLegend(tempCtx, exportTitle, legendPosition, legendHeight, legendWidth, exportWidth, exportHeight, resolution, textColor, bgColor);
+            }
+            
+            // Export
             const link = document.createElement('a');
-            link.download = `modular_rings_${new Date().toISOString().slice(0,10)}.png`;
-            link.href = canvas.toDataURL('image/png');
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            link.download = `modular_rings_${timestamp}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
             link.click();
+        }
+
+        function drawLegend(ctx, title, position, legendHeight, legendWidth, totalWidth, totalHeight, resolution, textColor, bgColor) {
+            const moduli = getSelectedModuli();
+            const mode = document.getElementById('modSelectionMode').value;
+            const displayMode = document.getElementById('displayMode').value;
+            const angularMapping = document.getElementById('angularMapping').value;
+            const showOpen = document.getElementById('showOpen').checked;
+            const showClosed = document.getElementById('showClosed').checked;
+            const enableGap = document.getElementById('enableGapAnalysis').checked;
+            const gapValues = document.getElementById('gapValues').value;
+            const enableTracker = document.getElementById('enableTracker').checked;
+            const trackedResidues = document.getElementById('trackedResidues').value;
+            const invertOrder = document.getElementById('invertModOrder').checked;
+            const enableConnections = document.getElementById('enableConnections').checked;
+            const connectionMode = document.getElementById('connectionMode').value;
+            
+            ctx.fillStyle = textColor;
+            const fontSize = 14 * resolution;
+            const lineHeight = 20 * resolution;
+            const padding = 20 * resolution;
+            
+            let startX, startY, maxWidth;
+            
+            if (position === 'top') {
+                startX = padding;
+                startY = padding;
+                maxWidth = totalWidth - 2 * padding;
+            } else if (position === 'bottom') {
+                startX = padding;
+                startY = totalHeight - legendHeight + padding;
+                maxWidth = totalWidth - 2 * padding;
+            } else {
+                startX = totalWidth - legendWidth + padding;
+                startY = padding;
+                maxWidth = legendWidth - 2 * padding;
+            }
+            
+            let y = startY;
+            
+            // Title
+            ctx.font = `bold ${fontSize * 1.5}px Arial`;
+            ctx.fillText(title, startX, y);
+            y += lineHeight * 1.8;
+            
+            // Draw separator
+            ctx.strokeStyle = textColor;
+            ctx.lineWidth = 1 * resolution;
+            ctx.beginPath();
+            ctx.moveTo(startX, y);
+            ctx.lineTo(startX + maxWidth * 0.8, y);
+            ctx.stroke();
+            y += lineHeight;
+            
+            // Parameters
+            ctx.font = `${fontSize}px Arial`;
+            
+            // Modulus configuration
+            let moduliText = '';
+            if (mode === 'range') {
+                const modMin = document.getElementById('modMin').value;
+                const modMax = document.getElementById('modMax').value;
+                const modStep = document.getElementById('modStep').value;
+                moduliText = `Range: ${modMin} to ${modMax} (step ${modStep})`;
+            } else if (mode === 'fibonacci') {
+                moduliText = `Fibonacci sequence (max ${document.getElementById('sequenceMax').value})`;
+            } else if (mode === 'primes') {
+                moduliText = `Prime moduli (max ${document.getElementById('sequenceMax').value})`;
+            } else if (mode === 'powers-of-2') {
+                moduliText = `Powers of 2 (${document.getElementById('sequenceTerms').value} terms)`;
+            } else if (mode === 'powers-of-3') {
+                moduliText = `Powers of 3 (${document.getElementById('sequenceTerms').value} terms)`;
+            } else if (mode === 'M30-sequence') {
+                moduliText = `M₃₀ = 30×2ⁿ (${document.getElementById('sequenceTerms').value} terms)`;
+            } else if (mode === 'custom') {
+                const customMods = document.getElementById('customModuli').value;
+                moduliText = `Custom: ${customMods}`;
+            }
+            
+            ctx.fillText(`Moduli: ${moduliText}`, startX, y);
+            y += lineHeight;
+            
+            ctx.fillText(`Total Moduli: ${moduli.length}`, startX, y);
+            y += lineHeight;
+            
+            ctx.fillText(`Display Mode: ${displayMode === 'rings' ? 'Concentric Rings' : 'Unit Circle'}`, startX, y);
+            y += lineHeight;
+            
+            if (invertOrder) {
+                ctx.fillText(`Order: Inverted (Outer↔Inner)`, startX, y);
+                y += lineHeight;
+            }
+            
+            ctx.fillText(`Angular Mapping: ${angularMapping}`, startX, y);
+            y += lineHeight;
+            
+            const channelText = showOpen && showClosed ? 'Open & Closed' : showOpen ? 'Open Only' : 'Closed Only';
+            ctx.fillText(`Channels: ${channelText}`, startX, y);
+            y += lineHeight;
+            
+            if (enableGap) {
+                ctx.fillText(`Gap Analysis: ${gapValues}`, startX, y);
+                y += lineHeight;
+            }
+            
+            if (enableTracker) {
+                ctx.fillText(`Tracked Residues: ${trackedResidues}`, startX, y);
+                y += lineHeight;
+            }
+            
+            if (enableConnections) {
+                const connModeText = connectionMode === 'next-mod' ? 'r to r (Next Mod)' :
+                                     connectionMode === 'binary-lift' ? 'Binary Lift' :
+                                     connectionMode === 'double-lift' ? 'r to r+M×2ⁿ' :
+                                     connectionMode === 'same-mod' ? 'Same Modulus' :
+                                     connectionMode === 'specific-mod' ? 'Specific Modulus' : 'None';
+                ctx.fillText(`Connections: ${connModeText}`, startX, y);
+                y += lineHeight;
+            }
+            
+            // Statistics
+            y += lineHeight * 0.5;
+            ctx.font = `bold ${fontSize}px Arial`;
+            ctx.fillText('Statistics:', startX, y);
+            y += lineHeight;
+            
+            ctx.font = `${fontSize}px Arial`;
+            const totalPoints = document.getElementById('statTotal').textContent;
+            const openCount = document.getElementById('statOpen').textContent;
+            const closedCount = document.getElementById('statClosed').textContent;
+            const openRatio = document.getElementById('statRatio').textContent;
+            const avgPhi = document.getElementById('statAvgPhi').textContent;
+            
+            ctx.fillText(`Total Points: ${totalPoints}`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Open: ${openCount}, Closed: ${closedCount}`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Open Ratio: ${openRatio}`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Avg φ(m)/m: ${avgPhi} (Limit: 0.6079)`, startX, y);
+            y += lineHeight;
+            
+            // Author and date
+            y += lineHeight * 0.5;
+            ctx.font = `${fontSize * 0.9}px Arial`;
+            ctx.fillStyle = textColor;
+            const date = new Date().toLocaleDateString();
+            ctx.fillText(`Generated: ${date}`, startX, y);
+            y += lineHeight;
+            ctx.fillText('By Wessen Getachew', startX, y);
         }
 
         function exportCSV() {
