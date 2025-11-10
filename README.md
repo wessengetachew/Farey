@@ -938,6 +938,18 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="performanceMode" checked>
+                                Performance Mode (Faster Rendering)
+                            </label>
+                        </div>
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enablePointClick">
+                                Enable Point Click Info
+                            </label>
+                        </div>
                         <div class="control-row">
                             <div class="control-group">
                                 <label>Background Color</label>
@@ -1193,7 +1205,13 @@
         let isComputing = false;
         let progressiveRenderBatch = 0;
         const PROGRESSIVE_BATCH_SIZE = 1000;
-        const COMPUTE_CHUNK_SIZE = 500; // Process this many residues before yielding (increased from 100)
+        const COMPUTE_CHUNK_SIZE = 500;
+        
+        // Performance mode caching
+        let cachedStaticCanvas = null;
+        let cachedPointBatches = null;
+        let lastDrawSettings = null;
+        let needsFullRedraw = true;
 
         // Progressive computation without Web Worker
         async function computePointsProgressive(modMin, modMax, modStep, gaps, angularMapping) {
@@ -2133,6 +2151,503 @@
         document.getElementById('trackerModFilter').addEventListener('input', updateTrackerInfo);
 
         function drawVisualization() {
+            const performanceMode = document.getElementById('performanceMode').checked;
+            
+            if (performanceMode) {
+                drawVisualizationOptimized();
+            } else {
+                drawVisualizationStandard();
+            }
+        }
+
+        // Helper function to get radius for a modulus
+        function getRadius(m) {
+            const width = canvas.width;
+            const height = canvas.height;
+            const maxRadius = Math.min(width, height) * 0.4;
+            const displayMode = document.getElementById('displayMode').value;
+            const invertOrder = document.getElementById('invertModOrder').checked;
+            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+            
+            if (displayMode === 'unit') {
+                return maxRadius;
+            }
+            
+            const radiusScale = maxRadius / Math.max(...moduli);
+            
+            if (invertOrder) {
+                const maxMod = Math.max(...moduli);
+                const minMod = Math.min(...moduli);
+                const inverted = maxMod - (m - minMod);
+                return inverted * radiusScale;
+            }
+            
+            return m * radiusScale;
+        }
+
+        function drawVisualizationOptimized() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const maxRadius = Math.min(width, height) * 0.4;
+
+            // Check if we need full redraw
+            const currentSettings = JSON.stringify({
+                displayMode: document.getElementById('displayMode').value,
+                showOpen: document.getElementById('showOpen').checked,
+                showClosed: document.getElementById('showClosed').checked,
+                showRingLines: document.getElementById('showRingLines').checked,
+                pointSize: document.getElementById('pointSize').value,
+                baseOpenColor: document.getElementById('baseOpenColor').value,
+                baseClosedColor: document.getElementById('baseClosedColor').value,
+                openColorMode: document.getElementById('openColorMode').value,
+                invertOrder: document.getElementById('invertModOrder').checked,
+                pointsLength: pointsData.length
+            });
+
+            if (currentSettings !== lastDrawSettings || needsFullRedraw) {
+                // Pre-batch points by color for faster rendering
+                cachedPointBatches = batchPointsByColor();
+                
+                // Create static background layer (ring lines)
+                if (!cachedStaticCanvas) {
+                    cachedStaticCanvas = document.createElement('canvas');
+                    cachedStaticCanvas.width = width;
+                    cachedStaticCanvas.height = height;
+                }
+                
+                drawStaticElements(cachedStaticCanvas);
+                lastDrawSettings = currentSettings;
+                needsFullRedraw = false;
+            }
+
+            // Always use black background
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+
+            // Draw cached static background
+            if (cachedStaticCanvas) {
+                ctx.drawImage(cachedStaticCanvas, 0, 0);
+            }
+
+            ctx.save();
+            ctx.translate(centerX + transform.x, centerY + transform.y);
+            ctx.scale(transform.scale, transform.scale);
+            ctx.rotate(globalRotation * Math.PI / 180);
+
+            const displayMode = document.getElementById('displayMode').value;
+            const showOpen = document.getElementById('showOpen').checked;
+            const showClosed = document.getElementById('showClosed').checked;
+            const pointSize = parseFloat(document.getElementById('pointSize').value);
+            const enableTracker = document.getElementById('enableTracker').checked;
+            const enableConnections = document.getElementById('enableConnections').checked;
+            const showGapLines = document.getElementById('showGapLines').checked;
+            const enableGap = document.getElementById('enableGapAnalysis').checked;
+
+            const radiusScale = displayMode === 'unit' ? maxRadius : maxRadius / Math.max(...pointsData.map(p => p.m));
+
+            // Draw connection lines (if enabled and not too many)
+            if (enableConnections && pointsData.length < 5000) {
+                drawConnectionLines(radiusScale, displayMode);
+            }
+
+            // Draw gap lines (if enabled and not too many)
+            if (showGapLines && enableGap && pointsData.length < 5000) {
+                drawGapLines(radiusScale, displayMode);
+            }
+
+            // Draw points using batched rendering
+            if (cachedPointBatches) {
+                drawBatchedPoints(cachedPointBatches, pointSize, displayMode, radiusScale, showOpen, showClosed);
+            }
+
+            // Draw tracker
+            if (enableTracker) {
+                drawTrackerPoints(radiusScale, displayMode);
+            }
+
+            // Draw labels (skip in performance mode if too many points)
+            const showLabels = document.getElementById('showLabels').checked;
+            if (showLabels && pointsData.length < 2000) {
+                drawLabels(radiusScale, displayMode, showOpen, showClosed, pointSize);
+            }
+
+            ctx.restore();
+        }
+
+        function drawStaticElements(staticCanvas) {
+            const staticCtx = staticCanvas.getContext('2d');
+            const width = staticCanvas.width;
+            const height = staticCanvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const maxRadius = Math.min(width, height) * 0.4;
+
+            staticCtx.clearRect(0, 0, width, height);
+            
+            const showRingLines = document.getElementById('showRingLines').checked;
+            const displayMode = document.getElementById('displayMode').value;
+            
+            if (showRingLines && displayMode === 'rings') {
+                staticCtx.save();
+                staticCtx.translate(centerX + transform.x, centerY + transform.y);
+                staticCtx.scale(transform.scale, transform.scale);
+                staticCtx.rotate(globalRotation * Math.PI / 180);
+                
+                staticCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                staticCtx.lineWidth = 1 / transform.scale;
+                
+                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+                moduli.forEach(m => {
+                    staticCtx.beginPath();
+                    staticCtx.arc(0, 0, getRadius(m), 0, 2 * Math.PI);
+                    staticCtx.stroke();
+                });
+                
+                staticCtx.restore();
+            }
+        }
+
+        function batchPointsByColor() {
+            const batches = new Map();
+            const openColorMode = document.getElementById('openColorMode').value;
+            const closedColorMode = document.getElementById('closedColorMode').value;
+            
+            pointsData.forEach(point => {
+                const color = getColorForPoint(point, point.isOpen);
+                
+                if (!batches.has(color)) {
+                    batches.set(color, {
+                        open: [],
+                        closed: [],
+                        admissible: []
+                    });
+                }
+                
+                if (point.isAdmissible) {
+                    batches.get(color).admissible.push(point);
+                } else if (point.isOpen) {
+                    batches.get(color).open.push(point);
+                } else {
+                    batches.get(color).closed.push(point);
+                }
+            });
+            
+            return batches;
+        }
+
+        function drawBatchedPoints(batches, pointSize, displayMode, radiusScale, showOpen, showClosed) {
+            batches.forEach((pointTypes, color) => {
+                // Draw closed points
+                if (showClosed && pointTypes.closed.length > 0) {
+                    ctx.globalAlpha = 0.3;
+                    ctx.fillStyle = color;
+                    pointTypes.closed.forEach(point => {
+                        const modRot = modRotations[point.m] || 0;
+                        const totalAngle = point.angle + (modRot * Math.PI / 180);
+                        const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
+                        const x = r * Math.cos(totalAngle);
+                        const y = r * Math.sin(totalAngle);
+
+                        ctx.beginPath();
+                        ctx.arc(x, y, pointSize / transform.scale, 0, 2 * Math.PI);
+                        ctx.fill();
+
+                        point.screenX = x;
+                        point.screenY = y;
+                        point.screenRadius = pointSize / transform.scale;
+                    });
+                }
+                
+                // Draw open points
+                if (showOpen && pointTypes.open.length > 0) {
+                    ctx.globalAlpha = 0.8;
+                    ctx.fillStyle = color;
+                    pointTypes.open.forEach(point => {
+                        const modRot = modRotations[point.m] || 0;
+                        const totalAngle = point.angle + (modRot * Math.PI / 180);
+                        const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
+                        const x = r * Math.cos(totalAngle);
+                        const y = r * Math.sin(totalAngle);
+
+                        ctx.beginPath();
+                        ctx.arc(x, y, pointSize / transform.scale, 0, 2 * Math.PI);
+                        ctx.fill();
+
+                        point.screenX = x;
+                        point.screenY = y;
+                        point.screenRadius = pointSize / transform.scale;
+                    });
+                }
+                
+                // Draw admissible points
+                if (pointTypes.admissible.length > 0) {
+                    ctx.globalAlpha = 0.9;
+                    ctx.fillStyle = '#aa00ff';
+                    pointTypes.admissible.forEach(point => {
+                        const modRot = modRotations[point.m] || 0;
+                        const totalAngle = point.angle + (modRot * Math.PI / 180);
+                        const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
+                        const x = r * Math.cos(totalAngle);
+                        const y = r * Math.sin(totalAngle);
+
+                        ctx.beginPath();
+                        ctx.arc(x, y, (pointSize * 1.2) / transform.scale, 0, 2 * Math.PI);
+                        ctx.fill();
+
+                        point.screenX = x;
+                        point.screenY = y;
+                        point.screenRadius = (pointSize * 1.2) / transform.scale;
+                    });
+                }
+            });
+            
+            ctx.globalAlpha = 1.0;
+        }
+
+        function drawConnectionLines(radiusScale, displayMode) {
+            const connectionMode = document.getElementById('connectionMode').value;
+            if (connectionMode === 'none') return;
+            
+            const connOpacity = parseFloat(document.getElementById('connOpacity').value);
+            const connLineWidth = parseFloat(document.getElementById('connLineWidth').value);
+            const onlyOpenConn = document.getElementById('onlyOpenConn').checked;
+            
+            ctx.strokeStyle = `rgba(255, 255, 255, ${connOpacity})`;
+            ctx.lineWidth = connLineWidth / transform.scale;
+            
+            // Only draw connection lines for reasonable dataset sizes
+            if (connectionMode === 'same-mod') {
+                drawSameModConnections(radiusScale, displayMode, onlyOpenConn);
+            } else if (connectionMode === 'specific-mod') {
+                drawSpecificModConnections(radiusScale, displayMode, onlyOpenConn);
+            } else {
+                drawCrossModulusConnections(radiusScale, displayMode, connectionMode, onlyOpenConn);
+            }
+        }
+
+        function drawSameModConnections(radiusScale, displayMode, onlyOpenConn) {
+            const sameModPattern = document.getElementById('sameModPattern').value;
+            const sameModGap = parseInt(document.getElementById('sameModGap').value);
+            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
+            
+            moduli.forEach(m => {
+                const pointsInMod = pointsData.filter(p => p.m === m);
+                
+                pointsInMod.forEach((p1, idx) => {
+                    if (onlyOpenConn && !p1.isOpen) return;
+                    
+                    let targetPoints = [];
+                    
+                    if (sameModPattern === 'sequential') {
+                        const nextR = (p1.r + 1) % m;
+                        targetPoints = pointsInMod.filter(p2 => p2.r === nextR);
+                    } else if (sameModPattern === 'open-only') {
+                        if (p1.isOpen) {
+                            targetPoints = pointsInMod.filter(p2 => p2.isOpen && p2.r !== p1.r);
+                        }
+                    } else if (sameModPattern === 'by-gap') {
+                        const targetR = (p1.r + sameModGap) % m;
+                        targetPoints = pointsInMod.filter(p2 => p2.r === targetR);
+                    }
+                    
+                    targetPoints.forEach(p2 => {
+                        if (onlyOpenConn && !p2.isOpen) return;
+                        drawLineBetweenPoints(p1, p2, m, m, radiusScale, displayMode);
+                    });
+                });
+            });
+        }
+
+        function drawSpecificModConnections(radiusScale, displayMode, onlyOpenConn) {
+            const specificMod = parseInt(document.getElementById('specificModValue').value);
+            const pointsInMod = pointsData.filter(p => p.m === specificMod);
+            
+            pointsInMod.forEach((p1, idx) => {
+                if (onlyOpenConn && !p1.isOpen) return;
+                if (idx < pointsInMod.length - 1) {
+                    const p2 = pointsInMod[idx + 1];
+                    if (onlyOpenConn && !p2.isOpen) return;
+                    drawLineBetweenPoints(p1, p2, specificMod, specificMod, radiusScale, displayMode);
+                }
+            });
+        }
+
+        function drawCrossModulusConnections(radiusScale, displayMode, connectionMode, onlyOpenConn) {
+            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
+            
+            for (let i = 0; i < moduli.length - 1; i++) {
+                const m1 = moduli[i];
+                const m2 = moduli[i + 1];
+                
+                const points1 = pointsData.filter(p => p.m === m1);
+                const points2 = pointsData.filter(p => p.m === m2);
+
+                points1.forEach(p1 => {
+                    if (onlyOpenConn && !p1.isOpen) return;
+
+                    let targetPoints = [];
+                    
+                    if (connectionMode === 'next-mod') {
+                        targetPoints = points2.filter(p2 => p2.r === p1.r);
+                    } else if (connectionMode === 'binary-lift') {
+                        targetPoints = points2.filter(p2 => p2.r === p1.r || p2.r === (p1.r + m1) % m2);
+                    } else if (connectionMode === 'double-lift') {
+                        for (let n = 0; n < 5; n++) {
+                            const target = (p1.r + m1 * Math.pow(2, n)) % m2;
+                            targetPoints = targetPoints.concat(points2.filter(p2 => p2.r === target));
+                        }
+                    }
+
+                    targetPoints.forEach(p2 => {
+                        if (onlyOpenConn && !p2.isOpen) return;
+                        drawLineBetweenPoints(p1, p2, m1, m2, radiusScale, displayMode);
+                    });
+                });
+            }
+        }
+
+        function drawLineBetweenPoints(p1, p2, m1, m2, radiusScale, displayMode) {
+            const modRot1 = modRotations[m1] || 0;
+            const angle1 = p1.angle + (modRot1 * Math.PI / 180);
+            const r1 = displayMode === 'unit' ? radiusScale : getRadius(m1);
+            const x1 = r1 * Math.cos(angle1);
+            const y1 = r1 * Math.sin(angle1);
+
+            const modRot2 = modRotations[m2] || 0;
+            const angle2 = p2.angle + (modRot2 * Math.PI / 180);
+            const r2 = displayMode === 'unit' ? radiusScale : getRadius(m2);
+            const x2 = r2 * Math.cos(angle2);
+            const y2 = r2 * Math.sin(angle2);
+
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+
+        function drawGapLines(radiusScale, displayMode) {
+            const gapInput = document.getElementById('gapValues').value;
+            const gaps = gapInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g > 0);
+            const gapOpacity = parseFloat(document.getElementById('gapOpacity').value);
+            const gapLineWidth = parseFloat(document.getElementById('gapLineWidth').value);
+
+            gaps.forEach((gap, gapIdx) => {
+                const gapColorInput = document.getElementById(`gapColor${gapIdx}`);
+                const gapColor = gapColorInput ? gapColorInput.value : gapColorScheme[gapIdx % gapColorScheme.length];
+                
+                ctx.strokeStyle = gapColor;
+                ctx.globalAlpha = gapOpacity;
+                ctx.lineWidth = gapLineWidth / transform.scale;
+
+                const pointsByMod = {};
+                pointsData.forEach(p => {
+                    if (!pointsByMod[p.m]) pointsByMod[p.m] = {};
+                    pointsByMod[p.m][p.r] = p;
+                });
+
+                pointsData.forEach(point => {
+                    if (!point.isOpen) return;
+                    if (!point.admissibleGaps.includes(gap)) return;
+
+                    const rPlusG = (point.r + gap) % point.m;
+                    const targetPoint = pointsByMod[point.m] && pointsByMod[point.m][rPlusG];
+                    
+                    if (targetPoint && targetPoint.isOpen) {
+                        drawLineBetweenPoints(point, targetPoint, point.m, point.m, radiusScale, displayMode);
+                    }
+                });
+                
+                ctx.globalAlpha = 1.0;
+            });
+        }
+
+        function drawTrackerPoints(radiusScale, displayMode) {
+            const trackedInput = document.getElementById('trackedResidues').value;
+            const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
+            const modFilter = document.getElementById('trackerModFilter').value;
+            const filterMod = modFilter ? parseInt(modFilter) : null;
+            const trackerColor = document.getElementById('trackerColor').value;
+            const trackerSize = parseFloat(document.getElementById('trackerSize').value);
+            
+            trackedRs.forEach(trackedResidue => {
+                let filteredPoints = pointsData.filter(p => p.r === trackedResidue);
+                if (filterMod !== null) {
+                    filteredPoints = filteredPoints.filter(p => p.m === filterMod);
+                }
+                
+                filteredPoints.forEach(point => {
+                    const modRot = modRotations[point.m] || 0;
+                    const totalAngle = point.angle + (modRot * Math.PI / 180);
+                    const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
+                    const x = r * Math.cos(totalAngle);
+                    const y = r * Math.sin(totalAngle);
+
+                    ctx.strokeStyle = trackerColor;
+                    ctx.lineWidth = 2 / transform.scale;
+                    ctx.fillStyle = trackerColor;
+                    ctx.globalAlpha = 0.9;
+                    ctx.beginPath();
+                    ctx.arc(x, y, trackerSize / transform.scale, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                });
+            });
+        }
+
+        function drawLabels(radiusScale, displayMode, showOpen, showClosed, pointSize) {
+            const labelType = document.getElementById('labelType').value;
+            const labelFilter = document.getElementById('labelFilter').value;
+            const labelFilterValue = parseInt(document.getElementById('labelFilterValue').value);
+            const labelSize = parseFloat(document.getElementById('labelSize').value);
+            const labelColor = document.getElementById('labelColor').value;
+            const labelBg = document.getElementById('labelBackground').checked;
+            const labelSpacing = parseFloat(document.getElementById('labelSpacing').value);
+
+            ctx.font = `${labelSize / transform.scale}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            pointsData.forEach(point => {
+                if (!shouldShowLabel(point, labelFilter, labelFilterValue)) return;
+                if (!showOpen && point.isOpen) return;
+                if (!showClosed && !point.isOpen) return;
+
+                const modRot = modRotations[point.m] || 0;
+                const totalAngle = point.angle + (modRot * Math.PI / 180);
+                const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
+                const x = r * Math.cos(totalAngle);
+                const y = r * Math.sin(totalAngle);
+
+                const labelText = getPointLabel(point, labelType);
+                const labelOffset = (pointSize + labelSpacing) / transform.scale;
+                const labelX = x + labelOffset * Math.cos(totalAngle);
+                const labelY = y + labelOffset * Math.sin(totalAngle);
+
+                if (labelBg) {
+                    const metrics = ctx.measureText(labelText);
+                    const padding = 2 / transform.scale;
+                    const bgHeight = labelSize / transform.scale + 2 * padding;
+                    const bgWidth = metrics.width + 2 * padding;
+
+                    ctx.fillStyle = currentTheme === 'dark' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)';
+                    ctx.fillRect(
+                        labelX - bgWidth / 2,
+                        labelY - bgHeight / 2,
+                        bgWidth,
+                        bgHeight
+                    );
+                }
+
+                ctx.fillStyle = labelColor;
+                ctx.fillText(labelText, labelX, labelY);
+            });
+        }
+
+        function drawVisualizationStandard() {
             const width = canvas.width;
             const height = canvas.height;
             const centerX = width / 2;
@@ -2678,8 +3193,10 @@
         }
 
         function handleEnd(e) {
-            if (!isDragging) {
-                // Click detected
+            const enablePointClick = document.getElementById('enablePointClick').checked;
+            
+            if (!isDragging && enablePointClick) {
+                // Click detected and point clicking is enabled
                 const coords = e.changedTouches ? 
                     { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY } :
                     { x: e.clientX, y: e.clientY };
@@ -2692,16 +3209,27 @@
                 const rx = x * Math.cos(angle) - y * Math.sin(angle);
                 const ry = x * Math.sin(angle) + y * Math.cos(angle);
                 
+                let foundPoint = null;
+                let minDist = Infinity;
+                
                 pointsData.forEach(point => {
                     if (point.screenX !== undefined) {
                         const dx = rx - point.screenX;
                         const dy = ry - point.screenY;
                         const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < point.screenRadius * 2) {
-                            alert(`Point Details:\n\nModulus m = ${point.m}\nResidue r = ${point.r}\ngcd(${point.r}, ${point.m}) = ${point.gcd}\nChannel: ${point.isOpen ? 'OPEN' : 'CLOSED'}\nφ(${point.m}) = ${point.phiM}\nAngle: ${(point.angle * 180 / Math.PI).toFixed(2)}°${point.isAdmissible ? '\n\nGAP ADMISSIBLE' : ''}`);
+                        if (dist < point.screenRadius * 3 && dist < minDist) {
+                            minDist = dist;
+                            foundPoint = point;
                         }
                     }
                 });
+                
+                if (foundPoint) {
+                    const [reducedNum, reducedDen] = reduceFraction(foundPoint.r, foundPoint.m);
+                    const fareyFraction = `${foundPoint.r}/${foundPoint.m}` + (reducedNum !== foundPoint.r ? ` = ${reducedNum}/${reducedDen}` : '');
+                    
+                    alert(`Point Details:\n\nModulus m = ${foundPoint.m}\nResidue r = ${foundPoint.r}\nFarey Fraction: ${fareyFraction}\n\ngcd(${foundPoint.r}, ${foundPoint.m}) = ${foundPoint.gcd}\nChannel: ${foundPoint.isOpen ? 'OPEN' : 'CLOSED'}\nφ(${foundPoint.m}) = ${foundPoint.phiM}\nAngle: ${(foundPoint.angle * 180 / Math.PI).toFixed(2)}°${foundPoint.isAdmissible ? '\n\nGAP ADMISSIBLE ✓' : ''}`);
+                }
             }
             isDragging = false;
             touchStartDist = 0;
@@ -3033,11 +3561,21 @@
                 alert('Computation already in progress. Please wait...');
                 return;
             }
+            needsFullRedraw = true;
+            cachedPointBatches = null;
+            cachedStaticCanvas = null;
+            lastDrawSettings = null;
             generatePointsData();
             if (!isComputing) {
                 drawVisualization();
             }
         }
+        
+        // Performance mode change handler
+        document.getElementById('performanceMode').addEventListener('change', () => {
+            needsFullRedraw = true;
+            drawVisualization();
+        });
 
         function setPreset(n) {
             document.getElementById('modSelectionMode').value = 'M30-sequence';
