@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -431,109 +431,6 @@
             margin-top: 10px;
         }
 
-        .floating-update-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 9999;
-            padding: 15px 25px;
-            background: var(--hover-bg);
-            color: var(--hover-text);
-            border: 2px solid var(--border-color);
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .floating-update-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-        }
-
-        .floating-update-btn:active {
-            transform: translateY(-1px);
-        }
-
-        .floating-center-btn {
-            position: fixed;
-            bottom: 90px;
-            right: 30px;
-            z-index: 9999;
-            padding: 15px 25px;
-            background: #4CAF50;
-            color: #ffffff;
-            border: 2px solid var(--border-color);
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .floating-center-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            background: #45a049;
-        }
-
-        .floating-center-btn:active {
-            transform: translateY(-1px);
-        }
-
-        .floating-export-btn {
-            position: fixed;
-            right: 30px;
-            z-index: 9999;
-            padding: 12px 20px;
-            background: #2196F3;
-            color: #ffffff;
-            border: 2px solid var(--border-color);
-            border-radius: 50px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .export-png {
-            bottom: 150px;
-        }
-
-        .export-csv {
-            bottom: 210px;
-            background: #FF9800;
-        }
-
-        .floating-export-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .export-png:hover {
-            background: #1976D2;
-        }
-
-        .export-csv:hover {
-            background: #F57C00;
-        }
-
-        .floating-export-btn:active {
-            transform: translateY(-1px);
-        }
-
         .preset-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -635,7 +532,7 @@
 </head>
 <body>
     <div class="container">
-                    <div class="header">
+        <div class="header">
             <h1>Modular Rings</h1>
             <div class="subtitle">GCD Channels, Farey Sequences & Prime Distribution</div>
             <div class="author">By Wessen Getachew</div>
@@ -644,67 +541,177 @@
             </button>
         </div>
 
-        <div class="main-content">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('introduction')">Introduction</button>
+            <button class="tab" onclick="switchTab('visualization')">Visualization</button>
+            <button class="tab" onclick="switchTab('bridge')">Euler-Maclaurin Bridge</button>
+            <button class="tab" onclick="switchTab('theory')">Theory</button>
+            <button class="tab" onclick="switchTab('references')">References</button>
+        </div>
+
+        <div id="introductionTab" class="tab-content active">
+            <div class="intro-page">
+                <h2>Introduction</h2>
+                <p>
+                    This interactive tool provides a geometric visualization of modular arithmetic, coprimality patterns, and their deep connections to prime number theory. By representing residues as points on concentric rings, we reveal the elegant structure underlying Euler's totient function, Farey sequences, and the distribution of prime numbers.
+                </p>
+
+                <div class="intro-box">
+                    <h3>What You Will Explore</h3>
+                    <p>
+                        For each modulus m, we map every residue r (where 0 ≤ r < m) to a point at angle 2πr/m on a circle of radius m. Points are classified as <strong>open channels</strong> (where gcd(r,m) = 1, indicating coprimality) or <strong>closed channels</strong> (where gcd(r,m) > 1). This simple geometric construction reveals profound mathematical patterns.
+                    </p>
+                    <p>
+                        The visualization demonstrates how the density of open channels converges to 6/π² ≈ 0.6079, the Euler product formula, and connections to the Riemann zeta function ζ(2) = π²/6. You can track individual residues across moduli, analyze prime gaps, and explore various coloring schemes based on prime factorization.
+                    </p>
+                </div>
+
+                <h2>Getting Started: Quick Walkthrough</h2>
+
+                <div class="starter-toolkit">
+                    <div class="toolkit-card">
+                        <h4>Step 1: Basic Setup</h4>
+                        <ol>
+                            <li>Navigate to the <strong>Visualization</strong> tab</li>
+                            <li>Start with default settings (m=1 to 60)</li>
+                            <li>Click <strong>Update Display</strong></li>
+                            <li>Observe concentric rings with colored points</li>
+                            <li>Green points = open channels (coprime)</li>
+                            <li>Red points = closed channels (not coprime)</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 2: Navigation</h4>
+                        <ol>
+                            <li><strong>Pan:</strong> Click and drag on canvas</li>
+                            <li><strong>Zoom:</strong> Scroll wheel or pinch</li>
+                            <li><strong>Hover:</strong> Mouse over points for details</li>
+                            <li><strong>Click:</strong> Click points for full information</li>
+                            <li><strong>Reset View:</strong> Double-click canvas</li>
+                            <li><strong>Export:</strong> Use PNG or CSV buttons</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 3: Preset Sequences</h4>
+                        <ol>
+                            <li>Try preset M_n = 30×2^n buttons</li>
+                            <li>n=0: View m=30 (single ring)</li>
+                            <li>n=1: View m=60</li>
+                            <li>Progress through n=2,3,4,5</li>
+                            <li>Click "All: 30 to 960" for full range</li>
+                            <li>Observe binary lifting structure</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 4: Rotation Effects</h4>
+                        <ol>
+                            <li>Enable <strong>Animation</strong> checkbox</li>
+                            <li>Set <strong>Global Rotation</strong> to 1-5 deg/frame</li>
+                            <li>Try <strong>Individual Mod Rotation</strong></li>
+                            <li>Select <strong>Speed Gradient</strong>: Inner-to-Outer</li>
+                            <li>Adjust <strong>Gradient Strength</strong></li>
+                            <li>Observe spiraling patterns</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 5: Coloring Schemes</h4>
+                        <ol>
+                            <li>Change <strong>Open Channel Color Mode</strong></li>
+                            <li>Try "By Smallest Prime Factor"</li>
+                            <li>Groups: 2→red, 3→orange, 5→yellow</li>
+                            <li>Try "By Residue" for rainbow patterns</li>
+                            <li>Adjust <strong>Saturation</strong> and <strong>Lightness</strong></li>
+                            <li>Compare different prime factorizations</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 6: Residue Tracker</h4>
+                        <ol>
+                            <li>Enable <strong>Residue Tracker</strong></li>
+                            <li>Set <strong>Track Residue</strong> to 7</li>
+                            <li>Observe where r=7 appears across rings</li>
+                            <li>Note coprimality patterns</li>
+                            <li>Try tracking r=1, r=11, r=13</li>
+                            <li>Check statistics in tracker display</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 7: Connection Lines</h4>
+                        <ol>
+                            <li>Enable <strong>Connect Residues</strong></li>
+                            <li>Try "r to r (Next Mod)" mode</li>
+                            <li>Shows how residues connect between rings</li>
+                            <li>Try "r to r+M×2^n" for binary lifting</li>
+                            <li>Visualizes the lifting theorem</li>
+                            <li>Adjust connection opacity</li>
+                        </ol>
+                    </div>
+
+                    <div class="toolkit-card">
+                        <h4>Step 8: Gap Analysis</h4>
+                        <ol>
+                            <li>Enable <strong>Gap Analysis</strong></li>
+                            <li>Set <strong>Gap Value</strong> to 2 (twin primes)</li>
+                            <li>Purple points = admissible pairs</li>
+                            <li>These satisfy: gcd(r,m)=1 and gcd(r+2,m)=1</li>
+                            <li>Try gaps: 4, 6, 30</li>
+                            <li>Compare admissibility counts</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="intro-box">
+                    <h3>Key Insights to Discover</h3>
+                    <ul>
+                        <li><strong>Density Convergence:</strong> Watch the Open Channel Ratio approach 6/π² ≈ 0.6079 as you increase the modulus range</li>
+                        <li><strong>Binary Lifting:</strong> Each open channel at M_n spawns exactly two open channels at M_{n+1}</li>
+                        <li><strong>Farey Structure:</strong> Enable radial lines to see the spoke pattern of reduced fractions</li>
+                        <li><strong>Prime Factorization:</strong> Color by smallest/largest prime factor to reveal divisibility patterns</li>
+                        <li><strong>Gap Patterns:</strong> Admissible residues predict where prime pairs can occur</li>
+                    </ul>
+                </div>
+
+                <h2>Mathematical Context</h2>
+                <p>
+                    This framework connects several fundamental areas of number theory: Euler's totient function φ(m) counts the open channels for each modulus. The average value of φ(m)/m equals 6/π², which appears in the Riemann zeta function as 1/ζ(2). The Farey sequence F_m consists of all reduced fractions with denominator at most m, corresponding to the angular positions of open channels on the unit circle.
+                </p>
+                <p>
+                    The gap admissibility conditions determine which residue classes can contain prime pairs (p, p+g). The Hardy-Littlewood conjecture predicts the density of such pairs based on these modular constraints. By visualizing these patterns geometrically, we gain intuition about prime distribution and the deep structure of multiplicative number theory.
+                </p>
+
+                <div class="intro-box">
+                    <h3>Recommended Exploration Paths</h3>
+                    <p><strong>For Beginners:</strong> Start with Steps 1-3, explore presets, and observe the basic open/closed channel distinction.</p>
+                    <p><strong>For Intermediate Users:</strong> Complete Steps 4-6, experiment with coloring schemes, and track specific residues like prime numbers.</p>
+                    <p><strong>For Advanced Users:</strong> Master Steps 7-8, analyze connection patterns, study gap admissibility, and cross-reference with the Theory tab.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="visualizationTab" class="tab-content">
+            <div class="main-content">
                 <div class="control-panel">
                     <div class="control-section">
                         <h3>Modulus Configuration</h3>
-                        
-                        <div class="control-group">
-                            <label>Modulus Selection Mode</label>
-                            <select id="modSelectionMode">
-                                <option value="range">Range (Start to End)</option>
-                                <option value="fibonacci">Fibonacci Sequence</option>
-                                <option value="primes">Prime Moduli Only</option>
-                                <option value="powers-of-2">Powers of 2</option>
-                                <option value="powers-of-3">Powers of 3</option>
-                                <option value="M30-sequence">M_n = 30×2^n</option>
-                                <option value="custom">Custom List</option>
-                            </select>
-                        </div>
-
-                        <div id="rangeInputs">
-                            <div class="control-row">
-                                <div class="control-group">
-                                    <label>Start Modulus</label>
-                                    <input type="number" id="modMin" value="1" min="1" max="10000">
-                                </div>
-                                <div class="control-group">
-                                    <label>End Modulus</label>
-                                    <input type="number" id="modMax" value="60" min="1" max="10000">
-                                </div>
-                                <div class="control-group">
-                                    <label>Step</label>
-                                    <input type="number" id="modStep" value="1" min="1" max="100">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="sequenceInputs" style="display: none;">
+                        <div class="control-row">
                             <div class="control-group">
-                                <label>Maximum Value</label>
-                                <input type="number" id="sequenceMax" value="100" min="1" max="10000">
+                                <label>Start Modulus</label>
+                                <input type="number" id="modMin" value="1" min="1" max="10000">
                             </div>
                             <div class="control-group">
-                                <label>Number of Terms</label>
-                                <input type="number" id="sequenceTerms" value="5" min="1" max="50">
+                                <label>End Modulus</label>
+                                <input type="number" id="modMax" value="60" min="1" max="10000">
                             </div>
-                        </div>
-
-                        <div id="customInputs" style="display: none;">
                             <div class="control-group">
-                                <label>Custom Moduli (comma-separated)</label>
-                                <input type="text" id="customModuli" value="1,2,3,5,8,13,21,34" placeholder="e.g., 1,6,10,15,21,28">
+                                <label>Step</label>
+                                <input type="number" id="modStep" value="1" min="1" max="100">
                             </div>
-                            <div class="info-box">
-                                Enter any sequence of moduli. If 1 is included, the unit circle will be shown.
-                            </div>
-                        </div>
-
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="includeUnitCircle" checked>
-                                Always Include Unit Circle (m=1)
-                            </label>
                         </div>
                         
                         <div class="preset-grid">
@@ -716,13 +723,6 @@
                             <button onclick="setPreset(5)">n=5 (960)</button>
                         </div>
                         <button onclick="setPresetRange()" style="width: 100%; margin-top: 8px;">All: 30 to 960</button>
-                        
-                        <div class="info-box" style="margin-top: 10px;">
-                            <div id="selectedModuliDisplay" style="font-size: 11px;">
-                                <strong>Selected Moduli:</strong> <span id="moduliList">1 to 60 (step 1)</span>
-                            </div>
-                            <button onclick="clearCache()" style="width: 100%; margin-top: 5px; padding: 8px; font-size: 11px;">Clear Cache</button>
-                        </div>
                     </div>
 
                     <div class="control-section">
@@ -740,39 +740,13 @@
                                 <option value="next-mod">r to r (Next Modulus)</option>
                                 <option value="binary-lift">r to r+M (Binary Lift)</option>
                                 <option value="double-lift">r to r+M×2^n</option>
-                                <option value="same-mod">Same Modulus Connections</option>
-                                <option value="specific-mod">Specific Modulus Only</option>
                             </select>
-                        </div>
-                        <div class="control-group" id="specificModGroup" style="display: none;">
-                            <label>Specific Modulus Value</label>
-                            <input type="number" id="specificModValue" value="30" min="1">
-                        </div>
-                        <div class="control-group" id="sameModOptionsGroup" style="display: none;">
-                            <label>Same-Mod Pattern</label>
-                            <select id="sameModPattern">
-                                <option value="all">All Points Connected</option>
-                                <option value="sequential">Sequential (r to r+1)</option>
-                                <option value="open-only">Open Channels Only</option>
-                                <option value="by-gap">By Gap Interval</option>
-                            </select>
-                        </div>
-                        <div class="control-group" id="sameModGapGroup" style="display: none;">
-                            <label>Connection Gap</label>
-                            <input type="number" id="sameModGap" value="1" min="1">
                         </div>
                         <div class="control-group">
                             <label>Connection Opacity <span class="range-display" id="connOpacityDisplay">0.3</span></label>
                             <div class="dual-input">
                                 <input type="range" id="connOpacity" min="0.1" max="1" step="0.1" value="0.3">
                                 <input type="number" id="connOpacityNum" min="0" max="1" step="0.1" value="0.3">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label>Connection Line Width <span class="range-display" id="connLineWidthDisplay">1</span></label>
-                            <div class="dual-input">
-                                <input type="range" id="connLineWidth" min="0.5" max="5" step="0.5" value="1">
-                                <input type="number" id="connLineWidthNum" min="0.5" max="10" step="0.5" value="1">
                             </div>
                         </div>
                         <div class="control-group">
@@ -786,87 +760,95 @@
                     <div class="control-section">
                         <h3>Rotation Controls</h3>
                         
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="invertModOrder">
-                                Invert Modulus Order (Outer↔Inner)
-                            </label>
+                        <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 12px; margin-bottom: 15px;">
+                            <h4 style="font-size: 12px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Static Rotation (Applied Once)</h4>
+                            
+                            <div class="control-group">
+                                <label>Global Static Rotation (degrees)</label>
+                                <div class="dual-input">
+                                    <input type="number" id="staticGlobalRotation" value="0" step="1">
+                                    <button onclick="applyStaticGlobalRotation()" style="padding: 8px;">Apply</button>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Individual Mod Static Rotation (degrees)</label>
+                                <div class="dual-input">
+                                    <input type="number" id="staticModRotation" value="0" step="1">
+                                    <button onclick="applyStaticModRotation()" style="padding: 8px;">Apply</button>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Differential Rotation Mode</label>
+                                <select id="staticDifferentialMode">
+                                    <option value="none">Uniform (All Same)</option>
+                                    <option value="inner-faster">Inner Faster than Outer</option>
+                                    <option value="outer-faster">Outer Faster than Inner</option>
+                                </select>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Differential Factor <span class="range-display" id="staticDiffFactorDisplay">2.0</span></label>
+                                <div class="dual-input">
+                                    <input type="range" id="staticDiffFactor" min="1" max="5" step="0.1" value="2.0">
+                                    <input type="number" id="staticDiffFactorNum" min="1" max="10" step="0.1" value="2.0">
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <button onclick="applyDifferentialRotation()" style="width: 100%;">Apply Differential Rotation</button>
+                            </div>
+
+                            <div class="control-group">
+                                <button onclick="resetAllRotations()" style="width: 100%; background: var(--bg-primary); color: var(--text-primary);">Reset All Rotations</button>
+                            </div>
                         </div>
 
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="autoRotate" checked>
-                                Auto-Rotate on Slider Change
-                            </label>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label>Global Rotation <span class="range-display" id="globalSpeedDisplay">0</span> deg/frame</label>
-                            <div class="dual-input">
-                                <input type="range" id="globalSpeed" min="0" max="360" step="0.5" value="0">
-                                <input type="number" id="globalSpeedNum" min="0" max="360" step="0.5" value="0">
+                        <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 12px;">
+                            <h4 style="font-size: 12px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Animated Rotation (Continuous)</h4>
+                            
+                            <div class="control-group">
+                                <label>Global Rotation <span class="range-display" id="globalSpeedDisplay">0</span> deg/frame</label>
+                                <div class="dual-input">
+                                    <input type="range" id="globalSpeed" min="0" max="360" step="0.5" value="0">
+                                    <input type="number" id="globalSpeedNum" min="0" max="360" step="0.5" value="0">
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label>Individual Mod <span class="range-display" id="modRotSpeedDisplay">0</span> deg/frame</label>
-                            <div class="dual-input">
-                                <input type="range" id="modRotSpeed" min="0" max="360" step="0.5" value="0">
-                                <input type="number" id="modRotSpeedNum" min="0" max="360" step="0.5" value="0">
+                            
+                            <div class="control-group">
+                                <label>Individual Mod <span class="range-display" id="modRotSpeedDisplay">0</span> deg/frame</label>
+                                <div class="dual-input">
+                                    <input type="range" id="modRotSpeed" min="0" max="360" step="0.5" value="0">
+                                    <input type="number" id="modRotSpeedNum" min="0" max="360" step="0.5" value="0">
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label>Per-Ring Spiral <span class="range-display" id="perRingRotDisplay">0</span>° per ring</label>
-                            <div class="dual-input">
-                                <input type="range" id="perRingRot" min="-360" max="360" step="1" value="0">
-                                <input type="number" id="perRingRotNum" min="-720" max="720" step="1" value="0">
+                            
+                            <div class="control-group">
+                                <label>Speed Gradient</label>
+                                <select id="speedGradient">
+                                    <option value="none">No Gradient</option>
+                                    <option value="inner-to-outer">Inner to Outer</option>
+                                    <option value="outer-to-inner">Outer to Inner</option>
+                                </select>
                             </div>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label>Spiral Mode</label>
-                            <select id="spiralMode">
-                                <option value="linear">Linear (Constant Step)</option>
-                                <option value="fibonacci">Fibonacci (Golden Spiral)</option>
-                                <option value="logarithmic">Logarithmic (Exponential)</option>
-                                <option value="sine-wave">Sine Wave</option>
-                            </select>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label>Speed Gradient</label>
-                            <select id="speedGradient">
-                                <option value="none">No Gradient</option>
-                                <option value="inner-to-outer">Inner to Outer</option>
-                                <option value="outer-to-inner">Outer to Inner</option>
-                            </select>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label>Gradient Strength <span class="range-display" id="gradientStrengthDisplay">1.0</span></label>
-                            <div class="dual-input">
-                                <input type="range" id="gradientStrength" min="0" max="3" step="0.1" value="1.0">
-                                <input type="number" id="gradientStrengthNum" min="0" max="5" step="0.1" value="1.0">
+                            
+                            <div class="control-group">
+                                <label>Gradient Strength <span class="range-display" id="gradientStrengthDisplay">1.0</span></label>
+                                <div class="dual-input">
+                                    <input type="range" id="gradientStrength" min="0" max="3" step="0.1" value="1.0">
+                                    <input type="number" id="gradientStrengthNum" min="0" max="5" step="0.1" value="1.0">
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="button-group">
-                            <button id="playButton" onclick="toggleAnimation()" style="background: #00ff00; color: #000000;">Play</button>
-                            <button onclick="resetRotations()" style="background: var(--bg-secondary); color: var(--text-primary);">Reset</button>
-                        </div>
-                        
-                        <div class="preset-grid" style="margin-top: 10px;">
-                            <button onclick="setSpiralPreset('gentle')">Gentle Spiral</button>
-                            <button onclick="setSpiralPreset('moderate')">Moderate</button>
-                            <button onclick="setSpiralPreset('strong')">Strong Twist</button>
-                            <button onclick="setSpiralPreset('golden')">Golden Ratio</button>
-                            <button onclick="setSpiralPreset('galaxy')">Galaxy</button>
-                            <button onclick="setSpiralPreset('helix')">DNA Helix</button>
-                        </div>
-                        
-                        <div class="info-box" id="animationStatus">
-                            Status: Stopped
+                            
+                            <div class="button-group">
+                                <button id="playButton" onclick="startAnimation()" style="background: #00ff00; color: #000000;">Play</button>
+                                <button id="pauseButton" onclick="stopAnimation()" style="background: #ff0000; color: #ffffff;">Pause</button>
+                            </div>
+                            
+                            <div class="info-box" id="animationStatus">
+                                Status: Stopped
+                            </div>
                         </div>
                     </div>
 
@@ -878,31 +860,12 @@
                                 Enable Tracker
                             </label>
                         </div>
-                        
                         <div class="control-group">
-                            <label>Track Mode</label>
-                            <select id="trackerMode">
-                                <option value="manual">Manual Input</option>
-                                <option value="slider">Slider (Single r)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="control-group" id="manualTrackerGroup">
-                            <label>Track Residues (comma-separated)</label>
-                            <input type="text" id="trackedResidues" value="1" placeholder="e.g., 1,7,13,19">
-                        </div>
-                        
-                        <div class="control-group" id="sliderTrackerGroup" style="display: none;">
-                            <label>Track Residue r = <span class="range-display" id="trackedRSliderDisplay">1</span></label>
+                            <label>Track Residue (r)</label>
                             <div class="dual-input">
-                                <input type="range" id="trackedRSlider" min="0" max="100" step="1" value="1">
-                                <input type="number" id="trackedRSliderNum" min="0" max="10000" step="1" value="1">
+                                <input type="range" id="trackedResidue" min="0" max="100" step="1" value="1">
+                                <input type="number" id="trackedResidueNum" min="0" max="10000" step="1" value="1">
                             </div>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label>Filter by Modulus (optional)</label>
-                            <input type="number" id="trackerModFilter" placeholder="Leave empty for all">
                         </div>
                         <div class="control-group">
                             <label>Tracker Color</label>
@@ -916,7 +879,7 @@
                             </div>
                         </div>
                         <div class="tracker-display" id="trackerInfo" style="display: none;">
-                            <h4>Tracked Residues Info</h4>
+                            <h4>Tracked Residue Info</h4>
                             <div class="tracker-info" id="trackerInfoContent"></div>
                         </div>
                     </div>
@@ -927,7 +890,7 @@
                             <label>Open Channel Mode</label>
                             <select id="openColorMode">
                                 <option value="solid">Solid Color</option>
-                                <option value="by-residue" selected>By Residue (r)</option>
+                                <option value="by-residue">By Residue (r)</option>
                                 <option value="by-modulus">By Modulus (m)</option>
                                 <option value="by-integer">By Integer Value</option>
                                 <option value="by-spf">By Smallest Prime Factor</option>
@@ -972,7 +935,7 @@
                                     <option value="standard">Standard: 2πr/m</option>
                                     <option value="half">Half: πr/m</option>
                                     <option value="inverted">Inverted: 2π(m-r)/m</option>
-                                    <option value="negative" selected>Negative: -2πr/m</option>
+                                    <option value="negative">Negative: -2πr/m</option>
                                 </select>
                             </div>
                             <div class="control-group">
@@ -982,18 +945,6 @@
                                     <input type="number" id="pointSizeNum" min="1" max="20" step="0.5" value="4">
                                 </div>
                             </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="performanceMode" checked>
-                                Performance Mode (Faster Rendering)
-                            </label>
-                        </div>
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="enablePointClick">
-                                Enable Point Click Info
-                            </label>
                         </div>
                         <div class="control-row">
                             <div class="control-group">
@@ -1150,39 +1101,10 @@
                         </div>
                     </div>
 
-                    <div class="control-section">
-                        <h3>Export Settings</h3>
-                        
-                        <div class="control-group">
-                            <label>Export Title</label>
-                            <input type="text" id="exportTitle" value="Modular Rings Visualization" placeholder="Enter title for export">
-                        </div>
-                        
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="includeLegend" checked>
-                                Include Parameter Legend
-                            </label>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label>Export Resolution</label>
-                            <select id="exportResolution">
-                                <option value="1">Current (1000×800)</option>
-                                <option value="2">2× (2000×1600)</option>
-                                <option value="3">3× (3000×2400)</option>
-                                <option value="4">4× (4000×3200)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="button-group">
-                            <button onclick="exportImage()">Export PNG</button>
-                            <button onclick="exportCSV()">Export CSV</button>
-                        </div>
-                    </div>
-
                     <div class="button-group">
                         <button onclick="updateVisualization()">Update</button>
+                        <button onclick="exportImage()">PNG</button>
+                        <button onclick="exportCSV()">CSV</button>
                         <button onclick="resetSettings()">Reset</button>
                     </div>
 
@@ -1190,11 +1112,6 @@
                         Drag to pan • Scroll to zoom • Hover for details • Click for info
                     </div>
                 </div>
-
-                <!-- Floating Update Button -->
-                <button class="floating-update-btn" onclick="updateVisualization()" title="Update Visualization">
-                    ⟳ Update
-                </button>
 
                 <div class="canvas-container">
                     <canvas id="mainCanvas" width="1000" height="800"></canvas>
@@ -1233,6 +1150,207 @@
             </div>
         </div>
 
+        <div id="bridgeTab" class="tab-content">
+            <div class="theory-section">
+                <h2>Euler-Maclaurin Bridge Analysis</h2>
+                
+                <div class="intro-box">
+                    <h3>The Discrete-Continuous Duality</h3>
+                    <p>
+                        The Euler-Maclaurin formula bridges discrete summation and continuous integration through Bernoulli number corrections. 
+                        This framework reveals an analogous structure in modular arithmetic: the <strong>Modular Pair Combinatorics</strong> 
+                        framework provides a discrete-modular continuation where residue transitions replace Bernoulli corrections.
+                    </p>
+                </div>
+
+                <h3>Core Correspondence</h3>
+                <div class="formula">
+                    <div class="formula-title">Classical Euler-Maclaurin</div>
+                    Σf(n) = ∫f(x)dx + [f(a)+f(b)]/2 + Σ[B₂ₙ/(2n)!](f^(2n-1)(b) - f^(2n-1)(a))
+                </div>
+
+                <div class="formula">
+                    <div class="formula-title">Modular Continuation Analogue</div>
+                    Σ_{r∈Φ(M)} f(r) = ∫_{Φ(M)} f(x)dx + C_mod(M_n)
+                </div>
+
+                <h3>Live Correction Series</h3>
+                <div id="correctionSeriesDisplay" class="tracker-display">
+                    <h4>Modular Bernoulli Analogues 𝕋₂ₖ(Mₖ)</h4>
+                    <div class="tracker-info" id="correctionSeriesContent">
+                        Click "Update Display" in Visualization tab to compute...
+                    </div>
+                </div>
+
+                <h3>Convergence Analysis</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                    <canvas id="convergenceChart" width="500" height="300" style="border: 1px solid var(--border-color);"></canvas>
+                    <canvas id="correctionChart" width="500" height="300" style="border: 1px solid var(--border-color);"></canvas>
+                </div>
+
+                <h3>Modular Curvature Coefficients</h3>
+                <div class="example-box">
+                    <p><strong>Theoretical Result:</strong> For M_n = 30 × 2^n, the modular correction amplitude follows:</p>
+                    <div class="formula" style="margin: 10px 0;">
+                        𝕋₂ₙ(M_n) ∝ [T(M_n) - T(M_{n-1})]/T(M_n) = [3×2^n - 3×2^(n-1)]/(3×2^n) = 1/2
+                    </div>
+                    <p>This constant halving matches the decay structure of Bernoulli corrections in classical Euler-Maclaurin.</p>
+                </div>
+
+                <h3>Residue Transition Dynamics</h3>
+                <div id="transitionAnalysis" class="tracker-display">
+                    <h4>Doubling Transition Law: T(M_n) = 3 × 2^n</h4>
+                    <div class="tracker-info" id="transitionContent">
+                        <div id="transitionTable"></div>
+                    </div>
+                </div>
+
+                <h3>Interpretation: Dual Curvature Structures</h3>
+                <div class="intro-box">
+                    <p><strong>Analytic Domain (Bernoulli):</strong> B₂ₙ encode oscillatory curvature corrections that exponentially decay, balancing discrete sums against continuous integrals.</p>
+                    <p><strong>Modular Domain (Residue Doubling):</strong> T(M_n) encode combinatorial transition corrections that geometrically decay (halving at each level), balancing discrete residue counts against continuous coprime densities.</p>
+                    <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                        <strong>Unified Principle:</strong> Both frameworks exhibit layered refinement through hierarchical correction patterns, 
+                        revealing that <em>modular arithmetic realizes Euler-Maclaurin structure in purely combinatorial form</em>.
+                    </p>
+                </div>
+
+                <h3>Key Observations from Visualization Data</h3>
+                <div class="stats-panel" style="max-width: 100%;">
+                    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="stat-item">
+                            <div class="stat-label">Observed φ(m)/m Average</div>
+                            <div class="stat-value" id="bridgeAvgPhi">--</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Theoretical Limit (6/π²)</div>
+                            <div class="stat-value">0.607927</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Convergence Error</div>
+                            <div class="stat-value" id="bridgeError">--</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Modular Levels (n)</div>
+                            <div class="stat-value" id="bridgeLevels">--</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Total Transitions</div>
+                            <div class="stat-value" id="bridgeTransitions">--</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Doubling Ratio</div>
+                            <div class="stat-value" id="bridgeRatio">2.000</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="updateBridgeAnalysis()" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 14px;">
+                    Refresh Bridge Analysis
+                </button>
+            </div>
+        </div>
+
+        <div id="theoryTab" class="tab-content">
+            <div class="theory-section">
+                <h2>Mathematical Theory</h2>
+                
+                <h3>1. Modular Sequence Definition</h3>
+                <p>We study the sequence of moduli M_n = 30 × 2^n where n ∈ ℤ≥0, generating: 30, 60, 120, 240, 480, 960, ...</p>
+
+                <h3>2. Open and Closed Channels</h3>
+                <div class="formula">
+                    <div class="formula-title">Channel Classification</div>
+                    Open Channel: gcd(r,m) = 1 (totative)<br>
+                    Closed Channel: gcd(r,m) > 1 (non-totative)
+                </div>
+
+                <h3>3. Euler's Totient Function</h3>
+                <div class="formula">
+                    <div class="formula-title">Totient Formula</div>
+                    φ(m) = m × ∏(1 - 1/p) for all primes p|m
+                </div>
+
+                <div class="formula">
+                    <div class="formula-title">Density Theorem</div>
+                    lim(M→∞) [1/M × Σ(m=1 to M) φ(m)/m] = 6/π² ≈ 0.6079
+                </div>
+
+                <p>This connects to the Riemann zeta function: ζ(2) = π²/6.</p>
+
+                <h3>4. Geometric Mapping</h3>
+                <div class="formula">
+                    <div class="formula-title">Point Coordinates</div>
+                    P(m,r) = (m·cos(2πr/m), m·sin(2πr/m))
+                </div>
+
+                <h3>5. Binary Lifting Theorem</h3>
+                <div class="formula">
+                    <div class="formula-title">Lifting Property</div>
+                    If gcd(r, M_n) = 1, then:<br>
+                    • gcd(r, M_(n+1)) = 1<br>
+                    • gcd(r + M_n, M_(n+1)) = 1
+                </div>
+
+                <h3>6. Connection Lines</h3>
+                <p><strong>r to r (Next Modulus):</strong> Connects residue r on ring m to residue r on ring m+step, showing how the same residue appears across scales.</p>
+                <p><strong>r to r+M (Binary Lift):</strong> Visualizes the binary lifting theorem by connecting r at M_n to both r and r+M_n at M_(n+1).</p>
+                <p><strong>r to r+M×2^n:</strong> Generalizes binary lifting to show the full tree structure of open channel propagation.</p>
+
+                <h3>7. Gap Admissibility</h3>
+                <div class="formula">
+                    <div class="formula-title">Admissibility Condition</div>
+                    r is g-admissible if:<br>
+                    gcd(r, M) = 1 AND gcd(r+g, M) = 1
+                </div>
+
+                <div class="formula">
+                    <div class="formula-title">Admissible Count</div>
+                    N_M(g) = ∏(p|M) (p - f_p)<br>
+                    where f_p = 1 if p|g, else f_p = 2
+                </div>
+            </div>
+        </div>
+
+        <div id="referencesTab" class="tab-content">
+            <div class="theory-section">
+                <h2>References</h2>
+
+                <h3>Foundational Number Theory</h3>
+                <div class="example-box">
+                    <p><strong>Hardy, G. H., & Wright, E. M.</strong> (2008). <em>An Introduction to the Theory of Numbers</em> (6th ed.). Oxford University Press.</p>
+                    <p><strong>Apostol, T. M.</strong> (1976). <em>Introduction to Analytic Number Theory</em>. Springer-Verlag.</p>
+                </div>
+
+                <h3>Prime Gaps and Twin Primes</h3>
+                <div class="example-box">
+                    <p><strong>Hardy, G. H., & Littlewood, J. E.</strong> (1923). "Some Problems of 'Partitio Numerorum' III." <em>Acta Mathematica</em>, 44(1), 1-70.</p>
+                    <p><strong>Zhang, Y.</strong> (2014). "Bounded gaps between primes." <em>Annals of Mathematics</em>, 179(3), 1121-1174.</p>
+                </div>
+
+                <h3>Riemann Hypothesis</h3>
+                <div class="example-box">
+                    <p><strong>Riemann, B.</strong> (1859). "Über die Anzahl der Primzahlen unter einer gegebenen Größe." <em>Monatsberichte der Berliner Akademie</em>.</p>
+                    <p><strong>Edwards, H. M.</strong> (1974). <em>Riemann's Zeta Function</em>. Academic Press.</p>
+                </div>
+
+                <h3>Euler Products</h3>
+                <div class="example-box">
+                    <p><strong>Euler, L.</strong> (1748). <em>Introductio in analysin infinitorum</em>.</p>
+                    <p><strong>Iwaniec, H., & Kowalski, E.</strong> (2004). <em>Analytic Number Theory</em>. American Mathematical Society.</p>
+                </div>
+
+                <h3>Online Resources</h3>
+                <div class="example-box">
+                    <p>• OEIS (Online Encyclopedia of Integer Sequences): oeis.org</p>
+                    <p>• Prime Pages by Chris Caldwell: primes.utm.edu</p>
+                    <p>• MathWorld - Wolfram: mathworld.wolfram.com</p>
+                    <p>• arXiv Number Theory: arxiv.org/list/math.NT/recent</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
@@ -1246,235 +1364,7 @@
         let globalRotation = 0;
         let modRotations = {};
         let animationId = null;
-        let currentTheme = 'light';
-        let isComputing = false;
-        
-        // Advanced performance optimizations
-        let pointsByModulus = {}; // O(1) lookup by modulus
-        let ringMetadata = []; // Pre-computed ring properties
-
-        // Progressive computation without Web Worker
-        async function computePointsProgressive(modMin, modMax, modStep, gaps, angularMapping) {
-            pointsData = [];
-            pointsByModulus = {}; // Reset lookup table
-            ringMetadata = [];
-            
-            let totalOpen = 0;
-            let totalClosed = 0;
-            let sumPhiOverM = 0;
-            let countModuli = 0;
-            let processedCount = 0;
-
-            // Build moduli list
-            const moduli = [];
-            for (let m = modMin; m <= modMax; m += modStep) {
-                moduli.push(m);
-            }
-
-            // Pre-compute ring metadata
-            moduli.forEach((m, idx) => {
-                ringMetadata.push({
-                    modulus: m,
-                    index: idx,
-                    phiM: phi(m),
-                    totalPoints: m
-                });
-            });
-
-            for (let m = modMin; m <= modMax; m += modStep) {
-                if (!modRotations[m]) modRotations[m] = 0;
-                
-                // Initialize modulus bucket for O(1) lookup
-                pointsByModulus[m] = {};
-                
-                const phiM = phi(m);
-                sumPhiOverM += phiM / m;
-                countModuli++;
-
-                for (let r = 0; r < m; r++) {
-                    const g = gcd(r, m);
-                    const isOpen = g === 1;
-                    
-                    if (isOpen) totalOpen++;
-                    else totalClosed++;
-
-                    let admissibleGaps = [];
-                    if (isOpen && gaps.length > 0) {
-                        gaps.forEach(gap => {
-                            const rPlusG = (r + gap) % m;
-                            if (gcd(rPlusG, m) === 1) {
-                                admissibleGaps.push(gap);
-                            }
-                        });
-                    }
-
-                    let angle;
-                    switch(angularMapping) {
-                        case 'standard':
-                            angle = (2 * Math.PI * r) / m;
-                            break;
-                        case 'half':
-                            angle = (Math.PI * r) / m;
-                            break;
-                        case 'inverted':
-                            angle = (2 * Math.PI * (m - r)) / m;
-                            break;
-                        case 'negative':
-                            angle = -(2 * Math.PI * r) / m;
-                            break;
-                        default:
-                            angle = (2 * Math.PI * r) / m;
-                    }
-
-                    const point = {
-                        m: m,
-                        r: r,
-                        gcd: g,
-                        isOpen: isOpen,
-                        angle: angle,
-                        phiM: phiM,
-                        isAdmissible: admissibleGaps.length > 0,
-                        admissibleGaps: admissibleGaps
-                    };
-
-                    pointsData.push(point);
-                    pointsByModulus[m][r] = point;
-
-                    processedCount++;
-
-                    // Yield to UI periodically
-                    if (processedCount % 1000 === 0) {
-                        updateProgressDisplay(processedCount, m, modMax);
-                        if (processedCount > 50000) {
-                            await new Promise(resolve => setTimeout(resolve, 0));
-                        }
-                    }
-                }
-            }
-
-            const avgPhiOverM = countModuli > 0 ? sumPhiOverM / countModuli : 0;
-            const openRatio = (totalOpen + totalClosed) > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
-
-            document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
-            document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
-            document.getElementById('statClosed').textContent = totalClosed.toLocaleString();
-            document.getElementById('statRatio').textContent = openRatio.toFixed(4);
-            document.getElementById('statAvgPhi').textContent = avgPhiOverM.toFixed(4);
-
-            return { totalOpen, totalClosed, avgPhiOverM, countModuli };
-        }
-
-        function updateProgressDisplay(count, currentMod, maxMod) {
-            const modMin = parseInt(document.getElementById('modMin').value);
-            const percent = ((currentMod - modMin) / (maxMod - modMin) * 100).toFixed(1);
-            document.getElementById('animationStatus').textContent = 
-                `Computing: ${count.toLocaleString()} points (${percent}% - m=${currentMod})`;
-            document.getElementById('animationStatus').style.background = '#1a4d4d';
-        }
-
-        function hideProgressDisplay() {
-            document.getElementById('animationStatus').textContent = 'Status: Stopped';
-            document.getElementById('animationStatus').style.background = 'var(--bg-secondary)';
-        }
-
-        function getCacheKey() {
-            const mode = document.getElementById('modSelectionMode').value;
-            const moduli = getSelectedModuli();
-            const moduliHash = moduli.join('_');
-            const angularMapping = document.getElementById('angularMapping').value;
-            return `modular_rings_${mode}_${moduliHash}_${angularMapping}`;
-        }
-
-        function saveToCache() {
-            try {
-                const cacheKey = getCacheKey();
-                const cacheData = {
-                    pointsData: pointsData,
-                    timestamp: Date.now(),
-                    settings: {
-                        modMin: document.getElementById('modMin').value,
-                        modMax: document.getElementById('modMax').value,
-                        modStep: document.getElementById('modStep').value,
-                        angularMapping: document.getElementById('angularMapping').value
-                    }
-                };
-                
-                // Only cache if dataset is reasonable size (< 50MB estimated)
-                const dataSize = JSON.stringify(cacheData).length;
-                if (dataSize < 50000000) {
-                    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-                    console.log(`Cached ${pointsData.length} points (${(dataSize/1024/1024).toFixed(2)} MB)`);
-                }
-            } catch (e) {
-                console.warn('Cache save failed:', e);
-            }
-        }
-
-        function loadFromCache() {
-            try {
-                const cacheKey = getCacheKey();
-                const cached = localStorage.getItem(cacheKey);
-                
-                if (cached) {
-                    const cacheData = JSON.parse(cached);
-                    const age = Date.now() - cacheData.timestamp;
-                    
-                    // Cache valid for 1 hour
-                    if (age < 3600000) {
-                        pointsData = cacheData.pointsData;
-                        console.log(`Loaded ${pointsData.length} points from cache`);
-                        
-                        // Restore modRotations
-                        pointsData.forEach(p => {
-                            if (!modRotations[p.m]) modRotations[p.m] = 0;
-                        });
-                        
-                        // Update stats
-                        const totalOpen = pointsData.filter(p => p.isOpen).length;
-                        const totalClosed = pointsData.length - totalOpen;
-                        const moduli = [...new Set(pointsData.map(p => p.m))];
-                        const sumPhiOverM = moduli.reduce((sum, m) => {
-                            const phiM = pointsData.find(p => p.m === m).phiM;
-                            return sum + phiM / m;
-                        }, 0);
-                        
-                        const openRatio = totalClosed > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
-                        document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
-                        document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
-                        document.getElementById('statClosed').textContent = totalClosed.toLocaleString();
-                        document.getElementById('statRatio').textContent = openRatio.toFixed(4);
-                        document.getElementById('statAvgPhi').textContent = (sumPhiOverM / moduli.length).toFixed(4);
-                        
-                        return true;
-                    }
-                }
-            } catch (e) {
-                console.warn('Cache load failed:', e);
-            }
-            return false;
-        }
-
-        function clearCache() {
-            try {
-                const keys = Object.keys(localStorage);
-                let count = 0;
-                keys.forEach(key => {
-                    if (key.startsWith('modular_rings_')) {
-                        localStorage.removeItem(key);
-                        count++;
-                    }
-                });
-                alert(`Cache cleared! Removed ${count} cached dataset(s).`);
-            } catch (e) {
-                alert('Failed to clear cache: ' + e.message);
-            }
-        }
-
-        function progressiveRender() {
-            // Always render immediately - removed progressive rendering complexity
-            drawVisualization();
-            updateTrackerInfo();
-        }
+        let currentTheme = 'dark';
 
         function toggleTheme() {
             currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -1489,9 +1379,8 @@
 
         // Initialize dark theme
         function initializeTheme() {
-            document.body.className = 'light-theme';
-            document.getElementById('themeText').textContent = 'Dark Mode';
-            currentTheme = 'light';
+            document.body.className = 'dark-theme';
+            document.getElementById('themeText').textContent = 'Light Mode';
         }
 
         function isPrime(n) {
@@ -1678,113 +1567,16 @@
         syncInputs('globalSpeed', 'globalSpeedNum');
         syncInputs('modRotSpeed', 'modRotSpeedNum');
         syncInputs('gradientStrength', 'gradientStrengthNum');
+        syncInputs('trackedResidue', 'trackedResidueNum');
         syncInputs('trackerSize', 'trackerSizeNum');
         syncInputs('pointSize', 'pointSizeNum');
         syncInputs('connOpacity', 'connOpacityNum');
-        syncInputs('perRingRot', 'perRingRotNum');
-        syncInputs('trackedRSlider', 'trackedRSliderNum');
 
         syncInputs('labelSize', 'labelSizeNum');
         syncInputs('labelSpacing', 'labelSpacingNum');
         syncInputs('gapOpacity', 'gapOpacityNum');
         syncInputs('gapLineWidth', 'gapLineWidthNum');
-        syncInputs('connLineWidth', 'connLineWidthNum');
-
-        // Show/hide tracker mode inputs
-        document.getElementById('trackerMode').addEventListener('change', function() {
-            const mode = this.value;
-            const manualGroup = document.getElementById('manualTrackerGroup');
-            const sliderGroup = document.getElementById('sliderTrackerGroup');
-            
-            if (mode === 'manual') {
-                manualGroup.style.display = 'block';
-                sliderGroup.style.display = 'none';
-            } else {
-                manualGroup.style.display = 'none';
-                sliderGroup.style.display = 'block';
-                updateSliderTrackerRange();
-            }
-        });
-
-        // Update slider range when moduli change
-        function updateSliderTrackerRange() {
-            const moduli = getSelectedModuli();
-            if (moduli.length === 0) return;
-            
-            const maxR = Math.max(...moduli) - 1;
-            const slider = document.getElementById('trackedRSlider');
-            const numberInput = document.getElementById('trackedRSliderNum');
-            
-            slider.max = maxR;
-            numberInput.max = maxR;
-            
-            // Clamp current value
-            if (parseInt(slider.value) > maxR) {
-                slider.value = maxR;
-                numberInput.value = maxR;
-            }
-        }
-
-        // Real-time slider update
-        document.getElementById('trackedRSlider').addEventListener('input', () => {
-            updateRangeDisplays();
-            if (document.getElementById('enableTracker').checked) {
-                drawVisualization();
-                updateTrackerInfo();
-            }
-        });
-        
-        document.getElementById('trackedRSliderNum').addEventListener('input', () => {
-            updateRangeDisplays();
-            if (document.getElementById('enableTracker').checked) {
-                drawVisualization();
-                updateTrackerInfo();
-            }
-        });
-
-        // Show/hide connection mode options
-        document.getElementById('connectionMode').addEventListener('change', function() {
-            const mode = this.value;
-            const specificModGroup = document.getElementById('specificModGroup');
-            const sameModOptionsGroup = document.getElementById('sameModOptionsGroup');
-            const sameModGapGroup = document.getElementById('sameModGapGroup');
-            
-            specificModGroup.style.display = mode === 'specific-mod' ? 'block' : 'none';
-            sameModOptionsGroup.style.display = mode === 'same-mod' ? 'block' : 'none';
-            
-            if (mode === 'same-mod') {
-                const pattern = document.getElementById('sameModPattern').value;
-                sameModGapGroup.style.display = pattern === 'by-gap' ? 'block' : 'none';
-            } else {
-                sameModGapGroup.style.display = 'none';
-            }
-        });
-
-        document.getElementById('sameModPattern').addEventListener('change', function() {
-            const pattern = this.value;
-            const sameModGapGroup = document.getElementById('sameModGapGroup');
-            sameModGapGroup.style.display = pattern === 'by-gap' ? 'block' : 'none';
-        });
-
-        // Show/hide modulus configuration inputs based on mode
-        document.getElementById('modSelectionMode').addEventListener('change', function() {
-            const mode = this.value;
-            const rangeInputs = document.getElementById('rangeInputs');
-            const sequenceInputs = document.getElementById('sequenceInputs');
-            const customInputs = document.getElementById('customInputs');
-            
-            rangeInputs.style.display = 'none';
-            sequenceInputs.style.display = 'none';
-            customInputs.style.display = 'none';
-            
-            if (mode === 'range') {
-                rangeInputs.style.display = 'block';
-            } else if (mode === 'custom') {
-                customInputs.style.display = 'block';
-            } else if (mode === 'fibonacci' || mode === 'primes' || mode === 'powers-of-2' || mode === 'powers-of-3') {
-                sequenceInputs.style.display = 'block';
-            }
-        });
+        syncInputs('staticDiffFactor', 'staticDiffFactorNum');
 
         const gapColorScheme = [
             '#ff0080', // Hot pink for gap 2
@@ -1877,100 +1669,20 @@
         document.getElementById('gapValues').addEventListener('input', updateGapColorPickers);
         document.getElementById('enableGapAnalysis').addEventListener('change', updateGapColorPickers);
 
-        // Spiral presets
-        function setSpiralPreset(preset) {
-            switch(preset) {
-                case 'gentle':
-                    document.getElementById('perRingRot').value = 5;
-                    document.getElementById('perRingRotNum').value = 5;
-                    document.getElementById('spiralMode').value = 'linear';
-                    break;
-                case 'moderate':
-                    document.getElementById('perRingRot').value = 15;
-                    document.getElementById('perRingRotNum').value = 15;
-                    document.getElementById('spiralMode').value = 'linear';
-                    break;
-                case 'strong':
-                    document.getElementById('perRingRot').value = 30;
-                    document.getElementById('perRingRotNum').value = 30;
-                    document.getElementById('spiralMode').value = 'linear';
-                    break;
-                case 'golden':
-                    document.getElementById('perRingRot').value = 20;
-                    document.getElementById('perRingRotNum').value = 20;
-                    document.getElementById('spiralMode').value = 'fibonacci';
-                    break;
-                case 'galaxy':
-                    document.getElementById('perRingRot').value = 45;
-                    document.getElementById('perRingRotNum').value = 45;
-                    document.getElementById('spiralMode').value = 'logarithmic';
-                    break;
-                case 'helix':
-                    document.getElementById('perRingRot').value = 25;
-                    document.getElementById('perRingRotNum').value = 25;
-                    document.getElementById('spiralMode').value = 'sine-wave';
-                    break;
-            }
-            updateRangeDisplays();
-            needsFullRedraw = true;
-            drawVisualization();
-        }
-
-        // Auto-start animation when rotation values change (if auto-rotate enabled)
+        // Auto-start animation when rotation values change
         function autoStartAnimation() {
-            const autoRotate = document.getElementById('autoRotate').checked;
             const globalSpeed = parseFloat(document.getElementById('globalSpeed').value);
             const modRotSpeed = parseFloat(document.getElementById('modRotSpeed').value);
             
-            if (autoRotate && (globalSpeed > 0 || modRotSpeed > 0)) {
-                if (!animationId) {
-                    startAnimation();
-                }
-            }
-        }
-
-        function toggleAnimation() {
-            if (animationId) {
-                stopAnimation();
-                document.getElementById('playButton').textContent = 'Play';
-                document.getElementById('playButton').style.background = '#00ff00';
-                document.getElementById('playButton').style.color = '#000000';
-            } else {
+            if ((globalSpeed > 0 || modRotSpeed > 0) && !animationId) {
                 startAnimation();
-                document.getElementById('playButton').textContent = 'Pause';
-                document.getElementById('playButton').style.background = '#ff0000';
-                document.getElementById('playButton').style.color = '#ffffff';
             }
-        }
-
-        function resetRotations() {
-            globalRotation = 0;
-            Object.keys(modRotations).forEach(m => {
-                modRotations[m] = 0;
-            });
-            drawVisualization();
         }
 
         document.getElementById('globalSpeed').addEventListener('input', autoStartAnimation);
         document.getElementById('globalSpeedNum').addEventListener('input', autoStartAnimation);
         document.getElementById('modRotSpeed').addEventListener('input', autoStartAnimation);
         document.getElementById('modRotSpeedNum').addEventListener('input', autoStartAnimation);
-        document.getElementById('perRingRot').addEventListener('input', () => {
-            needsFullRedraw = true;
-            drawVisualization();
-        });
-        document.getElementById('perRingRotNum').addEventListener('input', () => {
-            needsFullRedraw = true;
-            drawVisualization();
-        });
-        document.getElementById('spiralMode').addEventListener('change', () => {
-            needsFullRedraw = true;
-            drawVisualization();
-        });
-
-        document.getElementById('invertModOrder').addEventListener('change', () => {
-            drawVisualization();
-        });
 
         function updateRangeDisplays() {
             document.getElementById('globalSpeedDisplay').textContent = document.getElementById('globalSpeed').value;
@@ -1979,12 +1691,10 @@
             document.getElementById('pointSizeDisplay').textContent = document.getElementById('pointSize').value;
             document.getElementById('trackerSizeDisplay').textContent = document.getElementById('trackerSize').value;
             document.getElementById('connOpacityDisplay').textContent = document.getElementById('connOpacity').value;
-            document.getElementById('perRingRotDisplay').textContent = document.getElementById('perRingRot').value;
             document.getElementById('labelSizeDisplay').textContent = document.getElementById('labelSize').value;
             document.getElementById('labelSpacingDisplay').textContent = document.getElementById('labelSpacing').value;
             document.getElementById('gapOpacityDisplay').textContent = document.getElementById('gapOpacity').value;
             document.getElementById('gapLineWidthDisplay').textContent = document.getElementById('gapLineWidth').value;
-            document.getElementById('connLineWidthDisplay').textContent = document.getElementById('connLineWidth').value;
         }
 
         document.querySelectorAll('input[type="range"]').forEach(input => {
@@ -1992,58 +1702,21 @@
         });
 
         function generatePointsData() {
-            // Check if we can load from cache first
-            if (loadFromCache()) {
-                progressiveRender();
-                updateModuliDisplay();
-                return;
-            }
-
-            const moduli = getSelectedModuli();
-            
-            if (moduli.length === 0) {
-                alert('No valid moduli selected. Please check your input.');
-                return;
-            }
-
+            const modMin = parseInt(document.getElementById('modMin').value);
+            const modMax = parseInt(document.getElementById('modMax').value);
+            const modStep = parseInt(document.getElementById('modStep').value);
             const enableGap = document.getElementById('enableGapAnalysis').checked;
             const gapInput = document.getElementById('gapValues').value;
             const gaps = gapInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g > 0);
             const angularMapping = document.getElementById('angularMapping').value;
 
-            // Calculate total expected points
-            let totalExpectedPoints = 0;
-            moduli.forEach(m => {
-                totalExpectedPoints += m;
-            });
-
-            updateModuliDisplay();
-
-            // Use progressive computation for large datasets
-            if (totalExpectedPoints > 10000) {
-                isComputing = true;
-                document.getElementById('animationStatus').textContent = 'Computing: Starting...';
-                document.getElementById('animationStatus').style.background = '#1a4d4d';
-                
-                computePointsProgressiveFromList(moduli, enableGap ? gaps : [], angularMapping)
-                    .then(() => {
-                        isComputing = false;
-                        hideProgressDisplay();
-                        saveToCache();
-                        drawVisualization();
-                        updateTrackerInfo();
-                    });
-                return;
-            }
-
-            // Fallback: compute directly (for small datasets)
             pointsData = [];
             let totalOpen = 0;
             let totalClosed = 0;
             let sumPhiOverM = 0;
             let countModuli = 0;
 
-            for (let m of moduli) {
+            for (let m = modMin; m <= modMax; m += modStep) {
                 if (!modRotations[m]) modRotations[m] = 0;
                 
                 const phiM = phi(m);
@@ -2057,6 +1730,7 @@
                     if (isOpen) totalOpen++;
                     else totalClosed++;
 
+                    // Check admissibility for ALL gaps
                     let admissibleGaps = [];
                     if (enableGap && isOpen) {
                         gaps.forEach(gap => {
@@ -2067,6 +1741,7 @@
                         });
                     }
 
+                    // Calculate angle based on mapping mode
                     let angle;
                     switch(angularMapping) {
                         case 'standard':
@@ -2093,13 +1768,13 @@
                         angle: angle,
                         phiM: phiM,
                         isAdmissible: admissibleGaps.length > 0,
-                        admissibleGaps: admissibleGaps
+                        admissibleGaps: admissibleGaps // Store which gaps are admissible
                     });
                 }
             }
 
-            const avgPhiOverM = countModuli > 0 ? sumPhiOverM / countModuli : 0;
-            const openRatio = (totalOpen + totalClosed) > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
+            const avgPhiOverM = sumPhiOverM / countModuli;
+            const openRatio = totalOpen / (totalOpen + totalClosed);
 
             document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
             document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
@@ -2107,233 +1782,21 @@
             document.getElementById('statRatio').textContent = openRatio.toFixed(4);
             document.getElementById('statAvgPhi').textContent = avgPhiOverM.toFixed(4);
 
-            saveToCache();
             updateTrackerInfo();
-        }
-
-        function getSelectedModuli() {
-            const mode = document.getElementById('modSelectionMode').value;
-            const includeUnit = document.getElementById('includeUnitCircle').checked;
-            let moduli = [];
-
-            if (mode === 'range') {
-                const modMin = parseInt(document.getElementById('modMin').value);
-                const modMax = parseInt(document.getElementById('modMax').value);
-                const modStep = parseInt(document.getElementById('modStep').value);
-                
-                for (let m = modMin; m <= modMax; m += modStep) {
-                    moduli.push(m);
-                }
-            } else if (mode === 'fibonacci') {
-                const maxVal = parseInt(document.getElementById('sequenceMax').value);
-                let a = 1, b = 1;
-                if (a <= maxVal) moduli.push(a);
-                while (b <= maxVal) {
-                    moduli.push(b);
-                    let temp = a + b;
-                    a = b;
-                    b = temp;
-                }
-            } else if (mode === 'primes') {
-                const maxVal = parseInt(document.getElementById('sequenceMax').value);
-                for (let n = 2; n <= maxVal; n++) {
-                    if (isPrime(n)) {
-                        moduli.push(n);
-                    }
-                }
-            } else if (mode === 'powers-of-2') {
-                const numTerms = parseInt(document.getElementById('sequenceTerms').value);
-                for (let i = 0; i < numTerms; i++) {
-                    const val = Math.pow(2, i);
-                    if (val >= 1) moduli.push(val);
-                }
-            } else if (mode === 'powers-of-3') {
-                const numTerms = parseInt(document.getElementById('sequenceTerms').value);
-                for (let i = 0; i < numTerms; i++) {
-                    const val = Math.pow(3, i);
-                    if (val >= 1) moduli.push(val);
-                }
-            } else if (mode === 'M30-sequence') {
-                const numTerms = parseInt(document.getElementById('sequenceTerms').value);
-                for (let n = 0; n < numTerms; n++) {
-                    const val = 30 * Math.pow(2, n);
-                    moduli.push(val);
-                }
-            } else if (mode === 'custom') {
-                const customInput = document.getElementById('customModuli').value;
-                moduli = customInput.split(',')
-                    .map(m => parseInt(m.trim()))
-                    .filter(m => !isNaN(m) && m > 0);
-            }
-
-            // Add unit circle if requested and not already present
-            if (includeUnit && !moduli.includes(1)) {
-                moduli.unshift(1);
-            }
-
-            // Remove duplicates and sort
-            moduli = [...new Set(moduli)].sort((a, b) => a - b);
-
-            return moduli;
-        }
-
-        async function computePointsProgressiveFromList(moduli, gaps, angularMapping) {
-            pointsData = [];
-            pointsByModulus = {}; // Reset lookup table
-            ringMetadata = [];
-            
-            let totalOpen = 0;
-            let totalClosed = 0;
-            let sumPhiOverM = 0;
-            let countModuli = 0;
-            let processedCount = 0;
-
-            // Pre-compute ring metadata for O(1) access
-            moduli.forEach((m, idx) => {
-                ringMetadata.push({
-                    modulus: m,
-                    index: idx,
-                    phiM: phi(m),
-                    totalPoints: m
-                });
-            });
-
-            for (let m of moduli) {
-                if (!modRotations[m]) modRotations[m] = 0;
-                
-                // Initialize modulus bucket for O(1) lookup
-                pointsByModulus[m] = {};
-                
-                const phiM = phi(m);
-                sumPhiOverM += phiM / m;
-                countModuli++;
-
-                // Single-pass computation with all properties
-                for (let r = 0; r < m; r++) {
-                    const g = gcd(r, m);
-                    const isOpen = g === 1;
-                    
-                    if (isOpen) totalOpen++;
-                    else totalClosed++;
-
-                    // Pre-compute angle once
-                    let angle;
-                    switch(angularMapping) {
-                        case 'standard':
-                            angle = (2 * Math.PI * r) / m;
-                            break;
-                        case 'half':
-                            angle = (Math.PI * r) / m;
-                            break;
-                        case 'inverted':
-                            angle = (2 * Math.PI * (m - r)) / m;
-                            break;
-                        case 'negative':
-                            angle = -(2 * Math.PI * r) / m;
-                            break;
-                        default:
-                            angle = (2 * Math.PI * r) / m;
-                    }
-
-                    // Pre-compute admissible gaps (only if needed)
-                    let admissibleGaps = [];
-                    if (isOpen && gaps.length > 0) {
-                        gaps.forEach(gap => {
-                            const rPlusG = (r + gap) % m;
-                            if (gcd(rPlusG, m) === 1) {
-                                admissibleGaps.push(gap);
-                            }
-                        });
-                    }
-
-                    const point = {
-                        m: m,
-                        r: r,
-                        gcd: g,
-                        isOpen: isOpen,
-                        angle: angle,
-                        phiM: phiM,
-                        isAdmissible: admissibleGaps.length > 0,
-                        admissibleGaps: admissibleGaps
-                    };
-
-                    pointsData.push(point);
-                    pointsByModulus[m][r] = point; // Store for O(1) lookup
-
-                    processedCount++;
-
-                    // Reduced yield frequency for better performance
-                    if (processedCount % (COMPUTE_CHUNK_SIZE * 2) === 0) {
-                        updateProgressDisplay(processedCount, m, moduli[moduli.length - 1]);
-                        // Only yield for very large datasets
-                        if (processedCount > 50000) {
-                            await new Promise(resolve => setTimeout(resolve, 0));
-                        }
-                    }
-                }
-            }
-
-            const avgPhiOverM = countModuli > 0 ? sumPhiOverM / countModuli : 0;
-            const openRatio = (totalOpen + totalClosed) > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
-
-            document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
-            document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
-            document.getElementById('statClosed').textContent = totalClosed.toLocaleString();
-            document.getElementById('statRatio').textContent = openRatio.toFixed(4);
-            document.getElementById('statAvgPhi').textContent = avgPhiOverM.toFixed(4);
-
-            return { totalOpen, totalClosed, avgPhiOverM, countModuli };
-        }
-
-        function updateModuliDisplay() {
-            const moduli = getSelectedModuli();
-            const mode = document.getElementById('modSelectionMode').value;
-            let displayText = '';
-
-            if (moduli.length === 0) {
-                displayText = 'None selected';
-            } else if (moduli.length <= 10) {
-                displayText = moduli.join(', ');
-            } else {
-                displayText = `${moduli[0]}, ${moduli[1]}, ..., ${moduli[moduli.length-1]} (${moduli.length} total)`;
-            }
-
-            if (mode === 'fibonacci') displayText = 'Fibonacci: ' + displayText;
-            else if (mode === 'primes') displayText = 'Primes: ' + displayText;
-            else if (mode === 'powers-of-2') displayText = 'Powers of 2: ' + displayText;
-            else if (mode === 'powers-of-3') displayText = 'Powers of 3: ' + displayText;
-            else if (mode === 'M30-sequence') displayText = 'M₃₀ = 30×2ⁿ: ' + displayText;
-
-            document.getElementById('moduliList').textContent = displayText;
         }
 
         function updateTrackerInfo() {
             const enabled = document.getElementById('enableTracker').checked;
-            const trackedInput = document.getElementById('trackedResidues').value;
-            const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
-            const modFilter = document.getElementById('trackerModFilter').value;
-            const filterMod = modFilter ? parseInt(modFilter) : null;
+            const trackedR = parseInt(document.getElementById('trackedResidue').value);
             const trackerInfo = document.getElementById('trackerInfo');
             
-            if (enabled && trackedRs.length > 0) {
+            if (enabled) {
                 trackerInfo.style.display = 'block';
-                let infoHTML = '';
-                
-                trackedRs.forEach(trackedR => {
-                    let trackedPoints = pointsData.filter(p => p.r === trackedR);
-                    if (filterMod !== null) {
-                        trackedPoints = trackedPoints.filter(p => p.m === filterMod);
-                    }
-                    
-                    const openCount = trackedPoints.filter(p => p.isOpen).length;
-                    infoHTML += `<strong>r = ${trackedR}</strong>`;
-                    if (filterMod !== null) {
-                        infoHTML += ` (m = ${filterMod})`;
-                    }
-                    infoHTML += `<br>Appears: ${trackedPoints.length} times<br>`;
-                    infoHTML += `Open: ${openCount}, Closed: ${trackedPoints.length - openCount}<br><br>`;
-                });
-                
+                const trackedPoints = pointsData.filter(p => p.r === trackedR);
+                let infoHTML = `Residue r = ${trackedR}<br>`;
+                infoHTML += `Appears in ${trackedPoints.length} moduli<br>`;
+                const openCount = trackedPoints.filter(p => p.isOpen).length;
+                infoHTML += `Open: ${openCount}, Closed: ${trackedPoints.length - openCount}`;
                 document.getElementById('trackerInfoContent').innerHTML = infoHTML;
             } else {
                 trackerInfo.style.display = 'none';
@@ -2341,617 +1804,17 @@
         }
 
         document.getElementById('enableTracker').addEventListener('change', updateTrackerInfo);
-        document.getElementById('trackedResidues').addEventListener('input', updateTrackerInfo);
-        document.getElementById('trackerModFilter').addEventListener('input', updateTrackerInfo);
+        document.getElementById('trackedResidue').addEventListener('input', updateTrackerInfo);
 
         function drawVisualization() {
-            const performanceMode = document.getElementById('performanceMode').checked;
-            
-            if (performanceMode) {
-                drawVisualizationOptimized();
-            } else {
-                drawVisualizationStandard();
-            }
-        }
-
-        // Helper function to get radius for a modulus
-        function getRadius(m) {
-            const width = canvas.width;
-            const height = canvas.height;
-            const maxRadius = Math.min(width, height) * 0.4;
-            const displayMode = document.getElementById('displayMode').value;
-            const invertOrder = document.getElementById('invertModOrder').checked;
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            
-            if (displayMode === 'unit') {
-                return maxRadius;
-            }
-            
-            const radiusScale = maxRadius / Math.max(...moduli);
-            
-            if (invertOrder) {
-                const maxMod = Math.max(...moduli);
-                const minMod = Math.min(...moduli);
-                const inverted = maxMod - (m - minMod);
-                return inverted * radiusScale;
-            }
-            
-            return m * radiusScale;
-        }
-
-        // Helper function to get ring index for a modulus
-        function getRingIndex(m) {
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            const invertOrder = document.getElementById('invertModOrder').checked;
-            
-            if (invertOrder) {
-                return moduli.length - 1 - moduli.indexOf(m);
-            }
-            
-            return moduli.indexOf(m);
-        }
-
-        // Calculate per-ring rotation based on spiral mode
-        function getPerRingRotation(ringIndex, totalRings) {
-            const perRingRot = parseFloat(document.getElementById('perRingRot').value);
-            const spiralMode = document.getElementById('spiralMode').value;
-            
-            if (perRingRot === 0) return 0;
-            
-            switch(spiralMode) {
-                case 'linear':
-                    return perRingRot * ringIndex;
-                    
-                case 'fibonacci':
-                    // Golden ratio spiral: φ ≈ 1.618
-                    const phi = (1 + Math.sqrt(5)) / 2;
-                    return perRingRot * Math.log(ringIndex + 1) * phi;
-                    
-                case 'logarithmic':
-                    // Natural logarithmic spiral
-                    return perRingRot * Math.log(ringIndex + 1) * 2;
-                    
-                case 'sine-wave':
-                    // Sinusoidal modulation
-                    return perRingRot * ringIndex * (1 + 0.5 * Math.sin(ringIndex * Math.PI / 4));
-                    
-                default:
-                    return perRingRot * ringIndex;
-            }
-        }
-
-        function drawVisualizationOptimized() {
             const width = canvas.width;
             const height = canvas.height;
             const centerX = width / 2;
             const centerY = height / 2;
             const maxRadius = Math.min(width, height) * 0.4;
 
-            // Check if we need full redraw
-            const currentSettings = JSON.stringify({
-                displayMode: document.getElementById('displayMode').value,
-                showOpen: document.getElementById('showOpen').checked,
-                showClosed: document.getElementById('showClosed').checked,
-                showRingLines: document.getElementById('showRingLines').checked,
-                pointSize: document.getElementById('pointSize').value,
-                baseOpenColor: document.getElementById('baseOpenColor').value,
-                baseClosedColor: document.getElementById('baseClosedColor').value,
-                openColorMode: document.getElementById('openColorMode').value,
-                invertOrder: document.getElementById('invertModOrder').checked,
-                pointsLength: pointsData.length
-            });
-
-            if (currentSettings !== lastDrawSettings || needsFullRedraw) {
-                // Pre-batch points by color for faster rendering
-                cachedPointBatches = batchPointsByColor();
-                
-                // Create static background layer (ring lines)
-                if (!cachedStaticCanvas) {
-                    cachedStaticCanvas = document.createElement('canvas');
-                    cachedStaticCanvas.width = width;
-                    cachedStaticCanvas.height = height;
-                }
-                
-                drawStaticElements(cachedStaticCanvas);
-                lastDrawSettings = currentSettings;
-                needsFullRedraw = false;
-            }
-
-            // Always use black background
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, width, height);
-
-            // Draw cached static background
-            if (cachedStaticCanvas) {
-                ctx.drawImage(cachedStaticCanvas, 0, 0);
-            }
-
-            ctx.save();
-            ctx.translate(centerX + transform.x, centerY + transform.y);
-            ctx.scale(transform.scale, transform.scale);
-            ctx.rotate(globalRotation * Math.PI / 180);
-
-            const displayMode = document.getElementById('displayMode').value;
-            const showOpen = document.getElementById('showOpen').checked;
-            const showClosed = document.getElementById('showClosed').checked;
-            const pointSize = parseFloat(document.getElementById('pointSize').value);
-            const enableTracker = document.getElementById('enableTracker').checked;
-            const enableConnections = document.getElementById('enableConnections').checked;
-            const showGapLines = document.getElementById('showGapLines').checked;
-            const enableGap = document.getElementById('enableGapAnalysis').checked;
-
-            const radiusScale = displayMode === 'unit' ? maxRadius : maxRadius / Math.max(...pointsData.map(p => p.m));
-
-            // Draw connection lines (if enabled and not too many)
-            if (enableConnections && pointsData.length < 5000) {
-                drawConnectionLines(radiusScale, displayMode);
-            }
-
-            // Draw gap lines (if enabled and not too many)
-            if (showGapLines && enableGap && pointsData.length < 5000) {
-                drawGapLines(radiusScale, displayMode);
-            }
-
-            // Draw points using batched rendering
-            if (cachedPointBatches) {
-                drawBatchedPoints(cachedPointBatches, pointSize, displayMode, radiusScale, showOpen, showClosed);
-            }
-
-            // Draw tracker
-            if (enableTracker) {
-                drawTrackerPoints(radiusScale, displayMode);
-            }
-
-            // Draw labels (skip in performance mode if too many points)
-            const showLabels = document.getElementById('showLabels').checked;
-            if (showLabels && pointsData.length < 2000) {
-                drawLabels(radiusScale, displayMode, showOpen, showClosed, pointSize);
-            }
-
-            ctx.restore();
-        }
-
-        function drawStaticElements(staticCanvas) {
-            const staticCtx = staticCanvas.getContext('2d');
-            const width = staticCanvas.width;
-            const height = staticCanvas.height;
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const maxRadius = Math.min(width, height) * 0.4;
-
-            staticCtx.clearRect(0, 0, width, height);
-            
-            const showRingLines = document.getElementById('showRingLines').checked;
-            const displayMode = document.getElementById('displayMode').value;
-            
-            if (showRingLines && displayMode === 'rings') {
-                staticCtx.save();
-                staticCtx.translate(centerX + transform.x, centerY + transform.y);
-                staticCtx.scale(transform.scale, transform.scale);
-                staticCtx.rotate(globalRotation * Math.PI / 180);
-                
-                staticCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-                staticCtx.lineWidth = 1 / transform.scale;
-                
-                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-                moduli.forEach(m => {
-                    staticCtx.beginPath();
-                    staticCtx.arc(0, 0, getRadius(m), 0, 2 * Math.PI);
-                    staticCtx.stroke();
-                });
-                
-                staticCtx.restore();
-            }
-        }
-
-        function batchPointsByColor() {
-            const batches = new Map();
-            const openColorMode = document.getElementById('openColorMode').value;
-            
-            // Fast path for solid colors
-            if (openColorMode === 'solid') {
-                const openColor = document.getElementById('baseOpenColor').value;
-                const closedColor = document.getElementById('baseClosedColor').value;
-                
-                batches.set(openColor, { open: [], closed: [], admissible: [] });
-                batches.set(closedColor, { open: [], closed: [], admissible: [] });
-                batches.set('#aa00ff', { open: [], closed: [], admissible: [] });
-                
-                pointsData.forEach(point => {
-                    if (point.isAdmissible) {
-                        batches.get('#aa00ff').admissible.push(point);
-                    } else if (point.isOpen) {
-                        batches.get(openColor).open.push(point);
-                    } else {
-                        batches.get(closedColor).closed.push(point);
-                    }
-                });
-                
-                return batches;
-            }
-            
-            // Standard batching for other color modes
-            pointsData.forEach(point => {
-                const color = getColorForPoint(point, point.isOpen);
-                
-                if (!batches.has(color)) {
-                    batches.set(color, {
-                        open: [],
-                        closed: [],
-                        admissible: []
-                    });
-                }
-                
-                if (point.isAdmissible) {
-                    batches.get(color).admissible.push(point);
-                } else if (point.isOpen) {
-                    batches.get(color).open.push(point);
-                } else {
-                    batches.get(color).closed.push(point);
-                }
-            });
-            
-            return batches;
-        }
-
-        function drawBatchedPoints(batches, pointSize, displayMode, radiusScale, showOpen, showClosed) {
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            const totalRings = moduli.length;
-            
-            // Pre-compute scale factor once
-            const pointScale = 1 / transform.scale;
-            const scaledPointSize = pointSize * pointScale;
-            const scaledAdmissibleSize = pointSize * 1.2 * pointScale;
-            
-            batches.forEach((pointTypes, color) => {
-                // Draw closed points in single batch
-                if (showClosed && pointTypes.closed.length > 0) {
-                    ctx.globalAlpha = 0.3;
-                    ctx.fillStyle = color;
-                    
-                    // Begin path once for entire batch
-                    ctx.beginPath();
-                    pointTypes.closed.forEach(point => {
-                        const ringIndex = getRingIndex(point.m);
-                        const perRingRotation = getPerRingRotation(ringIndex, totalRings);
-                        const modRot = modRotations[point.m] || 0;
-                        const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
-                        const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
-                        const x = r * Math.cos(totalAngle);
-                        const y = r * Math.sin(totalAngle);
-
-                        // Add to single path
-                        ctx.moveTo(x + scaledPointSize, y);
-                        ctx.arc(x, y, scaledPointSize, 0, 2 * Math.PI);
-
-                        // Cache screen position
-                        point.screenX = x;
-                        point.screenY = y;
-                        point.screenRadius = scaledPointSize;
-                    });
-                    // Fill entire batch at once
-                    ctx.fill();
-                }
-                
-                // Draw open points in single batch
-                if (showOpen && pointTypes.open.length > 0) {
-                    ctx.globalAlpha = 0.8;
-                    ctx.fillStyle = color;
-                    
-                    ctx.beginPath();
-                    pointTypes.open.forEach(point => {
-                        const ringIndex = getRingIndex(point.m);
-                        const perRingRotation = getPerRingRotation(ringIndex, totalRings);
-                        const modRot = modRotations[point.m] || 0;
-                        const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
-                        const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
-                        const x = r * Math.cos(totalAngle);
-                        const y = r * Math.sin(totalAngle);
-
-                        ctx.moveTo(x + scaledPointSize, y);
-                        ctx.arc(x, y, scaledPointSize, 0, 2 * Math.PI);
-
-                        point.screenX = x;
-                        point.screenY = y;
-                        point.screenRadius = scaledPointSize;
-                    });
-                    ctx.fill();
-                }
-                
-                // Draw admissible points in single batch
-                if (pointTypes.admissible.length > 0) {
-                    ctx.globalAlpha = 0.9;
-                    ctx.fillStyle = '#aa00ff';
-                    
-                    ctx.beginPath();
-                    pointTypes.admissible.forEach(point => {
-                        const ringIndex = getRingIndex(point.m);
-                        const perRingRotation = getPerRingRotation(ringIndex, totalRings);
-                        const modRot = modRotations[point.m] || 0;
-                        const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
-                        const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
-                        const x = r * Math.cos(totalAngle);
-                        const y = r * Math.sin(totalAngle);
-
-                        ctx.moveTo(x + scaledAdmissibleSize, y);
-                        ctx.arc(x, y, scaledAdmissibleSize, 0, 2 * Math.PI);
-
-                        point.screenX = x;
-                        point.screenY = y;
-                        point.screenRadius = scaledAdmissibleSize;
-                    });
-                    ctx.fill();
-                }
-            });
-            
-            ctx.globalAlpha = 1.0;
-        }
-
-        function drawConnectionLines(radiusScale, displayMode) {
-            const connectionMode = document.getElementById('connectionMode').value;
-            if (connectionMode === 'none') return;
-            
-            const connOpacity = parseFloat(document.getElementById('connOpacity').value);
-            const connLineWidth = parseFloat(document.getElementById('connLineWidth').value);
-            const onlyOpenConn = document.getElementById('onlyOpenConn').checked;
-            
-            ctx.strokeStyle = `rgba(255, 255, 255, ${connOpacity})`;
-            ctx.lineWidth = connLineWidth / transform.scale;
-            
-            // Only draw connection lines for reasonable dataset sizes
-            if (connectionMode === 'same-mod') {
-                drawSameModConnections(radiusScale, displayMode, onlyOpenConn);
-            } else if (connectionMode === 'specific-mod') {
-                drawSpecificModConnections(radiusScale, displayMode, onlyOpenConn);
-            } else {
-                drawCrossModulusConnections(radiusScale, displayMode, connectionMode, onlyOpenConn);
-            }
-        }
-
-        function drawSameModConnections(radiusScale, displayMode, onlyOpenConn) {
-            const sameModPattern = document.getElementById('sameModPattern').value;
-            const sameModGap = parseInt(document.getElementById('sameModGap').value);
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
-            
-            moduli.forEach(m => {
-                const pointsInMod = pointsData.filter(p => p.m === m);
-                
-                pointsInMod.forEach((p1, idx) => {
-                    if (onlyOpenConn && !p1.isOpen) return;
-                    
-                    let targetPoints = [];
-                    
-                    if (sameModPattern === 'sequential') {
-                        const nextR = (p1.r + 1) % m;
-                        targetPoints = pointsInMod.filter(p2 => p2.r === nextR);
-                    } else if (sameModPattern === 'open-only') {
-                        if (p1.isOpen) {
-                            targetPoints = pointsInMod.filter(p2 => p2.isOpen && p2.r !== p1.r);
-                        }
-                    } else if (sameModPattern === 'by-gap') {
-                        const targetR = (p1.r + sameModGap) % m;
-                        targetPoints = pointsInMod.filter(p2 => p2.r === targetR);
-                    }
-                    
-                    targetPoints.forEach(p2 => {
-                        if (onlyOpenConn && !p2.isOpen) return;
-                        drawLineBetweenPoints(p1, p2, m, m, radiusScale, displayMode);
-                    });
-                });
-            });
-        }
-
-        function drawSpecificModConnections(radiusScale, displayMode, onlyOpenConn) {
-            const specificMod = parseInt(document.getElementById('specificModValue').value);
-            const pointsInMod = pointsData.filter(p => p.m === specificMod);
-            
-            pointsInMod.forEach((p1, idx) => {
-                if (onlyOpenConn && !p1.isOpen) return;
-                if (idx < pointsInMod.length - 1) {
-                    const p2 = pointsInMod[idx + 1];
-                    if (onlyOpenConn && !p2.isOpen) return;
-                    drawLineBetweenPoints(p1, p2, specificMod, specificMod, radiusScale, displayMode);
-                }
-            });
-        }
-
-        function drawCrossModulusConnections(radiusScale, displayMode, connectionMode, onlyOpenConn) {
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
-            
-            for (let i = 0; i < moduli.length - 1; i++) {
-                const m1 = moduli[i];
-                const m2 = moduli[i + 1];
-                
-                const points1 = pointsData.filter(p => p.m === m1);
-                const points2 = pointsData.filter(p => p.m === m2);
-
-                points1.forEach(p1 => {
-                    if (onlyOpenConn && !p1.isOpen) return;
-
-                    let targetPoints = [];
-                    
-                    if (connectionMode === 'next-mod') {
-                        targetPoints = points2.filter(p2 => p2.r === p1.r);
-                    } else if (connectionMode === 'binary-lift') {
-                        targetPoints = points2.filter(p2 => p2.r === p1.r || p2.r === (p1.r + m1) % m2);
-                    } else if (connectionMode === 'double-lift') {
-                        for (let n = 0; n < 5; n++) {
-                            const target = (p1.r + m1 * Math.pow(2, n)) % m2;
-                            targetPoints = targetPoints.concat(points2.filter(p2 => p2.r === target));
-                        }
-                    }
-
-                    targetPoints.forEach(p2 => {
-                        if (onlyOpenConn && !p2.isOpen) return;
-                        drawLineBetweenPoints(p1, p2, m1, m2, radiusScale, displayMode);
-                    });
-                });
-            }
-        }
-
-        function drawLineBetweenPoints(p1, p2, m1, m2, radiusScale, displayMode) {
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            const totalRings = moduli.length;
-            
-            const ringIndex1 = getRingIndex(m1);
-            const perRingRot1 = getPerRingRotation(ringIndex1, totalRings);
-            const modRot1 = modRotations[m1] || 0;
-            const angle1 = p1.angle + (modRot1 * Math.PI / 180) + (perRingRot1 * Math.PI / 180);
-            const r1 = displayMode === 'unit' ? radiusScale : getRadius(m1);
-            const x1 = r1 * Math.cos(angle1);
-            const y1 = r1 * Math.sin(angle1);
-
-            const ringIndex2 = getRingIndex(m2);
-            const perRingRot2 = getPerRingRotation(ringIndex2, totalRings);
-            const modRot2 = modRotations[m2] || 0;
-            const angle2 = p2.angle + (modRot2 * Math.PI / 180) + (perRingRot2 * Math.PI / 180);
-            const r2 = displayMode === 'unit' ? radiusScale : getRadius(m2);
-            const x2 = r2 * Math.cos(angle2);
-            const y2 = r2 * Math.sin(angle2);
-
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-        }
-
-        function drawGapLines(radiusScale, displayMode) {
-            const gapInput = document.getElementById('gapValues').value;
-            const gaps = gapInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g > 0);
-            const gapOpacity = parseFloat(document.getElementById('gapOpacity').value);
-            const gapLineWidth = parseFloat(document.getElementById('gapLineWidth').value);
-
-            gaps.forEach((gap, gapIdx) => {
-                const gapColorInput = document.getElementById(`gapColor${gapIdx}`);
-                const gapColor = gapColorInput ? gapColorInput.value : gapColorScheme[gapIdx % gapColorScheme.length];
-                
-                ctx.strokeStyle = gapColor;
-                ctx.globalAlpha = gapOpacity;
-                ctx.lineWidth = gapLineWidth / transform.scale;
-
-                // Use pre-computed lookup table for O(1) access
-                ctx.beginPath();
-                
-                pointsData.forEach(point => {
-                    if (!point.isOpen) return;
-                    if (!point.admissibleGaps.includes(gap)) return;
-
-                    const rPlusG = (point.r + gap) % point.m;
-                    const targetPoint = pointsByModulus[point.m] && pointsByModulus[point.m][rPlusG];
-                    
-                    if (targetPoint && targetPoint.isOpen) {
-                        drawLineBetweenPoints(point, targetPoint, point.m, point.m, radiusScale, displayMode);
-                    }
-                });
-                
-                ctx.stroke();
-                ctx.globalAlpha = 1.0;
-            });
-        }
-
-        function drawTrackerPoints(radiusScale, displayMode) {
-            const trackedInput = document.getElementById('trackedResidues').value;
-            const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
-            const modFilter = document.getElementById('trackerModFilter').value;
-            const filterMod = modFilter ? parseInt(modFilter) : null;
-            const trackerColor = document.getElementById('trackerColor').value;
-            const trackerSize = parseFloat(document.getElementById('trackerSize').value);
-            
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            const totalRings = moduli.length;
-            
-            trackedRs.forEach(trackedResidue => {
-                let filteredPoints = pointsData.filter(p => p.r === trackedResidue);
-                if (filterMod !== null) {
-                    filteredPoints = filteredPoints.filter(p => p.m === filterMod);
-                }
-                
-                filteredPoints.forEach(point => {
-                    const ringIndex = getRingIndex(point.m);
-                    const perRingRotation = getPerRingRotation(ringIndex, totalRings);
-                    const modRot = modRotations[point.m] || 0;
-                    const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
-                    const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
-                    const x = r * Math.cos(totalAngle);
-                    const y = r * Math.sin(totalAngle);
-
-                    ctx.strokeStyle = trackerColor;
-                    ctx.lineWidth = 2 / transform.scale;
-                    ctx.fillStyle = trackerColor;
-                    ctx.globalAlpha = 0.9;
-                    ctx.beginPath();
-                    ctx.arc(x, y, trackerSize / transform.scale, 0, 2 * Math.PI);
-                    ctx.fill();
-                    ctx.stroke();
-                    ctx.globalAlpha = 1.0;
-                });
-            });
-        }
-
-        function drawLabels(radiusScale, displayMode, showOpen, showClosed, pointSize) {
-            const labelType = document.getElementById('labelType').value;
-            const labelFilter = document.getElementById('labelFilter').value;
-            const labelFilterValue = parseInt(document.getElementById('labelFilterValue').value);
-            const labelSize = parseFloat(document.getElementById('labelSize').value);
-            const labelColor = document.getElementById('labelColor').value;
-            const labelBg = document.getElementById('labelBackground').checked;
-            const labelSpacing = parseFloat(document.getElementById('labelSpacing').value);
-
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            const totalRings = moduli.length;
-
-            ctx.font = `${labelSize / transform.scale}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-
-            pointsData.forEach(point => {
-                if (!shouldShowLabel(point, labelFilter, labelFilterValue)) return;
-                if (!showOpen && point.isOpen) return;
-                if (!showClosed && !point.isOpen) return;
-
-                const ringIndex = getRingIndex(point.m);
-                const perRingRotation = getPerRingRotation(ringIndex, totalRings);
-                const modRot = modRotations[point.m] || 0;
-                const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
-                const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
-                const x = r * Math.cos(totalAngle);
-                const y = r * Math.sin(totalAngle);
-
-                const labelText = getPointLabel(point, labelType);
-                const labelOffset = (pointSize + labelSpacing) / transform.scale;
-                const labelX = x + labelOffset * Math.cos(totalAngle);
-                const labelY = y + labelOffset * Math.sin(totalAngle);
-
-                if (labelBg) {
-                    const metrics = ctx.measureText(labelText);
-                    const padding = 2 / transform.scale;
-                    const bgHeight = labelSize / transform.scale + 2 * padding;
-                    const bgWidth = metrics.width + 2 * padding;
-
-                    ctx.fillStyle = currentTheme === 'dark' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)';
-                    ctx.fillRect(
-                        labelX - bgWidth / 2,
-                        labelY - bgHeight / 2,
-                        bgWidth,
-                        bgHeight
-                    );
-                }
-
-                ctx.fillStyle = labelColor;
-                ctx.fillText(labelText, labelX, labelY);
-            });
-        }
-
-        function drawVisualizationStandard() {
-            const width = canvas.width;
-            const height = canvas.height;
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const maxRadius = Math.min(width, height) * 0.4;
-
-            // Always use black background for canvas
-            const bgColor = '#000000';
+            // Get theme-aware background color
+            const bgColor = currentTheme === 'dark' ? '#000000' : '#ffffff';
             ctx.clearRect(0, 0, width, height);
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, width, height);
@@ -2970,6 +1833,7 @@
             const modMin = parseInt(document.getElementById('modMin').value);
             const modStep = parseInt(document.getElementById('modStep').value);
             const enableTracker = document.getElementById('enableTracker').checked;
+            const trackedResidue = parseInt(document.getElementById('trackedResidue').value);
             const trackerColor = document.getElementById('trackerColor').value;
             const trackerSize = parseFloat(document.getElementById('trackerSize').value);
             const enableConnections = document.getElementById('enableConnections').checked;
@@ -2979,28 +1843,18 @@
 
             const radiusScale = displayMode === 'unit' ? maxRadius : maxRadius / modMax;
 
-            // Always use white/light colors for lines on black background
-            const lineColor = 'rgba(255, 255, 255, 0.2)';
-            const connectionLineColor = `rgba(255, 255, 255, ${connOpacity})`;
+            // Theme-aware line color
+            const lineColor = currentTheme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)';
+            const connectionLineColor = currentTheme === 'dark' ? `rgba(255, 255, 255, ${connOpacity})` : `rgba(0, 0, 0, ${connOpacity})`;
 
             // Function to get proper radius for each modulus
             function getRadius(m) {
-                const invertOrder = document.getElementById('invertModOrder').checked;
-                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-                
                 if (displayMode === 'unit') {
+                    // In unit circle mode, all gcd(r,m)=1 points map to the outer circle
                     return maxRadius;
                 }
-                
-                if (invertOrder) {
-                    // Map largest modulus to innermost, smallest to outermost
-                    const maxMod = Math.max(...moduli);
-                    const minMod = Math.min(...moduli);
-                    const inverted = maxMod - (m - minMod);
-                    return inverted * radiusScale;
-                }
-                
-                // Normal: m=1 is innermost
+                // Rings mode - scale by modulus
+                // m=1 is innermost, starting point
                 return m * radiusScale;
             }
 
@@ -3017,143 +1871,55 @@
 
             // Draw connection lines
             if (enableConnections && connectionMode !== 'none' && displayMode === 'rings') {
-                const connLineWidth = parseFloat(document.getElementById('connLineWidth').value);
                 ctx.strokeStyle = connectionLineColor;
-                ctx.lineWidth = connLineWidth / transform.scale;
+                ctx.lineWidth = 0.5 / transform.scale;
 
-                if (connectionMode === 'same-mod') {
-                    // Same modulus connections
-                    const sameModPattern = document.getElementById('sameModPattern').value;
-                    const sameModGap = parseInt(document.getElementById('sameModGap').value);
+                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
+                
+                for (let i = 0; i < moduli.length - 1; i++) {
+                    const m1 = moduli[i];
+                    const m2 = moduli[i + 1];
                     
-                    const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
-                    
-                    moduli.forEach(m => {
-                        const pointsInMod = pointsData.filter(p => p.m === m);
-                        
-                        pointsInMod.forEach((p1, idx) => {
-                            if (onlyOpenConn && !p1.isOpen) return;
-                            
-                            let targetPoints = [];
-                            
-                            if (sameModPattern === 'all') {
-                                // Connect to all other points in same modulus
-                                targetPoints = pointsInMod.filter(p2 => p2.r !== p1.r);
-                            } else if (sameModPattern === 'sequential') {
-                                // Connect to next point (r to r+1)
-                                const nextR = (p1.r + 1) % m;
-                                targetPoints = pointsInMod.filter(p2 => p2.r === nextR);
-                            } else if (sameModPattern === 'open-only') {
-                                // Connect all open channels in this modulus
-                                if (p1.isOpen) {
-                                    targetPoints = pointsInMod.filter(p2 => p2.isOpen && p2.r !== p1.r);
-                                }
-                            } else if (sameModPattern === 'by-gap') {
-                                // Connect by gap interval
-                                const targetR = (p1.r + sameModGap) % m;
-                                targetPoints = pointsInMod.filter(p2 => p2.r === targetR);
-                            }
-                            
-                            targetPoints.forEach(p2 => {
-                                if (onlyOpenConn && !p2.isOpen) return;
-                                
-                                const modRot = modRotations[m] || 0;
-                                
-                                const angle1 = p1.angle + (modRot * Math.PI / 180);
-                                const r1 = getRadius(m);
-                                const x1 = r1 * Math.cos(angle1);
-                                const y1 = r1 * Math.sin(angle1);
-                                
-                                const angle2 = p2.angle + (modRot * Math.PI / 180);
-                                const r2 = getRadius(m);
-                                const x2 = r2 * Math.cos(angle2);
-                                const y2 = r2 * Math.sin(angle2);
-                                
-                                ctx.beginPath();
-                                ctx.moveTo(x1, y1);
-                                ctx.lineTo(x2, y2);
-                                ctx.stroke();
-                            });
-                        });
-                    });
-                } else if (connectionMode === 'specific-mod') {
-                    // Specific modulus only
-                    const specificMod = parseInt(document.getElementById('specificModValue').value);
-                    const pointsInMod = pointsData.filter(p => p.m === specificMod);
-                    
-                    pointsInMod.forEach((p1, idx) => {
+                    const points1 = pointsData.filter(p => p.m === m1);
+                    const points2 = pointsData.filter(p => p.m === m2);
+
+                    points1.forEach(p1 => {
                         if (onlyOpenConn && !p1.isOpen) return;
-                        if (idx < pointsInMod.length - 1) {
-                            const p2 = pointsInMod[idx + 1];
+
+                        const modRot1 = modRotations[m1] || 0;
+                        const angle1 = p1.angle + (modRot1 * Math.PI / 180);
+                        const r1 = getRadius(m1);
+                        const x1 = r1 * Math.cos(angle1);
+                        const y1 = r1 * Math.sin(angle1);
+
+                        let targetPoints = [];
+                        
+                        if (connectionMode === 'next-mod') {
+                            targetPoints = points2.filter(p2 => p2.r === p1.r);
+                        } else if (connectionMode === 'binary-lift') {
+                            targetPoints = points2.filter(p2 => p2.r === p1.r || p2.r === (p1.r + m1) % m2);
+                        } else if (connectionMode === 'double-lift') {
+                            for (let n = 0; n < 5; n++) {
+                                const target = (p1.r + m1 * Math.pow(2, n)) % m2;
+                                targetPoints = targetPoints.concat(points2.filter(p2 => p2.r === target));
+                            }
+                        }
+
+                        targetPoints.forEach(p2 => {
                             if (onlyOpenConn && !p2.isOpen) return;
-                            
-                            const modRot = modRotations[specificMod] || 0;
-                            
-                            const angle1 = p1.angle + (modRot * Math.PI / 180);
-                            const r1 = getRadius(specificMod);
-                            const x1 = r1 * Math.cos(angle1);
-                            const y1 = r1 * Math.sin(angle1);
-                            
-                            const angle2 = p2.angle + (modRot * Math.PI / 180);
-                            const r2 = getRadius(specificMod);
+
+                            const modRot2 = modRotations[m2] || 0;
+                            const angle2 = p2.angle + (modRot2 * Math.PI / 180);
+                            const r2 = getRadius(m2);
                             const x2 = r2 * Math.cos(angle2);
                             const y2 = r2 * Math.sin(angle2);
-                            
+
                             ctx.beginPath();
                             ctx.moveTo(x1, y1);
                             ctx.lineTo(x2, y2);
                             ctx.stroke();
-                        }
-                    });
-                } else {
-                    // Cross-modulus connections
-                    const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
-                    
-                    for (let i = 0; i < moduli.length - 1; i++) {
-                        const m1 = moduli[i];
-                        const m2 = moduli[i + 1];
-                        
-                        const points1 = pointsData.filter(p => p.m === m1);
-                        const points2 = pointsData.filter(p => p.m === m2);
-
-                        points1.forEach(p1 => {
-                            if (onlyOpenConn && !p1.isOpen) return;
-
-                            const modRot1 = modRotations[m1] || 0;
-                            const angle1 = p1.angle + (modRot1 * Math.PI / 180);
-                            const r1 = getRadius(m1);
-                            const x1 = r1 * Math.cos(angle1);
-                            const y1 = r1 * Math.sin(angle1);
-
-                            let targetPoints = [];
-                            
-                            if (connectionMode === 'next-mod') {
-                                targetPoints = points2.filter(p2 => p2.r === p1.r);
-                            } else if (connectionMode === 'binary-lift') {
-                                targetPoints = points2.filter(p2 => p2.r === p1.r || p2.r === (p1.r + m1) % m2);
-                            } else if (connectionMode === 'double-lift') {
-                                for (let n = 0; n < 5; n++) {
-                                    const target = (p1.r + m1 * Math.pow(2, n)) % m2;
-                                    targetPoints = targetPoints.concat(points2.filter(p2 => p2.r === target));
-                                }
-                            }
-
-                            targetPoints.forEach(p2 => {
-                                if (onlyOpenConn && !p2.isOpen) return;
-
-                                const modRot2 = modRotations[m2] || 0;
-                                const angle2 = p2.angle + (modRot2 * Math.PI / 180);
-                                const r2 = getRadius(m2);
-                                const x2 = r2 * Math.cos(angle2);
-                                const y2 = r2 * Math.sin(angle2);
-
-                                ctx.beginPath();
-                                ctx.moveTo(x1, y1);
-                                ctx.lineTo(x2, y2);
-                                ctx.stroke();
-                            });
                         });
-                    }
+                    });
                 }
             }
 
@@ -3192,34 +1958,22 @@
 
             // Draw tracker
             if (enableTracker) {
-                const trackedInput = document.getElementById('trackedResidues').value;
-                const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
-                const modFilter = document.getElementById('trackerModFilter').value;
-                const filterMod = modFilter ? parseInt(modFilter) : null;
-                
-                trackedRs.forEach(trackedResidue => {
-                    let filteredPoints = pointsData.filter(p => p.r === trackedResidue);
-                    if (filterMod !== null) {
-                        filteredPoints = filteredPoints.filter(p => p.m === filterMod);
-                    }
-                    
-                    filteredPoints.forEach(point => {
-                        const modRot = modRotations[point.m] || 0;
-                        const totalAngle = point.angle + (modRot * Math.PI / 180);
-                        const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
-                        const x = r * Math.cos(totalAngle);
-                        const y = r * Math.sin(totalAngle);
+                pointsData.filter(p => p.r === trackedResidue).forEach(point => {
+                    const modRot = modRotations[point.m] || 0;
+                    const totalAngle = point.angle + (modRot * Math.PI / 180);
+                    const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
+                    const x = r * Math.cos(totalAngle);
+                    const y = r * Math.sin(totalAngle);
 
-                        ctx.strokeStyle = trackerColor;
-                        ctx.lineWidth = 2 / transform.scale;
-                        ctx.fillStyle = trackerColor;
-                        ctx.globalAlpha = 0.9;
-                        ctx.beginPath();
-                        ctx.arc(x, y, trackerSize / transform.scale, 0, 2 * Math.PI);
-                        ctx.fill();
-                        ctx.stroke();
-                        ctx.globalAlpha = 1.0;
-                    });
+                    ctx.strokeStyle = trackerColor;
+                    ctx.lineWidth = 2 / transform.scale;
+                    ctx.fillStyle = trackerColor;
+                    ctx.globalAlpha = 0.9;
+                    ctx.beginPath();
+                    ctx.arc(x, y, trackerSize / transform.scale, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
                 });
             }
 
@@ -3369,9 +2123,6 @@
             if (!animationId) {
                 document.getElementById('animationStatus').textContent = 'Status: Playing';
                 document.getElementById('animationStatus').style.background = '#1a4d1a';
-                document.getElementById('playButton').textContent = 'Pause';
-                document.getElementById('playButton').style.background = '#ff0000';
-                document.getElementById('playButton').style.color = '#ffffff';
                 animationId = requestAnimationFrame(animate);
             }
         }
@@ -3382,9 +2133,6 @@
                 animationId = null;
                 document.getElementById('animationStatus').textContent = 'Status: Stopped';
                 document.getElementById('animationStatus').style.background = 'var(--bg-secondary)';
-                document.getElementById('playButton').textContent = 'Play';
-                document.getElementById('playButton').style.background = '#00ff00';
-                document.getElementById('playButton').style.color = '#000000';
             }
         }
 
@@ -3489,10 +2237,8 @@
         }
 
         function handleEnd(e) {
-            const enablePointClick = document.getElementById('enablePointClick').checked;
-            
-            if (!isDragging && enablePointClick) {
-                // Click detected and point clicking is enabled
+            if (!isDragging) {
+                // Click detected
                 const coords = e.changedTouches ? 
                     { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY } :
                     { x: e.clientX, y: e.clientY };
@@ -3505,27 +2251,16 @@
                 const rx = x * Math.cos(angle) - y * Math.sin(angle);
                 const ry = x * Math.sin(angle) + y * Math.cos(angle);
                 
-                let foundPoint = null;
-                let minDist = Infinity;
-                
                 pointsData.forEach(point => {
                     if (point.screenX !== undefined) {
                         const dx = rx - point.screenX;
                         const dy = ry - point.screenY;
                         const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < point.screenRadius * 3 && dist < minDist) {
-                            minDist = dist;
-                            foundPoint = point;
+                        if (dist < point.screenRadius * 2) {
+                            alert(`Point Details:\n\nModulus m = ${point.m}\nResidue r = ${point.r}\ngcd(${point.r}, ${point.m}) = ${point.gcd}\nChannel: ${point.isOpen ? 'OPEN' : 'CLOSED'}\nφ(${point.m}) = ${point.phiM}\nAngle: ${(point.angle * 180 / Math.PI).toFixed(2)}°${point.isAdmissible ? '\n\nGAP ADMISSIBLE' : ''}`);
                         }
                     }
                 });
-                
-                if (foundPoint) {
-                    const [reducedNum, reducedDen] = reduceFraction(foundPoint.r, foundPoint.m);
-                    const fareyFraction = `${foundPoint.r}/${foundPoint.m}` + (reducedNum !== foundPoint.r ? ` = ${reducedNum}/${reducedDen}` : '');
-                    
-                    alert(`Point Details:\n\nModulus m = ${foundPoint.m}\nResidue r = ${foundPoint.r}\nFarey Fraction: ${fareyFraction}\n\ngcd(${foundPoint.r}, ${foundPoint.m}) = ${foundPoint.gcd}\nChannel: ${foundPoint.isOpen ? 'OPEN' : 'CLOSED'}\nφ(${foundPoint.m}) = ${foundPoint.phiM}\nAngle: ${(foundPoint.angle * 180 / Math.PI).toFixed(2)}°${foundPoint.isAdmissible ? '\n\nGAP ADMISSIBLE ✓' : ''}`);
-                }
             }
             isDragging = false;
             touchStartDist = 0;
@@ -3560,102 +2295,83 @@
         });
 
         function updateBridgeAnalysis() {
-            // Function disabled - bridge analysis tab removed
-            return;
+            if (pointsData.length === 0) {
+                alert('Please generate visualization data first by clicking "Update Display" in the Visualization tab.');
+                return;
+            }
+
+            // Compute modular correction series
+            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
+            const M30Sequence = moduli.filter(m => m >= 30 && (m % 30 === 0) && Math.log2(m/30) % 1 === 0);
             
-            // Build correction series table
             let correctionHTML = '<table style="width: 100%; font-size: 11px; border-collapse: collapse;">';
-            correctionHTML += '<tr style="border-bottom: 1px solid var(--border-color);"><th>Level</th><th>Modulus M</th><th>φ(M)</th><th>φ(M)/M</th><th>ΔT (New Opens)</th><th>Correction 𝕋</th><th>Cumulative</th></tr>';
+            correctionHTML += '<tr style="border-bottom: 1px solid var(--border-color);"><th>n</th><th>M_n</th><th>T(M_n)</th><th>ΔT</th><th>𝕋₂ₙ = ΔT/T(M_n)</th><th>Cumulative</th></tr>';
             
             let cumulativeCorrection = 0;
             let correctionData = [];
-            let phiData = [];
             
-            moduli.forEach((m, idx) => {
-                const phiM = phi(m);
-                const ratio = phiM / m;
-                phiData.push({m, ratio});
-                
-                const T_curr = phiM;
-                const T_prev = idx === 0 ? 0 : phi(moduli[idx - 1]);
-                const deltaT = T_curr - T_prev;
-                const coefficient = T_curr === 0 ? 0 : deltaT / T_curr;
+            M30Sequence.forEach((m, idx) => {
+                const n = Math.log2(m / 30);
+                const T_n = 3 * Math.pow(2, n);
+                const T_prev = idx === 0 ? 0 : 3 * Math.pow(2, n-1);
+                const deltaT = T_n - T_prev;
+                const coefficient = T_prev === 0 ? 1 : deltaT / T_n;
                 cumulativeCorrection += coefficient;
                 
-                correctionData.push({
-                    level: idx,
-                    M: m,
-                    phi: phiM,
-                    ratio: ratio,
-                    deltaT: deltaT,
-                    coeff: coefficient,
-                    cumul: cumulativeCorrection
-                });
+                correctionData.push({n, M: m, T: T_n, coeff: coefficient, cumul: cumulativeCorrection});
                 
-                // Show first 20 and last 5 entries if too many
-                const showEntry = moduli.length <= 25 || idx < 20 || idx >= moduli.length - 5;
-                
-                if (showEntry) {
-                    correctionHTML += `<tr style="border-bottom: 1px solid var(--border-subtle);">`;
-                    correctionHTML += `<td style="padding: 5px;">${idx}</td>`;
-                    correctionHTML += `<td>${m}</td>`;
-                    correctionHTML += `<td>${phiM}</td>`;
-                    correctionHTML += `<td>${ratio.toFixed(6)}</td>`;
-                    correctionHTML += `<td>${deltaT}</td>`;
-                    correctionHTML += `<td><strong>${coefficient.toFixed(6)}</strong></td>`;
-                    correctionHTML += `<td>${cumulativeCorrection.toFixed(6)}</td>`;
-                    correctionHTML += `</tr>`;
-                } else if (idx === 20) {
-                    correctionHTML += `<tr><td colspan="7" style="text-align: center; padding: 8px; font-style: italic;">... ${moduli.length - 25} more entries ...</td></tr>`;
-                }
+                correctionHTML += `<tr style="border-bottom: 1px solid var(--border-subtle);">`;
+                correctionHTML += `<td style="padding: 5px;">${n}</td>`;
+                correctionHTML += `<td>${m}</td>`;
+                correctionHTML += `<td>${T_n}</td>`;
+                correctionHTML += `<td>${deltaT}</td>`;
+                correctionHTML += `<td><strong>${coefficient.toFixed(4)}</strong></td>`;
+                correctionHTML += `<td>${cumulativeCorrection.toFixed(4)}</td>`;
+                correctionHTML += `</tr>`;
             });
             correctionHTML += '</table>';
             document.getElementById('correctionSeriesContent').innerHTML = correctionHTML;
 
-            // Transition table - show detailed view
+            // Transition table
             let transitionHTML = '<table style="width: 100%; font-size: 11px; border-collapse: collapse;">';
-            transitionHTML += '<tr style="border-bottom: 1px solid var(--border-color);"><th>Level</th><th>Modulus M</th><th>φ(M)</th><th>φ(M)/M</th><th>Error from 6/π²</th></tr>';
+            transitionHTML += '<tr style="border-bottom: 1px solid var(--border-color);"><th>Level n</th><th>M_n = 30×2^n</th><th>T(M_n) = 3×2^n</th><th>φ(M_n)</th><th>φ(M_n)/M_n</th></tr>';
             
-            const theoretical = 6 / (Math.PI * Math.PI);
-            
-            moduli.forEach((m, idx) => {
+            M30Sequence.forEach(m => {
+                const n = Math.log2(m / 30);
+                const T_n = 3 * Math.pow(2, n);
                 const phiM = phi(m);
                 const ratio = phiM / m;
-                const error = Math.abs(ratio - theoretical);
                 
-                const showEntry = moduli.length <= 25 || idx < 20 || idx >= moduli.length - 5;
-                
-                if (showEntry) {
-                    transitionHTML += `<tr style="border-bottom: 1px solid var(--border-subtle);">`;
-                    transitionHTML += `<td style="padding: 5px;">${idx}</td>`;
-                    transitionHTML += `<td>${m}</td>`;
-                    transitionHTML += `<td>${phiM}</td>`;
-                    transitionHTML += `<td>${ratio.toFixed(6)}</td>`;
-                    transitionHTML += `<td>${error.toFixed(6)}</td>`;
-                    transitionHTML += `</tr>`;
-                } else if (idx === 20) {
-                    transitionHTML += `<tr><td colspan="5" style="text-align: center; padding: 8px; font-style: italic;">... ${moduli.length - 25} more entries ...</td></tr>`;
-                }
+                transitionHTML += `<tr style="border-bottom: 1px solid var(--border-subtle);">`;
+                transitionHTML += `<td style="padding: 5px;">${n}</td>`;
+                transitionHTML += `<td>${m}</td>`;
+                transitionHTML += `<td>${T_n}</td>`;
+                transitionHTML += `<td>${phiM}</td>`;
+                transitionHTML += `<td>${ratio.toFixed(6)}</td>`;
+                transitionHTML += `</tr>`;
             });
             transitionHTML += '</table>';
             document.getElementById('transitionTable').innerHTML = transitionHTML;
 
             // Update bridge statistics
             const avgPhi = parseFloat(document.getElementById('statAvgPhi').textContent);
+            const theoretical = 6 / (Math.PI * Math.PI);
             const error = Math.abs(avgPhi - theoretical);
-            const totalOpen = pointsData.filter(p => p.isOpen).length;
             
             document.getElementById('bridgeAvgPhi').textContent = avgPhi.toFixed(6);
             document.getElementById('bridgeError').textContent = error.toFixed(6);
-            document.getElementById('bridgeLevels').textContent = moduli.length;
-            document.getElementById('bridgeTransitions').textContent = totalOpen.toLocaleString();
+            document.getElementById('bridgeLevels').textContent = M30Sequence.length;
+            document.getElementById('bridgeTransitions').textContent = M30Sequence.length > 0 ? 
+                (3 * Math.pow(2, M30Sequence.length - 1)).toFixed(0) : '0';
 
-            // Draw charts with updated data
-            drawConvergenceChart(phiData, avgPhi, theoretical);
+            // Draw convergence chart
+            drawConvergenceChart(correctionData, avgPhi, theoretical);
+            
+            // Draw correction amplitude chart
             drawCorrectionChart(correctionData);
         }
 
-        function drawConvergenceChart(phiData, observed, theoretical) {
+        function drawConvergenceChart(correctionData, observed, theoretical) {
             const canvas = document.getElementById('convergenceChart');
             if (!canvas) return;
             
@@ -3664,46 +2380,13 @@
             const height = canvas.height;
             const padding = 50;
             
+            // Clear and setup
             const bgColor = currentTheme === 'dark' ? '#000000' : '#ffffff';
             const lineColor = currentTheme === 'dark' ? '#ffffff' : '#000000';
             const gridColor = currentTheme === 'dark' ? '#333333' : '#cccccc';
             
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, width, height);
-            
-            if (phiData.length === 0) {
-                ctx.fillStyle = lineColor;
-                ctx.font = '12px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('No data to display', width/2, height/2);
-                return;
-            }
-            
-            // Find min/max for scaling
-            const ratios = phiData.map(d => d.ratio);
-            const minRatio = Math.min(...ratios, theoretical);
-            const maxRatio = Math.max(...ratios, theoretical);
-            const range = maxRatio - minRatio;
-            const yMin = minRatio - range * 0.1;
-            const yMax = maxRatio + range * 0.1;
-            const yRange = yMax - yMin;
-            
-            // Draw grid
-            ctx.strokeStyle = gridColor;
-            ctx.lineWidth = 0.5;
-            for (let i = 0; i <= 5; i++) {
-                const y = padding + (i / 5) * (height - 2 * padding);
-                ctx.beginPath();
-                ctx.moveTo(padding, y);
-                ctx.lineTo(width - padding, y);
-                ctx.stroke();
-                
-                const value = yMax - (i / 5) * yRange;
-                ctx.fillStyle = lineColor;
-                ctx.font = '10px Arial';
-                ctx.textAlign = 'right';
-                ctx.fillText(value.toFixed(4), padding - 5, y + 4);
-            }
             
             // Draw axes
             ctx.strokeStyle = lineColor;
@@ -3718,7 +2401,7 @@
             ctx.strokeStyle = '#00ff00';
             ctx.lineWidth = 2;
             ctx.setLineDash([5, 5]);
-            const yTheory = height - padding - ((theoretical - yMin) / yRange) * (height - 2 * padding);
+            const yTheory = height - padding - ((theoretical - 0.5) / 0.15) * (height - 2 * padding);
             ctx.beginPath();
             ctx.moveTo(padding, yTheory);
             ctx.lineTo(width - padding, yTheory);
@@ -3726,40 +2409,31 @@
             ctx.setLineDash([]);
             
             // Plot observed convergence
-            ctx.strokeStyle = '#ff0000';
-            ctx.fillStyle = '#ff0000';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            
-            phiData.forEach((d, i) => {
-                const x = padding + (i / (phiData.length - 1)) * (width - 2 * padding);
-                const y = height - padding - ((d.ratio - yMin) / yRange) * (height - 2 * padding);
-                
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-                
-                // Draw point
+            if (correctionData.length > 0) {
+                ctx.strokeStyle = '#ff0000';
+                ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.arc(x, y, 3, 0, 2 * Math.PI);
-                ctx.fill();
-            });
-            ctx.stroke();
+                
+                correctionData.forEach((d, i) => {
+                    const x = padding + (i / (correctionData.length - 1)) * (width - 2 * padding);
+                    const y = height - padding - ((observed - 0.5) / 0.15) * (height - 2 * padding);
+                    
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+            }
             
             // Labels
             ctx.fillStyle = lineColor;
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Level Index', width / 2, height - 10);
-            
-            ctx.save();
-            ctx.translate(15, height / 2);
-            ctx.rotate(-Math.PI / 2);
-            ctx.fillText('φ(M)/M', 0, 0);
-            ctx.restore();
-            
+            ctx.font = '11px Arial';
+            ctx.fillText('φ(m)/m Convergence', width / 2 - 60, 20);
+            ctx.fillText('0.50', padding - 35, height - padding + 5);
+            ctx.fillText('0.65', padding - 35, padding + 5);
             ctx.fillStyle = '#00ff00';
-            ctx.font = '10px Arial';
-            ctx.fillText(`6/π² = ${theoretical.toFixed(6)}`, width - padding - 60, yTheory - 5);
+            ctx.fillText('6/π² limit', width - padding + 5, yTheory + 5);
+            ctx.fillStyle = '#ff0000';
+            ctx.fillText('Observed', width - padding + 5, height - padding - 20);
         }
 
         function drawCorrectionChart(correctionData) {
@@ -3771,22 +2445,12 @@
             const height = canvas.height;
             const padding = 50;
             
+            // Clear and setup
             const bgColor = currentTheme === 'dark' ? '#000000' : '#ffffff';
             const lineColor = currentTheme === 'dark' ? '#ffffff' : '#000000';
             
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, width, height);
-            
-            if (correctionData.length === 0) {
-                ctx.fillStyle = lineColor;
-                ctx.font = '12px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('No data to display', width/2, height/2);
-                return;
-            }
-            
-            // Find max coefficient for scaling
-            const maxCoeff = Math.max(...correctionData.map(d => d.coeff), 1);
             
             // Draw axes
             ctx.strokeStyle = lineColor;
@@ -3797,105 +2461,65 @@
             ctx.lineTo(width - padding, height - padding);
             ctx.stroke();
             
-            // Y-axis labels
-            ctx.fillStyle = lineColor;
-            ctx.font = '10px Arial';
-            ctx.textAlign = 'right';
-            for (let i = 0; i <= 5; i++) {
-                const y = padding + (i / 5) * (height - 2 * padding);
-                const value = maxCoeff * (1 - i / 5);
-                ctx.fillText(value.toFixed(3), padding - 5, y + 4);
-                
-                // Grid line
-                ctx.strokeStyle = currentTheme === 'dark' ? '#333333' : '#cccccc';
-                ctx.lineWidth = 0.5;
-                ctx.beginPath();
-                ctx.moveTo(padding, y);
-                ctx.lineTo(width - padding, y);
-                ctx.stroke();
-            }
+            // Draw expected 1/2 line
+            ctx.strokeStyle = '#0080ff';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            const yHalf = height - padding - (0.5 / 1.0) * (height - 2 * padding);
+            ctx.beginPath();
+            ctx.moveTo(padding, yHalf);
+            ctx.lineTo(width - padding, yHalf);
+            ctx.stroke();
+            ctx.setLineDash([]);
             
-            // Plot bars
+            // Plot correction coefficients
             if (correctionData.length > 0) {
-                const barWidth = Math.min((width - 2 * padding) / correctionData.length * 0.8, 30);
+                ctx.fillStyle = '#ff0000';
                 
                 correctionData.forEach((d, i) => {
-                    const x = padding + (i + 0.5) / correctionData.length * (width - 2 * padding);
-                    const barHeight = (d.coeff / maxCoeff) * (height - 2 * padding);
-                    const y = height - padding - barHeight;
+                    const x = padding + (i / (correctionData.length - 1)) * (width - 2 * padding);
+                    const y = height - padding - (d.coeff / 1.0) * (height - 2 * padding);
+                    const barWidth = (width - 2 * padding) / correctionData.length * 0.6;
                     
-                    // Color bars by magnitude
-                    const intensity = d.coeff / maxCoeff;
-                    const r = Math.round(255 * intensity);
-                    const b = Math.round(255 * (1 - intensity));
-                    ctx.fillStyle = `rgb(${r}, 100, ${b})`;
-                    
-                    ctx.fillRect(x - barWidth / 2, y, barWidth, barHeight);
-                    
-                    // Border
-                    ctx.strokeStyle = lineColor;
-                    ctx.lineWidth = 0.5;
-                    ctx.strokeRect(x - barWidth / 2, y, barWidth, barHeight);
+                    ctx.fillRect(x - barWidth / 2, y, barWidth, height - padding - y);
                 });
             }
             
             // Labels
             ctx.fillStyle = lineColor;
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Level Index', width / 2, height - 10);
-            
-            ctx.save();
-            ctx.translate(15, height / 2);
-            ctx.rotate(-Math.PI / 2);
-            ctx.fillText('Correction 𝕋₂ₙ', 0, 0);
-            ctx.restore();
+            ctx.font = '11px Arial';
+            ctx.fillText('Correction Coefficients 𝕋₂ₙ', width / 2 - 70, 20);
+            ctx.fillText('0', padding - 15, height - padding + 5);
+            ctx.fillText('1', padding - 15, padding + 5);
+            ctx.fillStyle = '#0080ff';
+            ctx.fillText('Expected: 1/2', width - padding + 5, yHalf + 5);
         }
 
         function updateVisualization() {
-            if (isComputing) {
-                alert('Computation already in progress. Please wait...');
-                return;
-            }
-            needsFullRedraw = true;
-            cachedPointBatches = null;
-            cachedStaticCanvas = null;
-            lastDrawSettings = null;
             generatePointsData();
-            if (!isComputing) {
-                drawVisualization();
-            }
-        }
-        
-        // Performance mode change handler
-        document.getElementById('performanceMode').addEventListener('change', () => {
-            needsFullRedraw = true;
             drawVisualization();
-        });
+            updateBridgeAnalysis();
+        }
 
         function setPreset(n) {
-            document.getElementById('modSelectionMode').value = 'M30-sequence';
-            document.getElementById('sequenceInputs').style.display = 'block';
-            document.getElementById('rangeInputs').style.display = 'none';
-            document.getElementById('customInputs').style.display = 'none';
-            document.getElementById('sequenceTerms').value = n + 1;
+            const m = 30 * Math.pow(2, n);
+            document.getElementById('modMin').value = m;
+            document.getElementById('modMax').value = m;
+            document.getElementById('modStep').value = 1;
             
-            document.getElementById('enableConnections').checked = true;
-            document.getElementById('connectionMode').value = 'double-lift';
-            document.getElementById('displayMode').value = 'rings';
-            document.getElementById('showOpen').checked = true;
-            document.getElementById('showClosed').checked = false;
+            // Enable connections for nested visualization
+            document.getElementById('enableConnections').checked = false;
+            document.getElementById('connectionMode').value = 'none';
             
             updateVisualization();
         }
 
         function setPresetRange() {
-            document.getElementById('modSelectionMode').value = 'M30-sequence';
-            document.getElementById('sequenceInputs').style.display = 'block';
-            document.getElementById('rangeInputs').style.display = 'none';
-            document.getElementById('customInputs').style.display = 'none';
-            document.getElementById('sequenceTerms').value = 6;
+            document.getElementById('modMin').value = 30;
+            document.getElementById('modMax').value = 960;
+            document.getElementById('modStep').value = 30;
             
+            // Enable connections to show nested structure
             document.getElementById('enableConnections').checked = true;
             document.getElementById('connectionMode').value = 'binary-lift';
             document.getElementById('displayMode').value = 'rings';
@@ -3904,209 +2528,10 @@
         }
 
         function exportImage() {
-            const includeLegend = document.getElementById('includeLegend').checked;
-            const exportTitle = document.getElementById('exportTitle').value;
-            const resolution = parseFloat(document.getElementById('exportResolution').value);
-            
-            // Create temporary canvas at higher resolution
-            const tempCanvas = document.createElement('canvas');
-            const baseWidth = canvas.width;
-            const baseHeight = canvas.height;
-            
-            let exportWidth = baseWidth * resolution;
-            let exportHeight = baseHeight * resolution;
-            
-            // Calculate legend dimensions - always on right
-            let legendWidth = 0;
-            
-            if (includeLegend) {
-                legendWidth = 400 * resolution;
-                exportWidth += legendWidth;
-            }
-            
-            tempCanvas.width = exportWidth;
-            tempCanvas.height = exportHeight;
-            const tempCtx = tempCanvas.getContext('2d');
-            
-            // Fill background
-            const bgColor = currentTheme === 'dark' ? '#000000' : '#ffffff';
-            const textColor = currentTheme === 'dark' ? '#ffffff' : '#000000';
-            tempCtx.fillStyle = bgColor;
-            tempCtx.fillRect(0, 0, exportWidth, exportHeight);
-            
-            // Draw main visualization scaled up on the left
-            tempCtx.save();
-            tempCtx.scale(resolution, resolution);
-            tempCtx.drawImage(canvas, 0, 0);
-            tempCtx.restore();
-            
-            // Draw legend if enabled - always on right, title always top center
-            if (includeLegend) {
-                drawLegend(tempCtx, exportTitle, legendWidth, exportWidth, exportHeight, resolution, textColor, bgColor);
-            }
-            
-            // Export
             const link = document.createElement('a');
-            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-            link.download = `modular_rings_${timestamp}.png`;
-            link.href = tempCanvas.toDataURL('image/png');
+            link.download = `modular_rings_${new Date().toISOString().slice(0,10)}.png`;
+            link.href = canvas.toDataURL('image/png');
             link.click();
-        }
-
-        function drawLegend(ctx, title, legendWidth, totalWidth, totalHeight, resolution, textColor, bgColor) {
-            const moduli = getSelectedModuli();
-            const mode = document.getElementById('modSelectionMode').value;
-            const displayMode = document.getElementById('displayMode').value;
-            const angularMapping = document.getElementById('angularMapping').value;
-            const showOpen = document.getElementById('showOpen').checked;
-            const showClosed = document.getElementById('showClosed').checked;
-            const enableGap = document.getElementById('enableGapAnalysis').checked;
-            const gapValues = document.getElementById('gapValues').value;
-            const enableTracker = document.getElementById('enableTracker').checked;
-            const trackedResidues = document.getElementById('trackedResidues').value;
-            const invertOrder = document.getElementById('invertModOrder').checked;
-            const enableConnections = document.getElementById('enableConnections').checked;
-            const connectionMode = document.getElementById('connectionMode').value;
-            
-            const fontSize = 14 * resolution;
-            const lineHeight = 20 * resolution;
-            const padding = 20 * resolution;
-            
-            // Legend is always on the right
-            const startX = totalWidth - legendWidth + padding;
-            const maxWidth = legendWidth - 2 * padding;
-            
-            // Title at top center of entire image
-            ctx.fillStyle = textColor;
-            ctx.font = `bold ${fontSize * 1.8}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.fillText(title, totalWidth / 2, padding + fontSize * 1.5);
-            
-            // Start legend content
-            let y = padding * 3;
-            ctx.textAlign = 'left';
-            
-            // Draw separator
-            ctx.strokeStyle = textColor;
-            ctx.lineWidth = 1 * resolution;
-            ctx.beginPath();
-            ctx.moveTo(startX, y);
-            ctx.lineTo(startX + maxWidth * 0.8, y);
-            ctx.stroke();
-            y += lineHeight;
-            // Parameters
-            ctx.font = `${fontSize}px Arial`;
-            ctx.fillStyle = textColor;
-            
-            // Modulus configuration
-            let moduliText = '';
-            if (mode === 'range') {
-                const modMin = document.getElementById('modMin').value;
-                const modMax = document.getElementById('modMax').value;
-                const modStep = document.getElementById('modStep').value;
-                moduliText = `Range: ${modMin} to ${modMax} (step ${modStep})`;
-            } else if (mode === 'fibonacci') {
-                moduliText = `Fibonacci sequence (max ${document.getElementById('sequenceMax').value})`;
-            } else if (mode === 'primes') {
-                moduliText = `Prime moduli (max ${document.getElementById('sequenceMax').value})`;
-            } else if (mode === 'powers-of-2') {
-                moduliText = `Powers of 2 (${document.getElementById('sequenceTerms').value} terms)`;
-            } else if (mode === 'powers-of-3') {
-                moduliText = `Powers of 3 (${document.getElementById('sequenceTerms').value} terms)`;
-            } else if (mode === 'M30-sequence') {
-                moduliText = `M₃₀ = 30×2ⁿ (${document.getElementById('sequenceTerms').value} terms)`;
-            } else if (mode === 'custom') {
-                const customMods = document.getElementById('customModuli').value;
-                moduliText = `Custom: ${customMods}`;
-            }
-            
-            ctx.fillText(`Moduli: ${moduliText}`, startX, y);
-            y += lineHeight;
-            
-            ctx.fillText(`Total Moduli: ${moduli.length}`, startX, y);
-            y += lineHeight;
-            
-            ctx.fillText(`Display Mode: ${displayMode === 'rings' ? 'Concentric Rings' : 'Unit Circle'}`, startX, y);
-            y += lineHeight;
-            
-            if (invertOrder) {
-                ctx.fillText(`Order: Inverted (Outer↔Inner)`, startX, y);
-                y += lineHeight;
-            }
-            
-            ctx.fillText(`Angular Mapping: ${angularMapping}`, startX, y);
-            y += lineHeight;
-            
-            const channelText = showOpen && showClosed ? 'Open & Closed' : showOpen ? 'Open Only' : 'Closed Only';
-            ctx.fillText(`Channels: ${channelText}`, startX, y);
-            y += lineHeight;
-            
-            if (enableGap) {
-                ctx.fillText(`Gap Analysis: ${gapValues}`, startX, y);
-                y += lineHeight;
-            }
-            
-            if (enableTracker) {
-                ctx.fillText(`Tracked Residues: ${trackedResidues}`, startX, y);
-                y += lineHeight;
-            }
-            
-            if (enableConnections) {
-                const connModeText = connectionMode === 'next-mod' ? 'r to r (Next Mod)' :
-                                     connectionMode === 'binary-lift' ? 'Binary Lift' :
-                                     connectionMode === 'double-lift' ? 'r to r+M×2ⁿ' :
-                                     connectionMode === 'same-mod' ? 'Same Modulus' :
-                                     connectionMode === 'specific-mod' ? 'Specific Modulus' : 'None';
-                ctx.fillText(`Connections: ${connModeText}`, startX, y);
-                y += lineHeight;
-            }
-            
-            // Statistics
-            y += lineHeight * 0.5;
-            ctx.font = `bold ${fontSize}px Arial`;
-            ctx.fillText('Statistics:', startX, y);
-            y += lineHeight;
-            
-            ctx.font = `${fontSize}px Arial`;
-            const totalPoints = document.getElementById('statTotal').textContent;
-            const openCount = document.getElementById('statOpen').textContent;
-            const closedCount = document.getElementById('statClosed').textContent;
-            const openRatio = document.getElementById('statRatio').textContent;
-            const avgPhi = document.getElementById('statAvgPhi').textContent;
-            
-            ctx.fillText(`Total Points: ${totalPoints}`, startX, y);
-            y += lineHeight;
-            ctx.fillText(`Open: ${openCount}, Closed: ${closedCount}`, startX, y);
-            y += lineHeight;
-            ctx.fillText(`Open Ratio: ${openRatio}`, startX, y);
-            y += lineHeight;
-            ctx.fillText(`Avg φ(m)/m: ${avgPhi} (Limit: 0.6079)`, startX, y);
-            y += lineHeight;
-            
-            // Author and date
-            y += lineHeight * 0.5;
-            ctx.font = `${fontSize * 0.9}px Arial`;
-            ctx.fillStyle = textColor;
-            const date = new Date().toLocaleDateString();
-            ctx.fillText(`Generated: ${date}`, startX, y);
-            y += lineHeight;
-            ctx.fillText('By Wessen Getachew', startX, y);
-        }
-
-        function resetSettings() {
-            document.getElementById('modMin').value = '1';
-            document.getElementById('modMax').value = '60';
-            document.getElementById('modStep').value = '1';
-            document.getElementById('globalSpeed').value = '0';
-            document.getElementById('modRotSpeed').value = '0';
-            document.getElementById('enableTracker').checked = false;
-            document.getElementById('enableConnections').checked = false;
-            document.getElementById('bgColor').value = '#000000';
-            globalRotation = 0;
-            modRotations = {};
-            transform = { x: 0, y: 0, scale: 1 };
-            stopAnimation();
-            updateVisualization();
         }
 
         function exportCSV() {
@@ -4124,29 +2549,21 @@
             URL.revokeObjectURL(url);
         }
 
-        function centerAndFit() {
-            // Reset transform
+        function resetSettings() {
+            document.getElementById('modMin').value = '1';
+            document.getElementById('modMax').value = '60';
+            document.getElementById('modStep').value = '1';
+            document.getElementById('globalSpeed').value = '0';
+            document.getElementById('modRotSpeed').value = '0';
+            document.getElementById('enableTracker').checked = false;
+            document.getElementById('enableConnections').checked = false;
+            document.getElementById('bgColor').value = '#000000';
+            globalRotation = 0;
+            modRotations = {};
             transform = { x: 0, y: 0, scale: 1 };
-            
-            // Auto-fit to canvas based on the actual moduli range
-            if (pointsData.length > 0) {
-                const moduli = [...new Set(pointsData.map(p => p.m))];
-                const maxMod = Math.max(...moduli);
-                const minMod = Math.min(...moduli);
-                
-                const canvasSize = Math.min(canvas.width, canvas.height);
-                const maxRadius = canvasSize * 0.4;
-                const dataRadius = maxMod * (maxRadius / maxMod);
-                
-                // Calculate optimal scale to fit with some padding
-                const padding = 0.9; // 90% of canvas size
-                transform.scale = (canvasSize / 2 * padding) / (maxMod * (maxRadius / maxMod));
-                
-                // Ensure minimum scale
-                transform.scale = Math.max(0.5, Math.min(2, transform.scale));
-            }
-            
-            drawVisualization();
+            stopAnimation();
+            updateRangeDisplays();
+            updateVisualization();
         }
 
         function switchTab(tab) {
