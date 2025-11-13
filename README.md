@@ -878,28 +878,10 @@
                                 Enable Tracker
                             </label>
                         </div>
-                        
                         <div class="control-group">
-                            <label>Track Mode</label>
-                            <select id="trackerMode">
-                                <option value="manual">Manual Input</option>
-                                <option value="slider">Slider (Single r)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="control-group" id="manualTrackerGroup">
                             <label>Track Residues (comma-separated)</label>
                             <input type="text" id="trackedResidues" value="1" placeholder="e.g., 1,7,13,19">
                         </div>
-                        
-                        <div class="control-group" id="sliderTrackerGroup" style="display: none;">
-                            <label>Track Residue r = <span class="range-display" id="trackedRSliderDisplay">1</span></label>
-                            <div class="dual-input">
-                                <input type="range" id="trackedRSlider" min="0" max="100" step="1" value="1">
-                                <input type="number" id="trackedRSliderNum" min="0" max="10000" step="1" value="1">
-                            </div>
-                        </div>
-                        
                         <div class="control-group">
                             <label>Filter by Modulus (optional)</label>
                             <input type="number" id="trackerModFilter" placeholder="Leave empty for all">
@@ -1248,44 +1230,32 @@
         let animationId = null;
         let currentTheme = 'light';
         let isComputing = false;
+        let progressiveRenderBatch = 0;
+        const PROGRESSIVE_BATCH_SIZE = 1000;
+        const COMPUTE_CHUNK_SIZE = 500;
+        
+        // Performance mode caching
+        let cachedStaticCanvas = null;
+        let cachedPointBatches = null;
+        let lastDrawSettings = null;
+        let needsFullRedraw = true;
         
         // Advanced performance optimizations
         let pointsByModulus = {}; // O(1) lookup by modulus
         let ringMetadata = []; // Pre-computed ring properties
+        let visibleBounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
 
         // Progressive computation without Web Worker
         async function computePointsProgressive(modMin, modMax, modStep, gaps, angularMapping) {
             pointsData = [];
-            pointsByModulus = {}; // Reset lookup table
-            ringMetadata = [];
-            
             let totalOpen = 0;
             let totalClosed = 0;
             let sumPhiOverM = 0;
             let countModuli = 0;
             let processedCount = 0;
 
-            // Build moduli list
-            const moduli = [];
-            for (let m = modMin; m <= modMax; m += modStep) {
-                moduli.push(m);
-            }
-
-            // Pre-compute ring metadata
-            moduli.forEach((m, idx) => {
-                ringMetadata.push({
-                    modulus: m,
-                    index: idx,
-                    phiM: phi(m),
-                    totalPoints: m
-                });
-            });
-
             for (let m = modMin; m <= modMax; m += modStep) {
                 if (!modRotations[m]) modRotations[m] = 0;
-                
-                // Initialize modulus bucket for O(1) lookup
-                pointsByModulus[m] = {};
                 
                 const phiM = phi(m);
                 sumPhiOverM += phiM / m;
@@ -1326,7 +1296,7 @@
                             angle = (2 * Math.PI * r) / m;
                     }
 
-                    const point = {
+                    pointsData.push({
                         m: m,
                         r: r,
                         gcd: g,
@@ -1335,17 +1305,15 @@
                         phiM: phiM,
                         isAdmissible: admissibleGaps.length > 0,
                         admissibleGaps: admissibleGaps
-                    };
-
-                    pointsData.push(point);
-                    pointsByModulus[m][r] = point;
+                    });
 
                     processedCount++;
 
-                    // Yield to UI periodically
-                    if (processedCount % 1000 === 0) {
+                    // Yield to UI every COMPUTE_CHUNK_SIZE items
+                    if (processedCount % COMPUTE_CHUNK_SIZE === 0) {
                         updateProgressDisplay(processedCount, m, modMax);
-                        if (processedCount > 50000) {
+                        // Only yield for very large datasets
+                        if (processedCount > 20000) {
                             await new Promise(resolve => setTimeout(resolve, 0));
                         }
                     }
@@ -1682,65 +1650,12 @@
         syncInputs('pointSize', 'pointSizeNum');
         syncInputs('connOpacity', 'connOpacityNum');
         syncInputs('perRingRot', 'perRingRotNum');
-        syncInputs('trackedRSlider', 'trackedRSliderNum');
 
         syncInputs('labelSize', 'labelSizeNum');
         syncInputs('labelSpacing', 'labelSpacingNum');
         syncInputs('gapOpacity', 'gapOpacityNum');
         syncInputs('gapLineWidth', 'gapLineWidthNum');
         syncInputs('connLineWidth', 'connLineWidthNum');
-
-        // Show/hide tracker mode inputs
-        document.getElementById('trackerMode').addEventListener('change', function() {
-            const mode = this.value;
-            const manualGroup = document.getElementById('manualTrackerGroup');
-            const sliderGroup = document.getElementById('sliderTrackerGroup');
-            
-            if (mode === 'manual') {
-                manualGroup.style.display = 'block';
-                sliderGroup.style.display = 'none';
-            } else {
-                manualGroup.style.display = 'none';
-                sliderGroup.style.display = 'block';
-                updateSliderTrackerRange();
-            }
-        });
-
-        // Update slider range when moduli change
-        function updateSliderTrackerRange() {
-            const moduli = getSelectedModuli();
-            if (moduli.length === 0) return;
-            
-            const maxR = Math.max(...moduli) - 1;
-            const slider = document.getElementById('trackedRSlider');
-            const numberInput = document.getElementById('trackedRSliderNum');
-            
-            slider.max = maxR;
-            numberInput.max = maxR;
-            
-            // Clamp current value
-            if (parseInt(slider.value) > maxR) {
-                slider.value = maxR;
-                numberInput.value = maxR;
-            }
-        }
-
-        // Real-time slider update
-        document.getElementById('trackedRSlider').addEventListener('input', () => {
-            updateRangeDisplays();
-            if (document.getElementById('enableTracker').checked) {
-                drawVisualization();
-                updateTrackerInfo();
-            }
-        });
-        
-        document.getElementById('trackedRSliderNum').addEventListener('input', () => {
-            updateRangeDisplays();
-            if (document.getElementById('enableTracker').checked) {
-                drawVisualization();
-                updateTrackerInfo();
-            }
-        });
 
         // Show/hide connection mode options
         document.getElementById('connectionMode').addEventListener('change', function() {
