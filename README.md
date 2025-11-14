@@ -817,10 +817,10 @@
                         </div>
                         
                         <div class="control-group">
-                            <label>Per-Ring Spiral <span class="range-display" id="perRingRotDisplay">0</span>° per ring</label>
+                            <label>Per-Ring Spiral <span class="range-display" id="perRingSpiralDisplay">0</span>° per ring</label>
                             <div class="dual-input">
-                                <input type="range" id="perRingRot" min="-360" max="360" step="1" value="0">
-                                <input type="number" id="perRingRotNum" min="-720" max="720" step="1" value="0">
+                                <input type="range" id="perRingSpiral" min="-360" max="360" step="5" value="0">
+                                <input type="number" id="perRingSpiralNum" min="-360" max="360" step="5" value="0">
                             </div>
                         </div>
                         
@@ -830,8 +830,17 @@
                                 <option value="linear">Linear (Constant Step)</option>
                                 <option value="fibonacci">Fibonacci (Golden Spiral)</option>
                                 <option value="logarithmic">Logarithmic (Exponential)</option>
-                                <option value="sine-wave">Sine Wave</option>
+                                <option value="sine">Sine Wave</option>
                             </select>
+                        </div>
+                        
+                        <div class="preset-grid" style="margin-top: 10px;">
+                            <button onclick="setSpiralPreset('gentle')">Gentle</button>
+                            <button onclick="setSpiralPreset('moderate')">Moderate</button>
+                            <button onclick="setSpiralPreset('strong')">Strong</button>
+                            <button onclick="setSpiralPreset('golden')">Golden</button>
+                            <button onclick="setSpiralPreset('galaxy')">Galaxy</button>
+                            <button onclick="setSpiralPreset('dna')">DNA</button>
                         </div>
                         
                         <div class="control-group">
@@ -856,15 +865,6 @@
                             <button onclick="resetRotations()" style="background: var(--bg-secondary); color: var(--text-primary);">Reset</button>
                         </div>
                         
-                        <div class="preset-grid" style="margin-top: 10px;">
-                            <button onclick="setSpiralPreset('gentle')">Gentle Spiral</button>
-                            <button onclick="setSpiralPreset('moderate')">Moderate</button>
-                            <button onclick="setSpiralPreset('strong')">Strong Twist</button>
-                            <button onclick="setSpiralPreset('golden')">Golden Ratio</button>
-                            <button onclick="setSpiralPreset('galaxy')">Galaxy</button>
-                            <button onclick="setSpiralPreset('helix')">DNA Helix</button>
-                        </div>
-                        
                         <div class="info-box" id="animationStatus">
                             Status: Stopped
                         </div>
@@ -881,22 +881,26 @@
                         
                         <div class="control-group">
                             <label>Track Mode</label>
-                            <select id="trackerMode">
-                                <option value="manual">Manual Input</option>
+                            <select id="trackMode">
+                                <option value="manual">Manual Input (Multiple)</option>
                                 <option value="slider">Slider (Single r)</option>
                             </select>
                         </div>
                         
-                        <div class="control-group" id="manualTrackerGroup">
-                            <label>Track Residues (comma-separated)</label>
-                            <input type="text" id="trackedResidues" value="1" placeholder="e.g., 1,7,13,19">
+                        <div id="manualTrackInputs">
+                            <div class="control-group">
+                                <label>Track Residues (comma-separated)</label>
+                                <input type="text" id="trackedResidues" value="1" placeholder="e.g., 1,7,13,19">
+                            </div>
                         </div>
                         
-                        <div class="control-group" id="sliderTrackerGroup" style="display: none;">
-                            <label>Track Residue r = <span class="range-display" id="trackedRSliderDisplay">1</span></label>
-                            <div class="dual-input">
-                                <input type="range" id="trackedRSlider" min="0" max="100" step="1" value="1">
-                                <input type="number" id="trackedRSliderNum" min="0" max="10000" step="1" value="1">
+                        <div id="sliderTrackInputs" style="display: none;">
+                            <div class="control-group">
+                                <label>Track Residue r: <span class="range-display" id="sliderResidueDisplay">1</span></label>
+                                <div class="dual-input">
+                                    <input type="range" id="sliderResidue" min="0" max="100" step="1" value="1">
+                                    <input type="number" id="sliderResidueNum" min="0" max="10000" step="1" value="1">
+                                </div>
                             </div>
                         </div>
                         
@@ -983,17 +987,19 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="performanceMode" checked>
-                                Performance Mode (Faster Rendering)
-                            </label>
-                        </div>
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="enablePointClick">
-                                Enable Point Click Info
-                            </label>
+                        <div class="control-row">
+                            <div class="control-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="performanceMode" checked>
+                                    Performance Mode (For Large Datasets)
+                                </label>
+                            </div>
+                            <div class="control-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="enablePointClick">
+                                    Enable Point Click Info
+                                </label>
+                            </div>
                         </div>
                         <div class="control-row">
                             <div class="control-group">
@@ -1248,44 +1254,21 @@
         let animationId = null;
         let currentTheme = 'light';
         let isComputing = false;
-        
-        // Advanced performance optimizations
-        let pointsByModulus = {}; // O(1) lookup by modulus
-        let ringMetadata = []; // Pre-computed ring properties
+        let progressiveRenderBatch = 0;
+        const PROGRESSIVE_BATCH_SIZE = 1000;
+        const COMPUTE_CHUNK_SIZE = 500; // Process this many residues before yielding (increased from 100)
 
         // Progressive computation without Web Worker
         async function computePointsProgressive(modMin, modMax, modStep, gaps, angularMapping) {
             pointsData = [];
-            pointsByModulus = {}; // Reset lookup table
-            ringMetadata = [];
-            
             let totalOpen = 0;
             let totalClosed = 0;
             let sumPhiOverM = 0;
             let countModuli = 0;
             let processedCount = 0;
 
-            // Build moduli list
-            const moduli = [];
-            for (let m = modMin; m <= modMax; m += modStep) {
-                moduli.push(m);
-            }
-
-            // Pre-compute ring metadata
-            moduli.forEach((m, idx) => {
-                ringMetadata.push({
-                    modulus: m,
-                    index: idx,
-                    phiM: phi(m),
-                    totalPoints: m
-                });
-            });
-
             for (let m = modMin; m <= modMax; m += modStep) {
                 if (!modRotations[m]) modRotations[m] = 0;
-                
-                // Initialize modulus bucket for O(1) lookup
-                pointsByModulus[m] = {};
                 
                 const phiM = phi(m);
                 sumPhiOverM += phiM / m;
@@ -1326,7 +1309,7 @@
                             angle = (2 * Math.PI * r) / m;
                     }
 
-                    const point = {
+                    pointsData.push({
                         m: m,
                         r: r,
                         gcd: g,
@@ -1335,17 +1318,15 @@
                         phiM: phiM,
                         isAdmissible: admissibleGaps.length > 0,
                         admissibleGaps: admissibleGaps
-                    };
-
-                    pointsData.push(point);
-                    pointsByModulus[m][r] = point;
+                    });
 
                     processedCount++;
 
-                    // Yield to UI periodically
-                    if (processedCount % 1000 === 0) {
+                    // Yield to UI every COMPUTE_CHUNK_SIZE items
+                    if (processedCount % COMPUTE_CHUNK_SIZE === 0) {
                         updateProgressDisplay(processedCount, m, modMax);
-                        if (processedCount > 50000) {
+                        // Only yield for very large datasets
+                        if (processedCount > 20000) {
                             await new Promise(resolve => setTimeout(resolve, 0));
                         }
                     }
@@ -1681,8 +1662,8 @@
         syncInputs('trackerSize', 'trackerSizeNum');
         syncInputs('pointSize', 'pointSizeNum');
         syncInputs('connOpacity', 'connOpacityNum');
-        syncInputs('perRingRot', 'perRingRotNum');
-        syncInputs('trackedRSlider', 'trackedRSliderNum');
+        syncInputs('perRingSpiral', 'perRingSpiralNum');
+        syncInputs('sliderResidue', 'sliderResidueNum');
 
         syncInputs('labelSize', 'labelSizeNum');
         syncInputs('labelSpacing', 'labelSpacingNum');
@@ -1690,57 +1671,85 @@
         syncInputs('gapLineWidth', 'gapLineWidthNum');
         syncInputs('connLineWidth', 'connLineWidthNum');
 
-        // Show/hide tracker mode inputs
-        document.getElementById('trackerMode').addEventListener('change', function() {
+        // Track mode switching
+        document.getElementById('trackMode').addEventListener('change', function() {
             const mode = this.value;
-            const manualGroup = document.getElementById('manualTrackerGroup');
-            const sliderGroup = document.getElementById('sliderTrackerGroup');
+            const manualInputs = document.getElementById('manualTrackInputs');
+            const sliderInputs = document.getElementById('sliderTrackInputs');
             
             if (mode === 'manual') {
-                manualGroup.style.display = 'block';
-                sliderGroup.style.display = 'none';
+                manualInputs.style.display = 'block';
+                sliderInputs.style.display = 'none';
             } else {
-                manualGroup.style.display = 'none';
-                sliderGroup.style.display = 'block';
-                updateSliderTrackerRange();
+                manualInputs.style.display = 'none';
+                sliderInputs.style.display = 'block';
+                updateSliderResidueMax();
             }
         });
 
-        // Update slider range when moduli change
-        function updateSliderTrackerRange() {
+        // Update slider max based on current moduli
+        function updateSliderResidueMax() {
             const moduli = getSelectedModuli();
-            if (moduli.length === 0) return;
-            
-            const maxR = Math.max(...moduli) - 1;
-            const slider = document.getElementById('trackedRSlider');
-            const numberInput = document.getElementById('trackedRSliderNum');
-            
-            slider.max = maxR;
-            numberInput.max = maxR;
-            
-            // Clamp current value
-            if (parseInt(slider.value) > maxR) {
-                slider.value = maxR;
-                numberInput.value = maxR;
+            if (moduli.length > 0) {
+                const maxResidue = Math.max(...moduli);
+                document.getElementById('sliderResidue').max = maxResidue;
+                document.getElementById('sliderResidueNum').max = maxResidue;
             }
         }
 
-        // Real-time slider update
-        document.getElementById('trackedRSlider').addEventListener('input', () => {
-            updateRangeDisplays();
-            if (document.getElementById('enableTracker').checked) {
+        // Slider residue tracking with live update
+        document.getElementById('sliderResidue').addEventListener('input', function() {
+            if (document.getElementById('trackMode').value === 'slider' && 
+                document.getElementById('enableTracker').checked) {
                 drawVisualization();
                 updateTrackerInfo();
             }
         });
-        
-        document.getElementById('trackedRSliderNum').addEventListener('input', () => {
-            updateRangeDisplays();
-            if (document.getElementById('enableTracker').checked) {
+
+        document.getElementById('sliderResidueNum').addEventListener('input', function() {
+            if (document.getElementById('trackMode').value === 'slider' && 
+                document.getElementById('enableTracker').checked) {
                 drawVisualization();
                 updateTrackerInfo();
             }
         });
+
+        // Spiral preset functions
+        function setSpiralPreset(preset) {
+            const spiralInput = document.getElementById('perRingSpiral');
+            const spiralMode = document.getElementById('spiralMode');
+            
+            switch(preset) {
+                case 'gentle':
+                    spiralInput.value = 5;
+                    spiralMode.value = 'linear';
+                    break;
+                case 'moderate':
+                    spiralInput.value = 15;
+                    spiralMode.value = 'linear';
+                    break;
+                case 'strong':
+                    spiralInput.value = 30;
+                    spiralMode.value = 'linear';
+                    break;
+                case 'golden':
+                    spiralInput.value = 20;
+                    spiralMode.value = 'fibonacci';
+                    break;
+                case 'galaxy':
+                    spiralInput.value = 45;
+                    spiralMode.value = 'logarithmic';
+                    break;
+                case 'dna':
+                    spiralInput.value = 25;
+                    spiralMode.value = 'sine';
+                    break;
+            }
+            
+            document.getElementById('perRingSpiralNum').value = spiralInput.value;
+            updateRangeDisplays();
+            drawVisualization();
+        }
 
         // Show/hide connection mode options
         document.getElementById('connectionMode').addEventListener('change', function() {
@@ -1877,45 +1886,6 @@
         document.getElementById('gapValues').addEventListener('input', updateGapColorPickers);
         document.getElementById('enableGapAnalysis').addEventListener('change', updateGapColorPickers);
 
-        // Spiral presets
-        function setSpiralPreset(preset) {
-            switch(preset) {
-                case 'gentle':
-                    document.getElementById('perRingRot').value = 5;
-                    document.getElementById('perRingRotNum').value = 5;
-                    document.getElementById('spiralMode').value = 'linear';
-                    break;
-                case 'moderate':
-                    document.getElementById('perRingRot').value = 15;
-                    document.getElementById('perRingRotNum').value = 15;
-                    document.getElementById('spiralMode').value = 'linear';
-                    break;
-                case 'strong':
-                    document.getElementById('perRingRot').value = 30;
-                    document.getElementById('perRingRotNum').value = 30;
-                    document.getElementById('spiralMode').value = 'linear';
-                    break;
-                case 'golden':
-                    document.getElementById('perRingRot').value = 20;
-                    document.getElementById('perRingRotNum').value = 20;
-                    document.getElementById('spiralMode').value = 'fibonacci';
-                    break;
-                case 'galaxy':
-                    document.getElementById('perRingRot').value = 45;
-                    document.getElementById('perRingRotNum').value = 45;
-                    document.getElementById('spiralMode').value = 'logarithmic';
-                    break;
-                case 'helix':
-                    document.getElementById('perRingRot').value = 25;
-                    document.getElementById('perRingRotNum').value = 25;
-                    document.getElementById('spiralMode').value = 'sine-wave';
-                    break;
-            }
-            updateRangeDisplays();
-            needsFullRedraw = true;
-            drawVisualization();
-        }
-
         // Auto-start animation when rotation values change (if auto-rotate enabled)
         function autoStartAnimation() {
             const autoRotate = document.getElementById('autoRotate').checked;
@@ -1955,18 +1925,6 @@
         document.getElementById('globalSpeedNum').addEventListener('input', autoStartAnimation);
         document.getElementById('modRotSpeed').addEventListener('input', autoStartAnimation);
         document.getElementById('modRotSpeedNum').addEventListener('input', autoStartAnimation);
-        document.getElementById('perRingRot').addEventListener('input', () => {
-            needsFullRedraw = true;
-            drawVisualization();
-        });
-        document.getElementById('perRingRotNum').addEventListener('input', () => {
-            needsFullRedraw = true;
-            drawVisualization();
-        });
-        document.getElementById('spiralMode').addEventListener('change', () => {
-            needsFullRedraw = true;
-            drawVisualization();
-        });
 
         document.getElementById('invertModOrder').addEventListener('change', () => {
             drawVisualization();
@@ -1979,12 +1937,15 @@
             document.getElementById('pointSizeDisplay').textContent = document.getElementById('pointSize').value;
             document.getElementById('trackerSizeDisplay').textContent = document.getElementById('trackerSize').value;
             document.getElementById('connOpacityDisplay').textContent = document.getElementById('connOpacity').value;
-            document.getElementById('perRingRotDisplay').textContent = document.getElementById('perRingRot').value;
             document.getElementById('labelSizeDisplay').textContent = document.getElementById('labelSize').value;
             document.getElementById('labelSpacingDisplay').textContent = document.getElementById('labelSpacing').value;
             document.getElementById('gapOpacityDisplay').textContent = document.getElementById('gapOpacity').value;
             document.getElementById('gapLineWidthDisplay').textContent = document.getElementById('gapLineWidth').value;
             document.getElementById('connLineWidthDisplay').textContent = document.getElementById('connLineWidth').value;
+            document.getElementById('perRingSpiralDisplay').textContent = document.getElementById('perRingSpiral').value;
+            if (document.getElementById('sliderResidue')) {
+                document.getElementById('sliderResidueDisplay').textContent = document.getElementById('sliderResidue').value;
+            }
         }
 
         document.querySelectorAll('input[type="range"]').forEach(input => {
@@ -2179,36 +2140,19 @@
 
         async function computePointsProgressiveFromList(moduli, gaps, angularMapping) {
             pointsData = [];
-            pointsByModulus = {}; // Reset lookup table
-            ringMetadata = [];
-            
             let totalOpen = 0;
             let totalClosed = 0;
             let sumPhiOverM = 0;
             let countModuli = 0;
             let processedCount = 0;
 
-            // Pre-compute ring metadata for O(1) access
-            moduli.forEach((m, idx) => {
-                ringMetadata.push({
-                    modulus: m,
-                    index: idx,
-                    phiM: phi(m),
-                    totalPoints: m
-                });
-            });
-
             for (let m of moduli) {
                 if (!modRotations[m]) modRotations[m] = 0;
-                
-                // Initialize modulus bucket for O(1) lookup
-                pointsByModulus[m] = {};
                 
                 const phiM = phi(m);
                 sumPhiOverM += phiM / m;
                 countModuli++;
 
-                // Single-pass computation with all properties
                 for (let r = 0; r < m; r++) {
                     const g = gcd(r, m);
                     const isOpen = g === 1;
@@ -2216,7 +2160,16 @@
                     if (isOpen) totalOpen++;
                     else totalClosed++;
 
-                    // Pre-compute angle once
+                    let admissibleGaps = [];
+                    if (isOpen && gaps.length > 0) {
+                        gaps.forEach(gap => {
+                            const rPlusG = (r + gap) % m;
+                            if (gcd(rPlusG, m) === 1) {
+                                admissibleGaps.push(gap);
+                            }
+                        });
+                    }
+
                     let angle;
                     switch(angularMapping) {
                         case 'standard':
@@ -2235,18 +2188,7 @@
                             angle = (2 * Math.PI * r) / m;
                     }
 
-                    // Pre-compute admissible gaps (only if needed)
-                    let admissibleGaps = [];
-                    if (isOpen && gaps.length > 0) {
-                        gaps.forEach(gap => {
-                            const rPlusG = (r + gap) % m;
-                            if (gcd(rPlusG, m) === 1) {
-                                admissibleGaps.push(gap);
-                            }
-                        });
-                    }
-
-                    const point = {
+                    pointsData.push({
                         m: m,
                         r: r,
                         gcd: g,
@@ -2255,18 +2197,13 @@
                         phiM: phiM,
                         isAdmissible: admissibleGaps.length > 0,
                         admissibleGaps: admissibleGaps
-                    };
-
-                    pointsData.push(point);
-                    pointsByModulus[m][r] = point; // Store for O(1) lookup
+                    });
 
                     processedCount++;
 
-                    // Reduced yield frequency for better performance
-                    if (processedCount % (COMPUTE_CHUNK_SIZE * 2) === 0) {
+                    if (processedCount % COMPUTE_CHUNK_SIZE === 0) {
                         updateProgressDisplay(processedCount, m, moduli[moduli.length - 1]);
-                        // Only yield for very large datasets
-                        if (processedCount > 50000) {
+                        if (processedCount > 20000) {
                             await new Promise(resolve => setTimeout(resolve, 0));
                         }
                     }
@@ -2309,8 +2246,17 @@
 
         function updateTrackerInfo() {
             const enabled = document.getElementById('enableTracker').checked;
-            const trackedInput = document.getElementById('trackedResidues').value;
-            const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
+            const trackMode = document.getElementById('trackMode').value;
+            let trackedRs = [];
+            
+            if (trackMode === 'manual') {
+                const trackedInput = document.getElementById('trackedResidues').value;
+                trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
+            } else {
+                const sliderValue = parseInt(document.getElementById('sliderResidue').value);
+                trackedRs = [sliderValue];
+            }
+            
             const modFilter = document.getElementById('trackerModFilter').value;
             const filterMod = modFilter ? parseInt(modFilter) : null;
             const trackerInfo = document.getElementById('trackerInfo');
@@ -2345,605 +2291,6 @@
         document.getElementById('trackerModFilter').addEventListener('input', updateTrackerInfo);
 
         function drawVisualization() {
-            const performanceMode = document.getElementById('performanceMode').checked;
-            
-            if (performanceMode) {
-                drawVisualizationOptimized();
-            } else {
-                drawVisualizationStandard();
-            }
-        }
-
-        // Helper function to get radius for a modulus
-        function getRadius(m) {
-            const width = canvas.width;
-            const height = canvas.height;
-            const maxRadius = Math.min(width, height) * 0.4;
-            const displayMode = document.getElementById('displayMode').value;
-            const invertOrder = document.getElementById('invertModOrder').checked;
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            
-            if (displayMode === 'unit') {
-                return maxRadius;
-            }
-            
-            const radiusScale = maxRadius / Math.max(...moduli);
-            
-            if (invertOrder) {
-                const maxMod = Math.max(...moduli);
-                const minMod = Math.min(...moduli);
-                const inverted = maxMod - (m - minMod);
-                return inverted * radiusScale;
-            }
-            
-            return m * radiusScale;
-        }
-
-        // Helper function to get ring index for a modulus
-        function getRingIndex(m) {
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            const invertOrder = document.getElementById('invertModOrder').checked;
-            
-            if (invertOrder) {
-                return moduli.length - 1 - moduli.indexOf(m);
-            }
-            
-            return moduli.indexOf(m);
-        }
-
-        // Calculate per-ring rotation based on spiral mode
-        function getPerRingRotation(ringIndex, totalRings) {
-            const perRingRot = parseFloat(document.getElementById('perRingRot').value);
-            const spiralMode = document.getElementById('spiralMode').value;
-            
-            if (perRingRot === 0) return 0;
-            
-            switch(spiralMode) {
-                case 'linear':
-                    return perRingRot * ringIndex;
-                    
-                case 'fibonacci':
-                    // Golden ratio spiral: φ ≈ 1.618
-                    const phi = (1 + Math.sqrt(5)) / 2;
-                    return perRingRot * Math.log(ringIndex + 1) * phi;
-                    
-                case 'logarithmic':
-                    // Natural logarithmic spiral
-                    return perRingRot * Math.log(ringIndex + 1) * 2;
-                    
-                case 'sine-wave':
-                    // Sinusoidal modulation
-                    return perRingRot * ringIndex * (1 + 0.5 * Math.sin(ringIndex * Math.PI / 4));
-                    
-                default:
-                    return perRingRot * ringIndex;
-            }
-        }
-
-        function drawVisualizationOptimized() {
-            const width = canvas.width;
-            const height = canvas.height;
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const maxRadius = Math.min(width, height) * 0.4;
-
-            // Check if we need full redraw
-            const currentSettings = JSON.stringify({
-                displayMode: document.getElementById('displayMode').value,
-                showOpen: document.getElementById('showOpen').checked,
-                showClosed: document.getElementById('showClosed').checked,
-                showRingLines: document.getElementById('showRingLines').checked,
-                pointSize: document.getElementById('pointSize').value,
-                baseOpenColor: document.getElementById('baseOpenColor').value,
-                baseClosedColor: document.getElementById('baseClosedColor').value,
-                openColorMode: document.getElementById('openColorMode').value,
-                invertOrder: document.getElementById('invertModOrder').checked,
-                pointsLength: pointsData.length
-            });
-
-            if (currentSettings !== lastDrawSettings || needsFullRedraw) {
-                // Pre-batch points by color for faster rendering
-                cachedPointBatches = batchPointsByColor();
-                
-                // Create static background layer (ring lines)
-                if (!cachedStaticCanvas) {
-                    cachedStaticCanvas = document.createElement('canvas');
-                    cachedStaticCanvas.width = width;
-                    cachedStaticCanvas.height = height;
-                }
-                
-                drawStaticElements(cachedStaticCanvas);
-                lastDrawSettings = currentSettings;
-                needsFullRedraw = false;
-            }
-
-            // Always use black background
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, width, height);
-
-            // Draw cached static background
-            if (cachedStaticCanvas) {
-                ctx.drawImage(cachedStaticCanvas, 0, 0);
-            }
-
-            ctx.save();
-            ctx.translate(centerX + transform.x, centerY + transform.y);
-            ctx.scale(transform.scale, transform.scale);
-            ctx.rotate(globalRotation * Math.PI / 180);
-
-            const displayMode = document.getElementById('displayMode').value;
-            const showOpen = document.getElementById('showOpen').checked;
-            const showClosed = document.getElementById('showClosed').checked;
-            const pointSize = parseFloat(document.getElementById('pointSize').value);
-            const enableTracker = document.getElementById('enableTracker').checked;
-            const enableConnections = document.getElementById('enableConnections').checked;
-            const showGapLines = document.getElementById('showGapLines').checked;
-            const enableGap = document.getElementById('enableGapAnalysis').checked;
-
-            const radiusScale = displayMode === 'unit' ? maxRadius : maxRadius / Math.max(...pointsData.map(p => p.m));
-
-            // Draw connection lines (if enabled and not too many)
-            if (enableConnections && pointsData.length < 5000) {
-                drawConnectionLines(radiusScale, displayMode);
-            }
-
-            // Draw gap lines (if enabled and not too many)
-            if (showGapLines && enableGap && pointsData.length < 5000) {
-                drawGapLines(radiusScale, displayMode);
-            }
-
-            // Draw points using batched rendering
-            if (cachedPointBatches) {
-                drawBatchedPoints(cachedPointBatches, pointSize, displayMode, radiusScale, showOpen, showClosed);
-            }
-
-            // Draw tracker
-            if (enableTracker) {
-                drawTrackerPoints(radiusScale, displayMode);
-            }
-
-            // Draw labels (skip in performance mode if too many points)
-            const showLabels = document.getElementById('showLabels').checked;
-            if (showLabels && pointsData.length < 2000) {
-                drawLabels(radiusScale, displayMode, showOpen, showClosed, pointSize);
-            }
-
-            ctx.restore();
-        }
-
-        function drawStaticElements(staticCanvas) {
-            const staticCtx = staticCanvas.getContext('2d');
-            const width = staticCanvas.width;
-            const height = staticCanvas.height;
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const maxRadius = Math.min(width, height) * 0.4;
-
-            staticCtx.clearRect(0, 0, width, height);
-            
-            const showRingLines = document.getElementById('showRingLines').checked;
-            const displayMode = document.getElementById('displayMode').value;
-            
-            if (showRingLines && displayMode === 'rings') {
-                staticCtx.save();
-                staticCtx.translate(centerX + transform.x, centerY + transform.y);
-                staticCtx.scale(transform.scale, transform.scale);
-                staticCtx.rotate(globalRotation * Math.PI / 180);
-                
-                staticCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-                staticCtx.lineWidth = 1 / transform.scale;
-                
-                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-                moduli.forEach(m => {
-                    staticCtx.beginPath();
-                    staticCtx.arc(0, 0, getRadius(m), 0, 2 * Math.PI);
-                    staticCtx.stroke();
-                });
-                
-                staticCtx.restore();
-            }
-        }
-
-        function batchPointsByColor() {
-            const batches = new Map();
-            const openColorMode = document.getElementById('openColorMode').value;
-            
-            // Fast path for solid colors
-            if (openColorMode === 'solid') {
-                const openColor = document.getElementById('baseOpenColor').value;
-                const closedColor = document.getElementById('baseClosedColor').value;
-                
-                batches.set(openColor, { open: [], closed: [], admissible: [] });
-                batches.set(closedColor, { open: [], closed: [], admissible: [] });
-                batches.set('#aa00ff', { open: [], closed: [], admissible: [] });
-                
-                pointsData.forEach(point => {
-                    if (point.isAdmissible) {
-                        batches.get('#aa00ff').admissible.push(point);
-                    } else if (point.isOpen) {
-                        batches.get(openColor).open.push(point);
-                    } else {
-                        batches.get(closedColor).closed.push(point);
-                    }
-                });
-                
-                return batches;
-            }
-            
-            // Standard batching for other color modes
-            pointsData.forEach(point => {
-                const color = getColorForPoint(point, point.isOpen);
-                
-                if (!batches.has(color)) {
-                    batches.set(color, {
-                        open: [],
-                        closed: [],
-                        admissible: []
-                    });
-                }
-                
-                if (point.isAdmissible) {
-                    batches.get(color).admissible.push(point);
-                } else if (point.isOpen) {
-                    batches.get(color).open.push(point);
-                } else {
-                    batches.get(color).closed.push(point);
-                }
-            });
-            
-            return batches;
-        }
-
-        function drawBatchedPoints(batches, pointSize, displayMode, radiusScale, showOpen, showClosed) {
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            const totalRings = moduli.length;
-            
-            // Pre-compute scale factor once
-            const pointScale = 1 / transform.scale;
-            const scaledPointSize = pointSize * pointScale;
-            const scaledAdmissibleSize = pointSize * 1.2 * pointScale;
-            
-            batches.forEach((pointTypes, color) => {
-                // Draw closed points in single batch
-                if (showClosed && pointTypes.closed.length > 0) {
-                    ctx.globalAlpha = 0.3;
-                    ctx.fillStyle = color;
-                    
-                    // Begin path once for entire batch
-                    ctx.beginPath();
-                    pointTypes.closed.forEach(point => {
-                        const ringIndex = getRingIndex(point.m);
-                        const perRingRotation = getPerRingRotation(ringIndex, totalRings);
-                        const modRot = modRotations[point.m] || 0;
-                        const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
-                        const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
-                        const x = r * Math.cos(totalAngle);
-                        const y = r * Math.sin(totalAngle);
-
-                        // Add to single path
-                        ctx.moveTo(x + scaledPointSize, y);
-                        ctx.arc(x, y, scaledPointSize, 0, 2 * Math.PI);
-
-                        // Cache screen position
-                        point.screenX = x;
-                        point.screenY = y;
-                        point.screenRadius = scaledPointSize;
-                    });
-                    // Fill entire batch at once
-                    ctx.fill();
-                }
-                
-                // Draw open points in single batch
-                if (showOpen && pointTypes.open.length > 0) {
-                    ctx.globalAlpha = 0.8;
-                    ctx.fillStyle = color;
-                    
-                    ctx.beginPath();
-                    pointTypes.open.forEach(point => {
-                        const ringIndex = getRingIndex(point.m);
-                        const perRingRotation = getPerRingRotation(ringIndex, totalRings);
-                        const modRot = modRotations[point.m] || 0;
-                        const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
-                        const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
-                        const x = r * Math.cos(totalAngle);
-                        const y = r * Math.sin(totalAngle);
-
-                        ctx.moveTo(x + scaledPointSize, y);
-                        ctx.arc(x, y, scaledPointSize, 0, 2 * Math.PI);
-
-                        point.screenX = x;
-                        point.screenY = y;
-                        point.screenRadius = scaledPointSize;
-                    });
-                    ctx.fill();
-                }
-                
-                // Draw admissible points in single batch
-                if (pointTypes.admissible.length > 0) {
-                    ctx.globalAlpha = 0.9;
-                    ctx.fillStyle = '#aa00ff';
-                    
-                    ctx.beginPath();
-                    pointTypes.admissible.forEach(point => {
-                        const ringIndex = getRingIndex(point.m);
-                        const perRingRotation = getPerRingRotation(ringIndex, totalRings);
-                        const modRot = modRotations[point.m] || 0;
-                        const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
-                        const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
-                        const x = r * Math.cos(totalAngle);
-                        const y = r * Math.sin(totalAngle);
-
-                        ctx.moveTo(x + scaledAdmissibleSize, y);
-                        ctx.arc(x, y, scaledAdmissibleSize, 0, 2 * Math.PI);
-
-                        point.screenX = x;
-                        point.screenY = y;
-                        point.screenRadius = scaledAdmissibleSize;
-                    });
-                    ctx.fill();
-                }
-            });
-            
-            ctx.globalAlpha = 1.0;
-        }
-
-        function drawConnectionLines(radiusScale, displayMode) {
-            const connectionMode = document.getElementById('connectionMode').value;
-            if (connectionMode === 'none') return;
-            
-            const connOpacity = parseFloat(document.getElementById('connOpacity').value);
-            const connLineWidth = parseFloat(document.getElementById('connLineWidth').value);
-            const onlyOpenConn = document.getElementById('onlyOpenConn').checked;
-            
-            ctx.strokeStyle = `rgba(255, 255, 255, ${connOpacity})`;
-            ctx.lineWidth = connLineWidth / transform.scale;
-            
-            // Only draw connection lines for reasonable dataset sizes
-            if (connectionMode === 'same-mod') {
-                drawSameModConnections(radiusScale, displayMode, onlyOpenConn);
-            } else if (connectionMode === 'specific-mod') {
-                drawSpecificModConnections(radiusScale, displayMode, onlyOpenConn);
-            } else {
-                drawCrossModulusConnections(radiusScale, displayMode, connectionMode, onlyOpenConn);
-            }
-        }
-
-        function drawSameModConnections(radiusScale, displayMode, onlyOpenConn) {
-            const sameModPattern = document.getElementById('sameModPattern').value;
-            const sameModGap = parseInt(document.getElementById('sameModGap').value);
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
-            
-            moduli.forEach(m => {
-                const pointsInMod = pointsData.filter(p => p.m === m);
-                
-                pointsInMod.forEach((p1, idx) => {
-                    if (onlyOpenConn && !p1.isOpen) return;
-                    
-                    let targetPoints = [];
-                    
-                    if (sameModPattern === 'sequential') {
-                        const nextR = (p1.r + 1) % m;
-                        targetPoints = pointsInMod.filter(p2 => p2.r === nextR);
-                    } else if (sameModPattern === 'open-only') {
-                        if (p1.isOpen) {
-                            targetPoints = pointsInMod.filter(p2 => p2.isOpen && p2.r !== p1.r);
-                        }
-                    } else if (sameModPattern === 'by-gap') {
-                        const targetR = (p1.r + sameModGap) % m;
-                        targetPoints = pointsInMod.filter(p2 => p2.r === targetR);
-                    }
-                    
-                    targetPoints.forEach(p2 => {
-                        if (onlyOpenConn && !p2.isOpen) return;
-                        drawLineBetweenPoints(p1, p2, m, m, radiusScale, displayMode);
-                    });
-                });
-            });
-        }
-
-        function drawSpecificModConnections(radiusScale, displayMode, onlyOpenConn) {
-            const specificMod = parseInt(document.getElementById('specificModValue').value);
-            const pointsInMod = pointsData.filter(p => p.m === specificMod);
-            
-            pointsInMod.forEach((p1, idx) => {
-                if (onlyOpenConn && !p1.isOpen) return;
-                if (idx < pointsInMod.length - 1) {
-                    const p2 = pointsInMod[idx + 1];
-                    if (onlyOpenConn && !p2.isOpen) return;
-                    drawLineBetweenPoints(p1, p2, specificMod, specificMod, radiusScale, displayMode);
-                }
-            });
-        }
-
-        function drawCrossModulusConnections(radiusScale, displayMode, connectionMode, onlyOpenConn) {
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
-            
-            for (let i = 0; i < moduli.length - 1; i++) {
-                const m1 = moduli[i];
-                const m2 = moduli[i + 1];
-                
-                const points1 = pointsData.filter(p => p.m === m1);
-                const points2 = pointsData.filter(p => p.m === m2);
-
-                points1.forEach(p1 => {
-                    if (onlyOpenConn && !p1.isOpen) return;
-
-                    let targetPoints = [];
-                    
-                    if (connectionMode === 'next-mod') {
-                        targetPoints = points2.filter(p2 => p2.r === p1.r);
-                    } else if (connectionMode === 'binary-lift') {
-                        targetPoints = points2.filter(p2 => p2.r === p1.r || p2.r === (p1.r + m1) % m2);
-                    } else if (connectionMode === 'double-lift') {
-                        for (let n = 0; n < 5; n++) {
-                            const target = (p1.r + m1 * Math.pow(2, n)) % m2;
-                            targetPoints = targetPoints.concat(points2.filter(p2 => p2.r === target));
-                        }
-                    }
-
-                    targetPoints.forEach(p2 => {
-                        if (onlyOpenConn && !p2.isOpen) return;
-                        drawLineBetweenPoints(p1, p2, m1, m2, radiusScale, displayMode);
-                    });
-                });
-            }
-        }
-
-        function drawLineBetweenPoints(p1, p2, m1, m2, radiusScale, displayMode) {
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            const totalRings = moduli.length;
-            
-            const ringIndex1 = getRingIndex(m1);
-            const perRingRot1 = getPerRingRotation(ringIndex1, totalRings);
-            const modRot1 = modRotations[m1] || 0;
-            const angle1 = p1.angle + (modRot1 * Math.PI / 180) + (perRingRot1 * Math.PI / 180);
-            const r1 = displayMode === 'unit' ? radiusScale : getRadius(m1);
-            const x1 = r1 * Math.cos(angle1);
-            const y1 = r1 * Math.sin(angle1);
-
-            const ringIndex2 = getRingIndex(m2);
-            const perRingRot2 = getPerRingRotation(ringIndex2, totalRings);
-            const modRot2 = modRotations[m2] || 0;
-            const angle2 = p2.angle + (modRot2 * Math.PI / 180) + (perRingRot2 * Math.PI / 180);
-            const r2 = displayMode === 'unit' ? radiusScale : getRadius(m2);
-            const x2 = r2 * Math.cos(angle2);
-            const y2 = r2 * Math.sin(angle2);
-
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-        }
-
-        function drawGapLines(radiusScale, displayMode) {
-            const gapInput = document.getElementById('gapValues').value;
-            const gaps = gapInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g > 0);
-            const gapOpacity = parseFloat(document.getElementById('gapOpacity').value);
-            const gapLineWidth = parseFloat(document.getElementById('gapLineWidth').value);
-
-            gaps.forEach((gap, gapIdx) => {
-                const gapColorInput = document.getElementById(`gapColor${gapIdx}`);
-                const gapColor = gapColorInput ? gapColorInput.value : gapColorScheme[gapIdx % gapColorScheme.length];
-                
-                ctx.strokeStyle = gapColor;
-                ctx.globalAlpha = gapOpacity;
-                ctx.lineWidth = gapLineWidth / transform.scale;
-
-                // Use pre-computed lookup table for O(1) access
-                ctx.beginPath();
-                
-                pointsData.forEach(point => {
-                    if (!point.isOpen) return;
-                    if (!point.admissibleGaps.includes(gap)) return;
-
-                    const rPlusG = (point.r + gap) % point.m;
-                    const targetPoint = pointsByModulus[point.m] && pointsByModulus[point.m][rPlusG];
-                    
-                    if (targetPoint && targetPoint.isOpen) {
-                        drawLineBetweenPoints(point, targetPoint, point.m, point.m, radiusScale, displayMode);
-                    }
-                });
-                
-                ctx.stroke();
-                ctx.globalAlpha = 1.0;
-            });
-        }
-
-        function drawTrackerPoints(radiusScale, displayMode) {
-            const trackedInput = document.getElementById('trackedResidues').value;
-            const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
-            const modFilter = document.getElementById('trackerModFilter').value;
-            const filterMod = modFilter ? parseInt(modFilter) : null;
-            const trackerColor = document.getElementById('trackerColor').value;
-            const trackerSize = parseFloat(document.getElementById('trackerSize').value);
-            
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            const totalRings = moduli.length;
-            
-            trackedRs.forEach(trackedResidue => {
-                let filteredPoints = pointsData.filter(p => p.r === trackedResidue);
-                if (filterMod !== null) {
-                    filteredPoints = filteredPoints.filter(p => p.m === filterMod);
-                }
-                
-                filteredPoints.forEach(point => {
-                    const ringIndex = getRingIndex(point.m);
-                    const perRingRotation = getPerRingRotation(ringIndex, totalRings);
-                    const modRot = modRotations[point.m] || 0;
-                    const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
-                    const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
-                    const x = r * Math.cos(totalAngle);
-                    const y = r * Math.sin(totalAngle);
-
-                    ctx.strokeStyle = trackerColor;
-                    ctx.lineWidth = 2 / transform.scale;
-                    ctx.fillStyle = trackerColor;
-                    ctx.globalAlpha = 0.9;
-                    ctx.beginPath();
-                    ctx.arc(x, y, trackerSize / transform.scale, 0, 2 * Math.PI);
-                    ctx.fill();
-                    ctx.stroke();
-                    ctx.globalAlpha = 1.0;
-                });
-            });
-        }
-
-        function drawLabels(radiusScale, displayMode, showOpen, showClosed, pointSize) {
-            const labelType = document.getElementById('labelType').value;
-            const labelFilter = document.getElementById('labelFilter').value;
-            const labelFilterValue = parseInt(document.getElementById('labelFilterValue').value);
-            const labelSize = parseFloat(document.getElementById('labelSize').value);
-            const labelColor = document.getElementById('labelColor').value;
-            const labelBg = document.getElementById('labelBackground').checked;
-            const labelSpacing = parseFloat(document.getElementById('labelSpacing').value);
-
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            const totalRings = moduli.length;
-
-            ctx.font = `${labelSize / transform.scale}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-
-            pointsData.forEach(point => {
-                if (!shouldShowLabel(point, labelFilter, labelFilterValue)) return;
-                if (!showOpen && point.isOpen) return;
-                if (!showClosed && !point.isOpen) return;
-
-                const ringIndex = getRingIndex(point.m);
-                const perRingRotation = getPerRingRotation(ringIndex, totalRings);
-                const modRot = modRotations[point.m] || 0;
-                const totalAngle = point.angle + (modRot * Math.PI / 180) + (perRingRotation * Math.PI / 180);
-                const r = displayMode === 'unit' ? radiusScale : getRadius(point.m);
-                const x = r * Math.cos(totalAngle);
-                const y = r * Math.sin(totalAngle);
-
-                const labelText = getPointLabel(point, labelType);
-                const labelOffset = (pointSize + labelSpacing) / transform.scale;
-                const labelX = x + labelOffset * Math.cos(totalAngle);
-                const labelY = y + labelOffset * Math.sin(totalAngle);
-
-                if (labelBg) {
-                    const metrics = ctx.measureText(labelText);
-                    const padding = 2 / transform.scale;
-                    const bgHeight = labelSize / transform.scale + 2 * padding;
-                    const bgWidth = metrics.width + 2 * padding;
-
-                    ctx.fillStyle = currentTheme === 'dark' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)';
-                    ctx.fillRect(
-                        labelX - bgWidth / 2,
-                        labelY - bgHeight / 2,
-                        bgWidth,
-                        bgHeight
-                    );
-                }
-
-                ctx.fillStyle = labelColor;
-                ctx.fillText(labelText, labelX, labelY);
-            });
-        }
-
-        function drawVisualizationStandard() {
             const width = canvas.width;
             const height = canvas.height;
             const centerX = width / 2;
@@ -2976,6 +2323,8 @@
             const connectionMode = document.getElementById('connectionMode').value;
             const connOpacity = parseFloat(document.getElementById('connOpacity').value);
             const onlyOpenConn = document.getElementById('onlyOpenConn').checked;
+            const perRingSpiral = parseFloat(document.getElementById('perRingSpiral').value) * Math.PI / 180;
+            const spiralMode = document.getElementById('spiralMode').value;
 
             const radiusScale = displayMode === 'unit' ? maxRadius : maxRadius / modMax;
 
@@ -3002,6 +2351,26 @@
                 
                 // Normal: m=1 is innermost
                 return m * radiusScale;
+            }
+
+            // Function to calculate per-ring spiral angle
+            function getSpiralAngle(ringIndex) {
+                if (perRingSpiral === 0) return 0;
+                
+                const phi = 1.618033988749895; // Golden ratio
+                
+                switch(spiralMode) {
+                    case 'linear':
+                        return perRingSpiral * ringIndex;
+                    case 'fibonacci':
+                        return perRingSpiral * Math.log(ringIndex + 1) * phi;
+                    case 'logarithmic':
+                        return perRingSpiral * Math.log(ringIndex + 1) * 2;
+                    case 'sine':
+                        return perRingSpiral * ringIndex * (1 + 0.5 * Math.sin(ringIndex * Math.PI / 4));
+                    default:
+                        return perRingSpiral * ringIndex;
+                }
             }
 
             // Draw ring lines
@@ -3158,12 +2527,20 @@
             }
 
             // Draw points
+            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+            const modulusToIndex = {};
+            moduli.forEach((m, idx) => {
+                modulusToIndex[m] = idx;
+            });
+
             pointsData.forEach(point => {
                 if (!showOpen && point.isOpen) return;
                 if (!showClosed && !point.isOpen) return;
 
+                const ringIndex = modulusToIndex[point.m];
+                const spiralAngle = getSpiralAngle(ringIndex);
                 const modRot = modRotations[point.m] || 0;
-                const totalAngle = point.angle + (modRot * Math.PI / 180);
+                const totalAngle = point.angle + (modRot * Math.PI / 180) + spiralAngle;
                 const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
                 const x = r * Math.cos(totalAngle);
                 const y = r * Math.sin(totalAngle);
@@ -3192,8 +2569,17 @@
 
             // Draw tracker
             if (enableTracker) {
-                const trackedInput = document.getElementById('trackedResidues').value;
-                const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
+                const trackMode = document.getElementById('trackMode').value;
+                let trackedRs = [];
+                
+                if (trackMode === 'manual') {
+                    const trackedInput = document.getElementById('trackedResidues').value;
+                    trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
+                } else {
+                    const sliderValue = parseInt(document.getElementById('sliderResidue').value);
+                    trackedRs = [sliderValue];
+                }
+                
                 const modFilter = document.getElementById('trackerModFilter').value;
                 const filterMod = modFilter ? parseInt(modFilter) : null;
                 
@@ -3204,8 +2590,10 @@
                     }
                     
                     filteredPoints.forEach(point => {
+                        const ringIndex = modulusToIndex[point.m];
+                        const spiralAngle = getSpiralAngle(ringIndex);
                         const modRot = modRotations[point.m] || 0;
-                        const totalAngle = point.angle + (modRot * Math.PI / 180);
+                        const totalAngle = point.angle + (modRot * Math.PI / 180) + spiralAngle;
                         const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
                         const x = r * Math.cos(totalAngle);
                         const y = r * Math.sin(totalAngle);
@@ -3492,7 +2880,7 @@
             const enablePointClick = document.getElementById('enablePointClick').checked;
             
             if (!isDragging && enablePointClick) {
-                // Click detected and point clicking is enabled
+                // Click detected
                 const coords = e.changedTouches ? 
                     { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY } :
                     { x: e.clientX, y: e.clientY };
@@ -3505,27 +2893,16 @@
                 const rx = x * Math.cos(angle) - y * Math.sin(angle);
                 const ry = x * Math.sin(angle) + y * Math.cos(angle);
                 
-                let foundPoint = null;
-                let minDist = Infinity;
-                
                 pointsData.forEach(point => {
                     if (point.screenX !== undefined) {
                         const dx = rx - point.screenX;
                         const dy = ry - point.screenY;
                         const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < point.screenRadius * 3 && dist < minDist) {
-                            minDist = dist;
-                            foundPoint = point;
+                        if (dist < point.screenRadius * 2) {
+                            alert(`Point Details:\n\nModulus m = ${point.m}\nResidue r = ${point.r}\ngcd(${point.r}, ${point.m}) = ${point.gcd}\nChannel: ${point.isOpen ? 'OPEN' : 'CLOSED'}\nφ(${point.m}) = ${point.phiM}\nAngle: ${(point.angle * 180 / Math.PI).toFixed(2)}°${point.isAdmissible ? '\n\nGAP ADMISSIBLE' : ''}`);
                         }
                     }
                 });
-                
-                if (foundPoint) {
-                    const [reducedNum, reducedDen] = reduceFraction(foundPoint.r, foundPoint.m);
-                    const fareyFraction = `${foundPoint.r}/${foundPoint.m}` + (reducedNum !== foundPoint.r ? ` = ${reducedNum}/${reducedDen}` : '');
-                    
-                    alert(`Point Details:\n\nModulus m = ${foundPoint.m}\nResidue r = ${foundPoint.r}\nFarey Fraction: ${fareyFraction}\n\ngcd(${foundPoint.r}, ${foundPoint.m}) = ${foundPoint.gcd}\nChannel: ${foundPoint.isOpen ? 'OPEN' : 'CLOSED'}\nφ(${foundPoint.m}) = ${foundPoint.phiM}\nAngle: ${(foundPoint.angle * 180 / Math.PI).toFixed(2)}°${foundPoint.isAdmissible ? '\n\nGAP ADMISSIBLE ✓' : ''}`);
-                }
             }
             isDragging = false;
             touchStartDist = 0;
@@ -3857,21 +3234,11 @@
                 alert('Computation already in progress. Please wait...');
                 return;
             }
-            needsFullRedraw = true;
-            cachedPointBatches = null;
-            cachedStaticCanvas = null;
-            lastDrawSettings = null;
             generatePointsData();
             if (!isComputing) {
                 drawVisualization();
             }
         }
-        
-        // Performance mode change handler
-        document.getElementById('performanceMode').addEventListener('change', () => {
-            needsFullRedraw = true;
-            drawVisualization();
-        });
 
         function setPreset(n) {
             document.getElementById('modSelectionMode').value = 'M30-sequence';
