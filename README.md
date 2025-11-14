@@ -699,6 +699,42 @@
                         </h3>
                         <div class="collapsible-content">
                         <div class="control-group">
+                            <label>Rendering Mode</label>
+                            <select id="renderingMode" onchange="switchRenderingMode()">
+                                <option value="canvas2d">Canvas 2D (Default)</option>
+                                <option value="webgl">WebGL (High Performance)</option>
+                                <option value="svg">SVG (Infinite Zoom)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableCulling" checked>
+                                Enable View Culling (Hide Off-Screen)
+                            </label>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableLOD" checked>
+                                Level of Detail (Simplify When Zoomed Out)
+                            </label>
+                        </div>
+                        
+                        <div class="info-box">
+                            <strong>WebGL:</strong> 10-100× faster, handles millions of points<br>
+                            <strong>SVG:</strong> True infinite zoom, vector quality<br>
+                            <strong>Canvas 2D:</strong> Best compatibility, moderate performance
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span> Theorem Mode
+                        </h3>
+                        <div class="collapsible-content">
+                        <div class="control-group">
                             <label>Display Mode</label>
                             <select id="theoremMode">
                                 <option value="none">Standard Mode</option>
@@ -1466,6 +1502,46 @@
                             <div class="stat-item">
                                 <div class="stat-label">Limit (6/π²)</div>
                                 <div class="stat-value">0.6079</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Moduli Count</div>
+                                <div class="stat-value" id="statModuliCount">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Min Modulus</div>
+                                <div class="stat-value" id="statMinMod">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Max Modulus</div>
+                                <div class="stat-value" id="statMaxMod">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Avg Points/Mod</div>
+                                <div class="stat-value" id="statAvgPoints">0.00</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Prime Moduli</div>
+                                <div class="stat-value" id="statPrimeCount">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Composite Moduli</div>
+                                <div class="stat-value" id="statCompositeCount">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Error from 6/π²</div>
+                                <div class="stat-value" id="statError">0.0000</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Convergence %</div>
+                                <div class="stat-value" id="statConvergence">0.00%</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Admissible Points</div>
+                                <div class="stat-value" id="statAdmissible">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Admissible Ratio</div>
+                                <div class="stat-value" id="statAdmissibleRatio">0.00%</div>
                             </div>
                         </div>
                     </div>
@@ -2764,12 +2840,33 @@
 
             const avgPhiOverM = countModuli > 0 ? sumPhiOverM / countModuli : 0;
             const openRatio = (totalOpen + totalClosed) > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
+            
+            // Additional statistics
+            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+            const primeModuli = moduli.filter(m => isPrime(m)).length;
+            const compositeModuli = moduli.length - primeModuli;
+            const avgPointsPerMod = moduli.length > 0 ? pointsData.length / moduli.length : 0;
+            const admissibleCount = pointsData.filter(p => p.isAdmissible).length;
+            const admissibleRatio = totalOpen > 0 ? (admissibleCount / totalOpen) * 100 : 0;
+            const theoretical = 6 / (Math.PI * Math.PI);
+            const error = Math.abs(avgPhiOverM - theoretical);
+            const convergence = theoretical > 0 ? (1 - error / theoretical) * 100 : 0;
 
             document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
             document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
             document.getElementById('statClosed').textContent = totalClosed.toLocaleString();
             document.getElementById('statRatio').textContent = openRatio.toFixed(4);
             document.getElementById('statAvgPhi').textContent = avgPhiOverM.toFixed(4);
+            document.getElementById('statModuliCount').textContent = moduli.length.toLocaleString();
+            document.getElementById('statMinMod').textContent = moduli.length > 0 ? moduli[0] : '0';
+            document.getElementById('statMaxMod').textContent = moduli.length > 0 ? moduli[moduli.length - 1] : '0';
+            document.getElementById('statAvgPoints').textContent = avgPointsPerMod.toFixed(2);
+            document.getElementById('statPrimeCount').textContent = primeModuli.toLocaleString();
+            document.getElementById('statCompositeCount').textContent = compositeModuli.toLocaleString();
+            document.getElementById('statError').textContent = error.toFixed(6);
+            document.getElementById('statConvergence').textContent = convergence.toFixed(2) + '%';
+            document.getElementById('statAdmissible').textContent = admissibleCount.toLocaleString();
+            document.getElementById('statAdmissibleRatio').textContent = admissibleRatio.toFixed(2) + '%';
 
             return { totalOpen, totalClosed, avgPhiOverM, countModuli };
         }
