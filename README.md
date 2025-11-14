@@ -695,42 +695,6 @@
                 <div class="control-panel">
                     <div class="control-section">
                         <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
-                            <span class="toggle-icon">▼</span> Rendering & Performance
-                        </h3>
-                        <div class="collapsible-content collapsed">
-                        <div class="control-group">
-                            <label>Rendering Mode</label>
-                            <select id="renderingMode" onchange="switchRenderingMode()">
-                                <option value="canvas2d">Canvas 2D (Default)</option>
-                                <option value="webgl">WebGL (High Performance)</option>
-                                <option value="svg">SVG (Infinite Zoom)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="enableCulling" checked>
-                                Enable View Culling (Hide Off-Screen)
-                            </label>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="enableLOD" checked>
-                                Level of Detail (Simplify When Zoomed Out)
-                            </label>
-                        </div>
-                        
-                        <div class="info-box">
-                            <strong>WebGL:</strong> 10-100× faster, handles millions of points<br>
-                            <strong>SVG:</strong> True infinite zoom, vector quality<br>
-                            <strong>Canvas 2D:</strong> Best compatibility, moderate performance
-                        </div>
-                        </div>
-                    </div>
-
-                    <div class="control-section">
-                        <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
                             <span class="toggle-icon">▼</span> Theorem Mode
                         </h3>
                         <div class="collapsible-content collapsed">
