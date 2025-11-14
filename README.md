@@ -1433,21 +1433,31 @@
                     ⟳ Update
                 </button>
 
-                <div class="canvas-container">
-                    <canvas id="mainCanvas" width="1000" height="800" style="display: block;"></canvas>
-                    <svg id="mainSVG" width="1000" height="800" style="display: none; border: 1px solid var(--border-color); background: #000000; cursor: move;">
-                        <defs>
-                            <filter id="glow">
-                                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                                <feMerge>
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        <g id="svgMainGroup"></g>
-                    </svg>
-                    <div class="tooltip" id="tooltip"></div>
+                <div class="canvas-container" style="display: flex; gap: 20px; align-items: flex-start;">
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                        <canvas id="mainCanvas" width="1000" height="800" style="display: block;"></canvas>
+                        <svg id="mainSVG" width="1000" height="800" style="display: none; border: 1px solid var(--border-color); background: #000000; cursor: move;">
+                            <defs>
+                                <filter id="glow">
+                                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            <g id="svgMainGroup"></g>
+                        </svg>
+                        <div class="tooltip" id="tooltip"></div>
+                    </div>
+                    
+                    <div id="pointInfoPanel" style="width: 320px; min-height: 400px; background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; display: none;">
+                        <h3 style="margin: 0 0 15px 0; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Point Details</h3>
+                        <div id="pointInfoContent" style="font-size: 13px; line-height: 1.8;">
+                            <p style="opacity: 0.7; font-style: italic;">Click on a point to see details</p>
+                        </div>
+                        <button onclick="closePointInfo()" style="width: 100%; margin-top: 20px; padding: 10px; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border-color);">Close</button>
+                    </div>
                     
                     <div class="stats-panel">
                         <h3 style="margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Statistics</h3>
@@ -3794,6 +3804,60 @@
         document.getElementById('trackedResidues').addEventListener('input', updateTrackerInfo);
         document.getElementById('trackerModFilter').addEventListener('input', updateTrackerInfo);
 
+        function closePointInfo() {
+            document.getElementById('pointInfoPanel').style.display = 'none';
+        }
+
+        function showPointInfo(point) {
+            const panel = document.getElementById('pointInfoPanel');
+            const content = document.getElementById('pointInfoContent');
+            
+            let html = `<div style="margin-bottom: 12px;">
+                <strong style="font-size: 15px; color: var(--text-primary);">Modulus m = ${point.m}</strong>
+            </div>`;
+            
+            html += `<div style="margin-bottom: 10px;">
+                <span style="opacity: 0.8;">Residue r =</span> <strong>${point.r}</strong>
+            </div>`;
+            
+            html += `<div style="margin-bottom: 10px;">
+                <span style="opacity: 0.8;">gcd(${point.r}, ${point.m}) =</span> <strong>${point.gcd}</strong>
+            </div>`;
+            
+            html += `<div style="margin-bottom: 10px;">
+                <span style="opacity: 0.8;">Channel:</span> <strong style="color: ${point.isOpen ? '#00ff00' : '#ff0000'};">${point.isOpen ? 'OPEN' : 'CLOSED'}</strong>
+            </div>`;
+            
+            html += `<div style="margin-bottom: 10px;">
+                <span style="opacity: 0.8;">φ(${point.m}) =</span> <strong>${point.phiM}</strong>
+            </div>`;
+            
+            html += `<div style="margin-bottom: 10px;">
+                <span style="opacity: 0.8;">Angle:</span> <strong>${(point.angle * 180 / Math.PI).toFixed(2)}°</strong>
+            </div>`;
+            
+            const [num, den] = reduceFraction(point.r, point.m);
+            html += `<div style="margin-bottom: 10px;">
+                <span style="opacity: 0.8;">Farey Fraction:</span> <strong>${point.r}/${point.m}</strong>
+            </div>`;
+            
+            if (num !== point.r || den !== point.m) {
+                html += `<div style="margin-bottom: 10px;">
+                    <span style="opacity: 0.8;">Reduced:</span> <strong>${num}/${den}</strong>
+                </div>`;
+            }
+            
+            if (point.isAdmissible) {
+                html += `<div style="margin-top: 15px; padding: 10px; background: rgba(170, 0, 255, 0.2); border-left: 3px solid #aa00ff;">
+                    <strong style="color: #aa00ff;">GAP ADMISSIBLE</strong><br>
+                    <span style="font-size: 11px; opacity: 0.9;">Gaps: ${point.admissibleGaps.join(', ')}</span>
+                </div>`;
+            }
+            
+            content.innerHTML = html;
+            panel.style.display = 'block';
+        }
+
         function drawVisualization() {
             const width = canvas.width;
             const height = canvas.height;
@@ -4462,7 +4526,7 @@
                     });
                     
                     if (foundPoint) {
-                        alert(`Point Details:\n\nModulus m = ${foundPoint.m}\nResidue r = ${foundPoint.r}\ngcd(${foundPoint.r}, ${foundPoint.m}) = ${foundPoint.gcd}\nChannel: ${foundPoint.isOpen ? 'OPEN' : 'CLOSED'}\nφ(${foundPoint.m}) = ${foundPoint.phiM}\nAngle: ${(foundPoint.angle * 180 / Math.PI).toFixed(2)}°${foundPoint.isAdmissible ? '\n\nGAP ADMISSIBLE' : ''}`);
+                        showPointInfo(foundPoint);
                     }
                 }
             });
