@@ -730,10 +730,10 @@
                     </div>
 
                     <div class="control-section">
-                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                        <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
                             <span class="toggle-icon">▼</span> Theorem Mode
                         </h3>
-                        <div class="collapsible-content">
+                        <div class="collapsible-content collapsed">
                         <div class="control-group">
                             <label>Display Mode</label>
                             <select id="theoremMode">
@@ -820,10 +820,10 @@
                     </div>
 
                     <div class="control-section">
-                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                        <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
                             <span class="toggle-icon">▼</span> Modulus Configuration
                         </h3>
-                        <div class="collapsible-content">
+                        <div class="collapsible-content collapsed">
                         <div class="control-group">
                             <label>Modulus Selection Mode</label>
                             <select id="modSelectionMode">
@@ -902,10 +902,10 @@
                     </div>
 
                     <div class="control-section">
-                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                        <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
                             <span class="toggle-icon">▼</span> Connection Lines
                         </h3>
-                        <div class="collapsible-content">
+                        <div class="collapsible-content collapsed">
                         <div class="control-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="enableConnections">
@@ -964,10 +964,10 @@
                     </div>
 
                     <div class="control-section">
-                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                        <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
                             <span class="toggle-icon">▼</span> Rotation Controls
                         </h3>
-                        <div class="collapsible-content">
+                        <div class="collapsible-content collapsed">
                         
                         <div class="control-group">
                             <label class="checkbox-label">
@@ -1055,10 +1055,10 @@
                     </div>
 
                     <div class="control-section">
-                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                        <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
                             <span class="toggle-icon">▼</span> Residue Tracker
                         </h3>
-                        <div class="collapsible-content">
+                        <div class="collapsible-content collapsed">
                         <div class="control-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="enableTracker">
@@ -1114,10 +1114,62 @@
                     </div>
 
                     <div class="control-section">
-                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                        <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
                             <span class="toggle-icon">▼</span> Coloring Schemes
                         </h3>
-                        <div class="collapsible-content">
+                        <div class="collapsible-content collapsed">
+                        <div class="control-group">
+                            <label>Theorem Display Mode</label>
+                            <select id="theoremMode">
+                                <option value="none">Standard Mode</option>
+                                <option value="prime-avoidance">Prime Channel Avoidance</option>
+                                <option value="composite-projection">Composite Channel Projection</option>
+                                <option value="both">Combined Analysis</option>
+                            </select>
+                        </div>
+                        
+                        <div id="theoremModeSettings" style="display: none;">
+                            <div class="control-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="highlightFareyChannels" checked>
+                                    Highlight Farey Flow Lines (Gold)
+                                </label>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="highlightPrimeOrbits" checked>
+                                    Show Prime Coprime Manifolds (Cyan)
+                                </label>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="highlightCompositeProjection" checked>
+                                    Show Composite Projections (Red)
+                                </label>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="showChannelMultiplicity" checked>
+                                    Display Channel Multiplicity (d = M/M')
+                                </label>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="showInterstitialRegions">
+                                    Shade Interstitial Lattice Regions
+                                </label>
+                            </div>
+                            
+                            <div class="info-box">
+                                <strong>Prime Channel Avoidance:</strong> Prime moduli avoid all Farey channels, forming independent coprime manifolds.<br>
+                                <strong>Composite Channel Projection:</strong> Composite moduli project onto dense Farey channel networks.
+                            </div>
+                        </div>
+                        
                         <div class="control-group">
                             <label>Open Channel Mode</label>
                             <select id="openColorMode">
@@ -1153,10 +1205,39 @@
                     </div>
 
                     <div class="control-section">
-                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                        <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
                             <span class="toggle-icon">▼</span> Display Settings
                         </h3>
-                        <div class="collapsible-content">
+                        <div class="collapsible-content collapsed">
+                        <div class="control-group">
+                            <label>Rendering Mode</label>
+                            <select id="renderingMode" onchange="switchRenderingMode()">
+                                <option value="canvas2d">Canvas 2D (Default)</option>
+                                <option value="webgl">WebGL (High Performance)</option>
+                                <option value="svg">SVG (Infinite Zoom)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableCulling" checked>
+                                Enable View Culling (Hide Off-Screen)
+                            </label>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableLOD" checked>
+                                Level of Detail (Simplify When Zoomed Out)
+                            </label>
+                        </div>
+                        
+                        <div class="info-box">
+                            <strong>WebGL:</strong> 10-100× faster, handles millions of points<br>
+                            <strong>SVG:</strong> True infinite zoom, vector quality<br>
+                            <strong>Canvas 2D:</strong> Best compatibility, moderate performance
+                        </div>
+                        
                         <div class="control-row">
                             <div class="control-group">
                                 <label>Display Mode</label>
@@ -2852,21 +2933,9 @@
             const error = Math.abs(avgPhiOverM - theoretical);
             const convergence = theoretical > 0 ? (1 - error / theoretical) * 100 : 0;
 
-            document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
-            document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
-            document.getElementById('statClosed').textContent = totalClosed.toLocaleString();
-            document.getElementById('statRatio').textContent = openRatio.toFixed(4);
-            document.getElementById('statAvgPhi').textContent = avgPhiOverM.toFixed(4);
-            document.getElementById('statModuliCount').textContent = moduli.length.toLocaleString();
-            document.getElementById('statMinMod').textContent = moduli.length > 0 ? moduli[0] : '0';
-            document.getElementById('statMaxMod').textContent = moduli.length > 0 ? moduli[moduli.length - 1] : '0';
-            document.getElementById('statAvgPoints').textContent = avgPointsPerMod.toFixed(2);
-            document.getElementById('statPrimeCount').textContent = primeModuli.toLocaleString();
-            document.getElementById('statCompositeCount').textContent = compositeModuli.toLocaleString();
-            document.getElementById('statError').textContent = error.toFixed(6);
-            document.getElementById('statConvergence').textContent = convergence.toFixed(2) + '%';
-            document.getElementById('statAdmissible').textContent = admissibleCount.toLocaleString();
-            document.getElementById('statAdmissibleRatio').textContent = admissibleRatio.toFixed(2) + '%';
+            updateAllStats(pointsData.length, totalOpen, totalClosed, openRatio, avgPhiOverM, 
+                          moduli, primeModuli, compositeModuli, avgPointsPerMod, 
+                          admissibleCount, admissibleRatio, error, convergence);
 
             return { totalOpen, totalClosed, avgPhiOverM, countModuli };
         }
@@ -3242,6 +3311,24 @@
         syncInputs('gapLineWidth', 'gapLineWidthNum');
         syncInputs('connLineWidth', 'connLineWidthNum');
 
+        function updateAllStats(total, open, closed, ratio, avgPhi, moduli, primes, composites, avgPoints, admissible, admRatio, error, convergence) {
+            document.getElementById('statTotal').textContent = total.toLocaleString();
+            document.getElementById('statOpen').textContent = open.toLocaleString();
+            document.getElementById('statClosed').textContent = closed.toLocaleString();
+            document.getElementById('statRatio').textContent = ratio.toFixed(4);
+            document.getElementById('statAvgPhi').textContent = avgPhi.toFixed(4);
+            document.getElementById('statModuliCount').textContent = moduli.length.toLocaleString();
+            document.getElementById('statMinMod').textContent = moduli.length > 0 ? moduli[0] : '0';
+            document.getElementById('statMaxMod').textContent = moduli.length > 0 ? moduli[moduli.length - 1] : '0';
+            document.getElementById('statAvgPoints').textContent = avgPoints.toFixed(2);
+            document.getElementById('statPrimeCount').textContent = primes.toLocaleString();
+            document.getElementById('statCompositeCount').textContent = composites.toLocaleString();
+            document.getElementById('statError').textContent = error.toFixed(6);
+            document.getElementById('statConvergence').textContent = convergence.toFixed(2) + '%';
+            document.getElementById('statAdmissible').textContent = admissible.toLocaleString();
+            document.getElementById('statAdmissibleRatio').textContent = admRatio.toFixed(2) + '%';
+        }
+
         // Show/hide connection mode options
         document.getElementById('connectionMode').addEventListener('change', function() {
             const mode = this.value;
@@ -3586,12 +3673,21 @@
 
             const avgPhiOverM = countModuli > 0 ? sumPhiOverM / countModuli : 0;
             const openRatio = (totalOpen + totalClosed) > 0 ? totalOpen / (totalOpen + totalClosed) : 0;
+            
+            // Calculate additional statistics
+            const moduliArray = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+            const primeModuli = moduliArray.filter(m => isPrime(m)).length;
+            const compositeModuli = moduliArray.length - primeModuli;
+            const avgPointsPerMod = moduliArray.length > 0 ? pointsData.length / moduliArray.length : 0;
+            const admissibleCount = pointsData.filter(p => p.isAdmissible).length;
+            const admissibleRatio = totalOpen > 0 ? (admissibleCount / totalOpen) * 100 : 0;
+            const theoretical = 6 / (Math.PI * Math.PI);
+            const error = Math.abs(avgPhiOverM - theoretical);
+            const convergence = theoretical > 0 ? (1 - error / theoretical) * 100 : 0;
 
-            document.getElementById('statTotal').textContent = pointsData.length.toLocaleString();
-            document.getElementById('statOpen').textContent = totalOpen.toLocaleString();
-            document.getElementById('statClosed').textContent = totalClosed.toLocaleString();
-            document.getElementById('statRatio').textContent = openRatio.toFixed(4);
-            document.getElementById('statAvgPhi').textContent = avgPhiOverM.toFixed(4);
+            updateAllStats(pointsData.length, totalOpen, totalClosed, openRatio, avgPhiOverM,
+                          moduliArray, primeModuli, compositeModuli, avgPointsPerMod,
+                          admissibleCount, admissibleRatio, error, convergence);
 
             saveToCache();
             updateTrackerInfo();
@@ -4297,7 +4393,7 @@
                 const dy = e.touches[0].clientY - e.touches[1].clientY;
                 touchStartDist = Math.sqrt(dx * dx + dy * dy);
             } else {
-                // Pan start or click
+                // Pan start or potential click
                 const coords = getEventCoords(e);
                 isDragging = true;
                 lastMouseX = coords.x;
@@ -4335,17 +4431,23 @@
             } else if (isDragging) {
                 // Pan
                 const coords = getEventCoords(e);
-                transform.x += coords.x - lastMouseX;
-                transform.y += coords.y - lastMouseY;
-                lastMouseX = coords.x;
-                lastMouseY = coords.y;
+                const deltaX = coords.x - lastMouseX;
+                const deltaY = coords.y - lastMouseY;
                 
-                if (currentRenderer === 'canvas2d') {
-                    drawVisualization();
-                } else if (currentRenderer === 'webgl') {
-                    drawVisualizationWebGL();
-                } else if (currentRenderer === 'svg') {
-                    drawVisualizationSVG();
+                // Only pan if there's significant movement (prevents accidental clicks from becoming pans)
+                if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+                    transform.x += deltaX;
+                    transform.y += deltaY;
+                    lastMouseX = coords.x;
+                    lastMouseY = coords.y;
+                    
+                    if (currentRenderer === 'canvas2d') {
+                        drawVisualization();
+                    } else if (currentRenderer === 'webgl') {
+                        drawVisualizationWebGL();
+                    } else if (currentRenderer === 'svg') {
+                        drawVisualizationSVG();
+                    }
                 }
             } else if (currentRenderer === 'canvas2d') {
                 // Hover for tooltip (only for canvas2d)
@@ -4430,6 +4532,47 @@
             element.addEventListener('mouseleave', () => { 
                 isDragging = false; 
                 tooltip.style.opacity = '0';
+            });
+            
+            // Click handler for point info (only when enabled)
+            element.addEventListener('click', (e) => {
+                const enablePointClick = document.getElementById('enablePointClick');
+                if (!enablePointClick || !enablePointClick.checked) {
+                    return; // Exit if feature is disabled
+                }
+                
+                // Only trigger if it was a click (not a drag)
+                const deltaX = Math.abs(e.clientX - lastMouseX);
+                const deltaY = Math.abs(e.clientY - lastMouseY);
+                if (deltaX < 5 && deltaY < 5) {
+                    const rect = element.getBoundingClientRect();
+                    const x = (e.clientX - rect.left - element.width / 2 - transform.x) / transform.scale;
+                    const y = (e.clientY - rect.top - element.height / 2 - transform.y) / transform.scale;
+                    
+                    // Rotate back to find point
+                    const angle = -globalRotation * Math.PI / 180;
+                    const rx = x * Math.cos(angle) - y * Math.sin(angle);
+                    const ry = x * Math.sin(angle) + y * Math.cos(angle);
+                    
+                    let foundPoint = null;
+                    let minDist = Infinity;
+                    
+                    pointsData.forEach(point => {
+                        if (point.screenX !== undefined) {
+                            const dx = rx - point.screenX;
+                            const dy = ry - point.screenY;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < point.screenRadius * 2 && dist < minDist) {
+                                minDist = dist;
+                                foundPoint = point;
+                            }
+                        }
+                    });
+                    
+                    if (foundPoint) {
+                        alert(`Point Details:\n\nModulus m = ${foundPoint.m}\nResidue r = ${foundPoint.r}\ngcd(${foundPoint.r}, ${foundPoint.m}) = ${foundPoint.gcd}\nChannel: ${foundPoint.isOpen ? 'OPEN' : 'CLOSED'}\nφ(${foundPoint.m}) = ${foundPoint.phiM}\nAngle: ${(foundPoint.angle * 180 / Math.PI).toFixed(2)}°${foundPoint.isAdmissible ? '\n\nGAP ADMISSIBLE' : ''}`);
+                    }
+                }
             });
             
             element.addEventListener('touchstart', handleStart, { passive: true });
@@ -5369,10 +5512,13 @@
             
             // Click handler
             canvas.addEventListener('click', (e) => {
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                handleCompositeClick(x, y);
+                const enablePointClick = document.getElementById('enablePointClick');
+                if (enablePointClick && enablePointClick.checked) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    handleCompositeClick(x, y);
+                }
             });
             
             // Hover tooltip
