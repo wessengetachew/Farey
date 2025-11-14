@@ -244,6 +244,40 @@
             letter-spacing: 1px;
         }
 
+        .collapsible-header {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            font-weight: bold;
+            text-decoration: underline;
+            padding-left: 25px;
+        }
+
+        .collapsible-header:hover {
+            opacity: 0.8;
+        }
+
+        .toggle-icon {
+            position: absolute;
+            left: 0;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .collapsible-header.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-content {
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible-content.collapsed {
+            max-height: 0;
+        }
+
         .control-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -647,18 +681,27 @@
                 <span style="opacity: 0.5;">|</span>
                 <a href="https://wessengetachew.github.io/Ethiopian/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Epsilon Pi Calculator</a>
              <span style="opacity: 0.5;">|</span>
-                <a href="https://wessengetachew.github.io/2pir/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">2Pir</a>
+                <a href="https://wessengetachew.github.io/2pir/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">2Pi r/m</a>
             </div>
+                        
             <button class="theme-toggle" onclick="toggleTheme()">
                 <span id="themeText">Light Mode</span>
             </button>
         </div>
 
-        <div class="main-content">
+        <div class="tabs">
+            <button class="tab" onclick="switchTab('visualization')">Visualization</button>
+            <button class="tab" onclick="switchTab('understanding')">Understanding the Tool</button>
+        </div>
+
+        <div id="visualizationTab" class="tab-content active">
+            <div class="main-content">
                 <div class="control-panel">
                     <div class="control-section">
-                        <h3>Modulus Configuration</h3>
-                        
+                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span> Modulus Configuration
+                        </h3>
+                        <div class="collapsible-content">
                         <div class="control-group">
                             <label>Modulus Selection Mode</label>
                             <select id="modSelectionMode">
@@ -733,10 +776,14 @@
                             </div>
                             <button onclick="clearCache()" style="width: 100%; margin-top: 5px; padding: 8px; font-size: 11px;">Clear Cache</button>
                         </div>
+                        </div>
                     </div>
 
                     <div class="control-section">
-                        <h3>Connection Lines</h3>
+                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span> Connection Lines
+                        </h3>
+                        <div class="collapsible-content">
                         <div class="control-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="enableConnections">
@@ -791,10 +838,14 @@
                                 Only Connect Open Channels
                             </label>
                         </div>
+                        </div>
                     </div>
 
                     <div class="control-section">
-                        <h3>Rotation Controls</h3>
+                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span> Rotation Controls
+                        </h3>
+                        <div class="collapsible-content">
                         
                         <div class="control-group">
                             <label class="checkbox-label">
@@ -878,10 +929,14 @@
                         <div class="info-box" id="animationStatus">
                             Status: Stopped
                         </div>
+                        </div>
                     </div>
 
                     <div class="control-section">
-                        <h3>Residue Tracker</h3>
+                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span> Residue Tracker
+                        </h3>
+                        <div class="collapsible-content">
                         <div class="control-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="enableTracker">
@@ -933,10 +988,14 @@
                             <h4>Tracked Residues Info</h4>
                             <div class="tracker-info" id="trackerInfoContent"></div>
                         </div>
+                        </div>
                     </div>
 
                     <div class="control-section">
-                        <h3>Coloring Schemes</h3>
+                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span> Coloring Schemes
+                        </h3>
+                        <div class="collapsible-content">
                         <div class="control-group">
                             <label>Open Channel Mode</label>
                             <select id="openColorMode">
@@ -968,10 +1027,14 @@
                             <label>Base Closed Color</label>
                             <input type="color" id="baseClosedColor" value="#ff0000">
                         </div>
+                        </div>
                     </div>
 
                     <div class="control-section">
-                        <h3>Display Settings</h3>
+                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span> Display Settings
+                        </h3>
+                        <div class="collapsible-content">
                         <div class="control-row">
                             <div class="control-group">
                                 <label>Display Mode</label>
@@ -1035,10 +1098,14 @@
                                 </label>
                             </div>
                         </div>
+                        </div>
                     </div>
 
                     <div class="control-section">
-                        <h3>Label Display</h3>
+                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span> Label Display
+                        </h3>
+                        <div class="collapsible-content">
                         <div class="control-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="showLabels">
@@ -1102,10 +1169,14 @@
                                 <input type="number" id="labelSpacingNum" min="8" max="50" step="1" value="12">
                             </div>
                         </div>
+                        </div>
                     </div>
 
                     <div class="control-section">
-                        <h3>Gap Analysis</h3>
+                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span> Gap Analysis
+                        </h3>
+                        <div class="collapsible-content">
                         <div class="control-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="enableGapAnalysis">
@@ -1164,10 +1235,11 @@
                         <div class="info-box" id="gapInfo" style="margin-top: 10px;">
                             <strong>Active Gaps:</strong> <span id="activeGapsDisplay">None</span>
                         </div>
+                        </div>
                     </div>
 
                     <div class="control-section">
-                        <h3>Export Settings</h3>
+                        <h3 style="text-decoration: underline; font-weight: bold;">Export Settings</h3>
                         
                         <div class="control-group">
                             <label>Export Title</label>
@@ -1184,11 +1256,51 @@
                         <div class="control-group">
                             <label>Export Resolution</label>
                             <select id="exportResolution">
-                                <option value="1">Current (1000×800)</option>
-                                <option value="2">2× (2000×1600)</option>
-                                <option value="3">3× (3000×2400)</option>
-                                <option value="4">4× (4000×3200)</option>
+                                <option value="1">Standard (1000×800)</option>
+                                <option value="2">HD (2000×1600)</option>
+                                <option value="3">2K (3000×2400)</option>
+                                <option value="4" selected>4K (4000×3200)</option>
+                                <option value="6">6K (6000×4800)</option>
+                                <option value="8">8K (8000×6400)</option>
                             </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="includeColorKey" checked>
+                                Include Color Key Legend
+                            </label>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="includeTimestamp" checked>
+                                Include Timestamp
+                            </label>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>CSV Export Options</label>
+                            <select id="csvExportMode">
+                                <option value="basic">Basic (m, r, gcd, channel)</option>
+                                <option value="detailed" selected>Detailed (all properties)</option>
+                                <option value="statistical">Statistical Summary</option>
+                                <option value="gap-analysis">Gap Analysis Data</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="csvIncludeHeader" checked>
+                                Include Column Headers
+                            </label>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="csvIncludeMetadata" checked>
+                                Include Configuration Metadata
+                            </label>
                         </div>
                         
                         <div class="button-group">
@@ -1246,6 +1358,342 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div id="understandingTab" class="tab-content">
+            <div class="theory-section">
+                <h2>Understanding Modular Rings: Euler's Vision of the Residue System</h2>
+                
+                <p style="font-size: 16px; font-style: italic; margin: 20px 0; padding: 15px; background: var(--bg-secondary); border-left: 4px solid var(--border-color);">
+                    "This visualization brings to life Leonhard Euler's profound insight: that the integers, when viewed through the lens of modular arithmetic, reveal a hidden geometric structure—a nested architecture of circular symmetries where patterns of divisibility become visible paths through space."
+                </p>
+
+                <h2>What Are You Looking At?</h2>
+                
+                <h3>The Fundamental Concept</h3>
+                <p>
+                    Imagine the integers arranged not as a line, but as circles—infinite families of circles, each one capturing a different "rhythm" of counting. This is <strong>modular arithmetic</strong>, the mathematics of remainders, and it was Euler who first recognized its deep geometric character.
+                </p>
+                
+                <p>
+                    When we count modulo <em>m</em>, we're asking: "What's left over after dividing by <em>m</em>?" The possible remainders—called <strong>residues</strong>—are the integers {0, 1, 2, ..., m-1}. These <em>m</em> residues form what mathematicians call ℤ/mℤ (pronounced "Z mod m"), and Euler showed us how to think of them as points equally spaced around a circle.
+                </p>
+
+                <div class="example-box">
+                    <strong>Example: The Clock (Modulo 12)</strong><br>
+                    When we read a 12-hour clock, we're doing arithmetic modulo 12. After 12 o'clock comes 1 o'clock—the remainder when 13 is divided by 12. The 12 hours form a circle, and this circular structure is fundamental to modular arithmetic.
+                    <br><br>
+                    In our visualization, modulus <em>m</em> = 12 appears as a ring with 12 equally-spaced points, one for each hour: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}.
+                </div>
+
+                <h3>Why Nested Rings?</h3>
+                <p>
+                    The revolutionary insight is to display <em>multiple moduli simultaneously</em> as concentric rings. Each ring represents a different modulus, with the innermost circle being <em>m</em> = 1 (just one point—the origin) and outer rings representing larger moduli.
+                </p>
+                
+                <p>
+                    This nested structure reveals <strong>modular containment</strong>: larger moduli contain and extend smaller ones. When <em>d</em> divides <em>m</em>, the ring of modulus <em>d</em> embeds naturally inside the ring of modulus <em>m</em>. The visualization makes this abstract algebraic relationship visible as geometric nesting.
+                </p>
+
+                <h2>The Two Types of Channels: Open and Closed</h2>
+                
+                <p>
+                    Euler's greatest contribution to this theory was recognizing that residues fall into two fundamentally different categories, distinguished by their relationship to the modulus through the <strong>greatest common divisor (GCD)</strong>.
+                </p>
+
+                <h3>Open Channels (Coprime Residues)</h3>
+                <p>
+                    A residue <em>r</em> in modulus <em>m</em> is an <strong>open channel</strong> if gcd(<em>r</em>, <em>m</em>) = 1. This means <em>r</em> and <em>m</em> share no common factors—they are <strong>coprime</strong> or <strong>relatively prime</strong>.
+                </p>
+                
+                <div class="formula">
+                    <div class="formula-title">Mathematical Definition</div>
+                    r is an OPEN channel in ℤ/mℤ ⟺ gcd(r, m) = 1
+                    <br><br>
+                    These residues have <strong>multiplicative inverses</strong> modulo m.
+                    <br>
+                    They form a group under multiplication: (ℤ/mℤ)×
+                </div>
+
+                <p>
+                    <strong>Why "open"?</strong> These residues represent "pathways" that allow information to flow freely through the modular system. In number theory, they're the residues where primes can live—every prime <em>p</em> greater than <em>m</em> must occupy an open channel when reduced modulo <em>m</em>.
+                </p>
+
+                <div class="example-box">
+                    <strong>Example: Modulo 12</strong><br>
+                    Open channels in ℤ/12ℤ: {1, 5, 7, 11}<br>
+                    These are the residues coprime to 12.<br><br>
+                    • gcd(1, 12) = 1 ✓<br>
+                    • gcd(5, 12) = 1 ✓<br>
+                    • gcd(7, 12) = 1 ✓<br>
+                    • gcd(11, 12) = 1 ✓<br><br>
+                    Count: φ(12) = 4 (Euler's totient function)
+                </div>
+
+                <h3>Closed Channels (Non-Coprime Residues)</h3>
+                <p>
+                    A residue <em>r</em> is a <strong>closed channel</strong> if gcd(<em>r</em>, <em>m</em>) > 1. These residues share a common factor with the modulus—they are <strong>divisible by some prime that also divides m</strong>.
+                </p>
+
+                <div class="formula">
+                    <div class="formula-title">Mathematical Definition</div>
+                    r is a CLOSED channel in ℤ/mℤ ⟺ gcd(r, m) > 1
+                    <br><br>
+                    These residues do NOT have multiplicative inverses modulo m.
+                    <br>
+                    They are "zero divisors" or non-units in the ring ℤ/mℤ.
+                </div>
+
+                <p>
+                    <strong>Why "closed"?</strong> These residues are blocked—they cannot represent prime numbers (except for the primes dividing <em>m</em> itself). They form the "sieve" that filters out composites in prime-hunting algorithms.
+                </p>
+
+                <div class="example-box">
+                    <strong>Example: Modulo 12</strong><br>
+                    Closed channels in ℤ/12ℤ: {0, 2, 3, 4, 6, 8, 9, 10}<br>
+                    These share a factor of 2 or 3 with 12.<br><br>
+                    • gcd(0, 12) = 12 (shares all factors)<br>
+                    • gcd(2, 12) = 2 (shares factor 2)<br>
+                    • gcd(3, 12) = 3 (shares factor 3)<br>
+                    • gcd(4, 12) = 4 (shares factor 2)<br>
+                    • gcd(6, 12) = 6 (shares factors 2 and 3)<br><br>
+                    Count: 12 - φ(12) = 12 - 4 = 8
+                </div>
+
+                <h2>Euler's Totient Function φ(m)</h2>
+                
+                <p>
+                    One of Euler's most famous contributions to number theory is the <strong>totient function</strong> φ(<em>m</em>), which counts the number of open channels in ℤ/mℤ—the integers between 1 and <em>m</em> that are coprime to <em>m</em>.
+                </p>
+
+                <div class="formula">
+                    <div class="formula-title">Euler's Totient Function</div>
+                    φ(m) = |{r ∈ {1, 2, ..., m} : gcd(r, m) = 1}|
+                    <br><br>
+                    <strong>For prime p:</strong> φ(p) = p - 1 (all non-zero residues are open)
+                    <br>
+                    <strong>For prime power p^k:</strong> φ(p^k) = p^k - p^(k-1) = p^(k-1)(p - 1)
+                    <br>
+                    <strong>Multiplicative property:</strong> If gcd(m,n) = 1, then φ(mn) = φ(m)φ(n)
+                </div>
+
+                <p>
+                    The totient function measures the "density" of open channels. As we visualize larger and larger moduli, the ratio φ(<em>m</em>)/<em>m</em> converges to a famous limit:
+                </p>
+
+                <div class="formula">
+                    <div class="formula-title">The Asymptotic Density of Coprime Integers</div>
+                    lim (average of φ(m)/m over all m) = 6/π² ≈ 0.6079...
+                    <br><br>
+                    This means that approximately <strong>60.79% of all residue positions are open channels</strong> when averaged across all moduli.
+                    <br><br>
+                    This is intimately connected to the probability that two randomly chosen integers are coprime!
+                </div>
+
+                <h2>Farey Sequences and Angular Coordinates</h2>
+                
+                <p>
+                    Each residue <em>r</em> in modulus <em>m</em> naturally corresponds to a <strong>Farey fraction</strong> <em>r</em>/<em>m</em>, a rational number between 0 and 1. Euler showed that these fractions, when arranged in order, exhibit beautiful patterns.
+                </p>
+
+                <p>
+                    In our visualization, we map each fraction to an angle: θ = -2π<em>r</em>/<em>m</em> (using negative for clockwise orientation). This transforms the modular arithmetic ring into a geometric circle, with residues as evenly-spaced points.
+                </p>
+
+                <div class="example-box">
+                    <strong>Example: Modulo 8 → Angular Positions</strong><br>
+                    • r = 0 → 0/8 → θ = 0° (right/east)<br>
+                    • r = 1 → 1/8 → θ = -45° (clockwise)<br>
+                    • r = 2 → 2/8 = 1/4 → θ = -90° (down/south)<br>
+                    • r = 3 → 3/8 → θ = -135°<br>
+                    • r = 4 → 4/8 = 1/2 → θ = -180° (left/west)<br>
+                    • r = 5 → 5/8 → θ = -225°<br>
+                    • r = 6 → 6/8 = 3/4 → θ = -270° (up/north)<br>
+                    • r = 7 → 7/8 → θ = -315°<br>
+                </div>
+
+                <h2>Prime Constellations and Gap Analysis</h2>
+                
+                <h3>The Sieve Structure</h3>
+                <p>
+                    One of the most profound applications of this visualization is understanding <strong>why prime numbers appear in specific patterns</strong>. The ancient Greeks knew about the Sieve of Eratosthenes, but Euler revealed the deeper geometric structure.
+                </p>
+
+                <p>
+                    When we look for <strong>twin primes</strong> (primes separated by 2, like 11 and 13, or 17 and 19), we're asking: which residue positions allow both <em>r</em> and <em>r</em>+2 to be open channels?
+                </p>
+
+                <div class="formula">
+                    <div class="formula-title">Gap Admissibility</div>
+                    A residue r in modulus m is <strong>gap-g admissible</strong> if:
+                    <br>
+                    1. gcd(r, m) = 1 (r is an open channel)
+                    <br>
+                    2. gcd((r + g) mod m, m) = 1 (r+g is also an open channel)
+                    <br><br>
+                    For twin primes (g=2), we need consecutive open channels spaced 2 apart.
+                    <br>
+                    For sexy primes (g=6), we need open channels spaced 6 apart.
+                </div>
+
+                <div class="example-box">
+                    <strong>Example: Twin Primes in Modulo 30</strong><br>
+                    Open channels mod 30: {1, 7, 11, 13, 17, 19, 23, 29}<br><br>
+                    Gap-2 admissible positions:<br>
+                    • r = 11: 11+2 = 13 ✓ (both open)<br>
+                    • r = 17: 17+2 = 19 ✓ (both open)<br>
+                    • r = 29: 29+2 ≡ 1 mod 30 ✓ (both open)<br><br>
+                    Only 3 out of 8 open channels support twin prime patterns!<br>
+                    This is why twin primes become increasingly rare.
+                </div>
+
+                <p>
+                    The visualization reveals this structure through <strong>purple highlighting</strong> and <strong>colored connection lines</strong>. When you enable gap analysis with g = 2, 4, 6, etc., you see exactly which residue positions remain viable for prime constellations after the modular sieve has done its filtering.
+                </p>
+
+                <h2>The M₃₀ Sequence: A Special Case</h2>
+                
+                <p>
+                    The primorial-based sequence <strong>M<sub>n</sub> = 30 × 2<sup>n</sup></strong> has special significance in prime number theory because 30 = 2 × 3 × 5 is the product of the first three primes.
+                </p>
+
+                <div class="formula">
+                    <div class="formula-title">Why 30 Is Special</div>
+                    30 is the smallest number that "sieves out" all primes up to 5:
+                    <br><br>
+                    • Multiples of 2 (even numbers)
+                    <br>
+                    • Multiples of 3
+                    <br>
+                    • Multiples of 5
+                    <br><br>
+                    All primes > 5 must lie in one of φ(30) = 8 residue classes: {1, 7, 11, 13, 17, 19, 23, 29}
+                    <br><br>
+                    The sequence 30, 60, 120, 240, 480, 960 creates increasingly fine-grained sieves while preserving this structure.
+                </div>
+
+                <h2>Rotation and Spiral Features</h2>
+                
+                <h3>Global Rotation</h3>
+                <p>
+                    Rotates all rings together as a rigid body. This lets you explore the visualization from different angular perspectives, revealing symmetries that might not be obvious from the default orientation.
+                </p>
+
+                <h3>Individual Modulus Rotation</h3>
+                <p>
+                    Each ring rotates independently at its own rate. This creates dynamic, kaleidoscopic patterns and reveals how different modular rhythms interact—a visual representation of the <strong>Chinese Remainder Theorem</strong> in action.
+                </p>
+
+                <h3>Per-Ring Spiral</h3>
+                <p>
+                    Perhaps the most beautiful feature: each successive ring rotates by an additional angular increment, creating spiral or helical patterns. The four mathematical modes (Linear, Fibonacci, Logarithmic, Sine Wave) correspond to different growth functions:
+                </p>
+
+                <ul>
+                    <li><strong>Linear:</strong> Uniform spiral like a phonograph record</li>
+                    <li><strong>Fibonacci (Golden Spiral):</strong> Appears in nautilus shells and sunflower seed patterns</li>
+                    <li><strong>Logarithmic:</strong> Similar to galaxy spiral arms</li>
+                    <li><strong>Sine Wave:</strong> Oscillating, DNA-helix-like structure</li>
+                </ul>
+
+                <p>
+                    These rotations don't change the mathematics—they're purely visual transformations—but they reveal different aspects of the underlying modular structure, much like how rotating a crystal reveals different facets.
+                </p>
+
+                <h2>Connection Lines: Revealing Structure</h2>
+                
+                <p>
+                    The connection lines trace relationships between residues across different moduli:
+                </p>
+
+                <ul>
+                    <li><strong>r to r (Next Modulus):</strong> Shows how each residue "lifts" to the next modulus level</li>
+                    <li><strong>Binary Lift:</strong> Reveals the doubling structure inherent in powers of 2</li>
+                    <li><strong>Gap connections:</strong> Traces prime constellation patterns through multiple moduli simultaneously</li>
+                </ul>
+
+                <p>
+                    When you see open channels connected by colored lines, you're seeing the <strong>admissible patterns</strong>—the geometric skeleton that supports prime number constellations.
+                </p>
+
+                <h2>Why This Matters: Applications</h2>
+                
+                <h3>1. Cryptography</h3>
+                <p>
+                    Modern encryption (RSA, elliptic curve cryptography) relies fundamentally on modular arithmetic and Euler's totient function. The open channels are where cryptographic keys live.
+                </p>
+
+                <h3>2. Prime Number Theory</h3>
+                <p>
+                    Understanding prime distribution requires understanding the sieve structure. This visualization makes concrete the abstract ideas behind the Hardy-Littlewood conjectures on prime k-tuples.
+                </p>
+
+                <h3>3. The Riemann Hypothesis</h3>
+                <p>
+                    The distribution of primes is intimately connected to the behavior of the Riemann zeta function. The average density φ(<em>m</em>)/<em>m</em> → 6/π² is one manifestation of this deep connection between number theory and analysis.
+                </p>
+
+                <h3>4. Computational Number Theory</h3>
+                <p>
+                    Efficient algorithms for primality testing, factorization, and discrete logarithms all exploit the structure of modular arithmetic rings—the very structure this tool visualizes.
+                </p>
+
+                <h2>Historical Context: Euler's Legacy</h2>
+                
+                <p>
+                    Leonhard Euler (1707-1783) was one of the most prolific mathematicians in history. His work on modular arithmetic, particularly:
+                </p>
+
+                <ul>
+                    <li>The totient function φ(<em>m</em>)</li>
+                    <li>Euler's theorem: <em>a</em><sup>φ(m)</sup> ≡ 1 (mod <em>m</em>) when gcd(<em>a</em>,<em>m</em>)=1</li>
+                    <li>The product formula for φ(<em>m</em>)</li>
+                    <li>The asymptotic density of coprime integers</li>
+                </ul>
+
+                <p>
+                    ...laid the foundation for modern number theory. What you're seeing in this visualization is Euler's insight made visible: that numbers have not just algebraic structure, but <em>geometric</em> structure, and that this geometry reveals deep truths about primes, divisibility, and the architecture of mathematics itself.
+                </p>
+
+                <div class="formula" style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; margin: 30px 0;">
+                    <div style="text-align: center; font-size: 18px; font-weight: 600; margin-bottom: 15px;">
+                        Euler's Vision
+                    </div>
+                    <p style="font-style: italic; text-align: center; margin: 0;">
+                        "The properties of numbers known today have been mostly discovered by observation, and discovered long before their truth has been confirmed by rigid demonstrations. There are even many properties of numbers with which we are well acquainted, but which we are not yet able to prove; only observations have led us to their knowledge."
+                    </p>
+                    <p style="text-align: center; margin-top: 10px; font-size: 14px;">
+                        — Leonhard Euler, <em>Opera Omnia</em>
+                    </p>
+                </div>
+
+                <p>
+                    This tool continues Euler's tradition: through careful observation of mathematical structure—now aided by modern computation and visualization—we discover patterns that inspire rigorous proofs and deepen our understanding of number theory's infinite mysteries.
+                </p>
+
+                <h2>Getting Started: A Guided Tour</h2>
+                
+                <ol>
+                    <li><strong>Start simple:</strong> Set moduli to "Range" from 1 to 12. Click Update. You'll see 12 concentric rings with their open (green) and closed (red) channels.</li>
+                    
+                    <li><strong>Explore the totient:</strong> Notice that ring 12 has only 4 open channels (at positions 1, 5, 7, 11). This is φ(12) = 4.</li>
+                    
+                    <li><strong>Compare primes:</strong> Look at ring 11 (a prime). It has 10 open channels—all positions except 0. This is φ(11) = 10 = 11 - 1.</li>
+                    
+                    <li><strong>Enable gap analysis:</strong> Choose "Twin Primes (2)" and enable "Show Gap Connection Lines". The purple points are admissible—they can support twin primes.</li>
+                    
+                    <li><strong>Try the M₃₀ sequence:</strong> Click the preset buttons: n=0, n=1, n=2, etc. Watch how the sieve structure scales.</li>
+                    
+                    <li><strong>Add spiral rotation:</strong> Set "Per-Ring Spiral" to 15° and choose "Fibonacci (Golden Spiral)". Press Play. Watch the structure unfold in a golden spiral—the same pattern seen in nature.</li>
+                    
+                    <li><strong>Track a residue:</strong> Enable "Residue Tracker", choose "Slider" mode, and drag the slider. Watch how a single residue appears across all moduli—see where it's open vs closed.</li>
+                </ol>
+
+                <p style="margin-top: 30px; font-size: 16px; font-weight: 600;">
+                    You're now exploring Euler's vision of the integers—a vision that has guided number theory for over 250 years and continues to inspire new discoveries today.
+                </p>
+
             </div>
         </div>
 
@@ -1485,6 +1933,12 @@
             currentTheme = 'light';
         }
 
+        function toggleSection(header) {
+            header.classList.toggle('collapsed');
+            const content = header.nextElementSibling;
+            content.classList.toggle('collapsed');
+        }
+
         function isPrime(n) {
             if (n < 2) return false;
             if (n === 2) return true;
@@ -1672,94 +2126,12 @@
         syncInputs('trackerSize', 'trackerSizeNum');
         syncInputs('pointSize', 'pointSizeNum');
         syncInputs('connOpacity', 'connOpacityNum');
-        syncInputs('perRingSpiral', 'perRingSpiralNum');
-        syncInputs('sliderResidue', 'sliderResidueNum');
 
         syncInputs('labelSize', 'labelSizeNum');
         syncInputs('labelSpacing', 'labelSpacingNum');
         syncInputs('gapOpacity', 'gapOpacityNum');
         syncInputs('gapLineWidth', 'gapLineWidthNum');
         syncInputs('connLineWidth', 'connLineWidthNum');
-
-        // Track mode switching
-        document.getElementById('trackMode').addEventListener('change', function() {
-            const mode = this.value;
-            const manualInputs = document.getElementById('manualTrackInputs');
-            const sliderInputs = document.getElementById('sliderTrackInputs');
-            
-            if (mode === 'manual') {
-                manualInputs.style.display = 'block';
-                sliderInputs.style.display = 'none';
-            } else {
-                manualInputs.style.display = 'none';
-                sliderInputs.style.display = 'block';
-                updateSliderResidueMax();
-            }
-        });
-
-        // Update slider max based on current moduli
-        function updateSliderResidueMax() {
-            const moduli = getSelectedModuli();
-            if (moduli.length > 0) {
-                const maxResidue = Math.max(...moduli);
-                document.getElementById('sliderResidue').max = maxResidue;
-                document.getElementById('sliderResidueNum').max = maxResidue;
-            }
-        }
-
-        // Slider residue tracking with live update
-        document.getElementById('sliderResidue').addEventListener('input', function() {
-            if (document.getElementById('trackMode').value === 'slider' && 
-                document.getElementById('enableTracker').checked) {
-                drawVisualization();
-                updateTrackerInfo();
-            }
-        });
-
-        document.getElementById('sliderResidueNum').addEventListener('input', function() {
-            if (document.getElementById('trackMode').value === 'slider' && 
-                document.getElementById('enableTracker').checked) {
-                drawVisualization();
-                updateTrackerInfo();
-            }
-        });
-
-        // Spiral preset functions
-        function setSpiralPreset(preset) {
-            const spiralInput = document.getElementById('perRingSpiral');
-            const spiralMode = document.getElementById('spiralMode');
-            
-            switch(preset) {
-                case 'gentle':
-                    spiralInput.value = 5;
-                    spiralMode.value = 'linear';
-                    break;
-                case 'moderate':
-                    spiralInput.value = 15;
-                    spiralMode.value = 'linear';
-                    break;
-                case 'strong':
-                    spiralInput.value = 30;
-                    spiralMode.value = 'linear';
-                    break;
-                case 'golden':
-                    spiralInput.value = 20;
-                    spiralMode.value = 'fibonacci';
-                    break;
-                case 'galaxy':
-                    spiralInput.value = 45;
-                    spiralMode.value = 'logarithmic';
-                    break;
-                case 'dna':
-                    spiralInput.value = 25;
-                    spiralMode.value = 'sine';
-                    break;
-            }
-            
-            document.getElementById('perRingSpiralNum').value = spiralInput.value;
-            updateRangeDisplays();
-            drawVisualization();
-        }
 
         // Show/hide connection mode options
         document.getElementById('connectionMode').addEventListener('change', function() {
@@ -1906,6 +2278,11 @@
                 if (!animationId) {
                     startAnimation();
                 }
+            } else if (globalSpeed === 0 && modRotSpeed === 0) {
+                // Stop animation and reset to 0 when both sliders return to 0
+                if (animationId) {
+                    stopAnimation();
+                }
             }
         }
 
@@ -1952,10 +2329,6 @@
             document.getElementById('gapOpacityDisplay').textContent = document.getElementById('gapOpacity').value;
             document.getElementById('gapLineWidthDisplay').textContent = document.getElementById('gapLineWidth').value;
             document.getElementById('connLineWidthDisplay').textContent = document.getElementById('connLineWidth').value;
-            document.getElementById('perRingSpiralDisplay').textContent = document.getElementById('perRingSpiral').value;
-            if (document.getElementById('sliderResidue')) {
-                document.getElementById('sliderResidueDisplay').textContent = document.getElementById('sliderResidue').value;
-            }
         }
 
         document.querySelectorAll('input[type="range"]').forEach(input => {
@@ -2256,17 +2629,8 @@
 
         function updateTrackerInfo() {
             const enabled = document.getElementById('enableTracker').checked;
-            const trackMode = document.getElementById('trackMode').value;
-            let trackedRs = [];
-            
-            if (trackMode === 'manual') {
-                const trackedInput = document.getElementById('trackedResidues').value;
-                trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
-            } else {
-                const sliderValue = parseInt(document.getElementById('sliderResidue').value);
-                trackedRs = [sliderValue];
-            }
-            
+            const trackedInput = document.getElementById('trackedResidues').value;
+            const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
             const modFilter = document.getElementById('trackerModFilter').value;
             const filterMod = modFilter ? parseInt(modFilter) : null;
             const trackerInfo = document.getElementById('trackerInfo');
@@ -2333,8 +2697,6 @@
             const connectionMode = document.getElementById('connectionMode').value;
             const connOpacity = parseFloat(document.getElementById('connOpacity').value);
             const onlyOpenConn = document.getElementById('onlyOpenConn').checked;
-            const perRingSpiral = parseFloat(document.getElementById('perRingSpiral').value) * Math.PI / 180;
-            const spiralMode = document.getElementById('spiralMode').value;
 
             const radiusScale = displayMode === 'unit' ? maxRadius : maxRadius / modMax;
 
@@ -2361,26 +2723,6 @@
                 
                 // Normal: m=1 is innermost
                 return m * radiusScale;
-            }
-
-            // Function to calculate per-ring spiral angle
-            function getSpiralAngle(ringIndex) {
-                if (perRingSpiral === 0) return 0;
-                
-                const phi = 1.618033988749895; // Golden ratio
-                
-                switch(spiralMode) {
-                    case 'linear':
-                        return perRingSpiral * ringIndex;
-                    case 'fibonacci':
-                        return perRingSpiral * Math.log(ringIndex + 1) * phi;
-                    case 'logarithmic':
-                        return perRingSpiral * Math.log(ringIndex + 1) * 2;
-                    case 'sine':
-                        return perRingSpiral * ringIndex * (1 + 0.5 * Math.sin(ringIndex * Math.PI / 4));
-                    default:
-                        return perRingSpiral * ringIndex;
-                }
             }
 
             // Draw ring lines
@@ -2537,20 +2879,12 @@
             }
 
             // Draw points
-            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
-            const modulusToIndex = {};
-            moduli.forEach((m, idx) => {
-                modulusToIndex[m] = idx;
-            });
-
             pointsData.forEach(point => {
                 if (!showOpen && point.isOpen) return;
                 if (!showClosed && !point.isOpen) return;
 
-                const ringIndex = modulusToIndex[point.m];
-                const spiralAngle = getSpiralAngle(ringIndex);
                 const modRot = modRotations[point.m] || 0;
-                const totalAngle = point.angle + (modRot * Math.PI / 180) + spiralAngle;
+                const totalAngle = point.angle + (modRot * Math.PI / 180);
                 const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
                 const x = r * Math.cos(totalAngle);
                 const y = r * Math.sin(totalAngle);
@@ -2579,17 +2913,8 @@
 
             // Draw tracker
             if (enableTracker) {
-                const trackMode = document.getElementById('trackMode').value;
-                let trackedRs = [];
-                
-                if (trackMode === 'manual') {
-                    const trackedInput = document.getElementById('trackedResidues').value;
-                    trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
-                } else {
-                    const sliderValue = parseInt(document.getElementById('sliderResidue').value);
-                    trackedRs = [sliderValue];
-                }
-                
+                const trackedInput = document.getElementById('trackedResidues').value;
+                const trackedRs = trackedInput.split(',').map(r => parseInt(r.trim())).filter(r => !isNaN(r));
                 const modFilter = document.getElementById('trackerModFilter').value;
                 const filterMod = modFilter ? parseInt(modFilter) : null;
                 
@@ -2600,10 +2925,8 @@
                     }
                     
                     filteredPoints.forEach(point => {
-                        const ringIndex = modulusToIndex[point.m];
-                        const spiralAngle = getSpiralAngle(ringIndex);
                         const modRot = modRotations[point.m] || 0;
-                        const totalAngle = point.angle + (modRot * Math.PI / 180) + spiralAngle;
+                        const totalAngle = point.angle + (modRot * Math.PI / 180);
                         const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
                         const x = r * Math.cos(totalAngle);
                         const y = r * Math.sin(totalAngle);
@@ -2887,9 +3210,7 @@
         }
 
         function handleEnd(e) {
-            const enablePointClick = document.getElementById('enablePointClick').checked;
-            
-            if (!isDragging && enablePointClick) {
+            if (!isDragging) {
                 // Click detected
                 const coords = e.changedTouches ? 
                     { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY } :
@@ -3282,6 +3603,8 @@
 
         function exportImage() {
             const includeLegend = document.getElementById('includeLegend').checked;
+            const includeColorKey = document.getElementById('includeColorKey').checked;
+            const includeTimestamp = document.getElementById('includeTimestamp').checked;
             const exportTitle = document.getElementById('exportTitle').value;
             const resolution = parseFloat(document.getElementById('exportResolution').value);
             
@@ -3290,14 +3613,17 @@
             const baseWidth = canvas.width;
             const baseHeight = canvas.height;
             
+            // Reserve space for title at top
+            const titleHeight = 100 * resolution;
+            
             let exportWidth = baseWidth * resolution;
-            let exportHeight = baseHeight * resolution;
+            let exportHeight = baseHeight * resolution + titleHeight;
             
             // Calculate legend dimensions - always on right
             let legendWidth = 0;
             
             if (includeLegend) {
-                legendWidth = 400 * resolution;
+                legendWidth = 500 * resolution; // Increased width for more details
                 exportWidth += legendWidth;
             }
             
@@ -3306,20 +3632,36 @@
             const tempCtx = tempCanvas.getContext('2d');
             
             // Fill background
-            const bgColor = currentTheme === 'dark' ? '#000000' : '#ffffff';
-            const textColor = currentTheme === 'dark' ? '#ffffff' : '#000000';
+            const bgColor = '#000000';
+            const textColor = '#ffffff';
             tempCtx.fillStyle = bgColor;
             tempCtx.fillRect(0, 0, exportWidth, exportHeight);
             
-            // Draw main visualization scaled up on the left
+            // Draw title at top center
+            const fontSize = 18 * resolution;
+            tempCtx.fillStyle = textColor;
+            tempCtx.font = `bold ${fontSize * 1.8}px Arial`;
+            tempCtx.textAlign = 'center';
+            const titleY = titleHeight / 2 + fontSize / 2;
+            tempCtx.fillText(exportTitle, exportWidth / 2, titleY);
+            
+            // Draw timestamp if enabled
+            if (includeTimestamp) {
+                tempCtx.font = `${fontSize * 0.8}px Arial`;
+                const timestamp = new Date().toLocaleString();
+                tempCtx.fillText(timestamp, exportWidth / 2, titleY + fontSize * 1.5);
+            }
+            
+            // Draw main visualization scaled up below title
             tempCtx.save();
+            tempCtx.translate(0, titleHeight);
             tempCtx.scale(resolution, resolution);
             tempCtx.drawImage(canvas, 0, 0);
             tempCtx.restore();
             
-            // Draw legend if enabled - always on right, title always top center
+            // Draw legend if enabled
             if (includeLegend) {
-                drawLegend(tempCtx, exportTitle, legendWidth, exportWidth, exportHeight, resolution, textColor, bgColor);
+                drawLegend(tempCtx, legendWidth, exportWidth, exportHeight, resolution, textColor, bgColor, titleHeight, includeColorKey);
             }
             
             // Export
@@ -3330,7 +3672,7 @@
             link.click();
         }
 
-        function drawLegend(ctx, title, legendWidth, totalWidth, totalHeight, resolution, textColor, bgColor) {
+        function drawLegend(ctx, legendWidth, totalWidth, totalHeight, resolution, textColor, bgColor, titleHeight, includeColorKey) {
             const moduli = getSelectedModuli();
             const mode = document.getElementById('modSelectionMode').value;
             const displayMode = document.getElementById('displayMode').value;
@@ -3344,34 +3686,66 @@
             const invertOrder = document.getElementById('invertModOrder').checked;
             const enableConnections = document.getElementById('enableConnections').checked;
             const connectionMode = document.getElementById('connectionMode').value;
+            const showLabels = document.getElementById('showLabels').checked;
+            const labelType = document.getElementById('labelType').value;
+            const openColorMode = document.getElementById('openColorMode').value;
+            const closedColorMode = document.getElementById('closedColorMode').value;
             
-            const fontSize = 14 * resolution;
-            const lineHeight = 20 * resolution;
-            const padding = 20 * resolution;
+            const fontSize = 13 * resolution;
+            const lineHeight = 18 * resolution;
+            const padding = 25 * resolution;
+            const sectionSpacing = 15 * resolution;
             
             // Legend is always on the right
             const startX = totalWidth - legendWidth + padding;
             const maxWidth = legendWidth - 2 * padding;
             
-            // Title at top center of entire image
-            ctx.fillStyle = textColor;
-            ctx.font = `bold ${fontSize * 1.8}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.fillText(title, totalWidth / 2, padding + fontSize * 1.5);
-            
-            // Start legend content
-            let y = padding * 3;
+            // Start legend content below title area
+            let y = titleHeight + padding * 2;
             ctx.textAlign = 'left';
             
-            // Draw separator
-            ctx.strokeStyle = textColor;
-            ctx.lineWidth = 1 * resolution;
-            ctx.beginPath();
-            ctx.moveTo(startX, y);
-            ctx.lineTo(startX + maxWidth * 0.8, y);
-            ctx.stroke();
-            y += lineHeight;
-            // Parameters
+            // Helper function to draw section header
+            function drawSectionHeader(title) {
+                ctx.font = `bold ${fontSize * 1.1}px Arial`;
+                ctx.fillStyle = textColor;
+                ctx.fillText(title, startX, y);
+                y += lineHeight * 0.3;
+                
+                // Draw separator line
+                ctx.strokeStyle = textColor;
+                ctx.lineWidth = 1.5 * resolution;
+                ctx.beginPath();
+                ctx.moveTo(startX, y);
+                ctx.lineTo(startX + maxWidth * 0.9, y);
+                ctx.stroke();
+                y += lineHeight * 0.8;
+            }
+            
+            // Helper function to draw text with wrapping
+            function drawWrappedText(text, maxLineWidth) {
+                ctx.font = `${fontSize}px Arial`;
+                const words = text.split(' ');
+                let line = '';
+                
+                for (let i = 0; i < words.length; i++) {
+                    const testLine = line + words[i] + ' ';
+                    const metrics = ctx.measureText(testLine);
+                    
+                    if (metrics.width > maxLineWidth && line !== '') {
+                        ctx.fillText(line, startX, y);
+                        y += lineHeight;
+                        line = words[i] + ' ';
+                    } else {
+                        line = testLine;
+                    }
+                }
+                ctx.fillText(line, startX, y);
+                y += lineHeight;
+            }
+            
+            // === CONFIGURATION SECTION ===
+            drawSectionHeader('CONFIGURATION');
+            
             ctx.font = `${fontSize}px Arial`;
             ctx.fillStyle = textColor;
             
@@ -3381,56 +3755,124 @@
                 const modMin = document.getElementById('modMin').value;
                 const modMax = document.getElementById('modMax').value;
                 const modStep = document.getElementById('modStep').value;
-                moduliText = `Range: ${modMin} to ${modMax} (step ${modStep})`;
+                moduliText = `Moduli: Range ${modMin} to ${modMax} (step ${modStep})`;
             } else if (mode === 'fibonacci') {
-                moduliText = `Fibonacci sequence (max ${document.getElementById('sequenceMax').value})`;
+                moduliText = `Moduli: Fibonacci sequence (max ${document.getElementById('sequenceMax').value})`;
             } else if (mode === 'primes') {
-                moduliText = `Prime moduli (max ${document.getElementById('sequenceMax').value})`;
+                moduliText = `Moduli: Prime sequence (max ${document.getElementById('sequenceMax').value})`;
             } else if (mode === 'powers-of-2') {
-                moduliText = `Powers of 2 (${document.getElementById('sequenceTerms').value} terms)`;
+                moduliText = `Moduli: Powers of 2 (${document.getElementById('sequenceTerms').value} terms)`;
             } else if (mode === 'powers-of-3') {
-                moduliText = `Powers of 3 (${document.getElementById('sequenceTerms').value} terms)`;
+                moduliText = `Moduli: Powers of 3 (${document.getElementById('sequenceTerms').value} terms)`;
             } else if (mode === 'M30-sequence') {
-                moduliText = `M₃₀ = 30×2ⁿ (${document.getElementById('sequenceTerms').value} terms)`;
+                moduliText = `Moduli: M₃₀ = 30×2ⁿ (${document.getElementById('sequenceTerms').value} terms)`;
             } else if (mode === 'custom') {
                 const customMods = document.getElementById('customModuli').value;
-                moduliText = `Custom: ${customMods}`;
+                moduliText = `Moduli: Custom [${customMods}]`;
             }
             
-            ctx.fillText(`Moduli: ${moduliText}`, startX, y);
+            drawWrappedText(moduliText, maxWidth * 0.95);
+            
+            ctx.fillText(`Total Moduli Count: ${moduli.length}`, startX, y);
             y += lineHeight;
             
-            ctx.fillText(`Total Moduli: ${moduli.length}`, startX, y);
-            y += lineHeight;
-            
-            ctx.fillText(`Display Mode: ${displayMode === 'rings' ? 'Concentric Rings' : 'Unit Circle'}`, startX, y);
+            const displayText = displayMode === 'rings' ? 'Concentric Rings' : 'Unit Circle';
+            ctx.fillText(`Display Mode: ${displayText}`, startX, y);
             y += lineHeight;
             
             if (invertOrder) {
-                ctx.fillText(`Order: Inverted (Outer↔Inner)`, startX, y);
+                ctx.fillText(`Ring Order: Inverted (Outer↔Inner)`, startX, y);
                 y += lineHeight;
             }
             
-            ctx.fillText(`Angular Mapping: ${angularMapping}`, startX, y);
+            const angularText = angularMapping === 'standard' ? '2πr/m' :
+                               angularMapping === 'half' ? 'πr/m' :
+                               angularMapping === 'inverted' ? '2π(m-r)/m' : '-2πr/m';
+            ctx.fillText(`Angular Mapping: ${angularText}`, startX, y);
             y += lineHeight;
             
             const channelText = showOpen && showClosed ? 'Open & Closed' : showOpen ? 'Open Only' : 'Closed Only';
-            ctx.fillText(`Channels: ${channelText}`, startX, y);
+            ctx.fillText(`Visible Channels: ${channelText}`, startX, y);
             y += lineHeight;
             
-            if (enableGap) {
-                ctx.fillText(`Gap Analysis: ${gapValues}`, startX, y);
+            y += sectionSpacing;
+            
+            // === COLOR SCHEME SECTION ===
+            drawSectionHeader('COLOR SCHEME');
+            
+            ctx.font = `${fontSize}px Arial`;
+            const openModeText = openColorMode === 'solid' ? 'Solid Color' :
+                                openColorMode === 'by-residue' ? 'By Residue (r)' :
+                                openColorMode === 'by-modulus' ? 'By Modulus (m)' :
+                                openColorMode === 'by-spf' ? 'By Smallest Prime Factor' :
+                                'By Angle';
+            ctx.fillText(`Open Channels: ${openModeText}`, startX, y);
+            y += lineHeight;
+            
+            const closedModeText = closedColorMode === 'solid' ? 'Solid Color' :
+                                  closedColorMode === 'by-gcd' ? 'By GCD Value' :
+                                  'By Prime Factor';
+            ctx.fillText(`Closed Channels: ${closedModeText}`, startX, y);
+            y += lineHeight;
+            
+            if (includeColorKey && openColorMode !== 'solid') {
+                ctx.font = `${fontSize * 0.85}px Arial`;
+                ctx.fillStyle = textColor;
+                ctx.globalAlpha = 0.7;
+                ctx.fillText('(See visualization for color mapping)', startX, y);
+                ctx.globalAlpha = 1.0;
                 y += lineHeight;
+            }
+            
+            y += sectionSpacing;
+            
+            // === FEATURES SECTION ===
+            drawSectionHeader('ACTIVE FEATURES');
+            
+            ctx.font = `${fontSize}px Arial`;
+            
+            if (showLabels) {
+                const labelTypeText = labelType === 'residue' ? 'Residue (r)' :
+                                     labelType === 'farey' ? 'Farey Fraction (r/m)' :
+                                     labelType === 'theta' ? 'Angle θ (degrees)' :
+                                     labelType === 'gcd' ? 'GCD(r,m)' : labelType;
+                ctx.fillText(`Labels: ${labelTypeText}`, startX, y);
+                y += lineHeight;
+            }
+            
+            if (enableGap) {
+                ctx.fillText(`Gap Analysis: Gaps = [${gapValues}]`, startX, y);
+                y += lineHeight;
+                
+                const gaps = gapValues.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g));
+                if (gaps.length > 0) {
+                    ctx.font = `${fontSize * 0.85}px Arial`;
+                    ctx.fillStyle = textColor;
+                    ctx.globalAlpha = 0.8;
+                    gaps.forEach((gap, idx) => {
+                        const gapName = gap === 2 ? 'Twin' : gap === 4 ? 'Cousin' : gap === 6 ? 'Sexy' : `Gap-${gap}`;
+                        ctx.fillText(`  • ${gapName} (g=${gap})`, startX, y);
+                        y += lineHeight * 0.9;
+                    });
+                    ctx.globalAlpha = 1.0;
+                    ctx.font = `${fontSize}px Arial`;
+                }
             }
             
             if (enableTracker) {
-                ctx.fillText(`Tracked Residues: ${trackedResidues}`, startX, y);
+                ctx.fillText(`Residue Tracker: r = [${trackedResidues}]`, startX, y);
                 y += lineHeight;
+                
+                const trackerMod = document.getElementById('trackerModFilter').value;
+                if (trackerMod) {
+                    ctx.fillText(`  Filter: m = ${trackerMod}`, startX, y);
+                    y += lineHeight;
+                }
             }
             
             if (enableConnections) {
-                const connModeText = connectionMode === 'next-mod' ? 'r to r (Next Mod)' :
-                                     connectionMode === 'binary-lift' ? 'Binary Lift' :
+                const connModeText = connectionMode === 'next-mod' ? 'r to r (Next Modulus)' :
+                                     connectionMode === 'binary-lift' ? 'Binary Lift (r to r+M)' :
                                      connectionMode === 'double-lift' ? 'r to r+M×2ⁿ' :
                                      connectionMode === 'same-mod' ? 'Same Modulus' :
                                      connectionMode === 'specific-mod' ? 'Specific Modulus' : 'None';
@@ -3438,11 +3880,17 @@
                 y += lineHeight;
             }
             
-            // Statistics
-            y += lineHeight * 0.5;
-            ctx.font = `bold ${fontSize}px Arial`;
-            ctx.fillText('Statistics:', startX, y);
-            y += lineHeight;
+            const globalSpeed = document.getElementById('globalSpeed').value;
+            const modSpeed = document.getElementById('modRotSpeed').value;
+            if (parseFloat(globalSpeed) > 0 || parseFloat(modSpeed) > 0) {
+                ctx.fillText(`Rotation: Global=${globalSpeed}°, Mod=${modSpeed}°`, startX, y);
+                y += lineHeight;
+            }
+            
+            y += sectionSpacing;
+            
+            // === STATISTICS SECTION ===
+            drawSectionHeader('STATISTICS');
             
             ctx.font = `${fontSize}px Arial`;
             const totalPoints = document.getElementById('statTotal').textContent;
@@ -3453,21 +3901,33 @@
             
             ctx.fillText(`Total Points: ${totalPoints}`, startX, y);
             y += lineHeight;
-            ctx.fillText(`Open: ${openCount}, Closed: ${closedCount}`, startX, y);
+            ctx.fillText(`Open Channels: ${openCount}`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Closed Channels: ${closedCount}`, startX, y);
             y += lineHeight;
             ctx.fillText(`Open Ratio: ${openRatio}`, startX, y);
             y += lineHeight;
-            ctx.fillText(`Avg φ(m)/m: ${avgPhi} (Limit: 0.6079)`, startX, y);
+            ctx.fillText(`Avg φ(m)/m: ${avgPhi}`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Theoretical Limit: 0.6079 (6/π²)`, startX, y);
             y += lineHeight;
             
-            // Author and date
-            y += lineHeight * 0.5;
+            y += sectionSpacing;
+            
+            // === METADATA SECTION ===
+            drawSectionHeader('METADATA');
+            
             ctx.font = `${fontSize * 0.9}px Arial`;
             ctx.fillStyle = textColor;
-            const date = new Date().toLocaleDateString();
+            const date = new Date().toLocaleString();
             ctx.fillText(`Generated: ${date}`, startX, y);
             y += lineHeight;
-            ctx.fillText('By Wessen Getachew', startX, y);
+            ctx.fillText(`Author: Wessen Getachew`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Tool: Modular Rings Visualization`, startX, y);
+            y += lineHeight;
+            const resText = document.getElementById('exportResolution').selectedOptions[0].text;
+            ctx.fillText(`Resolution: ${resText}`, startX, y);
         }
 
         function resetSettings() {
@@ -3487,15 +3947,126 @@
         }
 
         function exportCSV() {
-            let csv = 'Modulus,Residue,GCD,Channel,Angle_Rad,Phi_m,Admissible\n';
-            pointsData.forEach(p => {
-                csv += `${p.m},${p.r},${p.gcd},${p.isOpen ? 'Open' : 'Closed'},`;
-                csv += `${p.angle.toFixed(6)},${p.phiM},${p.isAdmissible ? 'Yes' : 'No'}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
+            const csvMode = document.getElementById('csvExportMode').value;
+            const includeHeader = document.getElementById('csvIncludeHeader').checked;
+            const includeMetadata = document.getElementById('csvIncludeMetadata').checked;
+            
+            let csv = '';
+            
+            // Add metadata as comments if requested
+            if (includeMetadata) {
+                csv += `# Modular Rings Data Export\n`;
+                csv += `# Generated: ${new Date().toLocaleString()}\n`;
+                csv += `# Author: Wessen Getachew\n`;
+                csv += `# Total Points: ${pointsData.length}\n`;
+                
+                const moduli = getSelectedModuli();
+                const mode = document.getElementById('modSelectionMode').value;
+                csv += `# Modulus Mode: ${mode}\n`;
+                csv += `# Moduli Count: ${moduli.length}\n`;
+                
+                if (moduli.length <= 20) {
+                    csv += `# Moduli: ${moduli.join(', ')}\n`;
+                } else {
+                    csv += `# Moduli: ${moduli[0]} to ${moduli[moduli.length-1]}\n`;
+                }
+                
+                csv += `# Display Mode: ${document.getElementById('displayMode').value}\n`;
+                csv += `# Angular Mapping: ${document.getElementById('angularMapping').value}\n`;
+                
+                const enableGap = document.getElementById('enableGapAnalysis').checked;
+                if (enableGap) {
+                    csv += `# Gap Analysis: ${document.getElementById('gapValues').value}\n`;
+                }
+                
+                csv += `#\n`;
+            }
+            
+            if (csvMode === 'basic') {
+                if (includeHeader) {
+                    csv += 'Modulus,Residue,GCD,Channel\n';
+                }
+                pointsData.forEach(p => {
+                    csv += `${p.m},${p.r},${p.gcd},${p.isOpen ? 'Open' : 'Closed'}\n`;
+                });
+            } else if (csvMode === 'detailed') {
+                if (includeHeader) {
+                    csv += 'Modulus,Residue,GCD,Channel,Angle_Radians,Angle_Degrees,';
+                    csv += 'Farey_Fraction,Reduced_Numerator,Reduced_Denominator,';
+                    csv += 'Phi_m,Totient_Ratio,Admissible,Admissible_Gaps,';
+                    csv += 'Is_Prime_Residue,Smallest_Prime_Factor,Largest_Prime_Factor\n';
+                }
+                pointsData.forEach(p => {
+                    const [redNum, redDen] = reduceFraction(p.r, p.m);
+                    const totientRatio = (p.phiM / p.m).toFixed(6);
+                    const isPrimeRes = isPrime(p.r);
+                    const spf = p.r === 0 ? 0 : smallestPrimeFactor(p.r);
+                    const lpf = p.r === 0 ? 0 : largestPrimeFactor(p.r);
+                    const admGaps = p.admissibleGaps ? p.admissibleGaps.join(';') : '';
+                    
+                    csv += `${p.m},${p.r},${p.gcd},${p.isOpen ? 'Open' : 'Closed'},`;
+                    csv += `${p.angle.toFixed(6)},${(p.angle * 180 / Math.PI).toFixed(4)},`;
+                    csv += `${p.r}/${p.m},${redNum},${redDen},`;
+                    csv += `${p.phiM},${totientRatio},`;
+                    csv += `${p.isAdmissible ? 'Yes' : 'No'},"${admGaps}",`;
+                    csv += `${isPrimeRes ? 'Yes' : 'No'},${spf},${lpf}\n`;
+                });
+            } else if (csvMode === 'statistical') {
+                if (includeHeader) {
+                    csv += 'Modulus,Phi_m,Totient_Ratio,Open_Count,Closed_Count,';
+                    csv += 'Open_Percentage,Admissible_Count,Admissible_Percentage\n';
+                }
+                
+                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a,b) => a-b);
+                moduli.forEach(m => {
+                    const pointsInMod = pointsData.filter(p => p.m === m);
+                    const openCount = pointsInMod.filter(p => p.isOpen).length;
+                    const closedCount = pointsInMod.length - openCount;
+                    const admissibleCount = pointsInMod.filter(p => p.isAdmissible).length;
+                    const phiM = pointsInMod[0].phiM;
+                    const totientRatio = (phiM / m).toFixed(6);
+                    const openPct = ((openCount / pointsInMod.length) * 100).toFixed(2);
+                    const admPct = ((admissibleCount / pointsInMod.length) * 100).toFixed(2);
+                    
+                    csv += `${m},${phiM},${totientRatio},${openCount},${closedCount},`;
+                    csv += `${openPct},${admissibleCount},${admPct}\n`;
+                });
+            } else if (csvMode === 'gap-analysis') {
+                const enableGap = document.getElementById('enableGapAnalysis').checked;
+                if (!enableGap) {
+                    alert('Gap Analysis must be enabled to export gap analysis data!');
+                    return;
+                }
+                
+                if (includeHeader) {
+                    csv += 'Modulus,Residue,Is_Open,Is_Admissible,Admissible_Gaps,';
+                    csv += 'Gap_Partners\n';
+                }
+                
+                pointsData.forEach(p => {
+                    if (!p.isOpen) return; // Only export open channels for gap analysis
+                    
+                    const admGaps = p.admissibleGaps ? p.admissibleGaps.join(';') : '';
+                    
+                    // Find gap partners
+                    let gapPartners = [];
+                    if (p.admissibleGaps && p.admissibleGaps.length > 0) {
+                        p.admissibleGaps.forEach(gap => {
+                            const partnerR = (p.r + gap) % p.m;
+                            gapPartners.push(`${gap}:${partnerR}`);
+                        });
+                    }
+                    const partnersStr = gapPartners.join(';');
+                    
+                    csv += `${p.m},${p.r},Yes,${p.isAdmissible ? 'Yes' : 'No'},"${admGaps}","${partnersStr}"\n`;
+                });
+            }
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.download = `modular_rings_data_${new Date().toISOString().slice(0,10)}.csv`;
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            link.download = `modular_rings_${csvMode}_${timestamp}.csv`;
             link.href = url;
             link.click();
             URL.revokeObjectURL(url);
@@ -3530,16 +4101,13 @@
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             
-            const tabs = {
-                'introduction': [0, 'introductionTab'],
-                'visualization': [1, 'visualizationTab'],
-                'bridge': [2, 'bridgeTab'],
-                'theory': [3, 'theoryTab'],
-                'references': [4, 'referencesTab']
-            };
-            
-            document.querySelectorAll('.tab')[tabs[tab][0]].classList.add('active');
-            document.getElementById(tabs[tab][1]).classList.add('active');
+            if (tab === 'visualization') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('visualizationTab').classList.add('active');
+            } else if (tab === 'understanding') {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('understandingTab').classList.add('active');
+            }
         }
 
         window.addEventListener('load', () => {
