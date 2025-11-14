@@ -683,7 +683,6 @@
              <span style="opacity: 0.5;">|</span>
                 <a href="https://wessengetachew.github.io/2pir/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">2Pi r/m</a>
             </div>
-                        
             <button class="theme-toggle" onclick="toggleTheme()">
                 <span id="themeText">Light Mode</span>
             </button>
@@ -691,10 +690,8 @@
 
         <div class="tabs">
             <button class="tab" onclick="switchTab('visualization')">Visualization</button>
-            <button class="tab" onclick="switchTab('understanding')">Understanding the Tool</button>
-            <button class="tab" onclick="switchTab('channel-analysis')">Channel Analysis</button>
+            <button class="tab" onclick="switchTab('understanding')">Theoretical Framework</button>
             <button class="tab" onclick="switchTab('composite-projection')">Composite Projection</button>
-            <button class="tab" onclick="switchTab('zeta')">Zeta Surface</button>
         </div>
 
         <div id="visualizationTab" class="tab-content active">
@@ -702,16 +699,16 @@
                 <div class="control-panel">
                     <div class="control-section">
                         <h3 class="collapsible-header" onclick="toggleSection(this)">
-                            <span class="toggle-icon">▼</span> Theorem Visualization Mode
+                            <span class="toggle-icon">▼</span> Channel Structure Visualization
                         </h3>
                         <div class="collapsible-content">
                         <div class="control-group">
-                            <label>Theorem Display Mode</label>
+                            <label>Display Mode</label>
                             <select id="theoremMode">
                                 <option value="none">Standard Mode</option>
-                                <option value="prime-avoidance">Theorem 1: Prime Channel Avoidance</option>
-                                <option value="composite-projection">Theorem 2: Composite Channel Projection</option>
-                                <option value="both">Both Theorems Combined</option>
+                                <option value="prime-avoidance">Prime Channel Avoidance</option>
+                                <option value="composite-projection">Composite Channel Projection</option>
+                                <option value="both">Combined Analysis</option>
                             </select>
                         </div>
                         
@@ -752,8 +749,8 @@
                             </div>
                             
                             <div class="info-box">
-                                <strong>Theorem 1:</strong> Prime moduli avoid all Farey channels, forming independent coprime manifolds.<br>
-                                <strong>Theorem 2:</strong> Composite moduli project onto dense Farey channel networks.
+                                <strong>Prime Channel Avoidance:</strong> Prime moduli avoid all Farey channels, forming independent coprime manifolds.<br>
+                                <strong>Composite Channel Projection:</strong> Composite moduli project onto dense Farey channel networks.
                             </div>
                         </div>
                         </div>
@@ -1483,155 +1480,6 @@
             </div>
         </div>
 
-        <div id="channelAnalysisTab" class="tab-content">
-            <div class="theory-section">
-                <h2>Prime Channel Avoidance</h2>
-                
-                <h3>Mathematical Foundation</h3>
-                
-                <p style="font-style: italic;">
-                    Let each modulus M ∈ ℤ⁺ define a fractional residue system:
-                </p>
-                
-                <div class="formula">
-                    ℛ(M) = { r/M | 0 ≤ r < M }
-                </div>
-                
-                <p style="font-style: italic;">
-                    Define a reduction channel as the equivalence class of fractions that share the same lowest-term representation:
-                </p>
-                
-                <div class="formula">
-                    r₁/M₁ ~ r₂/M₂ ⟺ r₁/M₁ = r₂/M₂ (in lowest terms)
-                </div>
-                
-                <p>
-                    Each equivalence class corresponds to a fundamental Farey channel of the form 1/N or its rational multiples.
-                </p>
-                
-                <div class="example-box" style="background: rgba(0, 100, 255, 0.1); border-left: 4px solid #0066ff;">
-                    <h4 style="margin-bottom: 10px;">Statement:</h4>
-                    <p>For every prime modulus p, the complete residue set</p>
-                    <div class="formula" style="margin: 15px 0;">
-                        Φ(p) = {1, 2, 3, ..., p-1}
-                    </div>
-                    <p>contains no reducible fractions, and therefore intersects no reduction channel 1/N for any N > 1.</p>
-                    <div class="formula" style="margin: 15px 0;">
-                        gcd(r, p) = 1 &nbsp;&nbsp; ∀r ∈ Φ(p) &nbsp;&nbsp; ⟹ &nbsp;&nbsp; r/p cannot reduce to any channel 1/N
-                    </div>
-                </div>
-                
-                <h3>Interpretation:</h3>
-                
-                <p>
-                    Primes define <strong>irreducible modular orbits</strong> within the fractional lattice. Their residues never project downward into simpler rational channels because no shared divisors exist between any residue r and the prime modulus p. Each prime ring therefore forms a <strong>fully independent coprime manifold</strong>, geometrically isolated from the composite Farey flows that pass through reducible fractions such as 1/2, 1/3, 1/4, ...
-                </p>
-                
-                <div class="example-box" style="background: rgba(0, 180, 180, 0.1); border-left: 4px solid #00b4b4;">
-                    <h4 style="margin-bottom: 10px;">Geometric Consequence:</h4>
-                    <p>
-                        In the nested modular plane, the loci of reducible fractions form continuous <strong>Farey flow lines</strong> — rational channels through which composite moduli project. Prime moduli, in contrast, occupy the <strong>interstitial lattice regions</strong> between these channels, creating smooth, full, and non-overlapping modular rings.
-                    </p>
-                    <div style="background: rgba(0, 180, 180, 0.2); padding: 15px; margin-top: 10px; border-radius: 4px;">
-                        Prime moduli trace paths that avoid all reducible channels, forming the pure coprime skeleton of the modular continuum.
-                    </div>
-                </div>
-                
-                <h2 style="margin-top: 50px;">Composite Channel Projection</h2>
-                
-                <h3>Mathematical Foundation</h3>
-                
-                <p style="font-style: italic;">
-                    Let M ∈ ℤ⁺ be a composite modulus. For each integer r (0 ≤ r < M) define the fraction r/M.<br>
-                    Write d = gcd(r, M) and set r' = r/d, M' = M/d.<br>
-                    Then r/M reduces to the lowest-term fraction r'/M' with gcd(r', M') = 1.
-                </p>
-                
-                <div class="example-box" style="background: rgba(255, 0, 100, 0.1); border-left: 4px solid #ff0064;">
-                    <h4 style="margin-bottom: 10px;">Statement:</h4>
-                    <p>Every composite modulus M admits a nontrivial projection of its residues onto reduction channels (Farey channels):</p>
-                    <div class="formula" style="margin: 15px 0;">
-                        ∀ r ∈ {0,1,...,M-1}, &nbsp; r/M = r'/M' &nbsp; with<br>
-                        d = gcd(r,M), &nbsp; M' = M/d, &nbsp; r' = r/d
-                    </div>
-                </div>
-                
-                <h3>Key Properties:</h3>
-                
-                <ol>
-                    <li>
-                        <strong>(i) Channel Multiplicity:</strong> The number of distinct residues r (mod M) that reduce to a fixed lowest-term fraction r'/M' equals d = M/M'
-                    </li>
-                    <li>
-                        <strong>(ii) Reducibility Ratio:</strong> The total number of reducible residues modulo M is M - φ(M), giving proportion: 1 - φ(M)/M
-                    </li>
-                    <li>
-                        <strong>(iii) Channel Denominators:</strong> For composite M, the set of reduction channel denominators M' is exactly the set of divisors of M strictly less than M
-                    </li>
-                </ol>
-                
-                <div class="example-box" style="background: rgba(255, 200, 0, 0.1); border-left: 4px solid #ffc800;">
-                    <h4 style="margin-bottom: 10px;">Example: M = 12</h4>
-                    <p>φ(12) = 4, so M - φ(M) = 8 reducible residues</p>
-                    <p>Proper divisors M' ∈ {1, 2, 3, 4, 6}</p>
-                    <p>Take r = 8: gcd(8,12) = 4, r' = 2, M' = 3</p>
-                    <p>Thus 8/12 = 2/3, projecting onto the 1/3-family (channel with denominator 3)</p>
-                    <p>There are d = 4 residues that reduce to each fraction with denominator 3</p>
-                </div>
-                
-                <div class="example-box" style="background: rgba(150, 100, 200, 0.1); border-left: 4px solid #9664c8;">
-                    <h4 style="margin-bottom: 10px;">Geometric Consequence:</h4>
-                    <p>
-                        In the nested modular plane, reducible residues of composite moduli populate the <strong>Farey flow lines</strong> (the 1/N channels and their rational multiples). Each channel with denominator M' < M collects exactly d = M/M' lattice points from modulus M for each corresponding coprime numerator r'.
-                    </p>
-                    <div style="background: rgba(150, 100, 200, 0.2); padding: 15px; margin-top: 10px; border-radius: 4px;">
-                        Composite moduli project their reducible residues onto a dense web of Farey channels; primes, by contrast, contribute only irreducible residues and avoid these channels.
-                    </div>
-                </div>
-                
-                <h2 style="margin-top: 50px;">Interactive Visualization</h2>
-                
-                <div class="intro-box">
-                    <p>Use the "Channel Structure Visualization" controls to see both phenomena in action:</p>
-                    <ul>
-                        <li><strong style="color: #00ffff;">Cyan rings</strong> = Prime moduli avoiding all Farey channels</li>
-                        <li><strong style="color: #ff0064;">Red points</strong> = Composite residues projecting onto channels</li>
-                        <li><strong style="color: #ffc800;">Gold rings</strong> = Farey channels (reduction targets)</li>
-                        <li>Each point shows its gcd value and reduction path when clicked</li>
-                    </ul>
-                    <p style="margin-top: 15px;">
-                        <em>Together, these patterns reveal the fundamental geometric distinction between primes and composites in the modular lattice.</em>
-                    </p>
-                </div>
-                
-                <h3 style="margin-top: 40px;">Mathematical Significance</h3>
-                
-                <p>
-                    This analysis establishes a <strong>geometric duality</strong> in the fractional modular lattice:
-                </p>
-                
-                <ul>
-                    <li><strong>Prime moduli:</strong> Form irreducible orbits that never intersect Farey channels — they occupy the "interstitial space" between rational flows</li>
-                    <li><strong>Composite moduli:</strong> Project onto a dense network of Farey channels — each channel collects multiple lattice points with multiplicity d = M/M'</li>
-                </ul>
-                
-                <p>
-                    This dichotomy reveals why prime sieving works geometrically: primes trace <strong>pure coprime paths</strong> while composites get <strong>filtered through the Farey network</strong>. The visualization makes this abstract algebraic property visible as a spatial separation in the nested ring structure.
-                </p>
-                
-                <div class="formula" style="background: rgba(100, 200, 100, 0.15); border: 2px solid #64c864; margin-top: 30px;">
-                    <div style="text-align: center; font-size: 16px; font-weight: 600; margin-bottom: 10px;">
-                        Unified Geometric Principle
-                    </div>
-                    <p style="font-style: italic; text-align: center; margin: 0; padding: 10px;">
-                        The modular lattice decomposes into:<br>
-                        Farey channels (reducible fractions) ← populated by composite moduli<br>
-                        Coprime manifolds (irreducible orbits) ← occupied exclusively by prime moduli
-                    </p>
-                </div>
-            </div>
-        </div>
-
         <div id="compositeProjectionTab" class="tab-content">
             <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
                 <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Composite Channel Projection Corollary</h2>
@@ -1645,9 +1493,9 @@
                         </label>
                         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
                             <span style="font-size: 11px;">4 (minimal)</span>
-                            <input type="range" id="compModSlider" min="4" max="500" value="12" 
+                            <input type="range" id="compModSlider" min="4" max="2000" value="12" 
                                    style="flex: 1; height: 8px;">
-                            <span style="font-size: 11px;">500 (maximum)</span>
+                            <span style="font-size: 11px;">2000 (maximum)</span>
                         </div>
                         <div style="text-align: center; margin-top: 10px;">
                             <span style="font-size: 12px; opacity: 0.8;">60 (standard)</span>
@@ -1656,7 +1504,7 @@
                     
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 10px; font-weight: 600;">Or enter custom value:</label>
-                        <input type="number" id="compModInput" min="2" max="1000" value="12" 
+                        <input type="number" id="compModInput" min="2" max="5000" value="12" 
                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
                                       background: var(--bg-primary); color: var(--text-primary);">
                     </div>
@@ -1888,14 +1736,8 @@
         </div>
 
         <div id="understandingTab" class="tab-content">
-            <div class="theory-section">
-                <h2>Understanding Modular Rings: Euler's Vision of the Residue System</h2>
-                
-                <p style="font-size: 16px; font-style: italic; margin: 20px 0; padding: 15px; background: var(--bg-secondary); border-left: 4px solid var(--border-color);">
-                    "This visualization brings to life Leonhard Euler's profound insight: that the integers, when viewed through the lens of modular arithmetic, reveal a hidden geometric structure—a nested architecture of circular symmetries where patterns of divisibility become visible paths through space."
-                </p>
-
-                <h2>What Are You Looking At?</h2>
+                                <div class="theory-section">
+                <h2>Modular Rings and the Residue System</h2>
                 
                 <h3>The Fundamental Concept</h3>
                 <p>
@@ -5131,16 +4973,10 @@
             } else if (tab === 'understanding') {
                 document.querySelectorAll('.tab')[1].classList.add('active');
                 document.getElementById('understandingTab').classList.add('active');
-            } else if (tab === 'channel-analysis') {
-                document.querySelectorAll('.tab')[2].classList.add('active');
-                document.getElementById('channelAnalysisTab').classList.add('active');
             } else if (tab === 'composite-projection') {
-                document.querySelectorAll('.tab')[3].classList.add('active');
+                document.querySelectorAll('.tab')[2].classList.add('active');
                 document.getElementById('compositeProjectionTab').classList.add('active');
                 updateCompositeVisualization();
-            } else if (tab === 'zeta') {
-                document.querySelectorAll('.tab')[4].classList.add('active');
-                document.getElementById('zetaTab').classList.add('active');
             }
         }
 
@@ -5172,9 +5008,9 @@
             
             input.addEventListener('input', () => {
                 let val = parseInt(input.value);
-                if (!isNaN(val) && val >= 2 && val <= 1000) {
+                if (!isNaN(val) && val >= 2 && val <= 5000) {
                     compositeModulus = val;
-                    slider.value = Math.min(val, 500);
+                    slider.value = Math.min(val, 2000);
                     document.getElementById('compModDisplay').textContent = compositeModulus;
                     updateCompositeVisualization();
                 }
@@ -5198,7 +5034,7 @@
 
         function setCompositeMod(m) {
             compositeModulus = m;
-            document.getElementById('compModSlider').value = Math.min(m, 500);
+            document.getElementById('compModSlider').value = Math.min(m, 2000);
             document.getElementById('compModInput').value = m;
             document.getElementById('compModDisplay').textContent = m;
             updateCompositeVisualization();
