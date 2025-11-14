@@ -673,15 +673,11 @@
             <h1>Modular Rings</h1>
             <div class="subtitle">GCD Channels, Farey Sequences & Prime Distribution</div>
             <div class="author">By Wessen Getachew</div>
-                        <div style="text-align: center; margin-top: 12px; font-size: 0.9em;">
-                <span style="opacity: 0.8;">Explore more prime visualizations:</span>
-                <a href="https://wessengetachew.github.io/GCD/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">GCD Patterns</a>
-                <span style="opacity: 0.5;">|</span>
-                <a href="https://wessengetachew.github.io/Primes/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Prime Spirals</a>
-                <span style="opacity: 0.5;">|</span>
-                <a href="https://wessengetachew.github.io/Ethiopian/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">Epsilon Pi Calculator</a>
-             <span style="opacity: 0.5;">|</span>
-                <a href="https://wessengetachew.github.io/2pir/" target="_blank" style="color: #4ecdc4; text-decoration: none; margin: 0 8px; font-weight: 500;">2Pi r/m</a>
+            <div style="margin-top: 10px; font-size: 14px;">
+                <a href="https://wessengetachew.github.io/GCD/" target="_blank" style="color: var(--text-primary); text-decoration: none; margin: 0 8px; border-bottom: 1px solid var(--text-primary);">GCD</a>
+                <a href="https://wessengetachew.github.io/Primes/" target="_blank" style="color: var(--text-primary); text-decoration: none; margin: 0 8px; border-bottom: 1px solid var(--text-primary);">Primes</a>
+                <a href="https://wessengetachew.github.io/Ethiopian/" target="_blank" style="color: var(--text-primary); text-decoration: none; margin: 0 8px; border-bottom: 1px solid var(--text-primary);">Ethiopian</a>
+                <a href="https://wessengetachew.github.io/2pir/" target="_blank" style="color: var(--text-primary); text-decoration: none; margin: 0 8px; border-bottom: 1px solid var(--text-primary);">2πr</a>
             </div>
             <button class="theme-toggle" onclick="toggleTheme()">
                 <span id="themeText">Light Mode</span>
@@ -1515,6 +1511,20 @@
                         <button onclick="setCompositeMod(30)" style="padding: 8px;">M = 30</button>
                         <button onclick="setCompositeMod(60)" style="padding: 8px;">M = 60</button>
                         <button onclick="setCompositeMod(210)" style="padding: 8px;">M = 210</button>
+                        <button onclick="setCompositeMod(2310)" style="padding: 8px;">M = 2310</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Point Coloring Scheme:
+                        </label>
+                        <select id="compColorScheme" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="channel-type">By Channel Type (Cyan/Red/Gold)</option>
+                            <option value="spf">By Smallest Prime Factor</option>
+                            <option value="lpf">By Largest Prime Factor</option>
+                            <option value="gcd-value">By GCD Value</option>
+                            <option value="channel-depth">By Channel Depth (M')</option>
+                        </select>
                     </div>
                     
                     <div style="margin-bottom: 20px;">
@@ -1523,6 +1533,28 @@
                         </label>
                         <input type="range" id="projOpacitySlider" min="0.05" max="1" step="0.05" value="0.10" 
                                style="width: 100%; height: 8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Point Size: <span id="compPointSizeDisplay">6</span>
+                        </label>
+                        <input type="range" id="compPointSize" min="3" max="12" step="0.5" value="6" 
+                               style="width: 100%; height: 8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="showChannelLabels" checked style="margin-right: 8px;">
+                            Show Channel Labels (M' values)
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="showMultiplicityInfo" style="margin-right: 8px;">
+                            Show Multiplicity Annotations
+                        </label>
                     </div>
                     
                     <div style="margin-bottom: 15px;">
@@ -1540,13 +1572,22 @@
                     </div>
                 </div>
                 
-                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <div style="position: relative; display: flex; justify-content: center; margin-bottom: 20px;">
                     <canvas id="compositeCanvas" width="700" height="700" 
-                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px;">
+                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px; cursor: crosshair;">
                     </canvas>
+                    <div id="compositeTooltip" style="position: absolute; padding: 10px; background: rgba(255, 255, 255, 0.95); 
+                         color: #000000; border: 1px solid #000; pointer-events: none; font-size: 11px; 
+                         line-height: 1.4; opacity: 0; transition: opacity 0.2s; z-index: 1000; max-width: 250px;
+                         font-family: 'Courier New', monospace;">
+                    </div>
+                    <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); 
+                         padding: 8px 12px; border-radius: 4px; font-size: 11px; color: #ffffff;">
+                        Scroll to zoom • Click to see details
+                    </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px;">
                     <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
                         <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">φ(M)</div>
                         <div id="compPhi" style="font-size: 24px; font-weight: 600; color: #00ffff;">4</div>
@@ -1563,28 +1604,56 @@
                         <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Channels</div>
                         <div id="compChannels" style="font-size: 24px; font-weight: 600; color: #aa00ff;">5</div>
                     </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Prime Factors</div>
+                        <div id="compPrimeFactors" style="font-size: 16px; font-weight: 600; color: #ffffff; margin-top: 8px;">2² × 3</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Divisors</div>
+                        <div id="compDivisors" style="font-size: 14px; font-weight: 600; color: #ffffff; margin-top: 8px;">1,2,3,4,6,12</div>
+                    </div>
                 </div>
                 
                 <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
-                    <h3 style="margin-bottom: 15px;">Corollary Visualization:</h3>
-                    <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
-                            <span style="position: absolute; left: 0; color: #00ffff; font-size: 18px;">●</span>
-                            <strong style="color: #00ffff;">Cyan points</strong> = Irreducible residues (gcd = 1)
-                        </li>
-                        <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
-                            <span style="position: absolute; left: 0; color: #ff0064; font-size: 18px;">●</span>
-                            <strong style="color: #ff0064;">Red points</strong> = Reducible residues (gcd > 1)
-                        </li>
-                        <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
-                            <span style="position: absolute; left: 0; color: #ffc800; font-size: 18px;">○</span>
-                            <strong style="color: #ffc800;">Gold rings</strong> = Farey channels (reduction targets)
-                        </li>
-                        <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
-                            <span style="position: absolute; left: 0; color: #ff0064; font-size: 18px;">━</span>
-                            <strong style="color: #ff0064;">Red lines</strong> = Projection paths showing r/M → r'/M'
-                        </li>
-                    </ul>
+                    <h3 style="margin-bottom: 15px;">Current Modulus Analysis</h3>
+                    <div id="compAnalysisText" style="font-size: 14px; line-height: 1.8;">
+                        <p style="margin-bottom: 12px;"><strong>M = 12 = 2² × 3</strong></p>
+                        <p style="margin-bottom: 12px;">This composite modulus has <strong>4 coprime residues</strong> (φ(12) = 4) and <strong>8 reducible residues</strong>.</p>
+                        <p style="margin-bottom: 12px;">The reducible residues project onto <strong>5 distinct Farey channels</strong> with denominators: 1, 2, 3, 4, 6.</p>
+                        <p style="margin-bottom: 12px;"><strong>Channel multiplicities:</strong> Each channel M' receives exactly d = M/M' residues.</p>
+                        <ul style="margin-left: 25px; margin-bottom: 12px;">
+                            <li>Channel M'=1: 12/1 = 12 residues (all)</li>
+                            <li>Channel M'=2: 12/2 = 6 residues</li>
+                            <li>Channel M'=3: 12/3 = 4 residues</li>
+                            <li>Channel M'=4: 12/4 = 3 residues</li>
+                            <li>Channel M'=6: 12/6 = 2 residues</li>
+                        </ul>
+                        <p>The <strong>reducibility ratio</strong> is 66.7%, meaning approximately 2/3 of all residues mod 12 share a common factor with 12.</p>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Visualization Legend:</h3>
+                    <div id="compLegend">
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
+                                <span style="position: absolute; left: 0; color: #00ffff; font-size: 18px;">●</span>
+                                <strong style="color: #00ffff;">Cyan points</strong> = Irreducible residues (gcd = 1)
+                            </li>
+                            <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
+                                <span style="position: absolute; left: 0; color: #ff0064; font-size: 18px;">●</span>
+                                <strong style="color: #ff0064;">Red points</strong> = Reducible residues (gcd > 1)
+                            </li>
+                            <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
+                                <span style="position: absolute; left: 0; color: #ffc800; font-size: 18px;">○</span>
+                                <strong style="color: #ffc800;">Gold rings</strong> = Farey channels (reduction targets)
+                            </li>
+                            <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
+                                <span style="position: absolute; left: 0; color: #ff0064; font-size: 18px;">━</span>
+                                <strong style="color: #ff0064;">Red lines</strong> = Projection paths showing r/M → r'/M'
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 
                 <div style="background: rgba(255, 200, 0, 0.1); border: 2px solid #ffc800; padding: 20px; margin-bottom: 20px;">
@@ -1597,7 +1666,7 @@
                 
                 <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 20px;">
                     <p style="margin: 0; font-size: 13px; opacity: 0.8;">
-                        <strong>Click any point</strong> to see detailed reduction path!
+                        <strong>Interaction:</strong> Click any point to see detailed reduction path • Scroll over canvas to zoom • Hover for quick info
                     </p>
                 </div>
             </div>
@@ -4992,12 +5061,17 @@
         let compositeModulus = 12;
         let projectionMode = 'lines'; // 'lines' or 'ring'
         let compositePoints = [];
+        let compositeZoom = 1;
+        let compositePan = {x: 0, y: 0};
 
         function initCompositeProjection() {
             const slider = document.getElementById('compModSlider');
             const input = document.getElementById('compModInput');
             const opacitySlider = document.getElementById('projOpacitySlider');
+            const pointSizeSlider = document.getElementById('compPointSize');
+            const colorScheme = document.getElementById('compColorScheme');
             const canvas = document.getElementById('compositeCanvas');
+            const tooltip = document.getElementById('compositeTooltip');
             
             slider.addEventListener('input', () => {
                 compositeModulus = parseInt(slider.value);
@@ -5022,11 +5096,51 @@
                 drawCompositeVisualization();
             });
             
+            pointSizeSlider.addEventListener('input', () => {
+                document.getElementById('compPointSizeDisplay').textContent = 
+                    parseFloat(pointSizeSlider.value).toFixed(1);
+                drawCompositeVisualization();
+            });
+            
+            colorScheme.addEventListener('change', () => {
+                drawCompositeVisualization();
+            });
+            
+            document.getElementById('showChannelLabels').addEventListener('change', () => {
+                drawCompositeVisualization();
+            });
+            
+            document.getElementById('showMultiplicityInfo').addEventListener('change', () => {
+                drawCompositeVisualization();
+            });
+            
+            // Mouse wheel zoom
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                compositeZoom *= delta;
+                compositeZoom = Math.max(0.5, Math.min(10, compositeZoom));
+                drawCompositeVisualization();
+            });
+            
+            // Click handler
             canvas.addEventListener('click', (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
                 handleCompositeClick(x, y);
+            });
+            
+            // Hover tooltip
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                handleCompositeHover(x, y, e);
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                tooltip.style.opacity = '0';
             });
             
             updateCompositeVisualization();
@@ -5077,11 +5191,47 @@
                 }
             }
             
+            // Get prime factorization
+            const factorization = primeFactorization(M);
+            
+            // Get all divisors including M
+            const allDivisors = [];
+            for (let d = 1; d <= M; d++) {
+                if (M % d === 0) {
+                    allDivisors.push(d);
+                }
+            }
+            const divisorText = allDivisors.length <= 10 ? allDivisors.join(',') : 
+                                `${allDivisors.slice(0, 8).join(',')}... (${allDivisors.length} total)`;
+            
             // Update display
             document.getElementById('compPhi').textContent = phiM;
             document.getElementById('compReducible').textContent = reducible;
             document.getElementById('compRatio').textContent = ratio + '%';
             document.getElementById('compChannels').textContent = channels.length;
+            document.getElementById('compPrimeFactors').textContent = factorization;
+            document.getElementById('compDivisors').textContent = divisorText;
+            
+            // Update analysis text
+            let analysisHTML = `<p style="margin-bottom: 12px;"><strong>M = ${M} = ${factorization}</strong></p>`;
+            analysisHTML += `<p style="margin-bottom: 12px;">This composite modulus has <strong>${phiM} coprime residues</strong> (φ(${M}) = ${phiM}) and <strong>${reducible} reducible residues</strong>.</p>`;
+            analysisHTML += `<p style="margin-bottom: 12px;">The reducible residues project onto <strong>${channels.length} distinct Farey channels</strong> with denominators: ${channels.join(', ')}.</p>`;
+            analysisHTML += `<p style="margin-bottom: 12px;"><strong>Channel multiplicities:</strong> Each channel M' receives exactly d = M/M' residues.</p>`;
+            analysisHTML += `<ul style="margin-left: 25px; margin-bottom: 12px;">`;
+            
+            // Show first few channel multiplicities
+            const showChannels = channels.slice(0, Math.min(8, channels.length));
+            showChannels.forEach(ch => {
+                const mult = M / ch;
+                analysisHTML += `<li>Channel M'=${ch}: ${M}/${ch} = ${mult} residue${mult > 1 ? 's' : ''}</li>`;
+            });
+            if (channels.length > 8) {
+                analysisHTML += `<li>... and ${channels.length - 8} more channels</li>`;
+            }
+            analysisHTML += `</ul>`;
+            analysisHTML += `<p>The <strong>reducibility ratio</strong> is ${ratio}%, meaning ${ratio}% of all residues mod ${M} share a common factor with ${M}.</p>`;
+            
+            document.getElementById('compAnalysisText').innerHTML = analysisHTML;
             
             // Generate points data
             compositePoints = [];
@@ -5097,6 +5247,8 @@
                 }
                 
                 const angle = -2 * Math.PI * r / M;
+                const spf = r === 0 ? 0 : smallestPrimeFactor(r);
+                const lpf = r === 0 ? 0 : largestPrimeFactor(r);
                 
                 compositePoints.push({
                     r: r,
@@ -5105,7 +5257,9 @@
                     isOpen: isOpen,
                     angle: angle,
                     reducedR: reducedR,
-                    reducedM: reducedM
+                    reducedM: reducedM,
+                    spf: spf,
+                    lpf: lpf
                 });
             }
             
@@ -5117,9 +5271,10 @@
             const ctx = canvas.getContext('2d');
             const width = canvas.width;
             const height = canvas.height;
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const maxRadius = Math.min(width, height) * 0.42;
+            const centerX = width / 2 + compositePan.x;
+            const centerY = height / 2 + compositePan.y;
+            const baseRadius = Math.min(width, height) * 0.42;
+            const maxRadius = baseRadius * compositeZoom;
             
             // Clear
             ctx.fillStyle = '#000000';
@@ -5127,6 +5282,40 @@
             
             const M = compositeModulus;
             const opacity = parseFloat(document.getElementById('projOpacitySlider').value);
+            const pointSize = parseFloat(document.getElementById('compPointSize').value);
+            const colorScheme = document.getElementById('compColorScheme').value;
+            const showLabels = document.getElementById('showChannelLabels').checked;
+            const showMultiplicity = document.getElementById('showMultiplicityInfo').checked;
+            
+            // Get color for point based on scheme
+            function getPointColor(point) {
+                if (colorScheme === 'channel-type') {
+                    return point.isOpen ? '#00ffff' : '#ff0064';
+                } else if (colorScheme === 'spf') {
+                    if (point.r === 0) return '#666666';
+                    const primeColors = {2: '#ff0000', 3: '#00ff00', 5: '#0000ff', 7: '#ffff00', 
+                                        11: '#ff00ff', 13: '#00ffff', 17: '#ff8800', 19: '#8800ff'};
+                    return primeColors[point.spf] || '#ffffff';
+                } else if (colorScheme === 'lpf') {
+                    if (point.r === 0) return '#666666';
+                    const primeColors = {2: '#ff0000', 3: '#00ff00', 5: '#0000ff', 7: '#ffff00', 
+                                        11: '#ff00ff', 13: '#00ffff', 17: '#ff8800', 19: '#8800ff'};
+                    return primeColors[point.lpf] || '#ffffff';
+                } else if (colorScheme === 'gcd-value') {
+                    if (point.gcd === 1) return '#00ffff';
+                    const hue = (point.gcd * 40) % 360;
+                    return `hsl(${hue}, 100%, 50%)`;
+                } else if (colorScheme === 'channel-depth') {
+                    if (point.isOpen) return '#00ffff';
+                    const hue = (point.reducedM / M) * 240; // Blue to red spectrum
+                    return `hsl(${hue}, 80%, 50%)`;
+                }
+                return '#ffffff';
+            }
+            
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.scale(compositeZoom, compositeZoom);
             
             if (projectionMode === 'lines') {
                 // Draw projection lines mode
@@ -5142,41 +5331,50 @@
                 
                 // Draw Farey channel rings (gold)
                 ctx.strokeStyle = '#ffc800';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 2 / compositeZoom;
                 sortedTargets.forEach(m => {
-                    const radius = (m / M) * maxRadius;
+                    const radius = (m / M) * baseRadius;
                     ctx.beginPath();
-                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
                     ctx.stroke();
                     
                     // Label the channel
-                    ctx.fillStyle = '#ffc800';
-                    ctx.font = '12px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(`M' = ${m}`, centerX, centerY - radius - 8);
+                    if (showLabels) {
+                        ctx.fillStyle = '#ffc800';
+                        ctx.font = `${11 / compositeZoom}px Arial`;
+                        ctx.textAlign = 'center';
+                        ctx.fillText(`M' = ${m}`, 0, -radius - 8 / compositeZoom);
+                        
+                        // Show multiplicity
+                        if (showMultiplicity) {
+                            const mult = M / m;
+                            ctx.font = `${9 / compositeZoom}px Arial`;
+                            ctx.fillText(`(d = ${mult})`, 0, -radius - 20 / compositeZoom);
+                        }
+                    }
                 });
                 
                 // Draw outer ring for M
                 ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 2.5;
+                ctx.lineWidth = 2.5 / compositeZoom;
                 ctx.beginPath();
-                ctx.arc(centerX, centerY, maxRadius, 0, 2 * Math.PI);
+                ctx.arc(0, 0, baseRadius, 0, 2 * Math.PI);
                 ctx.stroke();
                 
                 // Draw projection lines first (so points appear on top)
                 ctx.strokeStyle = `rgba(255, 0, 100, ${opacity})`;
-                ctx.lineWidth = 1;
+                ctx.lineWidth = 1 / compositeZoom;
                 
                 compositePoints.forEach(point => {
                     if (!point.isOpen && point.reducedM < M) {
                         // Draw line from outer point to inner reduced point
-                        const outerX = centerX + maxRadius * Math.cos(point.angle);
-                        const outerY = centerY + maxRadius * Math.sin(point.angle);
+                        const outerX = baseRadius * Math.cos(point.angle);
+                        const outerY = baseRadius * Math.sin(point.angle);
                         
-                        const innerRadius = (point.reducedM / M) * maxRadius;
+                        const innerRadius = (point.reducedM / M) * baseRadius;
                         const reducedAngle = -2 * Math.PI * point.reducedR / point.reducedM;
-                        const innerX = centerX + innerRadius * Math.cos(reducedAngle);
-                        const innerY = centerY + innerRadius * Math.sin(reducedAngle);
+                        const innerX = innerRadius * Math.cos(reducedAngle);
+                        const innerY = innerRadius * Math.sin(reducedAngle);
                         
                         ctx.beginPath();
                         ctx.moveTo(outerX, outerY);
@@ -5187,30 +5385,34 @@
                 
                 // Draw points on outer ring
                 compositePoints.forEach(point => {
-                    const x = centerX + maxRadius * Math.cos(point.angle);
-                    const y = centerY + maxRadius * Math.sin(point.angle);
+                    const x = baseRadius * Math.cos(point.angle);
+                    const y = baseRadius * Math.sin(point.angle);
                     
-                    ctx.fillStyle = point.isOpen ? '#00ffff' : '#ff0064';
+                    const color = getPointColor(point);
+                    const size = point.isOpen ? pointSize : pointSize * 1.1;
+                    
+                    ctx.fillStyle = color;
                     ctx.beginPath();
-                    ctx.arc(x, y, point.isOpen ? 5 : 6, 0, 2 * Math.PI);
+                    ctx.arc(x, y, size / compositeZoom, 0, 2 * Math.PI);
                     ctx.fill();
                     
-                    // Store screen coordinates for click detection
-                    point.screenX = x;
-                    point.screenY = y;
+                    // Store screen coordinates for hover detection
+                    point.screenX = centerX + x * compositeZoom;
+                    point.screenY = centerY + y * compositeZoom;
+                    point.screenRadius = size;
                 });
                 
                 // Draw target points on inner rings
                 compositePoints.forEach(point => {
                     if (!point.isOpen && point.reducedM < M) {
-                        const innerRadius = (point.reducedM / M) * maxRadius;
+                        const innerRadius = (point.reducedM / M) * baseRadius;
                         const reducedAngle = -2 * Math.PI * point.reducedR / point.reducedM;
-                        const x = centerX + innerRadius * Math.cos(reducedAngle);
-                        const y = centerY + innerRadius * Math.sin(reducedAngle);
+                        const x = innerRadius * Math.cos(reducedAngle);
+                        const y = innerRadius * Math.sin(reducedAngle);
                         
                         ctx.fillStyle = '#ffc800';
                         ctx.beginPath();
-                        ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                        ctx.arc(x, y, 4 / compositeZoom, 0, 2 * Math.PI);
                         ctx.fill();
                     }
                 });
@@ -5229,45 +5431,57 @@
                 
                 // Draw rings
                 sortedModuli.forEach(m => {
-                    const radius = (m / M) * maxRadius;
+                    const radius = (m / M) * baseRadius;
                     
                     ctx.strokeStyle = m === M ? '#ffffff' : 'rgba(255, 200, 0, 0.3)';
-                    ctx.lineWidth = m === M ? 2.5 : 1.5;
+                    ctx.lineWidth = m === M ? 2.5 / compositeZoom : 1.5 / compositeZoom;
                     ctx.beginPath();
-                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
                     ctx.stroke();
                     
                     // Draw points for this modulus
                     for (let r = 0; r < m; r++) {
                         const angle = -2 * Math.PI * r / m;
-                        const x = centerX + radius * Math.cos(angle);
-                        const y = centerY + radius * Math.sin(angle);
+                        const x = radius * Math.cos(angle);
+                        const y = radius * Math.sin(angle);
                         
                         const g = gcd(r, m);
                         const isOpen = g === 1;
                         
                         if (m === M) {
-                            ctx.fillStyle = isOpen ? '#00ffff' : '#ff0064';
+                            const point = compositePoints.find(p => p.r === r);
+                            const color = point ? getPointColor(point) : (isOpen ? '#00ffff' : '#ff0064');
+                            const size = isOpen ? pointSize : pointSize * 1.1;
+                            
+                            ctx.fillStyle = color;
                             ctx.beginPath();
-                            ctx.arc(x, y, isOpen ? 5 : 6, 0, 2 * Math.PI);
+                            ctx.arc(x, y, size / compositeZoom, 0, 2 * Math.PI);
                             ctx.fill();
+                            
+                            if (point) {
+                                point.screenX = centerX + x * compositeZoom;
+                                point.screenY = centerY + y * compositeZoom;
+                                point.screenRadius = size;
+                            }
                         } else {
                             ctx.fillStyle = isOpen ? 'rgba(0, 255, 255, 0.4)' : 'rgba(255, 200, 0, 0.6)';
                             ctx.beginPath();
-                            ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                            ctx.arc(x, y, 3 / compositeZoom, 0, 2 * Math.PI);
                             ctx.fill();
                         }
                     }
                     
                     // Label
-                    if (m < M) {
+                    if (m < M && showLabels) {
                         ctx.fillStyle = '#ffc800';
-                        ctx.font = '11px Arial';
+                        ctx.font = `${11 / compositeZoom}px Arial`;
                         ctx.textAlign = 'center';
-                        ctx.fillText(`${m}`, centerX, centerY - radius - 5);
+                        ctx.fillText(`${m}`, 0, -radius - 5 / compositeZoom);
                     }
                 });
             }
+            
+            ctx.restore();
             
             // Draw center dot
             ctx.fillStyle = '#ffffff';
@@ -5279,7 +5493,53 @@
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 18px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(`Composite Modulus M = ${M}`, centerX, 30);
+            ctx.fillText(`Composite Modulus M = ${M}`, width / 2, 30);
+            
+            // Zoom indicator
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'right';
+            ctx.fillText(`Zoom: ${(compositeZoom * 100).toFixed(0)}%`, width - 10, height - 10);
+        }
+
+        function handleCompositeHover(x, y, e) {
+            const tooltip = document.getElementById('compositeTooltip');
+            
+            // Find hovered point
+            let hoveredPoint = null;
+            let minDist = Infinity;
+            
+            compositePoints.forEach(point => {
+                if (point.screenX !== undefined) {
+                    const dx = x - point.screenX;
+                    const dy = y - point.screenY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < point.screenRadius * 1.5 && dist < minDist) {
+                        minDist = dist;
+                        hoveredPoint = point;
+                    }
+                }
+            });
+            
+            if (hoveredPoint) {
+                tooltip.style.opacity = '1';
+                tooltip.style.left = (e.clientX + 15) + 'px';
+                tooltip.style.top = (e.clientY + 15) + 'px';
+                
+                let html = `<strong>r = ${hoveredPoint.r}</strong><br>`;
+                html += `gcd(${hoveredPoint.r}, ${hoveredPoint.M}) = ${hoveredPoint.gcd}<br>`;
+                
+                if (hoveredPoint.isOpen) {
+                    html += `<span style="color: #00ffff;">COPRIME</span><br>`;
+                    html += `${hoveredPoint.r}/${hoveredPoint.M} (irreducible)`;
+                } else {
+                    html += `<span style="color: #ff0064;">REDUCIBLE</span><br>`;
+                    html += `${hoveredPoint.r}/${hoveredPoint.M} = ${hoveredPoint.reducedR}/${hoveredPoint.reducedM}<br>`;
+                    html += `→ Channel M' = ${hoveredPoint.reducedM}`;
+                }
+            } else {
+                tooltip.style.opacity = '0';
+            }
         }
 
         function handleCompositeClick(x, y) {
