@@ -676,7 +676,7 @@
             <div style="margin-top: 10px; font-size: 14px;">
                 <a href="https://wessengetachew.github.io/GCD/" target="_blank" style="color: var(--text-primary); text-decoration: none; margin: 0 8px; border-bottom: 1px solid var(--text-primary);">GCD</a>
                 <a href="https://wessengetachew.github.io/Primes/" target="_blank" style="color: var(--text-primary); text-decoration: none; margin: 0 8px; border-bottom: 1px solid var(--text-primary);">Primes</a>
-                <a href="https://wessengetachew.github.io/Ethiopian/" target="_blank" style="color: var(--text-primary); text-decoration: none; margin: 0 8px; border-bottom: 1px solid var(--text-primary);">Ethiopian</a>
+                <a href="https://wessengetachew.github.io/Ethiopian/" target="_blank" style="color: var(--text-primary); text-decoration: none; margin: 0 8px; border-bottom: 1px solid var(--text-primary);">Pi Calculator</a>
                 <a href="https://wessengetachew.github.io/2pir/" target="_blank" style="color: var(--text-primary); text-decoration: none; margin: 0 8px; border-bottom: 1px solid var(--text-primary);">2πr</a>
             </div>
             <button class="theme-toggle" onclick="toggleTheme()">
@@ -2435,6 +2435,7 @@
             const highlightAdmissible = document.getElementById('highlightAdmissible').checked;
             const enableCulling = document.getElementById('enableCulling').checked;
             const enableLOD = document.getElementById('enableLOD').checked;
+            const theoremMode = document.getElementById('theoremMode').value;
             
             function getRadius(m) {
                 const invertOrder = document.getElementById('invertModOrder').checked;
@@ -2470,6 +2471,21 @@
                 maxY: (height - centerY) / transform.scale - transform.y
             } : null;
             
+            // Draw ring lines if needed
+            if (displayMode === 'rings') {
+                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+                moduli.forEach(m => {
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', 0);
+                    circle.setAttribute('cy', 0);
+                    circle.setAttribute('r', getRadius(m));
+                    circle.setAttribute('fill', 'none');
+                    circle.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
+                    circle.setAttribute('stroke-width', 1 / transform.scale);
+                    svgGroup.appendChild(circle);
+                });
+            }
+            
             // Draw points
             pointsData.forEach((point, idx) => {
                 if (skipFactor > 1 && idx % skipFactor !== 0) return;
@@ -2494,6 +2510,75 @@
                 let color = getColorForPoint(point, point.isOpen);
                 let opacity = point.isOpen ? 0.8 : 0.3;
                 
+                // Apply theorem mode highlighting
+                if (theoremMode !== 'none') {
+                    const isPrimeModulus = isPrime(point.m);
+                    const isFareyPoint = point.gcd > 1;
+                    const highlightPrime = document.getElementById('highlightPrimeOrbits').checked;
+                    const highlightComposite = document.getElementById('highlightCompositeProjection').checked;
+                    const highlightFarey = document.getElementById('highlightFareyChannels').checked;
+                    
+                    if ((theoremMode === 'prime-avoidance' || theoremMode === 'both') && 
+                        highlightPrime && isPrimeModulus && point.isOpen) {
+                        color = '#00ffff';
+                        opacity = 0.9;
+                    }
+                    
+                    if ((theoremMode === 'composite-projection' || theoremMode === 'both') && 
+                        highlightComposite && !isPrimeModulus && isFareyPoint) {
+                        color = '#ff0064';
+                        opacity = 0.85;
+                    }
+                    
+                    if (highlightFarey && isFareyPoint) {
+                        color = '#ffc800';
+                        opacity = 0.7;
+                    }
+                }
+                
+            // Apply theorem mode highlighting if enabled
+            const theoremMode = document.getElementById('theoremMode').value;
+            if (theoremMode !== 'none') {
+                const highlightFarey = document.getElementById('highlightFareyChannels').checked;
+                const highlightPrime = document.getElementById('highlightPrimeOrbits').checked;
+                const highlightComposite = document.getElementById('highlightCompositeProjection').checked;
+                
+                // Check if this modulus is prime
+                const isPrimeModulus = isPrime(point.m);
+                
+                // Farey channels: points that are reducible (can project to simpler fractions)
+                const isFareyPoint = point.gcd > 1;
+                
+                if (theoremMode === 'prime-avoidance' || theoremMode === 'both') {
+                    // Highlight prime moduli (cyan) - they avoid Farey channels
+                    if (highlightPrime && isPrimeModulus && isOpen) {
+                        color = '#00ffff';
+                        opacity = 0.9;
+                    }
+                    
+                    // Gold for Farey channel targets
+                    if (highlightFarey && isFareyPoint) {
+                        color = '#ffc800';
+                        opacity = 0.7;
+                    }
+                }
+                
+                if (theoremMode === 'composite-projection' || theoremMode === 'both') {
+                    // Highlight composite projections onto channels (red)
+                    if (highlightComposite && !isPrimeModulus && isFareyPoint) {
+                        color = '#ff0064';
+                        opacity = 0.85;
+                    }
+                }
+                
+                // If showing interstitial regions, dim non-highlighted points
+                const showInterstitial = document.getElementById('showInterstitialRegions').checked;
+                if (showInterstitial && !isPrimeModulus && isOpen && !isFareyPoint) {
+                    color = '#666666';
+                    opacity = 0.4;
+                }
+            }
+
                 if (highlightAdmissible && point.isAdmissible) {
                     radius = pointSize * 1.2;
                     color = '#aa00ff';
@@ -2538,6 +2623,14 @@
                 
                 svgGroup.appendChild(circle);
             });
+            
+            // Draw center dot
+            const centerDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            centerDot.setAttribute('cx', 0);
+            centerDot.setAttribute('cy', 0);
+            centerDot.setAttribute('r', 3);
+            centerDot.setAttribute('fill', '#ffffff');
+            svgGroup.appendChild(centerDot);
         }
 
         // Progressive computation without Web Worker
