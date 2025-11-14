@@ -694,10 +694,10 @@
             <div class="main-content">
                 <div class="control-panel">
                     <div class="control-section">
-                        <h3 class="collapsible-header" onclick="toggleSection(this)">
-                            <span class="toggle-icon">▼</span> Channel Structure Visualization
+                        <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span> Rendering & Performance
                         </h3>
-                        <div class="collapsible-content">
+                        <div class="collapsible-content collapsed">
                         <div class="control-group">
                             <label>Rendering Mode</label>
                             <select id="renderingMode" onchange="switchRenderingMode()">
@@ -784,37 +784,6 @@
                                 <strong>Prime Channel Avoidance:</strong> Prime moduli avoid all Farey channels, forming independent coprime manifolds.<br>
                                 <strong>Composite Channel Projection:</strong> Composite moduli project onto dense Farey channel networks.
                             </div>
-                        </div>
-                        </div>
-                    </div>
-                        <div class="collapsible-content">
-                        <div class="control-group">
-                            <label>Rendering Mode</label>
-                            <select id="renderingMode" onchange="switchRenderingMode()">
-                                <option value="canvas2d">Canvas 2D (Default)</option>
-                                <option value="webgl">WebGL (High Performance)</option>
-                                <option value="svg">SVG (Infinite Zoom)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="enableCulling" checked>
-                                Enable View Culling (Hide Off-Screen)
-                            </label>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="enableLOD" checked>
-                                Level of Detail (Simplify When Zoomed Out)
-                            </label>
-                        </div>
-                        
-                        <div class="info-box">
-                            <strong>WebGL:</strong> 10-100× faster, handles millions of points<br>
-                            <strong>SVG:</strong> True infinite zoom, vector quality<br>
-                            <strong>Canvas 2D:</strong> Best compatibility, moderate performance
                         </div>
                         </div>
                     </div>
@@ -1119,58 +1088,6 @@
                         </h3>
                         <div class="collapsible-content collapsed">
                         <div class="control-group">
-                            <label>Theorem Display Mode</label>
-                            <select id="theoremMode">
-                                <option value="none">Standard Mode</option>
-                                <option value="prime-avoidance">Prime Channel Avoidance</option>
-                                <option value="composite-projection">Composite Channel Projection</option>
-                                <option value="both">Combined Analysis</option>
-                            </select>
-                        </div>
-                        
-                        <div id="theoremModeSettings" style="display: none;">
-                            <div class="control-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="highlightFareyChannels" checked>
-                                    Highlight Farey Flow Lines (Gold)
-                                </label>
-                            </div>
-                            
-                            <div class="control-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="highlightPrimeOrbits" checked>
-                                    Show Prime Coprime Manifolds (Cyan)
-                                </label>
-                            </div>
-                            
-                            <div class="control-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="highlightCompositeProjection" checked>
-                                    Show Composite Projections (Red)
-                                </label>
-                            </div>
-                            
-                            <div class="control-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="showChannelMultiplicity" checked>
-                                    Display Channel Multiplicity (d = M/M')
-                                </label>
-                            </div>
-                            
-                            <div class="control-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="showInterstitialRegions">
-                                    Shade Interstitial Lattice Regions
-                                </label>
-                            </div>
-                            
-                            <div class="info-box">
-                                <strong>Prime Channel Avoidance:</strong> Prime moduli avoid all Farey channels, forming independent coprime manifolds.<br>
-                                <strong>Composite Channel Projection:</strong> Composite moduli project onto dense Farey channel networks.
-                            </div>
-                        </div>
-                        
-                        <div class="control-group">
                             <label>Open Channel Mode</label>
                             <select id="openColorMode">
                                 <option value="solid">Solid Color</option>
@@ -1209,35 +1126,6 @@
                             <span class="toggle-icon">▼</span> Display Settings
                         </h3>
                         <div class="collapsible-content collapsed">
-                        <div class="control-group">
-                            <label>Rendering Mode</label>
-                            <select id="renderingMode" onchange="switchRenderingMode()">
-                                <option value="canvas2d">Canvas 2D (Default)</option>
-                                <option value="webgl">WebGL (High Performance)</option>
-                                <option value="svg">SVG (Infinite Zoom)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="enableCulling" checked>
-                                Enable View Culling (Hide Off-Screen)
-                            </label>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="enableLOD" checked>
-                                Level of Detail (Simplify When Zoomed Out)
-                            </label>
-                        </div>
-                        
-                        <div class="info-box">
-                            <strong>WebGL:</strong> 10-100× faster, handles millions of points<br>
-                            <strong>SVG:</strong> True infinite zoom, vector quality<br>
-                            <strong>Canvas 2D:</strong> Best compatibility, moderate performance
-                        </div>
-                        
                         <div class="control-row">
                             <div class="control-group">
                                 <label>Display Mode</label>
@@ -1305,10 +1193,10 @@
                     </div>
 
                     <div class="control-section">
-                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                        <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
                             <span class="toggle-icon">▼</span> Label Display
                         </h3>
-                        <div class="collapsible-content">
+                        <div class="collapsible-content collapsed">
                         <div class="control-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="showLabels">
@@ -1376,10 +1264,10 @@
                     </div>
 
                     <div class="control-section">
-                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                        <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
                             <span class="toggle-icon">▼</span> Gap Analysis
                         </h3>
-                        <div class="collapsible-content">
+                        <div class="collapsible-content collapsed">
                         <div class="control-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="enableGapAnalysis">
@@ -1456,7 +1344,10 @@
                     </div>
 
                     <div class="control-section">
-                        <h3 style="text-decoration: underline; font-weight: bold;">Export Settings</h3>
+                        <h3 class="collapsible-header collapsed" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span> Export Settings
+                        </h3>
+                        <div class="collapsible-content collapsed">
                         
                         <div class="control-group">
                             <label>Export Title</label>
@@ -1523,6 +1414,7 @@
                         <div class="button-group">
                             <button onclick="exportImage()">Export PNG</button>
                             <button onclick="exportCSV()">Export CSV</button>
+                        </div>
                         </div>
                     </div>
 
