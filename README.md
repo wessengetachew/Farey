@@ -1669,6 +1669,62 @@
                         <strong>Interaction:</strong> Click any point to see detailed reduction path • Scroll over canvas to zoom • Hover for quick info
                     </p>
                 </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-top: 30px;">
+                    <h3 style="margin-bottom: 15px;">Export Options</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Export Title</label>
+                        <input type="text" id="compExportTitle" value="Composite Channel Projection Corollary" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="compIncludeLegend" checked style="margin-right: 8px;">
+                            Include Parameter Legend
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Export Resolution</label>
+                        <select id="compExportResolution" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="1">Standard (700×700)</option>
+                            <option value="2">HD (1400×1400)</option>
+                            <option value="3">2K (2100×2100)</option>
+                            <option value="4" selected>4K (2800×2800)</option>
+                            <option value="6">6K (4200×4200)</option>
+                            <option value="8">8K (5600×5600)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="compIncludeColorKey" checked style="margin-right: 8px;">
+                            Include Color Key Legend
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="compIncludeTimestamp" checked style="margin-right: 8px;">
+                            Include Timestamp
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="compIncludeStats" checked style="margin-right: 8px;">
+                            Include Statistics Panel
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="exportCompositeImage()" style="background: #2196F3; color: #ffffff;">Export PNG</button>
+                        <button onclick="exportCompositeCSV()" style="background: #FF9800; color: #ffffff;">Export CSV</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -5675,6 +5731,282 @@
                 
                 alert(message);
             }
+        }
+
+        function exportCompositeImage() {
+            const includeLegend = document.getElementById('compIncludeLegend').checked;
+            const includeColorKey = document.getElementById('compIncludeColorKey').checked;
+            const includeTimestamp = document.getElementById('compIncludeTimestamp').checked;
+            const includeStats = document.getElementById('compIncludeStats').checked;
+            const exportTitle = document.getElementById('compExportTitle').value;
+            const resolution = parseFloat(document.getElementById('compExportResolution').value);
+            
+            const sourceCanvas = document.getElementById('compositeCanvas');
+            const baseWidth = sourceCanvas.width;
+            const baseHeight = sourceCanvas.height;
+            
+            // Reserve space for title at top
+            const titleHeight = 100 * resolution;
+            
+            let exportWidth = baseWidth * resolution;
+            let exportHeight = baseHeight * resolution + titleHeight;
+            
+            // Calculate legend dimensions - always on right
+            let legendWidth = 0;
+            
+            if (includeLegend) {
+                legendWidth = 500 * resolution;
+                exportWidth += legendWidth;
+            }
+            
+            // Create temporary canvas
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = exportWidth;
+            tempCanvas.height = exportHeight;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Fill background
+            const bgColor = '#000000';
+            const textColor = '#ffffff';
+            tempCtx.fillStyle = bgColor;
+            tempCtx.fillRect(0, 0, exportWidth, exportHeight);
+            
+            // Draw title at top center
+            const fontSize = 18 * resolution;
+            tempCtx.fillStyle = textColor;
+            tempCtx.font = `bold ${fontSize * 1.8}px Arial`;
+            tempCtx.textAlign = 'center';
+            const titleY = titleHeight / 2 + fontSize / 2;
+            tempCtx.fillText(exportTitle, exportWidth / 2, titleY);
+            
+            // Draw timestamp if enabled
+            if (includeTimestamp) {
+                tempCtx.font = `${fontSize * 0.8}px Arial`;
+                const timestamp = new Date().toLocaleString();
+                tempCtx.fillText(timestamp, exportWidth / 2, titleY + fontSize * 1.5);
+            }
+            
+            // Draw main visualization scaled up below title
+            tempCtx.save();
+            tempCtx.translate(0, titleHeight);
+            tempCtx.scale(resolution, resolution);
+            tempCtx.drawImage(sourceCanvas, 0, 0);
+            tempCtx.restore();
+            
+            // Draw legend if enabled
+            if (includeLegend) {
+                drawCompositeLegend(tempCtx, legendWidth, exportWidth, exportHeight, resolution, textColor, bgColor, titleHeight, includeColorKey, includeStats);
+            }
+            
+            // Export
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            link.download = `composite_projection_M${compositeModulus}_${timestamp}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function drawCompositeLegend(ctx, legendWidth, totalWidth, totalHeight, resolution, textColor, bgColor, titleHeight, includeColorKey, includeStats) {
+            const M = compositeModulus;
+            const colorScheme = document.getElementById('compColorScheme').value;
+            const displayMode = projectionMode;
+            
+            const fontSize = 13 * resolution;
+            const lineHeight = 18 * resolution;
+            const padding = 25 * resolution;
+            const sectionSpacing = 15 * resolution;
+            
+            const startX = totalWidth - legendWidth + padding;
+            const maxWidth = legendWidth - 2 * padding;
+            
+            let y = titleHeight + padding * 2;
+            ctx.textAlign = 'left';
+            
+            // Helper function to draw section header
+            function drawSectionHeader(title) {
+                ctx.font = `bold ${fontSize * 1.1}px Arial`;
+                ctx.fillStyle = textColor;
+                ctx.fillText(title, startX, y);
+                y += lineHeight * 0.3;
+                
+                ctx.strokeStyle = textColor;
+                ctx.lineWidth = 1.5 * resolution;
+                ctx.beginPath();
+                ctx.moveTo(startX, y);
+                ctx.lineTo(startX + maxWidth * 0.9, y);
+                ctx.stroke();
+                y += lineHeight * 0.8;
+            }
+            
+            // === CONFIGURATION SECTION ===
+            drawSectionHeader('CONFIGURATION');
+            
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = textColor;
+            
+            ctx.fillText(`Modulus M = ${M}`, startX, y);
+            y += lineHeight;
+            
+            const factorization = primeFactorization(M);
+            ctx.fillText(`Prime Factorization: ${factorization}`, startX, y);
+            y += lineHeight;
+            
+            ctx.fillText(`Display Mode: ${displayMode === 'lines' ? 'Projection Lines' : 'Ring View'}`, startX, y);
+            y += lineHeight;
+            
+            const colorSchemeText = colorScheme === 'channel-type' ? 'Channel Type' :
+                                   colorScheme === 'spf' ? 'Smallest Prime Factor' :
+                                   colorScheme === 'lpf' ? 'Largest Prime Factor' :
+                                   colorScheme === 'gcd-value' ? 'GCD Value' : 'Channel Depth';
+            ctx.fillText(`Color Scheme: ${colorSchemeText}`, startX, y);
+            y += lineHeight;
+            
+            y += sectionSpacing;
+            
+            // === STATISTICS SECTION ===
+            if (includeStats) {
+                drawSectionHeader('STATISTICS');
+                
+                const phiM = phi(M);
+                const reducible = M - phiM;
+                const ratio = ((M - phiM) / M * 100).toFixed(1);
+                
+                const channels = [];
+                for (let d = 1; d < M; d++) {
+                    if (M % d === 0) channels.push(d);
+                }
+                
+                ctx.font = `${fontSize}px Arial`;
+                ctx.fillText(`φ(M) = ${phiM}`, startX, y);
+                y += lineHeight;
+                ctx.fillText(`Reducible Residues: ${reducible}`, startX, y);
+                y += lineHeight;
+                ctx.fillText(`Reducibility Ratio: ${ratio}%`, startX, y);
+                y += lineHeight;
+                ctx.fillText(`Farey Channels: ${channels.length}`, startX, y);
+                y += lineHeight;
+                
+                y += sectionSpacing;
+            }
+            
+            // === COLOR KEY SECTION ===
+            if (includeColorKey) {
+                drawSectionHeader('COLOR KEY');
+                
+                ctx.font = `${fontSize}px Arial`;
+                
+                if (colorScheme === 'channel-type') {
+                    const items = [
+                        { color: '#00ffff', label: 'Cyan = Irreducible (gcd=1)' },
+                        { color: '#ff0064', label: 'Red = Reducible (gcd>1)' },
+                        { color: '#ffc800', label: 'Gold = Farey Channels' }
+                    ];
+                    
+                    items.forEach(item => {
+                        ctx.fillStyle = item.color;
+                        ctx.beginPath();
+                        ctx.arc(startX + 10 * resolution, y - 5 * resolution, 6 * resolution, 0, 2 * Math.PI);
+                        ctx.fill();
+                        
+                        ctx.fillStyle = textColor;
+                        ctx.fillText(item.label, startX + 25 * resolution, y);
+                        y += lineHeight * 1.2;
+                    });
+                } else if (colorScheme === 'spf' || colorScheme === 'lpf') {
+                    ctx.fillStyle = textColor;
+                    ctx.fillText('Color by prime factor:', startX, y);
+                    y += lineHeight;
+                    
+                    const primes = [2, 3, 5, 7, 11, 13, 17, 19];
+                    const primeColors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', 
+                                        '#ff00ff', '#00ffff', '#ff8800', '#8800ff'];
+                    
+                    primes.forEach((p, idx) => {
+                        ctx.fillStyle = primeColors[idx];
+                        ctx.beginPath();
+                        ctx.arc(startX + 10 * resolution, y - 5 * resolution, 5 * resolution, 0, 2 * Math.PI);
+                        ctx.fill();
+                        
+                        ctx.fillStyle = textColor;
+                        ctx.font = `${fontSize * 0.9}px Arial`;
+                        ctx.fillText(`Prime ${p}`, startX + 25 * resolution, y);
+                        y += lineHeight;
+                    });
+                }
+                
+                y += sectionSpacing;
+            }
+            
+            // === KEY RESULT SECTION ===
+            drawSectionHeader('KEY RESULT');
+            
+            ctx.font = `${fontSize * 0.95}px Arial`;
+            ctx.fillStyle = textColor;
+            
+            const lines = [
+                'Every composite M has reducible',
+                'residues projecting onto simpler',
+                'Farey channels. The number',
+                'projecting to channel M\' is',
+                'exactly d = M/M\' (multiplicity).'
+            ];
+            
+            lines.forEach(line => {
+                ctx.fillText(line, startX, y);
+                y += lineHeight;
+            });
+            
+            y += sectionSpacing;
+            
+            // === METADATA SECTION ===
+            drawSectionHeader('METADATA');
+            
+            ctx.font = `${fontSize * 0.9}px Arial`;
+            const date = new Date().toLocaleString();
+            ctx.fillText(`Generated: ${date}`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Author: Wessen Getachew`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Tool: Composite Projection`, startX, y);
+            y += lineHeight;
+            const resText = document.getElementById('compExportResolution').selectedOptions[0].text;
+            ctx.fillText(`Resolution: ${resText}`, startX, y);
+        }
+
+        function exportCompositeCSV() {
+            let csv = '';
+            
+            // Add metadata
+            csv += `# Composite Channel Projection Data Export\n`;
+            csv += `# Generated: ${new Date().toLocaleString()}\n`;
+            csv += `# Author: Wessen Getachew\n`;
+            csv += `# Modulus M: ${compositeModulus}\n`;
+            csv += `# Prime Factorization: ${primeFactorization(compositeModulus)}\n`;
+            csv += `# φ(M): ${phi(compositeModulus)}\n`;
+            csv += `#\n`;
+            
+            // Header
+            csv += 'Residue,Modulus,GCD,Channel_Status,Reduced_Numerator,Reduced_Denominator,';
+            csv += 'Angle_Radians,Angle_Degrees,SPF,LPF\n';
+            
+            // Data
+            compositePoints.forEach(p => {
+                const angleRad = p.angle.toFixed(6);
+                const angleDeg = (p.angle * 180 / Math.PI).toFixed(4);
+                
+                csv += `${p.r},${p.M},${p.gcd},${p.isOpen ? 'Open' : 'Closed'},`;
+                csv += `${p.reducedR},${p.reducedM},${angleRad},${angleDeg},${p.spf},${p.lpf}\n`;
+            });
+            
+            // Export
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            link.download = `composite_projection_M${compositeModulus}_${timestamp}.csv`;
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
         }
     </script>
 </body>
