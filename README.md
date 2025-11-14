@@ -692,11 +692,104 @@
         <div class="tabs">
             <button class="tab" onclick="switchTab('visualization')">Visualization</button>
             <button class="tab" onclick="switchTab('understanding')">Understanding the Tool</button>
+            <button class="tab" onclick="switchTab('channel-analysis')">Channel Analysis</button>
+            <button class="tab" onclick="switchTab('composite-projection')">Composite Projection</button>
+            <button class="tab" onclick="switchTab('zeta')">Zeta Surface</button>
         </div>
 
         <div id="visualizationTab" class="tab-content active">
             <div class="main-content">
                 <div class="control-panel">
+                    <div class="control-section">
+                        <h3 class="collapsible-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span> Theorem Visualization Mode
+                        </h3>
+                        <div class="collapsible-content">
+                        <div class="control-group">
+                            <label>Theorem Display Mode</label>
+                            <select id="theoremMode">
+                                <option value="none">Standard Mode</option>
+                                <option value="prime-avoidance">Theorem 1: Prime Channel Avoidance</option>
+                                <option value="composite-projection">Theorem 2: Composite Channel Projection</option>
+                                <option value="both">Both Theorems Combined</option>
+                            </select>
+                        </div>
+                        
+                        <div id="theoremModeSettings" style="display: none;">
+                            <div class="control-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="highlightFareyChannels" checked>
+                                    Highlight Farey Flow Lines (Gold)
+                                </label>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="highlightPrimeOrbits" checked>
+                                    Show Prime Coprime Manifolds (Cyan)
+                                </label>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="highlightCompositeProjection" checked>
+                                    Show Composite Projections (Red)
+                                </label>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="showChannelMultiplicity" checked>
+                                    Display Channel Multiplicity (d = M/M')
+                                </label>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="showInterstitialRegions">
+                                    Shade Interstitial Lattice Regions
+                                </label>
+                            </div>
+                            
+                            <div class="info-box">
+                                <strong>Theorem 1:</strong> Prime moduli avoid all Farey channels, forming independent coprime manifolds.<br>
+                                <strong>Theorem 2:</strong> Composite moduli project onto dense Farey channel networks.
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                        <div class="collapsible-content">
+                        <div class="control-group">
+                            <label>Rendering Mode</label>
+                            <select id="renderingMode" onchange="switchRenderingMode()">
+                                <option value="canvas2d">Canvas 2D (Default)</option>
+                                <option value="webgl">WebGL (High Performance)</option>
+                                <option value="svg">SVG (Infinite Zoom)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableCulling" checked>
+                                Enable View Culling (Hide Off-Screen)
+                            </label>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableLOD" checked>
+                                Level of Detail (Simplify When Zoomed Out)
+                            </label>
+                        </div>
+                        
+                        <div class="info-box">
+                            <strong>WebGL:</strong> 10-100× faster, handles millions of points<br>
+                            <strong>SVG:</strong> True infinite zoom, vector quality<br>
+                            <strong>Canvas 2D:</strong> Best compatibility, moderate performance
+                        </div>
+                        </div>
+                    </div>
+
                     <div class="control-section">
                         <h3 class="collapsible-header" onclick="toggleSection(this)">
                             <span class="toggle-icon">▼</span> Modulus Configuration
@@ -1191,6 +1284,20 @@
                         </div>
                         
                         <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="onlyPrimeGaps">
+                                Only Show Prime-to-Prime Gaps
+                            </label>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="highlightAdmissible">
+                                Highlight Admissible Points (Purple)
+                            </label>
+                        </div>
+                        
+                        <div class="control-group">
                             <label>Gap Configuration</label>
                             <select id="gapPreset" onchange="applyGapPreset()">
                                 <option value="custom">Custom</option>
@@ -1325,7 +1432,19 @@
                 </button>
 
                 <div class="canvas-container">
-                    <canvas id="mainCanvas" width="1000" height="800"></canvas>
+                    <canvas id="mainCanvas" width="1000" height="800" style="display: block;"></canvas>
+                    <svg id="mainSVG" width="1000" height="800" style="display: none; border: 1px solid var(--border-color); background: #000000; cursor: move;">
+                        <defs>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <g id="svgMainGroup"></g>
+                    </svg>
                     <div class="tooltip" id="tooltip"></div>
                     
                     <div class="stats-panel">
@@ -1358,6 +1477,413 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+            </div>
+        </div>
+
+        <div id="channelAnalysisTab" class="tab-content">
+            <div class="theory-section">
+                <h2>Prime Channel Avoidance</h2>
+                
+                <h3>Mathematical Foundation</h3>
+                
+                <p style="font-style: italic;">
+                    Let each modulus M ∈ ℤ⁺ define a fractional residue system:
+                </p>
+                
+                <div class="formula">
+                    ℛ(M) = { r/M | 0 ≤ r < M }
+                </div>
+                
+                <p style="font-style: italic;">
+                    Define a reduction channel as the equivalence class of fractions that share the same lowest-term representation:
+                </p>
+                
+                <div class="formula">
+                    r₁/M₁ ~ r₂/M₂ ⟺ r₁/M₁ = r₂/M₂ (in lowest terms)
+                </div>
+                
+                <p>
+                    Each equivalence class corresponds to a fundamental Farey channel of the form 1/N or its rational multiples.
+                </p>
+                
+                <div class="example-box" style="background: rgba(0, 100, 255, 0.1); border-left: 4px solid #0066ff;">
+                    <h4 style="margin-bottom: 10px;">Statement:</h4>
+                    <p>For every prime modulus p, the complete residue set</p>
+                    <div class="formula" style="margin: 15px 0;">
+                        Φ(p) = {1, 2, 3, ..., p-1}
+                    </div>
+                    <p>contains no reducible fractions, and therefore intersects no reduction channel 1/N for any N > 1.</p>
+                    <div class="formula" style="margin: 15px 0;">
+                        gcd(r, p) = 1 &nbsp;&nbsp; ∀r ∈ Φ(p) &nbsp;&nbsp; ⟹ &nbsp;&nbsp; r/p cannot reduce to any channel 1/N
+                    </div>
+                </div>
+                
+                <h3>Interpretation:</h3>
+                
+                <p>
+                    Primes define <strong>irreducible modular orbits</strong> within the fractional lattice. Their residues never project downward into simpler rational channels because no shared divisors exist between any residue r and the prime modulus p. Each prime ring therefore forms a <strong>fully independent coprime manifold</strong>, geometrically isolated from the composite Farey flows that pass through reducible fractions such as 1/2, 1/3, 1/4, ...
+                </p>
+                
+                <div class="example-box" style="background: rgba(0, 180, 180, 0.1); border-left: 4px solid #00b4b4;">
+                    <h4 style="margin-bottom: 10px;">Geometric Consequence:</h4>
+                    <p>
+                        In the nested modular plane, the loci of reducible fractions form continuous <strong>Farey flow lines</strong> — rational channels through which composite moduli project. Prime moduli, in contrast, occupy the <strong>interstitial lattice regions</strong> between these channels, creating smooth, full, and non-overlapping modular rings.
+                    </p>
+                    <div style="background: rgba(0, 180, 180, 0.2); padding: 15px; margin-top: 10px; border-radius: 4px;">
+                        Prime moduli trace paths that avoid all reducible channels, forming the pure coprime skeleton of the modular continuum.
+                    </div>
+                </div>
+                
+                <h2 style="margin-top: 50px;">Composite Channel Projection</h2>
+                
+                <h3>Mathematical Foundation</h3>
+                
+                <p style="font-style: italic;">
+                    Let M ∈ ℤ⁺ be a composite modulus. For each integer r (0 ≤ r < M) define the fraction r/M.<br>
+                    Write d = gcd(r, M) and set r' = r/d, M' = M/d.<br>
+                    Then r/M reduces to the lowest-term fraction r'/M' with gcd(r', M') = 1.
+                </p>
+                
+                <div class="example-box" style="background: rgba(255, 0, 100, 0.1); border-left: 4px solid #ff0064;">
+                    <h4 style="margin-bottom: 10px;">Statement:</h4>
+                    <p>Every composite modulus M admits a nontrivial projection of its residues onto reduction channels (Farey channels):</p>
+                    <div class="formula" style="margin: 15px 0;">
+                        ∀ r ∈ {0,1,...,M-1}, &nbsp; r/M = r'/M' &nbsp; with<br>
+                        d = gcd(r,M), &nbsp; M' = M/d, &nbsp; r' = r/d
+                    </div>
+                </div>
+                
+                <h3>Key Properties:</h3>
+                
+                <ol>
+                    <li>
+                        <strong>(i) Channel Multiplicity:</strong> The number of distinct residues r (mod M) that reduce to a fixed lowest-term fraction r'/M' equals d = M/M'
+                    </li>
+                    <li>
+                        <strong>(ii) Reducibility Ratio:</strong> The total number of reducible residues modulo M is M - φ(M), giving proportion: 1 - φ(M)/M
+                    </li>
+                    <li>
+                        <strong>(iii) Channel Denominators:</strong> For composite M, the set of reduction channel denominators M' is exactly the set of divisors of M strictly less than M
+                    </li>
+                </ol>
+                
+                <div class="example-box" style="background: rgba(255, 200, 0, 0.1); border-left: 4px solid #ffc800;">
+                    <h4 style="margin-bottom: 10px;">Example: M = 12</h4>
+                    <p>φ(12) = 4, so M - φ(M) = 8 reducible residues</p>
+                    <p>Proper divisors M' ∈ {1, 2, 3, 4, 6}</p>
+                    <p>Take r = 8: gcd(8,12) = 4, r' = 2, M' = 3</p>
+                    <p>Thus 8/12 = 2/3, projecting onto the 1/3-family (channel with denominator 3)</p>
+                    <p>There are d = 4 residues that reduce to each fraction with denominator 3</p>
+                </div>
+                
+                <div class="example-box" style="background: rgba(150, 100, 200, 0.1); border-left: 4px solid #9664c8;">
+                    <h4 style="margin-bottom: 10px;">Geometric Consequence:</h4>
+                    <p>
+                        In the nested modular plane, reducible residues of composite moduli populate the <strong>Farey flow lines</strong> (the 1/N channels and their rational multiples). Each channel with denominator M' < M collects exactly d = M/M' lattice points from modulus M for each corresponding coprime numerator r'.
+                    </p>
+                    <div style="background: rgba(150, 100, 200, 0.2); padding: 15px; margin-top: 10px; border-radius: 4px;">
+                        Composite moduli project their reducible residues onto a dense web of Farey channels; primes, by contrast, contribute only irreducible residues and avoid these channels.
+                    </div>
+                </div>
+                
+                <h2 style="margin-top: 50px;">Interactive Visualization</h2>
+                
+                <div class="intro-box">
+                    <p>Use the "Channel Structure Visualization" controls to see both phenomena in action:</p>
+                    <ul>
+                        <li><strong style="color: #00ffff;">Cyan rings</strong> = Prime moduli avoiding all Farey channels</li>
+                        <li><strong style="color: #ff0064;">Red points</strong> = Composite residues projecting onto channels</li>
+                        <li><strong style="color: #ffc800;">Gold rings</strong> = Farey channels (reduction targets)</li>
+                        <li>Each point shows its gcd value and reduction path when clicked</li>
+                    </ul>
+                    <p style="margin-top: 15px;">
+                        <em>Together, these patterns reveal the fundamental geometric distinction between primes and composites in the modular lattice.</em>
+                    </p>
+                </div>
+                
+                <h3 style="margin-top: 40px;">Mathematical Significance</h3>
+                
+                <p>
+                    This analysis establishes a <strong>geometric duality</strong> in the fractional modular lattice:
+                </p>
+                
+                <ul>
+                    <li><strong>Prime moduli:</strong> Form irreducible orbits that never intersect Farey channels — they occupy the "interstitial space" between rational flows</li>
+                    <li><strong>Composite moduli:</strong> Project onto a dense network of Farey channels — each channel collects multiple lattice points with multiplicity d = M/M'</li>
+                </ul>
+                
+                <p>
+                    This dichotomy reveals why prime sieving works geometrically: primes trace <strong>pure coprime paths</strong> while composites get <strong>filtered through the Farey network</strong>. The visualization makes this abstract algebraic property visible as a spatial separation in the nested ring structure.
+                </p>
+                
+                <div class="formula" style="background: rgba(100, 200, 100, 0.15); border: 2px solid #64c864; margin-top: 30px;">
+                    <div style="text-align: center; font-size: 16px; font-weight: 600; margin-bottom: 10px;">
+                        Unified Geometric Principle
+                    </div>
+                    <p style="font-style: italic; text-align: center; margin: 0; padding: 10px;">
+                        The modular lattice decomposes into:<br>
+                        Farey channels (reducible fractions) ← populated by composite moduli<br>
+                        Coprime manifolds (irreducible orbits) ← occupied exclusively by prime moduli
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="compositeProjectionTab" class="tab-content">
+            <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Composite Channel Projection Corollary</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Configuration</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Composite Modulus (M): <span id="compModDisplay" style="color: #00ffff;">12</span>
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                            <span style="font-size: 11px;">4 (minimal)</span>
+                            <input type="range" id="compModSlider" min="4" max="500" value="12" 
+                                   style="flex: 1; height: 8px;">
+                            <span style="font-size: 11px;">500 (maximum)</span>
+                        </div>
+                        <div style="text-align: center; margin-top: 10px;">
+                            <span style="font-size: 12px; opacity: 0.8;">60 (standard)</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Or enter custom value:</label>
+                        <input type="number" id="compModInput" min="2" max="1000" value="12" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px;">
+                        <button onclick="setCompositeMod(6)" style="padding: 8px;">M = 6</button>
+                        <button onclick="setCompositeMod(12)" style="padding: 8px;">M = 12</button>
+                        <button onclick="setCompositeMod(30)" style="padding: 8px;">M = 30</button>
+                        <button onclick="setCompositeMod(60)" style="padding: 8px;">M = 60</button>
+                        <button onclick="setCompositeMod(210)" style="padding: 8px;">M = 210</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Projection Line Opacity: <span id="projOpacityDisplay">0.10</span>
+                        </label>
+                        <input type="range" id="projOpacitySlider" min="0.05" max="1" step="0.05" value="0.10" 
+                               style="width: 100%; height: 8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 10px;">Display Mode:</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <button id="projLinesBtn" onclick="setProjectionMode('lines')" 
+                                    style="padding: 12px; background: var(--hover-bg); color: var(--hover-text);">
+                                Projection Lines
+                            </button>
+                            <button id="ringViewBtn" onclick="setProjectionMode('ring')" 
+                                    style="padding: 12px;">
+                                Ring View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                    <canvas id="compositeCanvas" width="700" height="700" 
+                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px;">
+                    </canvas>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">φ(M)</div>
+                        <div id="compPhi" style="font-size: 24px; font-weight: 600; color: #00ffff;">4</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Reducible</div>
+                        <div id="compReducible" style="font-size: 24px; font-weight: 600; color: #ff0064;">8</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Ratio</div>
+                        <div id="compRatio" style="font-size: 24px; font-weight: 600; color: #ffc800;">66.7%</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Channels</div>
+                        <div id="compChannels" style="font-size: 24px; font-weight: 600; color: #aa00ff;">5</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Corollary Visualization:</h3>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #00ffff; font-size: 18px;">●</span>
+                            <strong style="color: #00ffff;">Cyan points</strong> = Irreducible residues (gcd = 1)
+                        </li>
+                        <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #ff0064; font-size: 18px;">●</span>
+                            <strong style="color: #ff0064;">Red points</strong> = Reducible residues (gcd > 1)
+                        </li>
+                        <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #ffc800; font-size: 18px;">○</span>
+                            <strong style="color: #ffc800;">Gold rings</strong> = Farey channels (reduction targets)
+                        </li>
+                        <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #ff0064; font-size: 18px;">━</span>
+                            <strong style="color: #ff0064;">Red lines</strong> = Projection paths showing r/M → r'/M'
+                        </li>
+                    </ul>
+                </div>
+                
+                <div style="background: rgba(255, 200, 0, 0.1); border: 2px solid #ffc800; padding: 20px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #ffc800;">Key Result:</h3>
+                    <p style="margin: 0; font-size: 15px; line-height: 1.6;">
+                        Every composite M has reducible residues that project onto simpler Farey channels. 
+                        The number projecting to each channel M' is exactly d = M/M' (channel multiplicity).
+                    </p>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 20px;">
+                    <p style="margin: 0; font-size: 13px; opacity: 0.8;">
+                        <strong>Click any point</strong> to see detailed reduction path!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="zetaTab" class="tab-content">
+            <div class="theory-section">
+                <h2>Nested Modular Unity & Zeta Surface</h2>
+                
+                <h3>The Zeta Function as a Phasor Sum:</h3>
+                
+                <p>
+                    For complex argument s = σ + it, the Riemann zeta function can be written as:
+                </p>
+                
+                <div class="formula">
+                    ζ(s) = Σ n⁻ᵠ e⁻ⁱᵗ ˡᵒᵍ ⁿ
+                </div>
+                
+                <p>
+                    Each term n<sup>s</sup> is a <strong>rotating phasor</strong> on the complex plane with:
+                </p>
+                
+                <div class="formula">
+                    Radius: rₙ = n⁻ᵠ<br>
+                    Angle: θₙ = -t log n
+                </div>
+                
+                <h3>Modular Unity Correspondence:</h3>
+                
+                <p>
+                    Each residue class k (mod m) corresponds to an m-th root of unity:
+                </p>
+                
+                <div class="formula">
+                    k mod m ↔ e<sup>2πik/m</sup>
+                </div>
+                
+                <p>
+                    This isomorphism connects modular arithmetic to the unit circle geometry. For each modulus m and residue k:
+                </p>
+                
+                <div class="formula">
+                    S<sub>m,k</sub>(s; N) = Σ<sub>n≡k (mod m)</sub> n⁻ˢ
+                </div>
+                
+                <h3>The Critical Line (σ = 1/2):</h3>
+                
+                <p>
+                    On the critical line, each contribution rotates at angular velocity ∝ log n. When modular rotations align <strong>destructively</strong>, their vector sum vanishes—precisely the condition for a nontrivial zero:
+                </p>
+                
+                <div class="formula">
+                    ζ(1/2 + iT) = 0
+                </div>
+                
+                <h3>Nested Modular Surface:</h3>
+                
+                <p>
+                    Stacking concentric rings for m = 1, 2, 3, ... creates a <strong>nested modular unity lattice</strong>. Each ring samples the unit circle at m equally-spaced points, and together they approximate the continuous analytic structure of ζ(s). The GCD=1 residues (primitive rotations) form the multiplicative group of units mod m.
+                </p>
+                
+                <h3>Geometric Interpretation:</h3>
+                
+                <ul>
+                    <li><strong>Height t:</strong> Controls angular phase of each modular shell (vertical movement on zeta surface)</li>
+                    <li><strong>Real part σ:</strong> Controls radial decay (compression toward critical line)</li>
+                    <li><strong>Modulus m:</strong> Discrete Fourier mode on the complex circle</li>
+                    <li><strong>Primitive residues:</strong> φ(m) independent rotation channels</li>
+                </ul>
+                
+                <div class="intro-box" style="background: rgba(255, 200, 0, 0.1); border-left: 4px solid #ffc800;">
+                    <h4>💡 Key Insight:</h4>
+                    <p>
+                        The nested modular lattice forms a discrete analogue of the complex-analytic domain of ζ(s). By weighting each ring by n<sup>-σ</sup> and rotating by phase -t log n, we obtain a direct geometric mimic of the Riemann zeta surface.
+                    </p>
+                </div>
+                
+                <h3>Connection to the Visualization:</h3>
+                
+                <p>
+                    When you view the nested modular rings with rotation enabled, you are seeing a <strong>discrete approximation of the zeta function's phasor structure</strong>. Each ring represents a term in the Dirichlet series, with:
+                </p>
+                
+                <ul>
+                    <li>Ring radius ∝ modular "frequency" m</li>
+                    <li>Open channels (φ(m) coprime residues) = independent Fourier modes</li>
+                    <li>Rotation speed = phase velocity on the critical line</li>
+                    <li>Spiral patterns = constructive/destructive interference of modular terms</li>
+                </ul>
+                
+                <div class="formula" style="background: rgba(100, 150, 255, 0.15); border: 2px solid #6496ff; margin-top: 30px;">
+                    <div style="text-align: center; font-size: 16px; font-weight: 600; margin-bottom: 10px;">
+                        Zeta-Modular Correspondence
+                    </div>
+                    <p style="text-align: center; margin: 0; padding: 10px;">
+                        The nested ring structure with m = 1, 2, 3, ... and rotation by -t log m<br>
+                        creates a geometric realization of ζ(1/2 + it) as a sum of rotating unit vectors,<br>
+                        where zeros correspond to <strong>perfect destructive interference</strong> of the modular phasors.
+                    </p>
+                </div>
+                
+                <h3 style="margin-top: 40px;">Visualization Controls for Zeta Exploration:</h3>
+                
+                <div class="intro-box">
+                    <p>To explore the zeta surface connection in the visualization:</p>
+                    <ol>
+                        <li>Set <strong>Modulus Selection</strong> to "Range" with a large sequence (e.g., 1 to 100)</li>
+                        <li>Enable <strong>Per-Ring Spiral</strong> with "Logarithmic" mode to mimic -t log n rotation</li>
+                        <li>Adjust <strong>Global Rotation</strong> to sweep through different t values on the critical line</li>
+                        <li>Watch for <strong>alignment patterns</strong> where open channels synchronize (constructive interference) or cancel (destructive interference)</li>
+                        <li>Use <strong>Connection Lines</strong> set to "Same Modulus" to see phase relationships within each ring</li>
+                    </ol>
+                    <p style="margin-top: 15px;">
+                        The moments when the pattern appears most "organized" or "collapsed" correspond geometrically to regions where ζ(s) has significant structure — near zeros, poles, or critical points.
+                    </p>
+                </div>
+                
+                <h3>Open Questions and Research Directions:</h3>
+                
+                <p>
+                    This geometric framework suggests several avenues for exploration:
+                </p>
+                
+                <ul>
+                    <li>Can we identify zeta zeros by finding specific rotation configurations where all open channels align destructively?</li>
+                    <li>Does the Farey channel structure impose constraints on where zeros can occur?</li>
+                    <li>How do prime moduli (which avoid Farey channels) contribute differently to the zeta sum than composite moduli?</li>
+                    <li>Can the nested modular lattice provide a finite-dimensional approximation for numerical zero-finding algorithms?</li>
+                </ul>
+                
+                <p style="margin-top: 30px; font-style: italic;">
+                    By connecting modular arithmetic, Farey sequences, and the Riemann zeta function through this unified geometric visualization, we gain new intuition for one of mathematics' deepest mysteries: the distribution of prime numbers and the location of zeta zeros on the critical line.
+                </p>
             </div>
         </div>
 
@@ -1700,7 +2226,12 @@
     <script>
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
+        const svg = document.getElementById('mainSVG');
+        const svgGroup = document.getElementById('svgMainGroup');
         const tooltip = document.getElementById('tooltip');
+        
+        let currentRenderer = 'canvas2d'; // 'canvas2d', 'webgl', or 'svg'
+        let webglRenderer = null;
         
         let pointsData = [];
         let transform = { x: 0, y: 0, scale: 1 };
@@ -1714,7 +2245,389 @@
         let isComputing = false;
         let progressiveRenderBatch = 0;
         const PROGRESSIVE_BATCH_SIZE = 1000;
-        const COMPUTE_CHUNK_SIZE = 500; // Process this many residues before yielding (increased from 100)
+        const COMPUTE_CHUNK_SIZE = 2000; // Process this many residues before yielding (increased from 500)
+
+        // WebGL Renderer Class
+        class WebGLRenderer {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                
+                if (!this.gl) {
+                    alert('WebGL not supported in your browser. Falling back to Canvas 2D.');
+                    return null;
+                }
+                
+                this.setupWebGL();
+            }
+            
+            setupWebGL() {
+                const gl = this.gl;
+                
+                // Vertex shader
+                const vsSource = `
+                    attribute vec2 a_position;
+                    attribute vec4 a_color;
+                    attribute float a_size;
+                    
+                    uniform vec2 u_resolution;
+                    uniform vec2 u_translation;
+                    uniform float u_scale;
+                    uniform float u_rotation;
+                    
+                    varying vec4 v_color;
+                    
+                    void main() {
+                        vec2 rotated = vec2(
+                            a_position.x * cos(u_rotation) - a_position.y * sin(u_rotation),
+                            a_position.x * sin(u_rotation) + a_position.y * cos(u_rotation)
+                        );
+                        
+                        vec2 scaled = rotated * u_scale;
+                        vec2 translated = scaled + u_translation;
+                        vec2 clipSpace = (translated / u_resolution) * 2.0 - 1.0;
+                        
+                        gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+                        gl_PointSize = a_size * u_scale;
+                        v_color = a_color;
+                    }
+                `;
+                
+                // Fragment shader
+                const fsSource = `
+                    precision mediump float;
+                    varying vec4 v_color;
+                    
+                    void main() {
+                        vec2 coord = gl_PointCoord - vec2(0.5);
+                        if (length(coord) > 0.5) discard;
+                        gl_FragColor = v_color;
+                    }
+                `;
+                
+                this.program = this.createProgram(vsSource, fsSource);
+                this.locations = {
+                    position: gl.getAttribLocation(this.program, 'a_position'),
+                    color: gl.getAttribLocation(this.program, 'a_color'),
+                    size: gl.getAttribLocation(this.program, 'a_size'),
+                    resolution: gl.getUniformLocation(this.program, 'u_resolution'),
+                    translation: gl.getUniformLocation(this.program, 'u_translation'),
+                    scale: gl.getUniformLocation(this.program, 'u_scale'),
+                    rotation: gl.getUniformLocation(this.program, 'u_rotation')
+                };
+                
+                this.buffers = {
+                    position: gl.createBuffer(),
+                    color: gl.createBuffer(),
+                    size: gl.createBuffer()
+                };
+            }
+            
+            createShader(type, source) {
+                const gl = this.gl;
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    console.error('Shader compile error:', gl.getShaderInfoLog(shader));
+                    gl.deleteShader(shader);
+                    return null;
+                }
+                return shader;
+            }
+            
+            createProgram(vsSource, fsSource) {
+                const gl = this.gl;
+                const vertexShader = this.createShader(gl.VERTEX_SHADER, vsSource);
+                const fragmentShader = this.createShader(gl.FRAGMENT_SHADER, fsSource);
+                
+                const program = gl.createProgram();
+                gl.attachShader(program, vertexShader);
+                gl.attachShader(program, fragmentShader);
+                gl.linkProgram(program);
+                
+                if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                    console.error('Program link error:', gl.getProgramInfoLog(program));
+                    return null;
+                }
+                return program;
+            }
+            
+            render(pointsData, transform, globalRotation, modRotations, settings) {
+                const gl = this.gl;
+                
+                gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+                gl.clearColor(0, 0, 0, 1);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                
+                gl.useProgram(this.program);
+                
+                // Prepare data arrays
+                const positions = [];
+                const colors = [];
+                const sizes = [];
+                
+                pointsData.forEach(point => {
+                    if (!settings.showOpen && point.isOpen) return;
+                    if (!settings.showClosed && !point.isOpen) return;
+                    
+                    const modRot = modRotations[point.m] || 0;
+                    const totalAngle = point.angle + (modRot * Math.PI / 180);
+                    const r = settings.getRadius(point.m);
+                    const x = r * Math.cos(totalAngle);
+                    const y = r * Math.sin(totalAngle);
+                    
+                    positions.push(x, y);
+                    
+                    const color = this.hexToRgb(settings.getColorForPoint(point));
+                    const opacity = point.isOpen ? 0.8 : 0.3;
+                    colors.push(color.r, color.g, color.b, opacity);
+                    
+                    let size = settings.pointSize;
+                    if (settings.highlightAdmissible && point.isAdmissible) {
+                        size *= 1.2;
+                    }
+                    sizes.push(size);
+                });
+                
+                // Upload data to GPU
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.position);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+                gl.enableVertexAttribArray(this.locations.position);
+                gl.vertexAttribPointer(this.locations.position, 2, gl.FLOAT, false, 0, 0);
+                
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.color);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+                gl.enableVertexAttribArray(this.locations.color);
+                gl.vertexAttribPointer(this.locations.color, 4, gl.FLOAT, false, 0, 0);
+                
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.size);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sizes), gl.STATIC_DRAW);
+                gl.enableVertexAttribArray(this.locations.size);
+                gl.vertexAttribPointer(this.locations.size, 1, gl.FLOAT, false, 0, 0);
+                
+                // Set uniforms
+                gl.uniform2f(this.locations.resolution, gl.canvas.width, gl.canvas.height);
+                gl.uniform2f(this.locations.translation, 
+                    gl.canvas.width / 2 + transform.x, 
+                    gl.canvas.height / 2 + transform.y
+                );
+                gl.uniform1f(this.locations.scale, transform.scale);
+                gl.uniform1f(this.locations.rotation, globalRotation * Math.PI / 180);
+                
+                // Draw points
+                gl.drawArrays(gl.POINTS, 0, positions.length / 2);
+            }
+            
+            hexToRgb(hex) {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16) / 255,
+                    g: parseInt(result[2], 16) / 255,
+                    b: parseInt(result[3], 16) / 255
+                } : { r: 0, g: 1, b: 0 };
+            }
+        }
+
+        function switchRenderingMode() {
+            const mode = document.getElementById('renderingMode').value;
+            currentRenderer = mode;
+            
+            if (mode === 'canvas2d') {
+                canvas.style.display = 'block';
+                svg.style.display = 'none';
+                drawVisualization();
+            } else if (mode === 'webgl') {
+                canvas.style.display = 'block';
+                svg.style.display = 'none';
+                
+                if (!webglRenderer) {
+                    webglRenderer = new WebGLRenderer(canvas);
+                }
+                
+                if (webglRenderer && webglRenderer.gl) {
+                    drawVisualizationWebGL();
+                } else {
+                    alert('WebGL initialization failed. Falling back to Canvas 2D.');
+                    document.getElementById('renderingMode').value = 'canvas2d';
+                    currentRenderer = 'canvas2d';
+                    drawVisualization();
+                }
+            } else if (mode === 'svg') {
+                canvas.style.display = 'none';
+                svg.style.display = 'block';
+                drawVisualizationSVG();
+            }
+        }
+
+        function drawVisualizationWebGL() {
+            if (!webglRenderer || !webglRenderer.gl) return;
+            
+            const displayMode = document.getElementById('displayMode').value;
+            const showOpen = document.getElementById('showOpen').checked;
+            const showClosed = document.getElementById('showClosed').checked;
+            const pointSize = parseFloat(document.getElementById('pointSize').value);
+            const highlightAdmissible = document.getElementById('highlightAdmissible').checked;
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            const maxRadius = Math.min(width, height) * 0.4;
+            
+            function getRadius(m) {
+                const invertOrder = document.getElementById('invertModOrder').checked;
+                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+                
+                if (displayMode === 'unit') {
+                    return maxRadius;
+                }
+                
+                if (invertOrder) {
+                    const maxMod = Math.max(...moduli);
+                    const minMod = Math.min(...moduli);
+                    const inverted = maxMod - (m - minMod);
+                    return inverted * (maxRadius / Math.max(...moduli));
+                }
+                
+                return m * (maxRadius / Math.max(...moduli));
+            }
+            
+            const settings = {
+                showOpen,
+                showClosed,
+                pointSize,
+                highlightAdmissible,
+                getRadius,
+                getColorForPoint: (point) => getColorForPoint(point, point.isOpen)
+            };
+            
+            webglRenderer.render(pointsData, transform, globalRotation, modRotations, settings);
+        }
+
+        function drawVisualizationSVG() {
+            const width = parseInt(svg.getAttribute('width'));
+            const height = parseInt(svg.getAttribute('height'));
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const maxRadius = Math.min(width, height) * 0.4;
+            
+            // Clear SVG
+            svgGroup.innerHTML = '';
+            
+            const displayMode = document.getElementById('displayMode').value;
+            const showOpen = document.getElementById('showOpen').checked;
+            const showClosed = document.getElementById('showClosed').checked;
+            const pointSize = parseFloat(document.getElementById('pointSize').value);
+            const highlightAdmissible = document.getElementById('highlightAdmissible').checked;
+            const enableCulling = document.getElementById('enableCulling').checked;
+            const enableLOD = document.getElementById('enableLOD').checked;
+            
+            function getRadius(m) {
+                const invertOrder = document.getElementById('invertModOrder').checked;
+                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+                
+                if (displayMode === 'unit') return maxRadius;
+                
+                if (invertOrder) {
+                    const maxMod = Math.max(...moduli);
+                    const minMod = Math.min(...moduli);
+                    const inverted = maxMod - (m - minMod);
+                    return inverted * (maxRadius / Math.max(...moduli));
+                }
+                
+                return m * (maxRadius / Math.max(...moduli));
+            }
+            
+            // Apply transform to group
+            const transformStr = `translate(${centerX + transform.x}, ${centerY + transform.y}) scale(${transform.scale}) rotate(${globalRotation})`;
+            svgGroup.setAttribute('transform', transformStr);
+            
+            // Level of detail: reduce point count when zoomed out
+            let skipFactor = 1;
+            if (enableLOD && transform.scale < 0.5) {
+                skipFactor = Math.ceil(1 / transform.scale);
+            }
+            
+            // View culling bounds
+            const viewBounds = enableCulling ? {
+                minX: -centerX / transform.scale - transform.x,
+                maxX: (width - centerX) / transform.scale - transform.x,
+                minY: -centerY / transform.scale - transform.y,
+                maxY: (height - centerY) / transform.scale - transform.y
+            } : null;
+            
+            // Draw points
+            pointsData.forEach((point, idx) => {
+                if (skipFactor > 1 && idx % skipFactor !== 0) return;
+                if (!showOpen && point.isOpen) return;
+                if (!showClosed && !point.isOpen) return;
+                
+                const modRot = modRotations[point.m] || 0;
+                const totalAngle = point.angle + (modRot * Math.PI / 180);
+                const r = getRadius(point.m);
+                const x = r * Math.cos(totalAngle);
+                const y = r * Math.sin(totalAngle);
+                
+                // View culling
+                if (viewBounds) {
+                    if (x < viewBounds.minX || x > viewBounds.maxX || 
+                        y < viewBounds.minY || y > viewBounds.maxY) {
+                        return;
+                    }
+                }
+                
+                let radius = pointSize;
+                let color = getColorForPoint(point, point.isOpen);
+                let opacity = point.isOpen ? 0.8 : 0.3;
+                
+                if (highlightAdmissible && point.isAdmissible) {
+                    radius = pointSize * 1.2;
+                    color = '#aa00ff';
+                    opacity = 0.9;
+                }
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', x);
+                circle.setAttribute('cy', y);
+                circle.setAttribute('r', radius);
+                circle.setAttribute('fill', color);
+                circle.setAttribute('opacity', opacity);
+                circle.setAttribute('data-m', point.m);
+                circle.setAttribute('data-r', point.r);
+                circle.setAttribute('data-gcd', point.gcd);
+                circle.setAttribute('data-open', point.isOpen);
+                
+                // Add click handler
+                circle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    alert(`Point Details:\n\nModulus m = ${point.m}\nResidue r = ${point.r}\ngcd(${point.r}, ${point.m}) = ${point.gcd}\nChannel: ${point.isOpen ? 'OPEN' : 'CLOSED'}\nφ(${point.m}) = ${point.phiM}\nAngle: ${(point.angle * 180 / Math.PI).toFixed(2)}°${point.isAdmissible ? '\n\nGAP ADMISSIBLE' : ''}`);
+                });
+                
+                // Hover tooltip
+                circle.addEventListener('mouseenter', (e) => {
+                    tooltip.style.opacity = '1';
+                    tooltip.style.left = (e.pageX + 15) + 'px';
+                    tooltip.style.top = (e.pageY + 15) + 'px';
+                    tooltip.innerHTML = `
+                        <strong>m = ${point.m}, r = ${point.r}</strong><br>
+                        gcd(${point.r}, ${point.m}) = ${point.gcd}<br>
+                        Channel: ${point.isOpen ? 'OPEN' : 'CLOSED'}<br>
+                        φ(${point.m}) = ${point.phiM}<br>
+                        Angle: ${(point.angle * 180 / Math.PI).toFixed(2)}°
+                        ${point.isAdmissible ? '<br><strong>GAP ADMISSIBLE</strong>' : ''}
+                    `;
+                });
+                
+                circle.addEventListener('mouseleave', () => {
+                    tooltip.style.opacity = '0';
+                });
+                
+                svgGroup.appendChild(circle);
+            });
+        }
 
         // Progressive computation without Web Worker
         async function computePointsProgressive(modMin, modMax, modStep, gaps, angularMapping) {
@@ -1784,7 +2697,7 @@
                     if (processedCount % COMPUTE_CHUNK_SIZE === 0) {
                         updateProgressDisplay(processedCount, m, modMax);
                         // Only yield for very large datasets
-                        if (processedCount > 20000) {
+                        if (processedCount > 50000) {
                             await new Promise(resolve => setTimeout(resolve, 0));
                         }
                     }
@@ -2085,6 +2998,47 @@
         }
 
         function getColorForPoint(point, isOpen) {
+            const theoremMode = document.getElementById('theoremMode').value;
+            
+            // Apply theorem-based coloring if enabled
+            if (theoremMode !== 'none') {
+                const highlightPrime = document.getElementById('highlightPrimeOrbits').checked;
+                const highlightComposite = document.getElementById('highlightCompositeProjection').checked;
+                const highlightFarey = document.getElementById('highlightFareyChannels').checked;
+                
+                // Check if this modulus is prime
+                const isPrimeModulus = isPrime(point.m);
+                
+                // Farey channels: points that are reducible (can project to simpler fractions)
+                const isFareyPoint = point.gcd > 1;
+                
+                if (theoremMode === 'prime-avoidance' || theoremMode === 'both') {
+                    // Theorem 1: Highlight prime moduli (cyan) - they avoid Farey channels
+                    if (highlightPrime && isPrimeModulus && isOpen) {
+                        return '#00ffff'; // Cyan for prime coprime manifolds
+                    }
+                    
+                    // Gold for Farey channel targets
+                    if (highlightFarey && isFareyPoint) {
+                        return '#ffc800'; // Gold for Farey channels
+                    }
+                }
+                
+                if (theoremMode === 'composite-projection' || theoremMode === 'both') {
+                    // Theorem 2: Highlight composite projections onto channels (red)
+                    if (highlightComposite && !isPrimeModulus && isFareyPoint) {
+                        return '#ff0064'; // Red for composite projections
+                    }
+                }
+                
+                // If showing interstitial regions, dim non-highlighted points
+                const showInterstitial = document.getElementById('showInterstitialRegions').checked;
+                if (showInterstitial && !isPrimeModulus && isOpen && !isFareyPoint) {
+                    return '#666666'; // Gray for interstitial regions
+                }
+            }
+            
+            // Default coloring logic
             if (isOpen) {
                 const mode = document.getElementById('openColorMode').value;
                 if (mode === 'solid') return document.getElementById('baseOpenColor').value;
@@ -2268,6 +3222,39 @@
         document.getElementById('gapValues').addEventListener('input', updateGapColorPickers);
         document.getElementById('enableGapAnalysis').addEventListener('change', updateGapColorPickers);
 
+        // Theorem mode change handler
+        document.getElementById('theoremMode').addEventListener('change', function() {
+            const mode = this.value;
+            const settings = document.getElementById('theoremModeSettings');
+            
+            if (mode !== 'none') {
+                settings.style.display = 'block';
+                
+                // Auto-configure for theorem visualization
+                if (mode === 'prime-avoidance' || mode === 'both') {
+                    document.getElementById('highlightPrimeOrbits').checked = true;
+                    document.getElementById('highlightFareyChannels').checked = true;
+                }
+                
+                if (mode === 'composite-projection' || mode === 'both') {
+                    document.getElementById('highlightCompositeProjection').checked = true;
+                    document.getElementById('highlightFareyChannels').checked = true;
+                }
+            } else {
+                settings.style.display = 'none';
+            }
+            
+            drawVisualization();
+        });
+
+        // Theorem visualization option changes
+        ['highlightFareyChannels', 'highlightPrimeOrbits', 'highlightCompositeProjection', 
+         'showChannelMultiplicity', 'showInterstitialRegions'].forEach(id => {
+            document.getElementById(id).addEventListener('change', () => {
+                drawVisualization();
+            });
+        });
+
         // Auto-start animation when rotation values change (if auto-rotate enabled)
         function autoStartAnimation() {
             const autoRotate = document.getElementById('autoRotate').checked;
@@ -2364,7 +3351,7 @@
             updateModuliDisplay();
 
             // Use progressive computation for large datasets
-            if (totalExpectedPoints > 10000) {
+            if (totalExpectedPoints > 20000) {
                 isComputing = true;
                 document.getElementById('animationStatus').textContent = 'Computing: Starting...';
                 document.getElementById('animationStatus').style.background = '#1a4d4d';
@@ -2586,7 +3573,7 @@
 
                     if (processedCount % COMPUTE_CHUNK_SIZE === 0) {
                         updateProgressDisplay(processedCount, m, moduli[moduli.length - 1]);
-                        if (processedCount > 20000) {
+                        if (processedCount > 50000) {
                             await new Promise(resolve => setTimeout(resolve, 0));
                         }
                     }
@@ -2677,6 +3664,9 @@
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, width, height);
 
+            // Use performance mode automatically for large datasets
+            const performanceMode = pointsData.length > 20000;
+            
             ctx.save();
             ctx.translate(centerX + transform.x, centerY + transform.y);
             ctx.scale(transform.scale, transform.scale);
@@ -2878,10 +3868,17 @@
                 }
             }
 
-            // Draw points
-            pointsData.forEach(point => {
-                if (!showOpen && point.isOpen) return;
-                if (!showClosed && !point.isOpen) return;
+            // Draw points (with batching for performance)
+            const batchSize = performanceMode ? 5000 : pointsData.length;
+            
+            for (let batchStart = 0; batchStart < pointsData.length; batchStart += batchSize) {
+                const batchEnd = Math.min(batchStart + batchSize, pointsData.length);
+                
+                for (let i = batchStart; i < batchEnd; i++) {
+                    const point = pointsData[i];
+                    
+                    if (!showOpen && point.isOpen) continue;
+                    if (!showClosed && !point.isOpen) continue;
 
                 const modRot = modRotations[point.m] || 0;
                 const totalAngle = point.angle + (modRot * Math.PI / 180);
@@ -2893,7 +3890,8 @@
                 let color = getColorForPoint(point, point.isOpen);
                 let opacity = point.isOpen ? 0.8 : 0.3;
 
-                if (point.isAdmissible) {
+                const highlightAdmissible = document.getElementById('highlightAdmissible').checked;
+                if (highlightAdmissible && point.isAdmissible) {
                     radius = pointSize * 1.2;
                     color = '#aa00ff';
                     opacity = 0.9;
@@ -2909,7 +3907,8 @@
                 point.screenX = x;
                 point.screenY = y;
                 point.screenRadius = radius / transform.scale;
-            });
+                }
+            }
 
             // Draw tracker
             if (enableTracker) {
@@ -2998,6 +3997,8 @@
             // Draw gap connection lines
             const showGapLines = document.getElementById('showGapLines').checked;
             const enableGap = document.getElementById('enableGapAnalysis').checked;
+            const onlyPrimeGaps = document.getElementById('onlyPrimeGaps').checked;
+            
             if (showGapLines && enableGap) {
                 const gapInput = document.getElementById('gapValues').value;
                 const gaps = gapInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g > 0);
@@ -3022,12 +4023,19 @@
                     // Draw lines for this gap
                     pointsData.forEach(point => {
                         if (!point.isOpen) return;
+                        
+                        // If only prime gaps is enabled, check if current residue is prime
+                        if (onlyPrimeGaps && !isPrime(point.r)) return;
+                        
                         if (!point.admissibleGaps.includes(gap)) return;
 
                         const rPlusG = (point.r + gap) % point.m;
                         const targetPoint = pointsByMod[point.m] && pointsByMod[point.m][rPlusG];
                         
                         if (targetPoint && targetPoint.isOpen) {
+                            // If only prime gaps is enabled, also check if target is prime
+                            if (onlyPrimeGaps && !isPrime(targetPoint.r)) return;
+                            
                             const modRot = modRotations[point.m] || 0;
                             
                             const angle1 = point.angle + (modRot * Math.PI / 180);
@@ -3082,7 +4090,15 @@
                 if (modRotations[m] > 360) modRotations[m] -= 360;
             });
 
-            drawVisualization();
+            // Use appropriate renderer
+            if (currentRenderer === 'canvas2d') {
+                drawVisualization();
+            } else if (currentRenderer === 'webgl') {
+                drawVisualizationWebGL();
+            } else if (currentRenderer === 'svg') {
+                drawVisualizationSVG();
+            }
+            
             animationId = requestAnimationFrame(animate);
         }
 
@@ -3109,7 +4125,7 @@
             }
         }
 
-        // Mouse and touch events
+        // Mouse and touch events - work for both canvas and SVG
         let touchStartDist = 0;
         
         function getEventCoords(e) {
@@ -3144,16 +4160,23 @@
                 const delta = dist / touchStartDist;
                 touchStartDist = dist;
                 
-                const rect = canvas.getBoundingClientRect();
-                const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left - canvas.width / 2;
-                const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top - canvas.height / 2;
+                const activeElement = currentRenderer === 'svg' ? svg : canvas;
+                const rect = activeElement.getBoundingClientRect();
+                const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left - activeElement.width / 2;
+                const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top - activeElement.height / 2;
                 
                 transform.x = centerX - (centerX - transform.x) * delta;
                 transform.y = centerY - (centerY - transform.y) * delta;
                 transform.scale *= delta;
-                transform.scale = Math.max(0.1, Math.min(20, transform.scale));
+                transform.scale = Math.max(0.01, Math.min(100, transform.scale));
                 
-                drawVisualization();
+                if (currentRenderer === 'canvas2d') {
+                    drawVisualization();
+                } else if (currentRenderer === 'webgl') {
+                    drawVisualizationWebGL();
+                } else if (currentRenderer === 'svg') {
+                    drawVisualizationSVG();
+                }
             } else if (isDragging) {
                 // Pan
                 const coords = getEventCoords(e);
@@ -3161,9 +4184,16 @@
                 transform.y += coords.y - lastMouseY;
                 lastMouseX = coords.x;
                 lastMouseY = coords.y;
-                drawVisualization();
-            } else {
-                // Hover for tooltip
+                
+                if (currentRenderer === 'canvas2d') {
+                    drawVisualization();
+                } else if (currentRenderer === 'webgl') {
+                    drawVisualizationWebGL();
+                } else if (currentRenderer === 'svg') {
+                    drawVisualizationSVG();
+                }
+            } else if (currentRenderer === 'canvas2d') {
+                // Hover for tooltip (only for canvas2d)
                 const coords = getEventCoords(e);
                 const rect = canvas.getBoundingClientRect();
                 const x = (coords.x - rect.left - canvas.width / 2 - transform.x) / transform.scale;
@@ -3210,61 +4240,49 @@
         }
 
         function handleEnd(e) {
-            if (!isDragging) {
-                // Click detected
-                const coords = e.changedTouches ? 
-                    { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY } :
-                    { x: e.clientX, y: e.clientY };
-                    
-                const rect = canvas.getBoundingClientRect();
-                const x = (coords.x - rect.left - canvas.width / 2 - transform.x) / transform.scale;
-                const y = (coords.y - rect.top - canvas.height / 2 - transform.y) / transform.scale;
-                
-                const angle = -globalRotation * Math.PI / 180;
-                const rx = x * Math.cos(angle) - y * Math.sin(angle);
-                const ry = x * Math.sin(angle) + y * Math.cos(angle);
-                
-                pointsData.forEach(point => {
-                    if (point.screenX !== undefined) {
-                        const dx = rx - point.screenX;
-                        const dy = ry - point.screenY;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < point.screenRadius * 2) {
-                            alert(`Point Details:\n\nModulus m = ${point.m}\nResidue r = ${point.r}\ngcd(${point.r}, ${point.m}) = ${point.gcd}\nChannel: ${point.isOpen ? 'OPEN' : 'CLOSED'}\nφ(${point.m}) = ${point.phiM}\nAngle: ${(point.angle * 180 / Math.PI).toFixed(2)}°${point.isAdmissible ? '\n\nGAP ADMISSIBLE' : ''}`);
-                        }
-                    }
-                });
-            }
             isDragging = false;
             touchStartDist = 0;
         }
 
-        canvas.addEventListener('mousedown', handleStart);
-        canvas.addEventListener('mousemove', handleMove);
-        canvas.addEventListener('mouseup', handleEnd);
-        canvas.addEventListener('mouseleave', () => { 
-            isDragging = false; 
-            tooltip.style.opacity = '0';
-        });
-        
-        canvas.addEventListener('touchstart', handleStart, { passive: true });
-        canvas.addEventListener('touchmove', handleMove, { passive: false });
-        canvas.addEventListener('touchend', handleEnd);
-        canvas.addEventListener('touchcancel', () => { isDragging = false; touchStartDist = 0; });
-
-        canvas.addEventListener('wheel', (e) => {
+        function handleWheel(e) {
             e.preventDefault();
             const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left - canvas.width / 2;
-            const mouseY = e.clientY - rect.top - canvas.height / 2;
+            
+            const activeElement = currentRenderer === 'svg' ? svg : canvas;
+            const rect = activeElement.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left - activeElement.width / 2;
+            const mouseY = e.clientY - rect.top - activeElement.height / 2;
             
             transform.x = mouseX - (mouseX - transform.x) * delta;
             transform.y = mouseY - (mouseY - transform.y) * delta;
             transform.scale *= delta;
-            transform.scale = Math.max(0.1, Math.min(20, transform.scale));
+            transform.scale = Math.max(0.01, Math.min(100, transform.scale));
             
-            drawVisualization();
+            if (currentRenderer === 'canvas2d') {
+                drawVisualization();
+            } else if (currentRenderer === 'webgl') {
+                drawVisualizationWebGL();
+            } else if (currentRenderer === 'svg') {
+                drawVisualizationSVG();
+            }
+        }
+
+        // Attach event listeners to both canvas and SVG
+        [canvas, svg].forEach(element => {
+            element.addEventListener('mousedown', handleStart);
+            element.addEventListener('mousemove', handleMove);
+            element.addEventListener('mouseup', handleEnd);
+            element.addEventListener('mouseleave', () => { 
+                isDragging = false; 
+                tooltip.style.opacity = '0';
+            });
+            
+            element.addEventListener('touchstart', handleStart, { passive: true });
+            element.addEventListener('touchmove', handleMove, { passive: false });
+            element.addEventListener('touchend', handleEnd);
+            element.addEventListener('touchcancel', () => { isDragging = false; touchStartDist = 0; });
+            
+            element.addEventListener('wheel', handleWheel);
         });
 
         function updateBridgeAnalysis() {
@@ -3567,7 +4585,13 @@
             }
             generatePointsData();
             if (!isComputing) {
-                drawVisualization();
+                if (currentRenderer === 'canvas2d') {
+                    drawVisualization();
+                } else if (currentRenderer === 'webgl') {
+                    drawVisualizationWebGL();
+                } else if (currentRenderer === 'svg') {
+                    drawVisualizationSVG();
+                }
             }
         }
 
@@ -4107,6 +5131,16 @@
             } else if (tab === 'understanding') {
                 document.querySelectorAll('.tab')[1].classList.add('active');
                 document.getElementById('understandingTab').classList.add('active');
+            } else if (tab === 'channel-analysis') {
+                document.querySelectorAll('.tab')[2].classList.add('active');
+                document.getElementById('channelAnalysisTab').classList.add('active');
+            } else if (tab === 'composite-projection') {
+                document.querySelectorAll('.tab')[3].classList.add('active');
+                document.getElementById('compositeProjectionTab').classList.add('active');
+                updateCompositeVisualization();
+            } else if (tab === 'zeta') {
+                document.querySelectorAll('.tab')[4].classList.add('active');
+                document.getElementById('zetaTab').classList.add('active');
             }
         }
 
@@ -4115,7 +5149,344 @@
             updateRangeDisplays();
             updateGapColorPickers();
             updateVisualization();
+            initCompositeProjection();
         });
+
+        // ===== COMPOSITE PROJECTION COROLLARY =====
+        let compositeModulus = 12;
+        let projectionMode = 'lines'; // 'lines' or 'ring'
+        let compositePoints = [];
+
+        function initCompositeProjection() {
+            const slider = document.getElementById('compModSlider');
+            const input = document.getElementById('compModInput');
+            const opacitySlider = document.getElementById('projOpacitySlider');
+            const canvas = document.getElementById('compositeCanvas');
+            
+            slider.addEventListener('input', () => {
+                compositeModulus = parseInt(slider.value);
+                input.value = compositeModulus;
+                document.getElementById('compModDisplay').textContent = compositeModulus;
+                updateCompositeVisualization();
+            });
+            
+            input.addEventListener('input', () => {
+                let val = parseInt(input.value);
+                if (!isNaN(val) && val >= 2 && val <= 1000) {
+                    compositeModulus = val;
+                    slider.value = Math.min(val, 500);
+                    document.getElementById('compModDisplay').textContent = compositeModulus;
+                    updateCompositeVisualization();
+                }
+            });
+            
+            opacitySlider.addEventListener('input', () => {
+                document.getElementById('projOpacityDisplay').textContent = 
+                    parseFloat(opacitySlider.value).toFixed(2);
+                drawCompositeVisualization();
+            });
+            
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                handleCompositeClick(x, y);
+            });
+            
+            updateCompositeVisualization();
+        }
+
+        function setCompositeMod(m) {
+            compositeModulus = m;
+            document.getElementById('compModSlider').value = Math.min(m, 500);
+            document.getElementById('compModInput').value = m;
+            document.getElementById('compModDisplay').textContent = m;
+            updateCompositeVisualization();
+        }
+
+        function setProjectionMode(mode) {
+            projectionMode = mode;
+            
+            const linesBtn = document.getElementById('projLinesBtn');
+            const ringBtn = document.getElementById('ringViewBtn');
+            
+            if (mode === 'lines') {
+                linesBtn.style.background = 'var(--hover-bg)';
+                linesBtn.style.color = 'var(--hover-text)';
+                ringBtn.style.background = 'var(--bg-primary)';
+                ringBtn.style.color = 'var(--text-primary)';
+            } else {
+                ringBtn.style.background = 'var(--hover-bg)';
+                ringBtn.style.color = 'var(--hover-text)';
+                linesBtn.style.background = 'var(--bg-primary)';
+                linesBtn.style.color = 'var(--text-primary)';
+            }
+            
+            drawCompositeVisualization();
+        }
+
+        function updateCompositeVisualization() {
+            const M = compositeModulus;
+            
+            // Calculate statistics
+            const phiM = phi(M);
+            const reducible = M - phiM;
+            const ratio = ((M - phiM) / M * 100).toFixed(1);
+            
+            // Find all divisors (channels)
+            const channels = [];
+            for (let d = 1; d < M; d++) {
+                if (M % d === 0) {
+                    channels.push(d);
+                }
+            }
+            
+            // Update display
+            document.getElementById('compPhi').textContent = phiM;
+            document.getElementById('compReducible').textContent = reducible;
+            document.getElementById('compRatio').textContent = ratio + '%';
+            document.getElementById('compChannels').textContent = channels.length;
+            
+            // Generate points data
+            compositePoints = [];
+            for (let r = 0; r < M; r++) {
+                const g = gcd(r, M);
+                const isOpen = g === 1;
+                
+                let reducedR = r;
+                let reducedM = M;
+                if (g > 1) {
+                    reducedR = r / g;
+                    reducedM = M / g;
+                }
+                
+                const angle = -2 * Math.PI * r / M;
+                
+                compositePoints.push({
+                    r: r,
+                    M: M,
+                    gcd: g,
+                    isOpen: isOpen,
+                    angle: angle,
+                    reducedR: reducedR,
+                    reducedM: reducedM
+                });
+            }
+            
+            drawCompositeVisualization();
+        }
+
+        function drawCompositeVisualization() {
+            const canvas = document.getElementById('compositeCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const maxRadius = Math.min(width, height) * 0.42;
+            
+            // Clear
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+            
+            const M = compositeModulus;
+            const opacity = parseFloat(document.getElementById('projOpacitySlider').value);
+            
+            if (projectionMode === 'lines') {
+                // Draw projection lines mode
+                
+                // Find all unique target moduli
+                const targetModuli = new Set();
+                compositePoints.forEach(p => {
+                    if (!p.isOpen) {
+                        targetModuli.add(p.reducedM);
+                    }
+                });
+                const sortedTargets = Array.from(targetModuli).sort((a, b) => a - b);
+                
+                // Draw Farey channel rings (gold)
+                ctx.strokeStyle = '#ffc800';
+                ctx.lineWidth = 2;
+                sortedTargets.forEach(m => {
+                    const radius = (m / M) * maxRadius;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    
+                    // Label the channel
+                    ctx.fillStyle = '#ffc800';
+                    ctx.font = '12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`M' = ${m}`, centerX, centerY - radius - 8);
+                });
+                
+                // Draw outer ring for M
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, maxRadius, 0, 2 * Math.PI);
+                ctx.stroke();
+                
+                // Draw projection lines first (so points appear on top)
+                ctx.strokeStyle = `rgba(255, 0, 100, ${opacity})`;
+                ctx.lineWidth = 1;
+                
+                compositePoints.forEach(point => {
+                    if (!point.isOpen && point.reducedM < M) {
+                        // Draw line from outer point to inner reduced point
+                        const outerX = centerX + maxRadius * Math.cos(point.angle);
+                        const outerY = centerY + maxRadius * Math.sin(point.angle);
+                        
+                        const innerRadius = (point.reducedM / M) * maxRadius;
+                        const reducedAngle = -2 * Math.PI * point.reducedR / point.reducedM;
+                        const innerX = centerX + innerRadius * Math.cos(reducedAngle);
+                        const innerY = centerY + innerRadius * Math.sin(reducedAngle);
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(outerX, outerY);
+                        ctx.lineTo(innerX, innerY);
+                        ctx.stroke();
+                    }
+                });
+                
+                // Draw points on outer ring
+                compositePoints.forEach(point => {
+                    const x = centerX + maxRadius * Math.cos(point.angle);
+                    const y = centerY + maxRadius * Math.sin(point.angle);
+                    
+                    ctx.fillStyle = point.isOpen ? '#00ffff' : '#ff0064';
+                    ctx.beginPath();
+                    ctx.arc(x, y, point.isOpen ? 5 : 6, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Store screen coordinates for click detection
+                    point.screenX = x;
+                    point.screenY = y;
+                });
+                
+                // Draw target points on inner rings
+                compositePoints.forEach(point => {
+                    if (!point.isOpen && point.reducedM < M) {
+                        const innerRadius = (point.reducedM / M) * maxRadius;
+                        const reducedAngle = -2 * Math.PI * point.reducedR / point.reducedM;
+                        const x = centerX + innerRadius * Math.cos(reducedAngle);
+                        const y = centerY + innerRadius * Math.sin(reducedAngle);
+                        
+                        ctx.fillStyle = '#ffc800';
+                        ctx.beginPath();
+                        ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                });
+                
+            } else {
+                // Ring view mode - show all rings including reduced ones
+                
+                // Collect all unique moduli
+                const allModuli = new Set([M]);
+                compositePoints.forEach(p => {
+                    if (!p.isOpen) {
+                        allModuli.add(p.reducedM);
+                    }
+                });
+                const sortedModuli = Array.from(allModuli).sort((a, b) => a - b);
+                
+                // Draw rings
+                sortedModuli.forEach(m => {
+                    const radius = (m / M) * maxRadius;
+                    
+                    ctx.strokeStyle = m === M ? '#ffffff' : 'rgba(255, 200, 0, 0.3)';
+                    ctx.lineWidth = m === M ? 2.5 : 1.5;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    
+                    // Draw points for this modulus
+                    for (let r = 0; r < m; r++) {
+                        const angle = -2 * Math.PI * r / m;
+                        const x = centerX + radius * Math.cos(angle);
+                        const y = centerY + radius * Math.sin(angle);
+                        
+                        const g = gcd(r, m);
+                        const isOpen = g === 1;
+                        
+                        if (m === M) {
+                            ctx.fillStyle = isOpen ? '#00ffff' : '#ff0064';
+                            ctx.beginPath();
+                            ctx.arc(x, y, isOpen ? 5 : 6, 0, 2 * Math.PI);
+                            ctx.fill();
+                        } else {
+                            ctx.fillStyle = isOpen ? 'rgba(0, 255, 255, 0.4)' : 'rgba(255, 200, 0, 0.6)';
+                            ctx.beginPath();
+                            ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                            ctx.fill();
+                        }
+                    }
+                    
+                    // Label
+                    if (m < M) {
+                        ctx.fillStyle = '#ffc800';
+                        ctx.font = '11px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(`${m}`, centerX, centerY - radius - 5);
+                    }
+                });
+            }
+            
+            // Draw center dot
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Title
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Composite Modulus M = ${M}`, centerX, 30);
+        }
+
+        function handleCompositeClick(x, y) {
+            const canvas = document.getElementById('compositeCanvas');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Find clicked point
+            let clickedPoint = null;
+            let minDist = Infinity;
+            
+            compositePoints.forEach(point => {
+                if (point.screenX !== undefined) {
+                    const dx = x - point.screenX;
+                    const dy = y - point.screenY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < 10 && dist < minDist) {
+                        minDist = dist;
+                        clickedPoint = point;
+                    }
+                }
+            });
+            
+            if (clickedPoint) {
+                let message = `Residue r = ${clickedPoint.r} in M = ${clickedPoint.M}\n\n`;
+                message += `gcd(${clickedPoint.r}, ${clickedPoint.M}) = ${clickedPoint.gcd}\n\n`;
+                
+                if (clickedPoint.isOpen) {
+                    message += `Status: IRREDUCIBLE (Coprime)\n`;
+                    message += `This residue cannot be reduced.\n`;
+                    message += `Fraction ${clickedPoint.r}/${clickedPoint.M} is already in lowest terms.`;
+                } else {
+                    message += `Status: REDUCIBLE\n`;
+                    message += `Dividing by gcd = ${clickedPoint.gcd}:\n\n`;
+                    message += `${clickedPoint.r}/${clickedPoint.M} = ${clickedPoint.reducedR}/${clickedPoint.reducedM}\n\n`;
+                    message += `Projects to Farey channel M' = ${clickedPoint.reducedM}\n`;
+                    message += `Channel multiplicity: d = ${clickedPoint.M}/${clickedPoint.reducedM} = ${clickedPoint.M / clickedPoint.reducedM}`;
+                }
+                
+                alert(message);
+            }
+        }
     </script>
 </body>
 </html>
