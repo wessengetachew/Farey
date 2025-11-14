@@ -688,6 +688,9 @@
             <button class="tab" onclick="switchTab('visualization')">Visualization</button>
             <button class="tab" onclick="switchTab('understanding')">Theoretical Framework</button>
             <button class="tab" onclick="switchTab('composite-projection')">Composite Projection</button>
+            <button class="tab" onclick="switchTab('quadratic-residues')">Quadratic Residues</button>
+            <button class="tab" onclick="switchTab('primitive-roots')">Primitive Roots</button>
+            <button class="tab" onclick="switchTab('multiplication-table')">Multiplication Table</button>
         </div>
 
         <div id="visualizationTab" class="tab-content active">
@@ -1497,6 +1500,403 @@
             </div>
         </div>
 
+        <div id="quadraticResiduesTab" class="tab-content">
+            <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Quadratic Residues & Legendre Symbols</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Configuration</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Prime Modulus (p): <span id="qrModDisplay" style="color: #00ffff;">17</span>
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                            <span style="font-size: 11px;">3 (minimal)</span>
+                            <input type="range" id="qrModSlider" min="3" max="997" value="17" step="2"
+                                   style="flex: 1; height: 8px;">
+                            <span style="font-size: 11px;">997 (maximum)</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Or enter custom prime:</label>
+                        <input type="number" id="qrModInput" min="3" max="10000" value="17" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px;">
+                        <button onclick="setQRPrime(7)" style="padding: 8px;">p = 7</button>
+                        <button onclick="setQRPrime(11)" style="padding: 8px;">p = 11</button>
+                        <button onclick="setQRPrime(13)" style="padding: 8px;">p = 13</button>
+                        <button onclick="setQRPrime(17)" style="padding: 8px;">p = 17</button>
+                        <button onclick="setQRPrime(23)" style="padding: 8px;">p = 23</button>
+                        <button onclick="setQRPrime(31)" style="padding: 8px;">p = 31</button>
+                        <button onclick="setQRPrime(61)" style="padding: 8px;">p = 61</button>
+                        <button onclick="setQRPrime(97)" style="padding: 8px;">p = 97</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Visualization Mode:
+                        </label>
+                        <select id="qrVisualizationMode" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="residue-nonresidue">Residues vs Non-Residues</option>
+                            <option value="legendre-symbol">Legendre Symbol (+1, 0, -1)</option>
+                            <option value="square-sequence">Square Sequence (1², 2², 3²...)</option>
+                            <option value="reciprocity-pattern">Quadratic Reciprocity Pattern</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="qrShowConnections" style="margin-right: 8px;">
+                            Show Square Connections (a → a²)
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="qrAnimateSequence" style="margin-right: 8px;">
+                            Animate Square Sequence
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Point Size: <span id="qrPointSizeDisplay">7</span>
+                        </label>
+                        <input type="range" id="qrPointSize" min="4" max="15" step="0.5" value="7" 
+                               style="width: 100%; height: 8px;">
+                    </div>
+                </div>
+                
+                <div style="position: relative; display: flex; justify-content: center; margin-bottom: 20px;">
+                    <canvas id="quadraticCanvas" width="700" height="700" 
+                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px; cursor: crosshair;">
+                    </canvas>
+                    <div id="quadraticTooltip" style="position: absolute; padding: 10px; background: rgba(255, 255, 255, 0.95); 
+                         color: #000000; border: 1px solid #000; pointer-events: none; font-size: 11px; 
+                         line-height: 1.4; opacity: 0; transition: opacity 0.2s; z-index: 1000; max-width: 250px;
+                         font-family: 'Courier New', monospace;">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Prime p</div>
+                        <div id="qrPrime" style="font-size: 24px; font-weight: 600; color: #00ffff;">17</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">QR Count</div>
+                        <div id="qrCount" style="font-size: 24px; font-weight: 600; color: #00ff00;">8</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">NR Count</div>
+                        <div id="nrCount" style="font-size: 24px; font-weight: 600; color: #ff0064;">8</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">QR Ratio</div>
+                        <div id="qrRatio" style="font-size: 24px; font-weight: 600; color: #ffc800;">50%</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">p mod 4</div>
+                        <div id="qrMod4" style="font-size: 24px; font-weight: 600; color: #ffffff;">1</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Current Prime Analysis</h3>
+                    <div id="qrAnalysisText" style="font-size: 14px; line-height: 1.8;">
+                        <p style="margin-bottom: 12px;">Analysis will appear here...</p>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Quadratic Residues Table</h3>
+                    <div id="qrTableContainer" style="max-height: 400px; overflow-y: auto;">
+                        <table id="qrTable" style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--bg-primary); position: sticky; top: 0;">
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">a</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">a² mod p</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">Legendre (a|p)</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="qrTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Visualization Legend</h3>
+                    <div id="qrLegend">
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
+                                <span style="position: absolute; left: 0; color: #00ff00; font-size: 18px;">●</span>
+                                <strong style="color: #00ff00;">Green points</strong> = Quadratic Residues (QR)
+                            </li>
+                            <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
+                                <span style="position: absolute; left: 0; color: #ff0064; font-size: 18px;">●</span>
+                                <strong style="color: #ff0064;">Red points</strong> = Non-Residues (NR)
+                            </li>
+                            <li style="margin-bottom: 12px; padding-left: 25px; position: relative;">
+                                <span style="position: absolute; left: 0; color: #666666; font-size: 18px;">●</span>
+                                <strong style="color: #666666;">Gray point</strong> = Zero (always QR)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(0, 200, 255, 0.1); border: 2px solid #00c8ff; padding: 20px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #00c8ff;">Key Theorem: Quadratic Reciprocity</h3>
+                    <p style="margin: 0; font-size: 15px; line-height: 1.6;">
+                        For odd primes p and q: (p|q)(q|p) = (-1)^((p-1)(q-1)/4)
+                    </p>
+                    <p style="margin-top: 10px; font-size: 13px; opacity: 0.9;">
+                        This beautiful result connects the quadratic character of p modulo q with that of q modulo p.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="primitiveRootsTab" class="tab-content">
+            <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Primitive Roots & Cyclic Structure</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Configuration</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Modulus (m): <span id="prModDisplay" style="color: #00ffff;">7</span>
+                        </label>
+                        <input type="number" id="prModInput" min="2" max="500" value="7" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px;">
+                        <button onclick="setPRModulus(7)" style="padding: 8px;">m = 7</button>
+                        <button onclick="setPRModulus(11)" style="padding: 8px;">m = 11</button>
+                        <button onclick="setPRModulus(13)" style="padding: 8px;">m = 13</button>
+                        <button onclick="setPRModulus(17)" style="padding: 8px;">m = 17</button>
+                        <button onclick="setPRModulus(18)" style="padding: 8px;">m = 18</button>
+                        <button onclick="setPRModulus(25)" style="padding: 8px;">m = 25</button>
+                        <button onclick="setPRModulus(26)" style="padding: 8px;">m = 26</button>
+                        <button onclick="setPRModulus(50)" style="padding: 8px;">m = 50</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Select Generator (if primitive roots exist):
+                        </label>
+                        <select id="prGeneratorSelect" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="auto">Auto (smallest)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Visualization Mode:
+                        </label>
+                        <select id="prVisualizationMode" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="orbit-structure">Orbit Structure</option>
+                            <option value="powers-sequence">Powers Sequence (g^1, g^2, g^3...)</option>
+                            <option value="order-coloring">Color by Order</option>
+                            <option value="subgroup-lattice">Subgroup Lattice</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="prShowPowerLines" checked style="margin-right: 8px;">
+                            Show Power Connections (g^k → g^(k+1))
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="prAnimatePowers" style="margin-right: 8px;">
+                            Animate Powers Cycling
+                        </label>
+                    </div>
+                </div>
+                
+                <div style="position: relative; display: flex; justify-content: center; margin-bottom: 20px;">
+                    <canvas id="primitiveCanvas" width="700" height="700" 
+                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px;">
+                    </canvas>
+                    <div id="primitiveTooltip" style="position: absolute; padding: 10px; background: rgba(255, 255, 255, 0.95); 
+                         color: #000000; border: 1px solid #000; pointer-events: none; font-size: 11px; 
+                         line-height: 1.4; opacity: 0; transition: opacity 0.2s; z-index: 1000; max-width: 300px;
+                         font-family: 'Courier New', monospace;">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Modulus m</div>
+                        <div id="prModulus" style="font-size: 24px; font-weight: 600; color: #00ffff;">7</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">φ(m)</div>
+                        <div id="prPhi" style="font-size: 24px; font-weight: 600; color: #00ff00;">6</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Has Primitive Root?</div>
+                        <div id="prHasRoot" style="font-size: 20px; font-weight: 600; color: #ffc800; margin-top: 8px;">Yes</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Smallest Root</div>
+                        <div id="prSmallest" style="font-size: 24px; font-weight: 600; color: #ff00ff;">3</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Total Generators</div>
+                        <div id="prCount" style="font-size: 24px; font-weight: 600; color: #ffffff;">2</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Analysis</h3>
+                    <div id="prAnalysisText" style="font-size: 14px; line-height: 1.8;"></div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Order Table</h3>
+                    <div id="prOrderTableContainer" style="max-height: 400px; overflow-y: auto;">
+                        <table id="prOrderTable" style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--bg-primary); position: sticky; top: 0;">
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">Element a</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">Order ord(a)</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">Powers</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">Generator?</th>
+                                </tr>
+                            </thead>
+                            <tbody id="prOrderTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255, 0, 255, 0.1); border: 2px solid #ff00ff; padding: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #ff00ff;">Existence Theorem</h3>
+                    <p style="margin: 0; font-size: 15px; line-height: 1.6;">
+                        Primitive roots exist modulo m if and only if m = 1, 2, 4, p^k, or 2p^k where p is an odd prime.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="multiplicationTableTab" class="tab-content">
+            <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Modular Multiplication Table & Cayley Table</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Configuration</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Modulus (m): <span id="mtModDisplay" style="color: #00ffff;">12</span>
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                            <span style="font-size: 11px;">2</span>
+                            <input type="range" id="mtModSlider" min="2" max="50" value="12" 
+                                   style="flex: 1; height: 8px;">
+                            <span style="font-size: 11px;">50</span>
+                        </div>
+                        <input type="number" id="mtModInput" min="2" max="100" value="12" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Table Type:
+                        </label>
+                        <select id="mtTableType" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="full">Full Multiplication (0 to m-1)</option>
+                            <option value="units">Units Only (Cayley Table)</option>
+                            <option value="addition">Addition Table</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Color Scheme:
+                        </label>
+                        <select id="mtColorScheme" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="rainbow">Rainbow (by value)</option>
+                            <option value="residue-class">By Residue Class</option>
+                            <option value="divisibility">By Divisibility</option>
+                            <option value="zero-divisors">Highlight Zero Divisors</option>
+                            <option value="idempotents">Highlight Idempotents</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Cell Size: <span id="mtCellSizeDisplay">20</span>px
+                        </label>
+                        <input type="range" id="mtCellSize" min="10" max="40" value="20" 
+                               style="width: 100%; height: 8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="mtShowValues" checked style="margin-right: 8px;">
+                            Show Numeric Values
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="mtShowSymmetry" style="margin-right: 8px;">
+                            Highlight Diagonal Symmetry
+                        </label>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                    <div id="mtTableContainer" style="background: #000000; border: 2px solid var(--border-color); padding: 20px; border-radius: 4px; overflow: auto; max-width: 100%; max-height: 600px;">
+                        <canvas id="multiplicationCanvas" width="600" height="600"></canvas>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Modulus</div>
+                        <div id="mtModulus" style="font-size: 24px; font-weight: 600; color: #00ffff;">12</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Units</div>
+                        <div id="mtUnits" style="font-size: 24px; font-weight: 600; color: #00ff00;">4</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Zero Divisors</div>
+                        <div id="mtZeroDivisors" style="font-size: 24px; font-weight: 600; color: #ff0064;">6</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Idempotents</div>
+                        <div id="mtIdempotents" style="font-size: 24px; font-weight: 600; color: #ffc800;">2</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Structure Analysis</h3>
+                    <div id="mtAnalysisText" style="font-size: 14px; line-height: 1.8;"></div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px;">
+                    <h3 style="margin-bottom: 15px;">Special Elements</h3>
+                    <div id="mtSpecialElements" style="font-size: 13px; line-height: 1.6;"></div>
+                </div>
+            </div>
+        </div>
+
         <div id="compositeProjectionTab" class="tab-content">
             <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
                 <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Composite Channel Projection Corollary</h2>
@@ -1882,7 +2282,291 @@
         </div>
 
         <div id="understandingTab" class="tab-content">
-                                <div class="theory-section">
+            <div class="theory-section">
+                <h2>Modular Rings and the Residue System</h2>
+                
+                <h3>The Fundamental Concept</h3>
+                <p>
+                    Imagine the integers arranged not as a line, but as circles—infinite families of circles, each one capturing a different "rhythm" of counting. This is <strong>modular arithmetic</strong>, the mathematics of remainders, and it was Euler who first recognized its deep geometric character.
+                </p>
+                
+                <p>
+                    When we count modulo <em>m</em>, we're asking: "What's left over after dividing by <em>m</em>?" The possible remainders—called <strong>residues</strong>—are the integers {0, 1, 2, ..., m-1}. These <em>m</em> residues form what mathematicians call ℤ/mℤ (pronounced "Z mod m"), and Euler showed us how to think of them as points equally spaced around a circle.
+                </p>
+
+                <div class="example-box">
+                    <strong>Example: The Clock (Modulo 12)</strong><br>
+                    When we read a 12-hour clock, we're doing arithmetic modulo 12. After 12 o'clock comes 1 o'clock—the remainder when 13 is divided by 12. The 12 hours form a circle, and this circular structure is fundamental to modular arithmetic.
+                    <br><br>
+                    In our visualization, modulus <em>m</em> = 12 appears as a ring with 12 equally-spaced points, one for each hour: {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}.
+                </div>
+
+                <h3>Why Nested Rings?</h3>
+                <p>
+                    The revolutionary insight is to display <em>multiple moduli simultaneously</em> as concentric rings. Each ring represents a different modulus, with the innermost circle being <em>m</em> = 1 (just one point—the origin) and outer rings representing larger moduli.
+                </p>
+                
+                <p>
+                    This nested structure reveals <strong>modular containment</strong>: larger moduli contain and extend smaller ones. When <em>d</em> divides <em>m</em>, the ring of modulus <em>d</em> embeds naturally inside the ring of modulus <em>m</em>. The visualization makes this abstract algebraic relationship visible as geometric nesting.
+                </p>
+
+                <h2>The Two Types of Channels: Open and Closed</h2>
+                
+                <p>
+                    Euler's greatest contribution to this theory was recognizing that residues fall into two fundamentally different categories, distinguished by their relationship to the modulus through the <strong>greatest common divisor (GCD)</strong>.
+                </p>
+
+                <h3>Open Channels (Coprime Residues)</h3>
+                <p>
+                    A residue <em>r</em> in modulus <em>m</em> is an <strong>open channel</strong> if gcd(<em>r</em>, <em>m</em>) = 1. This means <em>r</em> and <em>m</em> share no common factors—they are <strong>coprime</strong> or <strong>relatively prime</strong>.
+                </p>
+                
+                <div class="formula">
+                    <div class="formula-title">Mathematical Definition</div>
+                    r is an OPEN channel in ℤ/mℤ ⟺ gcd(r, m) = 1
+                    <br><br>
+                    These residues have <strong>multiplicative inverses</strong> modulo m.
+                    <br>
+                    They form a group under multiplication: (ℤ/mℤ)×
+                </div>
+
+                <p>
+                    <strong>Why "open"?</strong> These residues represent "pathways" that allow information to flow freely through the modular system. In number theory, they're the residues where primes can live—every prime <em>p</em> greater than <em>m</em> must occupy an open channel when reduced modulo <em>m</em>.
+                </p>
+
+                <div class="example-box">
+                    <strong>Example: Modulo 12</strong><br>
+                    Open channels in ℤ/12ℤ: {1, 5, 7, 11}<br>
+                    These are the residues coprime to 12.<br><br>
+                    gcd(1, 12) = 1<br>
+                    gcd(5, 12) = 1<br>
+                    gcd(7, 12) = 1<br>
+                    gcd(11, 12) = 1<br><br>
+                    Count: φ(12) = 4 (Euler's totient function)
+                </div>
+
+                <h3>Closed Channels (Non-Coprime Residues)</h3>
+                <p>
+                    A residue <em>r</em> is a <strong>closed channel</strong> if gcd(<em>r</em>, <em>m</em>) > 1. These residues share a common factor with the modulus—they are <strong>divisible by some prime that also divides m</strong>.
+                </p>
+
+                <div class="formula">
+                    <div class="formula-title">Mathematical Definition</div>
+                    r is a CLOSED channel in ℤ/mℤ ⟺ gcd(r, m) > 1
+                    <br><br>
+                    These residues do NOT have multiplicative inverses modulo m.
+                    <br>
+                    They are "zero divisors" or non-units in the ring ℤ/mℤ.
+                </div>
+
+                <p>
+                    <strong>Why "closed"?</strong> These residues are blocked—they cannot represent prime numbers (except for the primes dividing <em>m</em> itself). They form the "sieve" that filters out composites in prime-hunting algorithms.
+                </p>
+
+                <div class="example-box">
+                    <strong>Example: Modulo 12</strong><br>
+                    Closed channels in ℤ/12ℤ: {0, 2, 3, 4, 6, 8, 9, 10}<br>
+                    These share a factor of 2 or 3 with 12.<br><br>
+                    gcd(0, 12) = 12 (shares all factors)<br>
+                    gcd(2, 12) = 2 (shares factor 2)<br>
+                    gcd(3, 12) = 3 (shares factor 3)<br>
+                    gcd(4, 12) = 4 (shares factor 2)<br>
+                    gcd(6, 12) = 6 (shares factors 2 and 3)<br><br>
+                    Count: 12 - φ(12) = 12 - 4 = 8
+                </div>
+
+                <h2>Quadratic Residues: The Geometry of Squares</h2>
+                
+                <p>
+                    Beyond the coprimality structure lies another fundamental classification: <strong>quadratic residues</strong>. For a prime <em>p</em>, a non-zero residue <em>a</em> is a quadratic residue if there exists some <em>x</em> such that x² ≡ a (mod <em>p</em>).
+                </p>
+                
+                <div class="formula">
+                    <div class="formula-title">Definition of Quadratic Residue</div>
+                    a is a quadratic residue modulo p ⟺ ∃x: x² ≡ a (mod p)
+                    <br><br>
+                    The Legendre symbol encodes this:
+                    <br>
+                    (a|p) = +1 if a is a quadratic residue mod p
+                    <br>
+                    (a|p) = -1 if a is a non-residue mod p
+                    <br>
+                    (a|p) = 0 if p divides a
+                </div>
+
+                <h3>The Square Sequence</h3>
+                <p>
+                    Computing 1², 2², 3², ..., ((p-1)/2)² modulo <em>p</em> produces exactly (p-1)/2 distinct quadratic residues. This reveals a beautiful symmetry: exactly half of the non-zero residues modulo a prime are squares, and half are not.
+                </p>
+
+                <div class="example-box">
+                    <strong>Example: Quadratic Residues modulo 17</strong><br>
+                    1² ≡ 1 (mod 17)<br>
+                    2² ≡ 4 (mod 17)<br>
+                    3² ≡ 9 (mod 17)<br>
+                    4² ≡ 16 (mod 17)<br>
+                    5² ≡ 25 ≡ 8 (mod 17)<br>
+                    6² ≡ 36 ≡ 2 (mod 17)<br>
+                    7² ≡ 49 ≡ 15 (mod 17)<br>
+                    8² ≡ 64 ≡ 13 (mod 17)<br><br>
+                    Quadratic residues: {1, 2, 4, 8, 9, 13, 15, 16}<br>
+                    Non-residues: {3, 5, 6, 7, 10, 11, 12, 14}<br>
+                    Count: 8 residues, 8 non-residues (perfect balance)
+                </div>
+
+                <h3>Quadratic Reciprocity</h3>
+                <p>
+                    One of the most stunning results in number theory is <strong>Gauss's Law of Quadratic Reciprocity</strong>, discovered after years of computational exploration and proved in eight different ways by Gauss himself.
+                </p>
+
+                <div class="formula">
+                    <div class="formula-title">Quadratic Reciprocity Law</div>
+                    For distinct odd primes p and q:
+                    <br><br>
+                    (p|q) · (q|p) = (-1)^((p-1)(q-1)/4)
+                    <br><br>
+                    This means:
+                    <br>
+                    If p ≡ 1 (mod 4) OR q ≡ 1 (mod 4), then (p|q) = (q|p)
+                    <br>
+                    If p ≡ q ≡ 3 (mod 4), then (p|q) = -(q|p)
+                </div>
+
+                <p>
+                    This theorem reveals a deep reciprocity: whether <em>p</em> is a square modulo <em>q</em> is intimately connected to whether <em>q</em> is a square modulo <em>p</em>. The relationship depends only on the residue classes of <em>p</em> and <em>q</em> modulo 4.
+                </p>
+
+                <div class="example-box">
+                    <strong>Example: Quadratic Reciprocity in Action</strong><br>
+                    Consider p = 17 and q = 13.<br><br>
+                    Since 17 ≡ 1 (mod 4), reciprocity predicts (17|13) = (13|17).<br><br>
+                    Computing: 17 ≡ 4 (mod 13), and 4 = 2², so (17|13) = +1.<br>
+                    Also: 13 ≡ 13 (mod 17), and we saw 13 is a QR mod 17, so (13|17) = +1.<br><br>
+                    Indeed: (17|13) = (13|17) = +1, confirming reciprocity.
+                </div>
+
+                <h3>Supplements to Quadratic Reciprocity</h3>
+                <p>
+                    Two special cases complete the theory:
+                </p>
+
+                <div class="formula">
+                    <div class="formula-title">First Supplement</div>
+                    (-1|p) = (-1)^((p-1)/2)
+                    <br><br>
+                    This means: -1 is a quadratic residue mod p ⟺ p ≡ 1 (mod 4)
+                </div>
+
+                <div class="formula">
+                    <div class="formula-title">Second Supplement</div>
+                    (2|p) = (-1)^((p²-1)/8)
+                    <br><br>
+                    This means: 2 is a quadratic residue mod p ⟺ p ≡ ±1 (mod 8)
+                </div>
+
+                <p>
+                    These supplements, combined with the main reciprocity law, provide a complete algorithm for computing the Legendre symbol (a|p) for any <em>a</em> and prime <em>p</em>, without needing to find square roots.
+                </p>
+
+                <h2>Euler's Totient Function φ(m)</h2>
+                
+                <p>
+                    One of Euler's most famous contributions to number theory is the <strong>totient function</strong> φ(<em>m</em>), which counts the number of open channels in ℤ/mℤ—the integers between 1 and <em>m</em> that are coprime to <em>m</em>.
+                </p>
+
+                <div class="formula">
+                    <div class="formula-title">Euler's Totient Function</div>
+                    φ(m) = |{r ∈ {1, 2, ..., m} : gcd(r, m) = 1}|
+                    <br><br>
+                    <strong>For prime p:</strong> φ(p) = p - 1 (all non-zero residues are open)
+                    <br>
+                    <strong>For prime power p^k:</strong> φ(p^k) = p^k - p^(k-1) = p^(k-1)(p - 1)
+                    <br>
+                    <strong>Multiplicative property:</strong> If gcd(m,n) = 1, then φ(mn) = φ(m)φ(n)
+                </div>
+
+                <p>
+                    The totient function measures the "density" of open channels. As we visualize larger and larger moduli, the ratio φ(<em>m</em>)/<em>m</em> converges to a famous limit:
+                </p>
+
+                <div class="formula">
+                    <div class="formula-title">The Asymptotic Density of Coprime Integers</div>
+                    lim (average of φ(m)/m over all m) = 6/π² ≈ 0.6079...
+                    <br><br>
+                    This means that approximately <strong>60.79% of all residue positions are open channels</strong> when averaged across all moduli.
+                    <br><br>
+                    This is intimately connected to the probability that two randomly chosen integers are coprime.
+                </div>
+
+                <h2>Connection Between Structures</h2>
+                
+                <p>
+                    The interplay between coprimality and quadratic residuosity creates a rich tapestry of number-theoretic structure:
+                </p>
+
+                <ul>
+                    <li><strong>For prime moduli:</strong> All non-zero residues are coprime, so the quadratic residue structure lives entirely within the group (ℤ/pℤ)×</li>
+                    <li><strong>For composite moduli:</strong> Only coprime residues can be quadratic residues (in the generalized sense using the Jacobi symbol)</li>
+                    <li><strong>Primitive roots:</strong> When they exist, primitive roots generate all quadratic residues through even powers and all non-residues through odd powers</li>
+                    <li><strong>Cyclotomic theory:</strong> The quadratic residues correspond to specific Galois orbits of roots of unity</li>
+                </ul>
+
+                <h2>Historical Context</h2>
+                
+                <p>
+                    The theory of quadratic residues represents one of the great triumphs of number theory:
+                </p>
+
+                <ul>
+                    <li><strong>Fermat (1640s):</strong> Discovered special cases and made conjectures about when -1 and 2 are squares</li>
+                    <li><strong>Euler (1750s):</strong> Extensive computational work and the first statement of quadratic reciprocity (without proof)</li>
+                    <li><strong>Legendre (1785):</strong> Introduced the Legendre symbol and gave an incomplete proof</li>
+                    <li><strong>Gauss (1796):</strong> At age 19, provided the first complete proof; eventually found eight different proofs</li>
+                    <li><strong>Modern era:</strong> Generalizations to higher powers (cubic, quartic reciprocity) and connections to class field theory</li>
+                </ul>
+
+                <div class="formula" style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; margin: 30px 0;">
+                    <div style="text-align: center; font-size: 18px; font-weight: 600; margin-bottom: 15px;">
+                        Gauss on Quadratic Reciprocity
+                    </div>
+                    <p style="font-style: italic; text-align: center; margin: 0;">
+                        "The theorem must certainly be regarded as one of the most elegant of its type."
+                    </p>
+                    <p style="text-align: center; margin-top: 10px; font-size: 14px;">
+                        — Carl Friedrich Gauss, Disquisitiones Arithmeticae (1801)
+                    </p>
+                </div>
+
+                <h2>Applications and Significance</h2>
+                
+                <h3>1. Primality Testing</h3>
+                <p>
+                    The Solovay-Strassen and Miller-Rabin primality tests use quadratic residuosity as a probabilistic criterion for primality.
+                </p>
+
+                <h3>2. Cryptography</h3>
+                <p>
+                    The quadratic residuosity problem (determining whether a number is a QR mod n without knowing the factorization of n) is computationally hard and forms the basis of several cryptographic protocols.
+                </p>
+
+                <h3>3. Diophantine Equations</h3>
+                <p>
+                    Understanding when equations like x² + y² = p (sum of two squares) have solutions depends critically on quadratic reciprocity.
+                </p>
+
+                <h3>4. L-functions and the Riemann Hypothesis</h3>
+                <p>
+                    Dirichlet L-functions, which generalize the Riemann zeta function, are defined using quadratic characters. The distribution of quadratic residues connects to the distribution of primes.
+                </p>
+
+                <p style="margin-top: 30px; font-style: italic;">
+                    By visualizing these structures geometrically—as points on circles with carefully chosen colors and connections—we make visible the hidden symmetries that Gauss discovered through pure calculation. The patterns you see in the quadratic residue visualization are manifestations of reciprocity, the most fundamental symmetry in elementary number theory.
+                </p>
+
+            </div>
+        </div>
+
+        <div id="compositeProjectionTab" class="tab-content"
                 <h2>Modular Rings and the Residue System</h2>
                 
                 <h3>The Fundamental Concept</h3>
@@ -5353,6 +6037,18 @@
                 document.querySelectorAll('.tab')[2].classList.add('active');
                 document.getElementById('compositeProjectionTab').classList.add('active');
                 updateCompositeVisualization();
+            } else if (tab === 'quadratic-residues') {
+                document.querySelectorAll('.tab')[3].classList.add('active');
+                document.getElementById('quadraticResiduesTab').classList.add('active');
+                updateQuadraticVisualization();
+            } else if (tab === 'primitive-roots') {
+                document.querySelectorAll('.tab')[4].classList.add('active');
+                document.getElementById('primitiveRootsTab').classList.add('active');
+                updatePrimitiveRootsVisualization();
+            } else if (tab === 'multiplication-table') {
+                document.querySelectorAll('.tab')[5].classList.add('active');
+                document.getElementById('multiplicationTableTab').classList.add('active');
+                updateMultiplicationTable();
             }
         }
 
@@ -5362,6 +6058,9 @@
             updateGapColorPickers();
             updateVisualization();
             initCompositeProjection();
+            initQuadraticResidues();
+            initPrimitiveRoots();
+            initMultiplicationTable();
         });
 
         // ===== COMPOSITE PROJECTION COROLLARY =====
@@ -6168,6 +6867,1033 @@
             link.href = url;
             link.click();
             URL.revokeObjectURL(url);
+        }
+
+        // ===== QUADRATIC RESIDUES VISUALIZATION =====
+        let qrPrime = 17;
+        let qrPoints = [];
+        let qrZoom = 1;
+        let qrAnimationFrame = 0;
+        let qrAnimationId = null;
+
+        function initQuadraticResidues() {
+            const slider = document.getElementById('qrModSlider');
+            const input = document.getElementById('qrModInput');
+            const pointSize = document.getElementById('qrPointSize');
+            const canvas = document.getElementById('quadraticCanvas');
+            const tooltip = document.getElementById('quadraticTooltip');
+            const vizMode = document.getElementById('qrVisualizationMode');
+            const showConn = document.getElementById('qrShowConnections');
+            const animate = document.getElementById('qrAnimateSequence');
+            
+            slider.addEventListener('input', () => {
+                let val = parseInt(slider.value);
+                // Ensure it's an odd number (prime or close to prime)
+                if (val % 2 === 0) val++;
+                // Find next prime
+                while (!isPrime(val) && val < 1000) val += 2;
+                if (val >= 1000) val = 997; // largest prime under 1000
+                
+                qrPrime = val;
+                input.value = val;
+                slider.value = val;
+                document.getElementById('qrModDisplay').textContent = val;
+                updateQuadraticVisualization();
+            });
+            
+            input.addEventListener('input', () => {
+                let val = parseInt(input.value);
+                if (!isNaN(val) && val >= 3 && isPrime(val)) {
+                    qrPrime = val;
+                    slider.value = Math.min(val, 997);
+                    document.getElementById('qrModDisplay').textContent = val;
+                    updateQuadraticVisualization();
+                }
+            });
+            
+            pointSize.addEventListener('input', () => {
+                document.getElementById('qrPointSizeDisplay').textContent = 
+                    parseFloat(pointSize.value).toFixed(1);
+                drawQuadraticVisualization();
+            });
+            
+            vizMode.addEventListener('change', () => {
+                drawQuadraticVisualization();
+            });
+            
+            showConn.addEventListener('change', () => {
+                drawQuadraticVisualization();
+            });
+            
+            animate.addEventListener('change', () => {
+                if (animate.checked) {
+                    startQRAnimation();
+                } else {
+                    stopQRAnimation();
+                }
+            });
+            
+            // Mouse wheel zoom
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                qrZoom *= delta;
+                qrZoom = Math.max(0.5, Math.min(5, qrZoom));
+                drawQuadraticVisualization();
+            });
+            
+            // Hover tooltip
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                handleQRHover(x, y, e);
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                tooltip.style.opacity = '0';
+            });
+            
+            // Click handler
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                handleQRClick(x, y);
+            });
+            
+            updateQuadraticVisualization();
+        }
+
+        function setQRPrime(p) {
+            qrPrime = p;
+            document.getElementById('qrModSlider').value = p;
+            document.getElementById('qrModInput').value = p;
+            document.getElementById('qrModDisplay').textContent = p;
+            updateQuadraticVisualization();
+        }
+
+        function legendreSymbol(a, p) {
+            if (a % p === 0) return 0;
+            // Use Euler's criterion: (a|p) = a^((p-1)/2) mod p
+            const exp = (p - 1) / 2;
+            let result = 1;
+            let base = a % p;
+            let e = exp;
+            
+            while (e > 0) {
+                if (e % 2 === 1) {
+                    result = (result * base) % p;
+                }
+                base = (base * base) % p;
+                e = Math.floor(e / 2);
+            }
+            
+            return result === 1 ? 1 : -1;
+        }
+
+        function isQuadraticResidue(a, p) {
+            if (a % p === 0) return true; // 0 is always a QR
+            return legendreSymbol(a, p) === 1;
+        }
+
+        function updateQuadraticVisualization() {
+            const p = qrPrime;
+            
+            // Generate points
+            qrPoints = [];
+            let qrCount = 0;
+            let nrCount = 0;
+            
+            for (let a = 0; a < p; a++) {
+                const angle = -2 * Math.PI * a / p;
+                const isQR = isQuadraticResidue(a, p);
+                const legendre = a === 0 ? 0 : legendreSymbol(a, p);
+                
+                // Find which square produces this (if QR)
+                let squareRoot = -1;
+                if (isQR && a !== 0) {
+                    for (let x = 1; x <= (p - 1) / 2; x++) {
+                        if ((x * x) % p === a) {
+                            squareRoot = x;
+                            break;
+                        }
+                    }
+                }
+                
+                if (a !== 0) {
+                    if (isQR) qrCount++;
+                    else nrCount++;
+                }
+                
+                qrPoints.push({
+                    a: a,
+                    p: p,
+                    angle: angle,
+                    isQR: isQR,
+                    legendre: legendre,
+                    squareRoot: squareRoot
+                });
+            }
+            
+            // Update statistics
+            document.getElementById('qrPrime').textContent = p;
+            document.getElementById('qrCount').textContent = qrCount;
+            document.getElementById('nrCount').textContent = nrCount;
+            const ratio = ((qrCount / (qrCount + nrCount)) * 100).toFixed(1);
+            document.getElementById('qrRatio').textContent = ratio + '%';
+            document.getElementById('qrMod4').textContent = p % 4;
+            
+            // Update analysis text
+            let analysisHTML = `<p style="margin-bottom: 12px;"><strong>Prime p = ${p}</strong></p>`;
+            analysisHTML += `<p style="margin-bottom: 12px;">This prime has <strong>${qrCount} quadratic residues</strong> and <strong>${nrCount} non-residues</strong> among its ${p-1} non-zero elements.</p>`;
+            
+            if (p % 4 === 1) {
+                analysisHTML += `<p style="margin-bottom: 12px;">Since p ≡ 1 (mod 4), we know that <strong>-1 is a quadratic residue</strong> mod ${p}. This means the equation x² ≡ -1 (mod ${p}) has solutions.</p>`;
+            } else {
+                analysisHTML += `<p style="margin-bottom: 12px;">Since p ≡ 3 (mod 4), we know that <strong>-1 is NOT a quadratic residue</strong> mod ${p}. The equation x² ≡ -1 (mod ${p}) has no solutions.</p>`;
+            }
+            
+            const pMod8 = p % 8;
+            if (pMod8 === 1 || pMod8 === 7) {
+                analysisHTML += `<p style="margin-bottom: 12px;">Since p ≡ ±1 (mod 8), the number <strong>2 is a quadratic residue</strong> mod ${p}.</p>`;
+            } else {
+                analysisHTML += `<p style="margin-bottom: 12px;">Since p ≡ ±3 (mod 8), the number <strong>2 is NOT a quadratic residue</strong> mod ${p}.</p>`;
+            }
+            
+            analysisHTML += `<p>The quadratic residues form a subgroup of index 2 in the multiplicative group (ℤ/${p}ℤ)×, which has order ${p-1}.</p>`;
+            
+            document.getElementById('qrAnalysisText').innerHTML = analysisHTML;
+            
+            // Update table
+            updateQRTable();
+            
+            drawQuadraticVisualization();
+        }
+
+        function updateQRTable() {
+            const tbody = document.getElementById('qrTableBody');
+            tbody.innerHTML = '';
+            
+            for (let a = 1; a < qrPrime; a++) {
+                const aSq = (a * a) % qrPrime;
+                const leg = legendreSymbol(a, qrPrime);
+                const isQR = leg === 1;
+                
+                const row = document.createElement('tr');
+                row.style.background = isQR ? 'rgba(0, 255, 0, 0.1)' : 'rgba(255, 0, 100, 0.1)';
+                
+                row.innerHTML = `
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">${a}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">${aSq}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center; font-weight: 600; color: ${leg === 1 ? '#00ff00' : '#ff0064'};">${leg > 0 ? '+1' : '-1'}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">${isQR ? 'QR' : 'NR'}</td>
+                `;
+                
+                tbody.appendChild(row);
+            }
+        }
+
+        function drawQuadraticVisualization() {
+            const canvas = document.getElementById('quadraticCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const baseRadius = Math.min(width, height) * 0.42;
+            const radius = baseRadius * qrZoom;
+            
+            // Clear
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+            
+            const p = qrPrime;
+            const pointSize = parseFloat(document.getElementById('qrPointSize').value);
+            const vizMode = document.getElementById('qrVisualizationMode').value;
+            const showConn = document.getElementById('qrShowConnections').checked;
+            
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.scale(qrZoom, qrZoom);
+            
+            // Draw outer ring
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2.5 / qrZoom;
+            ctx.beginPath();
+            ctx.arc(0, 0, baseRadius, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Draw connections if enabled
+            if (showConn && vizMode === 'square-sequence') {
+                ctx.strokeStyle = 'rgba(0, 200, 255, 0.3)';
+                ctx.lineWidth = 1.5 / qrZoom;
+                
+                for (let x = 1; x <= (p - 1) / 2; x++) {
+                    const xSq = (x * x) % p;
+                    const point1 = qrPoints.find(pt => pt.a === x);
+                    const point2 = qrPoints.find(pt => pt.a === xSq);
+                    
+                    if (point1 && point2) {
+                        const x1 = baseRadius * Math.cos(point1.angle);
+                        const y1 = baseRadius * Math.sin(point1.angle);
+                        const x2 = baseRadius * Math.cos(point2.angle);
+                        const y2 = baseRadius * Math.sin(point2.angle);
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            // Draw points
+            qrPoints.forEach((point, idx) => {
+                const x = baseRadius * Math.cos(point.angle);
+                const y = baseRadius * Math.sin(point.angle);
+                
+                let color, size;
+                
+                if (point.a === 0) {
+                    color = '#666666';
+                    size = pointSize * 0.8;
+                } else if (vizMode === 'residue-nonresidue' || vizMode === 'square-sequence') {
+                    color = point.isQR ? '#00ff00' : '#ff0064';
+                    size = pointSize;
+                    
+                    if (vizMode === 'square-sequence') {
+                        // Highlight if this is currently being animated
+                        const animIdx = Math.floor(qrAnimationFrame) % ((p - 1) / 2);
+                        const currentSquare = ((animIdx + 1) * (animIdx + 1)) % p;
+                        if (point.a === currentSquare || point.a === (animIdx + 1)) {
+                            size = pointSize * 1.5;
+                            color = '#00ffff';
+                        }
+                    }
+                } else if (vizMode === 'legendre-symbol') {
+                    if (point.legendre === 1) {
+                        color = '#00ff00';
+                    } else if (point.legendre === -1) {
+                        color = '#ff0064';
+                    } else {
+                        color = '#666666';
+                    }
+                    size = pointSize;
+                }
+                
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, size / qrZoom, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Store screen coordinates
+                point.screenX = centerX + x * qrZoom;
+                point.screenY = centerY + y * qrZoom;
+                point.screenRadius = size;
+            });
+            
+            ctx.restore();
+            
+            // Draw center dot
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Title
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Quadratic Residues mod ${p}`, width / 2, 30);
+            
+            // Zoom indicator
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'right';
+            ctx.fillText(`Zoom: ${(qrZoom * 100).toFixed(0)}%`, width - 10, height - 10);
+        }
+
+        function handleQRHover(x, y, e) {
+            const tooltip = document.getElementById('quadraticTooltip');
+            
+            let hoveredPoint = null;
+            let minDist = Infinity;
+            
+            qrPoints.forEach(point => {
+                if (point.screenX !== undefined) {
+                    const dx = x - point.screenX;
+                    const dy = y - point.screenY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < point.screenRadius * 1.5 && dist < minDist) {
+                        minDist = dist;
+                        hoveredPoint = point;
+                    }
+                }
+            });
+            
+            if (hoveredPoint) {
+                tooltip.style.opacity = '1';
+                tooltip.style.left = (e.clientX + 15) + 'px';
+                tooltip.style.top = (e.clientY + 15) + 'px';
+                
+                let html = `<strong>a = ${hoveredPoint.a}</strong><br>`;
+                
+                if (hoveredPoint.a === 0) {
+                    html += `Zero (always QR)<br>`;
+                    html += `(0|${hoveredPoint.p}) = 0`;
+                } else {
+                    html += `Legendre: (${hoveredPoint.a}|${hoveredPoint.p}) = ${hoveredPoint.legendre > 0 ? '+1' : '-1'}<br>`;
+                    html += `<span style="color: ${hoveredPoint.isQR ? '#00ff00' : '#ff0064'};">${hoveredPoint.isQR ? 'QUADRATIC RESIDUE' : 'NON-RESIDUE'}</span><br>`;
+                    
+                    if (hoveredPoint.isQR && hoveredPoint.squareRoot > 0) {
+                        html += `${hoveredPoint.squareRoot}² ≡ ${hoveredPoint.a} (mod ${hoveredPoint.p})`;
+                    }
+                }
+                
+                tooltip.innerHTML = html;
+            } else {
+                tooltip.style.opacity = '0';
+            }
+        }
+
+        function handleQRClick(x, y) {
+            let clickedPoint = null;
+            let minDist = Infinity;
+            
+            qrPoints.forEach(point => {
+                if (point.screenX !== undefined) {
+                    const dx = x - point.screenX;
+                    const dy = y - point.screenY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < 10 && dist < minDist) {
+                        minDist = dist;
+                        clickedPoint = point;
+                    }
+                }
+            });
+            
+            if (clickedPoint) {
+                let message = `Residue a = ${clickedPoint.a} modulo p = ${clickedPoint.p}\n\n`;
+                
+                if (clickedPoint.a === 0) {
+                    message += `Zero is always a quadratic residue.\n`;
+                    message += `Legendre symbol: (0|${clickedPoint.p}) = 0`;
+                } else {
+                    message += `Legendre symbol: (${clickedPoint.a}|${clickedPoint.p}) = ${clickedPoint.legendre}\n\n`;
+                    
+                    if (clickedPoint.isQR) {
+                        message += `Status: QUADRATIC RESIDUE\n\n`;
+                        if (clickedPoint.squareRoot > 0) {
+                            const neg = clickedPoint.p - clickedPoint.squareRoot;
+                            message += `Square roots: ±${clickedPoint.squareRoot} ≡ ${clickedPoint.squareRoot}, ${neg} (mod ${clickedPoint.p})\n`;
+                            message += `Verification: ${clickedPoint.squareRoot}² = ${clickedPoint.squareRoot * clickedPoint.squareRoot} ≡ ${clickedPoint.a} (mod ${clickedPoint.p})`;
+                        }
+                    } else {
+                        message += `Status: NON-RESIDUE\n\n`;
+                        message += `The equation x² ≡ ${clickedPoint.a} (mod ${clickedPoint.p}) has no solutions.`;
+                    }
+                }
+                
+                alert(message);
+            }
+        }
+
+        function startQRAnimation() {
+            if (!qrAnimationId) {
+                qrAnimationFrame = 0;
+                function animate() {
+                    qrAnimationFrame += 0.05;
+                    drawQuadraticVisualization();
+                    qrAnimationId = requestAnimationFrame(animate);
+                }
+                qrAnimationId = requestAnimationFrame(animate);
+            }
+        }
+
+        function stopQRAnimation() {
+            if (qrAnimationId) {
+                cancelAnimationFrame(qrAnimationId);
+                qrAnimationId = null;
+                qrAnimationFrame = 0;
+                drawQuadraticVisualization();
+            }
+        }
+
+        // ===== PRIMITIVE ROOTS VISUALIZATION =====
+        let prModulus = 7;
+        let prGenerator = 3;
+        let prElements = [];
+        let prAnimationFrame = 0;
+        let prAnimationId = null;
+
+        function initPrimitiveRoots() {
+            const input = document.getElementById('prModInput');
+            const genSelect = document.getElementById('prGeneratorSelect');
+            const vizMode = document.getElementById('prVisualizationMode');
+            const showLines = document.getElementById('prShowPowerLines');
+            const animate = document.getElementById('prAnimatePowers');
+            
+            input.addEventListener('input', () => {
+                const val = parseInt(input.value);
+                if (!isNaN(val) && val >= 2) {
+                    prModulus = val;
+                    document.getElementById('prModDisplay').textContent = val;
+                    updatePrimitiveRootsVisualization();
+                }
+            });
+            
+            genSelect.addEventListener('change', () => {
+                const val = genSelect.value;
+                if (val !== 'auto') {
+                    prGenerator = parseInt(val);
+                    drawPrimitiveRootsVisualization();
+                }
+            });
+            
+            vizMode.addEventListener('change', () => {
+                drawPrimitiveRootsVisualization();
+            });
+            
+            showLines.addEventListener('change', () => {
+                drawPrimitiveRootsVisualization();
+            });
+            
+            animate.addEventListener('change', () => {
+                if (animate.checked) {
+                    startPRAnimation();
+                } else {
+                    stopPRAnimation();
+                }
+            });
+            
+            updatePrimitiveRootsVisualization();
+        }
+
+        function setPRModulus(m) {
+            prModulus = m;
+            document.getElementById('prModInput').value = m;
+            document.getElementById('prModDisplay').textContent = m;
+            updatePrimitiveRootsVisualization();
+        }
+
+        function computeOrder(a, m) {
+            if (gcd(a, m) !== 1) return 0;
+            let order = 1;
+            let power = a % m;
+            while (power !== 1) {
+                power = (power * a) % m;
+                order++;
+                if (order > m) return 0; // Safety check
+            }
+            return order;
+        }
+
+        function findPrimitiveRoots(m) {
+            const phiM = phi(m);
+            const roots = [];
+            
+            for (let a = 1; a < m; a++) {
+                if (gcd(a, m) === 1 && computeOrder(a, m) === phiM) {
+                    roots.push(a);
+                }
+            }
+            
+            return roots;
+        }
+
+        function hasPrimitiveRoot(m) {
+            // m has primitive roots iff m = 1, 2, 4, p^k, or 2p^k where p is odd prime
+            if (m === 1 || m === 2 || m === 4) return true;
+            
+            if (m % 2 === 0) {
+                const halfM = m / 2;
+                if (halfM % 2 === 0) return false;
+                return isPrimePower(halfM);
+            }
+            
+            return isPrimePower(m);
+        }
+
+        function isPrimePower(n) {
+            if (n <= 1) return false;
+            
+            for (let p = 2; p * p <= n; p++) {
+                if (n % p === 0) {
+                    let temp = n;
+                    while (temp % p === 0) {
+                        temp /= p;
+                    }
+                    return temp === 1;
+                }
+            }
+            return isPrime(n);
+        }
+
+        function updatePrimitiveRootsVisualization() {
+            const m = prModulus;
+            const phiM = phi(m);
+            const roots = findPrimitiveRoots(m);
+            const hasRoot = roots.length > 0;
+            
+            // Update generator select
+            const genSelect = document.getElementById('prGeneratorSelect');
+            genSelect.innerHTML = '<option value="auto">Auto (smallest)</option>';
+            
+            if (hasRoot) {
+                roots.forEach(g => {
+                    const option = document.createElement('option');
+                    option.value = g;
+                    option.textContent = `g = ${g}`;
+                    genSelect.appendChild(option);
+                });
+                prGenerator = roots[0];
+            }
+            
+            // Compute orders for all coprime elements
+            prElements = [];
+            for (let a = 1; a < m; a++) {
+                if (gcd(a, m) === 1) {
+                    const order = computeOrder(a, m);
+                    const angle = -2 * Math.PI * a / m;
+                    const isPrimRoot = order === phiM;
+                    
+                    prElements.push({
+                        a: a,
+                        m: m,
+                        order: order,
+                        angle: angle,
+                        isPrimitiveRoot: isPrimRoot
+                    });
+                }
+            }
+            
+            // Update statistics
+            document.getElementById('prModulus').textContent = m;
+            document.getElementById('prPhi').textContent = phiM;
+            document.getElementById('prHasRoot').textContent = hasRoot ? 'Yes' : 'No';
+            document.getElementById('prHasRoot').style.color = hasRoot ? '#00ff00' : '#ff0064';
+            document.getElementById('prSmallest').textContent = hasRoot ? roots[0] : 'N/A';
+            document.getElementById('prCount').textContent = roots.length;
+            
+            // Analysis text
+            let analysisHTML = `<p style="margin-bottom: 12px;"><strong>Modulus m = ${m}</strong></p>`;
+            analysisHTML += `<p style="margin-bottom: 12px;">The group of units (ℤ/${m}ℤ)× has order φ(${m}) = ${phiM}.</p>`;
+            
+            if (hasRoot) {
+                analysisHTML += `<p style="margin-bottom: 12px;"><strong>This modulus has primitive roots.</strong> There are ${roots.length} primitive root(s): {${roots.join(', ')}}.</p>`;
+                analysisHTML += `<p style="margin-bottom: 12px;">The multiplicative group (ℤ/${m}ℤ)× is <strong>cyclic</strong>, generated by any primitive root.</p>`;
+                analysisHTML += `<p style="margin-bottom: 12px;">For example, successive powers of g = ${roots[0]} cycle through all ${phiM} coprime residues before returning to 1.</p>`;
+                
+                // Show a few powers
+                const g = roots[0];
+                let powersStr = '';
+                for (let k = 1; k <= Math.min(10, phiM); k++) {
+                    const val = modPow(g, k, m);
+                    powersStr += `${g}^${k} ≡ ${val} (mod ${m}), `;
+                }
+                if (phiM > 10) powersStr += '...';
+                analysisHTML += `<p style="margin-bottom: 12px; font-size: 12px;">${powersStr}</p>`;
+            } else {
+                analysisHTML += `<p style="margin-bottom: 12px;"><strong>This modulus has NO primitive roots.</strong></p>`;
+                analysisHTML += `<p style="margin-bottom: 12px;">The multiplicative group (ℤ/${m}ℤ)× is NOT cyclic. It decomposes as a direct product of cyclic groups.</p>`;
+                
+                // Show the orders that exist
+                const orderCounts = {};
+                prElements.forEach(el => {
+                    orderCounts[el.order] = (orderCounts[el.order] || 0) + 1;
+                });
+                
+                analysisHTML += `<p style="margin-bottom: 12px;">Element orders present: `;
+                Object.keys(orderCounts).sort((a,b) => a-b).forEach(ord => {
+                    analysisHTML += `ord=${ord} (${orderCounts[ord]} elements), `;
+                });
+                analysisHTML += `</p>`;
+            }
+            
+            document.getElementById('prAnalysisText').innerHTML = analysisHTML;
+            
+            // Update order table
+            updatePROrderTable();
+            
+            drawPrimitiveRootsVisualization();
+        }
+
+        function modPow(base, exp, mod) {
+            let result = 1;
+            base = base % mod;
+            while (exp > 0) {
+                if (exp % 2 === 1) {
+                    result = (result * base) % mod;
+                }
+                base = (base * base) % mod;
+                exp = Math.floor(exp / 2);
+            }
+            return result;
+        }
+
+        function updatePROrderTable() {
+            const tbody = document.getElementById('prOrderTableBody');
+            tbody.innerHTML = '';
+            
+            prElements.forEach(el => {
+                const row = document.createElement('tr');
+                row.style.background = el.isPrimitiveRoot ? 'rgba(255, 0, 255, 0.2)' : 'transparent';
+                
+                // Generate powers
+                let powersStr = '';
+                const g = el.a;
+                const m = el.m;
+                for (let k = 1; k <= Math.min(el.order, 8); k++) {
+                    powersStr += modPow(g, k, m);
+                    if (k < el.order && k < 8) powersStr += ', ';
+                }
+                if (el.order > 8) powersStr += '...';
+                
+                row.innerHTML = `
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">${el.a}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center; font-weight: 600;">${el.order}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); font-size: 10px;">${powersStr}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center; color: ${el.isPrimitiveRoot ? '#ff00ff' : '#666'};">${el.isPrimitiveRoot ? 'YES' : 'no'}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function drawPrimitiveRootsVisualization() {
+            const canvas = document.getElementById('primitiveCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) * 0.40;
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+            
+            const m = prModulus;
+            const vizMode = document.getElementById('prVisualizationMode').value;
+            const showLines = document.getElementById('prShowPowerLines').checked;
+            
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            // Draw ring
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Draw power connections if enabled
+            if (showLines && vizMode === 'powers-sequence') {
+                ctx.strokeStyle = 'rgba(255, 0, 255, 0.3)';
+                ctx.lineWidth = 1.5;
+                
+                const g = prGenerator;
+                for (let k = 0; k < phi(m); k++) {
+                    const val1 = modPow(g, k, m);
+                    const val2 = modPow(g, k + 1, m);
+                    
+                    const el1 = prElements.find(e => e.a === val1);
+                    const el2 = prElements.find(e => e.a === val2);
+                    
+                    if (el1 && el2) {
+                        const x1 = radius * Math.cos(el1.angle);
+                        const y1 = radius * Math.sin(el1.angle);
+                        const x2 = radius * Math.cos(el2.angle);
+                        const y2 = radius * Math.sin(el2.angle);
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            // Draw points
+            prElements.forEach(el => {
+                const x = radius * Math.cos(el.angle);
+                const y = radius * Math.sin(el.angle);
+                
+                let color, size = 6;
+                
+                if (vizMode === 'orbit-structure' || vizMode === 'powers-sequence') {
+                    color = el.isPrimitiveRoot ? '#ff00ff' : '#00ffff';
+                    if (el.isPrimitiveRoot) size = 8;
+                } else if (vizMode === 'order-coloring') {
+                    const hue = (el.order / phi(m)) * 240;
+                    color = `hsl(${hue}, 100%, 50%)`;
+                }
+                
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                el.screenX = centerX + x;
+                el.screenY = centerY + y;
+                el.screenRadius = size;
+            });
+            
+            ctx.restore();
+            
+            // Center dot
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Title
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Primitive Roots mod ${m}`, width / 2, 30);
+        }
+
+        function startPRAnimation() {
+            if (!prAnimationId) {
+                prAnimationFrame = 0;
+                function animate() {
+                    prAnimationFrame += 0.05;
+                    drawPrimitiveRootsVisualization();
+                    prAnimationId = requestAnimationFrame(animate);
+                }
+                prAnimationId = requestAnimationFrame(animate);
+            }
+        }
+
+        function stopPRAnimation() {
+            if (prAnimationId) {
+                cancelAnimationFrame(prAnimationId);
+                prAnimationId = null;
+                prAnimationFrame = 0;
+                drawPrimitiveRootsVisualization();
+            }
+        }
+
+        // ===== MULTIPLICATION TABLE VISUALIZATION =====
+        let mtModulus = 12;
+
+        function initMultiplicationTable() {
+            const slider = document.getElementById('mtModSlider');
+            const input = document.getElementById('mtModInput');
+            const tableType = document.getElementById('mtTableType');
+            const colorScheme = document.getElementById('mtColorScheme');
+            const cellSize = document.getElementById('mtCellSize');
+            const showValues = document.getElementById('mtShowValues');
+            const showSymm = document.getElementById('mtShowSymmetry');
+            
+            slider.addEventListener('input', () => {
+                mtModulus = parseInt(slider.value);
+                input.value = mtModulus;
+                document.getElementById('mtModDisplay').textContent = mtModulus;
+                updateMultiplicationTable();
+            });
+            
+            input.addEventListener('input', () => {
+                const val = parseInt(input.value);
+                if (!isNaN(val) && val >= 2) {
+                    mtModulus = val;
+                    slider.value = Math.min(val, 50);
+                    document.getElementById('mtModDisplay').textContent = val;
+                    updateMultiplicationTable();
+                }
+            });
+            
+            tableType.addEventListener('change', () => updateMultiplicationTable());
+            colorScheme.addEventListener('change', () => drawMultiplicationTable());
+            cellSize.addEventListener('input', () => {
+                document.getElementById('mtCellSizeDisplay').textContent = cellSize.value;
+                drawMultiplicationTable();
+            });
+            showValues.addEventListener('change', () => drawMultiplicationTable());
+            showSymm.addEventListener('change', () => drawMultiplicationTable());
+            
+            updateMultiplicationTable();
+        }
+
+        function updateMultiplicationTable() {
+            const m = mtModulus;
+            
+            // Count special elements
+            const units = [];
+            const zeroDivisors = [];
+            const idempotents = [];
+            
+            for (let a = 0; a < m; a++) {
+                if (gcd(a, m) === 1) units.push(a);
+                
+                // Check if zero divisor
+                for (let b = 1; b < m; b++) {
+                    if ((a * b) % m === 0 && a !== 0 && b !== 0) {
+                        if (!zeroDivisors.includes(a)) zeroDivisors.push(a);
+                        break;
+                    }
+                }
+                
+                // Check if idempotent (a² ≡ a)
+                if ((a * a) % m === a) {
+                    idempotents.push(a);
+                }
+            }
+            
+            // Update statistics
+            document.getElementById('mtModulus').textContent = m;
+            document.getElementById('mtUnits').textContent = units.length;
+            document.getElementById('mtZeroDivisors').textContent = zeroDivisors.length;
+            document.getElementById('mtIdempotents').textContent = idempotents.length;
+            
+            // Analysis
+            let analysisHTML = `<p style="margin-bottom: 12px;"><strong>Modulus m = ${m}</strong></p>`;
+            analysisHTML += `<p style="margin-bottom: 12px;">The ring ℤ/${m}ℤ has ${m} elements: {0, 1, 2, ..., ${m-1}}.</p>`;
+            analysisHTML += `<p style="margin-bottom: 12px;">Units (invertible elements): ${units.length} = φ(${m})</p>`;
+            
+            if (zeroDivisors.length > 0) {
+                analysisHTML += `<p style="margin-bottom: 12px;">This ring has ${zeroDivisors.length} zero divisor(s). It is NOT an integral domain.</p>`;
+            } else {
+                analysisHTML += `<p style="margin-bottom: 12px;">This ring has no zero divisors. It IS an integral domain (actually a field, since m is prime).</p>`;
+            }
+            
+            analysisHTML += `<p style="margin-bottom: 12px;">Idempotent elements (a² = a): ${idempotents.length}</p>`;
+            
+            document.getElementById('mtAnalysisText').innerHTML = analysisHTML;
+            
+            // Special elements
+            let specialHTML = `<p style="margin-bottom: 8px;"><strong>Units:</strong> {${units.join(', ')}}</p>`;
+            if (zeroDivisors.length > 0) {
+                specialHTML += `<p style="margin-bottom: 8px;"><strong>Zero Divisors:</strong> {${zeroDivisors.join(', ')}}</p>`;
+            }
+            specialHTML += `<p style="margin-bottom: 8px;"><strong>Idempotents:</strong> {${idempotents.join(', ')}}</p>`;
+            
+            // Nilpotents
+            const nilpotents = [];
+            for (let a = 0; a < m; a++) {
+                let power = a;
+                let isNilpotent = false;
+                for (let k = 1; k <= 10; k++) {
+                    if (power === 0) {
+                        isNilpotent = true;
+                        break;
+                    }
+                    power = (power * a) % m;
+                }
+                if (isNilpotent && a !== 0) nilpotents.push(a);
+            }
+            
+            if (nilpotents.length > 0) {
+                specialHTML += `<p style="margin-bottom: 8px;"><strong>Nilpotents:</strong> {${nilpotents.join(', ')}}</p>`;
+            }
+            
+            document.getElementById('mtSpecialElements').innerHTML = specialHTML;
+            
+            drawMultiplicationTable();
+        }
+
+        function drawMultiplicationTable() {
+            const canvas = document.getElementById('multiplicationCanvas');
+            const ctx = canvas.getContext('2d');
+            const m = mtModulus;
+            const tableType = document.getElementById('mtTableType').value;
+            const colorScheme = document.getElementById('mtColorScheme').value;
+            const cellSize = parseInt(document.getElementById('mtCellSize').value);
+            const showValues = document.getElementById('mtShowValues').checked;
+            
+            // Determine what elements to show
+            let elements = [];
+            if (tableType === 'full') {
+                for (let i = 0; i < m; i++) elements.push(i);
+            } else if (tableType === 'units') {
+                for (let i = 1; i < m; i++) {
+                    if (gcd(i, m) === 1) elements.push(i);
+                }
+            } else { // addition
+                for (let i = 0; i < m; i++) elements.push(i);
+            }
+            
+            const n = elements.length;
+            const totalSize = n * cellSize;
+            
+            // Resize canvas
+            canvas.width = totalSize + 40;
+            canvas.height = totalSize + 40;
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const offsetX = 20;
+            const offsetY = 20;
+            
+            // Draw table
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < n; j++) {
+                    const a = elements[i];
+                    const b = elements[j];
+                    let result;
+                    
+                    if (tableType === 'addition') {
+                        result = (a + b) % m;
+                    } else {
+                        result = (a * b) % m;
+                    }
+                    
+                    // Determine color
+                    let color;
+                    if (colorScheme === 'rainbow') {
+                        const hue = (result / m) * 360;
+                        color = `hsl(${hue}, 70%, 50%)`;
+                    } else if (colorScheme === 'residue-class') {
+                        const hue = (result % 12) * 30;
+                        color = `hsl(${hue}, 70%, 50%)`;
+                    } else if (colorScheme === 'zero-divisors') {
+                        if (result === 0 && a !== 0 && b !== 0) {
+                            color = '#ff0000';
+                        } else if (gcd(result, m) === 1) {
+                            color = '#00ff00';
+                        } else {
+                            color = '#666666';
+                        }
+                    } else if (colorScheme === 'idempotents') {
+                        if (a === b && result === a) {
+                            color = '#ffff00';
+                        } else {
+                            const hue = (result / m) * 360;
+                            color = `hsl(${hue}, 70%, 50%)`;
+                        }
+                    }
+                    
+                    ctx.fillStyle = color;
+                    ctx.fillRect(offsetX + j * cellSize, offsetY + i * cellSize, cellSize, cellSize);
+                    
+                    // Draw value
+                    if (showValues && cellSize >= 15) {
+                        ctx.fillStyle = '#000000';
+                        ctx.font = `${Math.min(cellSize * 0.5, 12)}px Arial`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(result, offsetX + j * cellSize + cellSize / 2, offsetY + i * cellSize + cellSize / 2);
+                    }
+                }
+            }
+            
+            // Draw grid
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= n; i++) {
+                ctx.beginPath();
+                ctx.moveTo(offsetX, offsetY + i * cellSize);
+                ctx.lineTo(offsetX + totalSize, offsetY + i * cellSize);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(offsetX + i * cellSize, offsetY);
+                ctx.lineTo(offsetX + i * cellSize, offsetY + totalSize);
+                ctx.stroke();
+            }
         }
     </script>
 </body>
