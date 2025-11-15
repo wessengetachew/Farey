@@ -2776,11 +2776,10 @@
                 <p style="margin-top: 30px; font-style: italic;">
                     By visualizing these structures geometrically—as points on circles with carefully chosen colors and connections—we make visible the hidden symmetries that Gauss discovered through pure calculation. The patterns you see in the quadratic residue visualization are manifestations of reciprocity, the most fundamental symmetry in elementary number theory.
                 </p>
-
             </div>
         </div>
 
-        <div id="compositeProjectionTab" class="tab-content"
+        <div id="compositeProjectionTab" class="tab-content">
                 <h2>Modular Rings and the Residue System</h2>
                 
                 <h3>The Fundamental Concept</h3>
