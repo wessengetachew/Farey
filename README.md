@@ -9887,33 +9887,152 @@
         }
 
         function exportPRImage() {
+            const includeLegend = document.getElementById('prIncludeLegend').checked;
+            const includeColorKey = document.getElementById('prIncludeColorKey').checked;
+            const includeTimestamp = document.getElementById('prIncludeTimestamp').checked;
             const title = document.getElementById('prExportTitle').value;
             const resolution = parseFloat(document.getElementById('prExportResolution').value);
             
             const srcCanvas = document.getElementById('primitiveCanvas');
+            const baseWidth = srcCanvas.width;
+            const baseHeight = srcCanvas.height;
+            
+            const titleHeight = 100 * resolution;
+            let exportWidth = baseWidth * resolution;
+            let exportHeight = baseHeight * resolution + titleHeight;
+            
+            let legendWidth = 0;
+            if (includeLegend) {
+                legendWidth = 500 * resolution;
+                exportWidth += legendWidth;
+            }
+            
             const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = srcCanvas.width * resolution;
-            tempCanvas.height = srcCanvas.height * resolution + 100 * resolution;
-            
+            tempCanvas.width = exportWidth;
+            tempCanvas.height = exportHeight;
             const ctx = tempCanvas.getContext('2d');
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
             
-            ctx.fillStyle = '#ffffff';
-            ctx.font = `bold ${24 * resolution}px Arial`;
+            const bgColor = '#000000';
+            const textColor = '#ffffff';
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, exportWidth, exportHeight);
+            
+            const fontSize = 18 * resolution;
+            ctx.fillStyle = textColor;
+            ctx.font = `bold ${fontSize * 1.8}px Arial`;
             ctx.textAlign = 'center';
-            ctx.fillText(title, tempCanvas.width / 2, 50 * resolution);
+            const titleY = titleHeight / 2 + fontSize / 2;
+            ctx.fillText(title, exportWidth / 2, titleY);
+            
+            if (includeTimestamp) {
+                ctx.font = `${fontSize * 0.8}px Arial`;
+                const timestamp = new Date().toLocaleString();
+                ctx.fillText(timestamp, exportWidth / 2, titleY + fontSize * 1.5);
+            }
             
             ctx.save();
-            ctx.translate(0, 100 * resolution);
+            ctx.translate(0, titleHeight);
             ctx.scale(resolution, resolution);
             ctx.drawImage(srcCanvas, 0, 0);
             ctx.restore();
             
+            if (includeLegend) {
+                drawPRLegend(ctx, legendWidth, exportWidth, exportHeight, resolution, textColor, titleHeight, includeColorKey);
+            }
+            
             const link = document.createElement('a');
-            link.download = `primitive_roots_m${prModulus}_${Date.now()}.png`;
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            link.download = `primitive_roots_m${prModulus}_${timestamp}.png`;
             link.href = tempCanvas.toDataURL('image/png');
             link.click();
+        }
+
+        function drawPRLegend(ctx, legendWidth, totalWidth, totalHeight, resolution, textColor, titleHeight, includeColorKey) {
+            const m = prModulus;
+            const phiM = phi(m);
+            const roots = findPrimitiveRoots(m);
+            const vizMode = document.getElementById('prVisualizationMode').value;
+            
+            const fontSize = 13 * resolution;
+            const lineHeight = 18 * resolution;
+            const padding = 25 * resolution;
+            const sectionSpacing = 15 * resolution;
+            
+            const startX = totalWidth - legendWidth + padding;
+            const maxWidth = legendWidth - 2 * padding;
+            
+            let y = titleHeight + padding * 2;
+            ctx.textAlign = 'left';
+            
+            function drawSectionHeader(title) {
+                ctx.font = `bold ${fontSize * 1.1}px Arial`;
+                ctx.fillStyle = textColor;
+                ctx.fillText(title, startX, y);
+                y += lineHeight * 0.3;
+                
+                ctx.strokeStyle = textColor;
+                ctx.lineWidth = 1.5 * resolution;
+                ctx.beginPath();
+                ctx.moveTo(startX, y);
+                ctx.lineTo(startX + maxWidth * 0.9, y);
+                ctx.stroke();
+                y += lineHeight * 0.8;
+            }
+            
+            drawSectionHeader('CONFIGURATION');
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = textColor;
+            ctx.fillText(`Modulus: m = ${m}`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Visualization Mode: ${vizMode}`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Prime Factorization: ${primeFactorization(m)}`, startX, y);
+            y += lineHeight;
+            
+            y += sectionSpacing;
+            
+            drawSectionHeader('STATISTICS');
+            ctx.fillText(`φ(${m}) = ${phiM}`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Has Primitive Roots: ${roots.length > 0 ? 'Yes' : 'No'}`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Number of Generators: ${roots.length}`, startX, y);
+            y += lineHeight;
+            if (roots.length > 0) {
+                ctx.fillText(`Smallest Root: g = ${roots[0]}`, startX, y);
+                y += lineHeight;
+            }
+            
+            y += sectionSpacing;
+            
+            if (includeColorKey) {
+                drawSectionHeader('COLOR KEY');
+                const items = [
+                    { color: '#ff00ff', label: 'Magenta = Primitive Roots' },
+                    { color: '#00ffff', label: 'Cyan = Other Coprime Elements' }
+                ];
+                
+                items.forEach(item => {
+                    ctx.fillStyle = item.color;
+                    ctx.beginPath();
+                    ctx.arc(startX + 10 * resolution, y - 5 * resolution, 6 * resolution, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = textColor;
+                    ctx.fillText(item.label, startX + 25 * resolution, y);
+                    y += lineHeight * 1.2;
+                });
+                
+                y += sectionSpacing;
+            }
+            
+            drawSectionHeader('METADATA');
+            ctx.font = `${fontSize * 0.9}px Arial`;
+            ctx.fillText(`Generated: ${new Date().toLocaleString()}`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Author: Wessen Getachew`, startX, y);
+            y += lineHeight;
+            ctx.fillText(`Tool: Primitive Roots`, startX, y);
         }
 
         function exportPRCSV() {
@@ -10180,29 +10299,76 @@
             const resolution = parseFloat(document.getElementById('crtExportResolution').value);
             
             const srcCanvas = document.getElementById('crtCanvas');
+            const baseWidth = srcCanvas.width;
+            const baseHeight = srcCanvas.height;
+            
+            const titleHeight = 100 * resolution;
+            const legendWidth = 500 * resolution;
+            const exportWidth = baseWidth * resolution + legendWidth;
+            const exportHeight = baseHeight * resolution + titleHeight;
+            
             const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = srcCanvas.width * resolution;
-            tempCanvas.height = srcCanvas.height * resolution + 100 * resolution;
-            
+            tempCanvas.width = exportWidth;
+            tempCanvas.height = exportHeight;
             const ctx = tempCanvas.getContext('2d');
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
             
-            ctx.fillStyle = '#ffffff';
-            ctx.font = `bold ${24 * resolution}px Arial`;
+            const bgColor = '#000000';
+            const textColor = '#ffffff';
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, exportWidth, exportHeight);
+            
+            const fontSize = 18 * resolution;
+            ctx.fillStyle = textColor;
+            ctx.font = `bold ${fontSize * 1.8}px Arial`;
             ctx.textAlign = 'center';
-            ctx.fillText(title, tempCanvas.width / 2, 50 * resolution);
+            const titleY = titleHeight / 2 + fontSize / 2;
+            ctx.fillText(title, exportWidth / 2, titleY);
+            
+            ctx.font = `${fontSize * 0.8}px Arial`;
+            const timestamp = new Date().toLocaleString();
+            ctx.fillText(timestamp, exportWidth / 2, titleY + fontSize * 1.5);
             
             ctx.save();
-            ctx.translate(0, 100 * resolution);
+            ctx.translate(0, titleHeight);
             ctx.scale(resolution, resolution);
             ctx.drawImage(srcCanvas, 0, 0);
             ctx.restore();
             
+            drawCRTLegend(ctx, legendWidth, exportWidth, exportHeight, resolution, textColor, titleHeight);
+            
             const link = document.createElement('a');
-            link.download = `crt_solution_${Date.now()}.png`;
+            const ts = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            link.download = `crt_solution_${ts}.png`;
             link.href = tempCanvas.toDataURL('image/png');
             link.click();
+        }
+
+        function drawCRTLegend(ctx, legendWidth, totalWidth, totalHeight, resolution, textColor, titleHeight) {
+            const fontSize = 13 * resolution;
+            const lineHeight = 18 * resolution;
+            const padding = 25 * resolution;
+            const startX = totalWidth - legendWidth + padding;
+            
+            let y = titleHeight + padding * 2;
+            ctx.textAlign = 'left';
+            ctx.font = `bold ${fontSize * 1.1}px Arial`;
+            ctx.fillStyle = textColor;
+            ctx.fillText('SYSTEM', startX, y);
+            y += lineHeight * 1.5;
+            
+            ctx.font = `${fontSize}px Arial`;
+            crtSystem.forEach((eq, i) => {
+                ctx.fillText(`x ≡ ${eq.a} (mod ${eq.m})`, startX, y);
+                y += lineHeight;
+            });
+            
+            y += lineHeight;
+            if (crtSolution !== null) {
+                const M = crtSystem.reduce((p, eq) => p * eq.m, 1);
+                ctx.font = `bold ${fontSize * 1.1}px Arial`;
+                ctx.fillStyle = '#00ff00';
+                ctx.fillText(`Solution: x ≡ ${crtSolution} (mod ${M})`, startX, y);
+            }
         }
 
         function exportCRTCSV() {
