@@ -109,39 +109,60 @@
         }
 
         .tabs {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             background: var(--bg-primary);
             border-bottom: 1px solid var(--border-color);
+            gap: 2px;
         }
 
         .tab {
-            flex: 1;
-            padding: 15px;
+            padding: 15px 10px;
             text-align: center;
             cursor: pointer;
             background: var(--bg-primary);
             border: none;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-secondary);
             transition: all 0.3s;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            border-right: 1px solid var(--border-subtle);
-        }
-
-        .tab:last-child {
-            border-right: none;
-        }
-
-        .tab.active {
-            background: var(--hover-bg);
-            color: var(--hover-text);
+            letter-spacing: 0.5px;
+            border-bottom: 3px solid transparent;
         }
 
         .tab:hover:not(.active) {
             color: var(--text-primary);
+            border-bottom-color: var(--border-color);
         }
+
+        .tab.active {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-bottom-color: var(--accent-color);
+        }
+
+        .tab.color-main { border-bottom-color: #00ff00; }
+        .tab.color-theory { border-bottom-color: #00ffff; }
+        .tab.color-composite { border-bottom-color: #ffc800; }
+        .tab.color-quadratic { border-bottom-color: #ff00ff; }
+        .tab.color-primitive { border-bottom-color: #ff0064; }
+        .tab.color-multiplication { border-bottom-color: #00ff64; }
+        .tab.color-crt { border-bottom-color: #ff8800; }
+        .tab.color-cyclotomic { border-bottom-color: #8800ff; }
+        .tab.color-dirichlet { border-bottom-color: #ff0080; }
+        .tab.color-mobius { border-bottom-color: #00ffaa; }
+
+        .tab.active.color-main { background: rgba(0, 255, 0, 0.1); }
+        .tab.active.color-theory { background: rgba(0, 255, 255, 0.1); }
+        .tab.active.color-composite { background: rgba(255, 200, 0, 0.1); }
+        .tab.active.color-quadratic { background: rgba(255, 0, 255, 0.1); }
+        .tab.active.color-primitive { background: rgba(255, 0, 100, 0.1); }
+        .tab.active.color-multiplication { background: rgba(0, 255, 100, 0.1); }
+        .tab.active.color-crt { background: rgba(255, 136, 0, 0.1); }
+        .tab.active.color-cyclotomic { background: rgba(136, 0, 255, 0.1); }
+        .tab.active.color-dirichlet { background: rgba(255, 0, 128, 0.1); }
+        .tab.active.color-mobius { background: rgba(0, 255, 170, 0.1); }
 
         .tab-content {
             display: none;
@@ -685,14 +706,16 @@
         </div>
 
         <div class="tabs">
-            <button class="tab" onclick="switchTab('visualization')">Visualization</button>
-            <button class="tab" onclick="switchTab('understanding')">Theoretical Framework</button>
-            <button class="tab" onclick="switchTab('composite-projection')">Composite Projection</button>
-            <button class="tab" onclick="switchTab('quadratic-residues')">Quadratic Residues</button>
-            <button class="tab" onclick="switchTab('primitive-roots')">Primitive Roots</button>
-            <button class="tab" onclick="switchTab('multiplication-table')">Multiplication Table</button>
-            <button class="tab" onclick="switchTab('crt-visualizer')">Chinese Remainder</button>
-            <button class="tab" onclick="switchTab('cyclotomic')">Cyclotomic Polynomials</button>
+            <button class="tab color-main" onclick="switchTab('visualization')">Visualization</button>
+            <button class="tab color-theory" onclick="switchTab('understanding')">Theory</button>
+            <button class="tab color-composite" onclick="switchTab('composite-projection')">Composite</button>
+            <button class="tab color-quadratic" onclick="switchTab('quadratic-residues')">Quadratic</button>
+            <button class="tab color-primitive" onclick="switchTab('primitive-roots')">Primitive Roots</button>
+            <button class="tab color-multiplication" onclick="switchTab('multiplication-table')">Multiplication</button>
+            <button class="tab color-crt" onclick="switchTab('crt-visualizer')">CRT</button>
+            <button class="tab color-cyclotomic" onclick="switchTab('cyclotomic')">Cyclotomic</button>
+            <button class="tab color-dirichlet" onclick="switchTab('dirichlet')">Dirichlet</button>
+            <button class="tab color-mobius" onclick="switchTab('mobius')">Möbius</button>
         </div>
 
         <div id="visualizationTab" class="tab-content active">
@@ -1585,6 +1608,39 @@
                     </div>
                 </div>
                 
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Export Options</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Title</label>
+                        <input type="text" id="qrExportTitle" value="Quadratic Residues Visualization" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Resolution</label>
+                        <select id="qrExportResolution" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="1">Standard (700×700)</option>
+                            <option value="2">HD (1400×1400)</option>
+                            <option value="4" selected>4K (2800×2800)</option>
+                            <option value="8">8K (5600×5600)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="qrIncludeLegend" checked style="margin-right: 8px;">
+                            Include Statistics & Legend
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="exportQRImage()" style="background: #2196F3; color: #ffffff;">Export PNG</button>
+                        <button onclick="exportQRCSV()" style="background: #FF9800; color: #ffffff;">Export CSV</button>
+                    </div>
+                </div>
+                
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px;">
                     <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
                         <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Prime p</div>
@@ -1736,6 +1792,31 @@
                          color: #000000; border: 1px solid #000; pointer-events: none; font-size: 11px; 
                          line-height: 1.4; opacity: 0; transition: opacity 0.2s; z-index: 1000; max-width: 300px;
                          font-family: 'Courier New', monospace;">
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Export Options</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Title</label>
+                        <input type="text" id="mtExportTitle" value="Multiplication Table Visualization" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Resolution</label>
+                        <select id="mtExportResolution" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="1">Standard (current size)</option>
+                            <option value="2">HD (2× size)</option>
+                            <option value="4" selected>4K (4× size)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="exportMTImage()" style="background: #2196F3; color: #ffffff;">Export PNG</button>
+                        <button onclick="exportMTCSV()" style="background: #FF9800; color: #ffffff;">Export CSV</button>
                     </div>
                 </div>
                 
@@ -1973,6 +2054,32 @@
                     <div id="crtSteps" style="font-size: 13px; line-height: 1.8;"></div>
                 </div>
                 
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Export Options</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Title</label>
+                        <input type="text" id="crtExportTitle" value="Chinese Remainder Theorem Visualization" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Resolution</label>
+                        <select id="crtExportResolution" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="1">Standard (700×700)</option>
+                            <option value="2">HD (1400×1400)</option>
+                            <option value="4" selected>4K (2800×2800)</option>
+                            <option value="8">8K (5600×5600)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="exportCRTImage()" style="background: #2196F3; color: #ffffff;">Export PNG</button>
+                        <button onclick="exportCRTCSV()" style="background: #FF9800; color: #ffffff;">Export CSV</button>
+                    </div>
+                </div>
+                
                 <div style="background: rgba(0, 255, 100, 0.1); border: 2px solid #00ff64; padding: 20px;">
                     <h3 style="margin-bottom: 15px; color: #00ff64;">Chinese Remainder Theorem</h3>
                     <p style="margin: 0; font-size: 15px; line-height: 1.6;">
@@ -2057,6 +2164,32 @@
                     </canvas>
                 </div>
                 
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Export Options</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Title</label>
+                        <input type="text" id="prExportTitle" value="Primitive Roots Visualization" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Resolution</label>
+                        <select id="prExportResolution" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="1">Standard (700×700)</option>
+                            <option value="2">HD (1400×1400)</option>
+                            <option value="4" selected>4K (2800×2800)</option>
+                            <option value="8">8K (5600×5600)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="exportPRImage()" style="background: #2196F3; color: #ffffff;">Export PNG</button>
+                        <button onclick="exportPRCSV()" style="background: #FF9800; color: #ffffff;">Export CSV</button>
+                    </div>
+                </div>
+                
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px;">
                     <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
                         <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Order n</div>
@@ -2107,6 +2240,328 @@
                 <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px;">
                     <h3 style="margin-bottom: 15px;">Factorization of xⁿ - 1</h3>
                     <div id="cyclFactorization" style="font-size: 14px; line-height: 1.8; font-family: 'Courier New', monospace;"></div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px;">
+                    <h3 style="margin-bottom: 15px;">Export Options</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Title</label>
+                        <input type="text" id="cyclExportTitle" value="Cyclotomic Polynomials Visualization" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Resolution</label>
+                        <select id="cyclExportResolution" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="1">Standard (700×700)</option>
+                            <option value="2">HD (1400×1400)</option>
+                            <option value="4" selected>4K (2800×2800)</option>
+                            <option value="8">8K (5600×5600)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="exportCyclImage()" style="background: #2196F3; color: #ffffff;">Export PNG</button>
+                        <button onclick="exportCyclCSV()" style="background: #FF9800; color: #ffffff;">Export CSV</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dirichletTab" class="tab-content">
+            <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Dirichlet Characters & L-functions</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Configuration</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Modulus (q): <span id="dirModDisplay" style="color: #00ffff;">12</span>
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                            <span style="font-size: 11px;">3</span>
+                            <input type="range" id="dirModSlider" min="3" max="50" value="12" 
+                                   style="flex: 1; height: 8px;">
+                            <span style="font-size: 11px;">50</span>
+                        </div>
+                        <input type="number" id="dirModInput" min="3" max="100" value="12" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Select Character:</label>
+                        <select id="dirCharacterSelect" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="principal">Principal Character χ₀</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Visualization Mode:</label>
+                        <select id="dirVizMode" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="character-values">Character Values as Colors</option>
+                            <option value="character-table">Character Table</option>
+                            <option value="orthogonality">Orthogonality Relations</option>
+                            <option value="l-function">L-function Partial Sums</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="dirShowPhases" checked style="margin-right: 8px;">
+                            Show Phase Angles (for complex values)
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="dirAnimateRotation" style="margin-right: 8px;">
+                            Animate Character Rotation
+                        </label>
+                    </div>
+                </div>
+                
+                <div style="position: relative; display: flex; justify-content: center; margin-bottom: 20px;">
+                    <canvas id="dirichletCanvas" width="700" height="700" 
+                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px;">
+                    </canvas>
+                    <div id="dirichletTooltip" style="position: absolute; padding: 10px; background: rgba(255, 255, 255, 0.95); 
+                         color: #000000; border: 1px solid #000; pointer-events: none; font-size: 11px; 
+                         line-height: 1.4; opacity: 0; transition: opacity 0.2s; z-index: 1000; max-width: 250px;
+                         font-family: 'Courier New', monospace;">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Modulus q</div>
+                        <div id="dirModulus" style="font-size: 24px; font-weight: 600; color: #00ffff;">12</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">φ(q)</div>
+                        <div id="dirPhi" style="font-size: 24px; font-weight: 600; color: #00ff00;">4</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Total Characters</div>
+                        <div id="dirCharCount" style="font-size: 24px; font-weight: 600; color: #ff00ff;">4</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Character Type</div>
+                        <div id="dirCharType" style="font-size: 18px; font-weight: 600; color: #ffc800; margin-top: 8px;">Principal</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Character Analysis</h3>
+                    <div id="dirAnalysis" style="font-size: 14px; line-height: 1.8;"></div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Character Table</h3>
+                    <div id="dirTableContainer" style="max-height: 400px; overflow-y: auto;">
+                        <table id="dirTable" style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--bg-primary); position: sticky; top: 0;">
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">n</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">gcd(n,q)</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">χ(n)</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">|χ(n)|</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">arg(χ(n))</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dirTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Export Options</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Title</label>
+                        <input type="text" id="dirExportTitle" value="Dirichlet Characters Visualization" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Resolution</label>
+                        <select id="dirExportResolution" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="1">Standard (700×700)</option>
+                            <option value="2">HD (1400×1400)</option>
+                            <option value="4" selected>4K (2800×2800)</option>
+                            <option value="8">8K (5600×5600)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="exportDirImage()" style="background: #2196F3; color: #ffffff;">Export PNG</button>
+                        <button onclick="exportDirCSV()" style="background: #FF9800; color: #ffffff;">Export CSV</button>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255, 0, 128, 0.1); border: 2px solid #ff0080; padding: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #ff0080;">Dirichlet L-function</h3>
+                    <p style="margin: 0; font-size: 15px; line-height: 1.6;">
+                        L(s, χ) = Σ χ(n)/n^s generalizes the Riemann zeta function using multiplicative characters.
+                    </p>
+                    <p style="margin-top: 10px; font-size: 13px; opacity: 0.9;">
+                        Orthogonality: Σ χ(n)χ'(n)* = φ(q) if χ = χ', else 0
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobiusTab" class="tab-content">
+            <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Möbius Function & Arithmetic Functions</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Configuration</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Maximum n: <span id="mobMaxDisplay" style="color: #00ffff;">60</span>
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                            <span style="font-size: 11px;">10</span>
+                            <input type="range" id="mobMaxSlider" min="10" max="200" value="60" 
+                                   style="flex: 1; height: 8px;">
+                            <span style="font-size: 11px;">200</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Arithmetic Function:</label>
+                        <select id="mobFunctionSelect" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="mobius">μ(n) - Möbius Function</option>
+                            <option value="euler-phi">φ(n) - Euler Totient</option>
+                            <option value="tau">τ(n) - Number of Divisors</option>
+                            <option value="sigma">σ(n) - Sum of Divisors</option>
+                            <option value="omega">ω(n) - Distinct Prime Factors</option>
+                            <option value="bigomega">Ω(n) - Prime Factors with Multiplicity</option>
+                            <option value="liouville">λ(n) - Liouville Function</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Visualization Mode:</label>
+                        <select id="mobVizMode" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="ring-display">On Modular Rings</option>
+                            <option value="cumulative-sum">Cumulative Sum M(x)</option>
+                            <option value="color-map">Color Map by Value</option>
+                            <option value="sieve-layers">Sieve Inclusion-Exclusion</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="mobShowValues" checked style="margin-right: 8px;">
+                            Show Numeric Values
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="mobShowSummatory" style="margin-right: 8px;">
+                            Show Summatory Function
+                        </label>
+                    </div>
+                </div>
+                
+                <div style="position: relative; display: flex; justify-content: center; margin-bottom: 20px;">
+                    <canvas id="mobiusCanvas" width="700" height="700" 
+                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px;">
+                    </canvas>
+                    <div id="mobiusTooltip" style="position: absolute; padding: 10px; background: rgba(255, 255, 255, 0.95); 
+                         color: #000000; border: 1px solid #000; pointer-events: none; font-size: 11px; 
+                         line-height: 1.4; opacity: 0; transition: opacity 0.2s; z-index: 1000; max-width: 250px;
+                         font-family: 'Courier New', monospace;">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Range</div>
+                        <div id="mobRange" style="font-size: 24px; font-weight: 600; color: #00ffff;">1 to 60</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Sum M(x)</div>
+                        <div id="mobSum" style="font-size: 24px; font-weight: 600; color: #00ff00;">0</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">μ(n) = +1</div>
+                        <div id="mobPlusOne" style="font-size: 24px; font-weight: 600; color: #ffffff;">0</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">μ(n) = -1</div>
+                        <div id="mobMinusOne" style="font-size: 24px; font-weight: 600; color: #ff0064;">0</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">μ(n) = 0</div>
+                        <div id="mobZero" style="font-size: 24px; font-weight: 600; color: #666666;">0</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Function Analysis</h3>
+                    <div id="mobAnalysis" style="font-size: 14px; line-height: 1.8;"></div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Values Table</h3>
+                    <div id="mobTableContainer" style="max-height: 400px; overflow-y: auto;">
+                        <table id="mobTable" style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--bg-primary); position: sticky; top: 0;">
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">n</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">Prime Factors</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">f(n)</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">Cumulative</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mobTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Export Options</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Title</label>
+                        <input type="text" id="mobExportTitle" value="Möbius Function Visualization" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Resolution</label>
+                        <select id="mobExportResolution" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="1">Standard (700×700)</option>
+                            <option value="2">HD (1400×1400)</option>
+                            <option value="4" selected>4K (2800×2800)</option>
+                            <option value="8">8K (5600×5600)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="exportMobImage()" style="background: #2196F3; color: #ffffff;">Export PNG</button>
+                        <button onclick="exportMobCSV()" style="background: #FF9800; color: #ffffff;">Export CSV</button>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(0, 255, 170, 0.1); border: 2px solid #00ffaa; padding: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #00ffaa;">Möbius Inversion Formula</h3>
+                    <p style="margin: 0; font-size: 15px; line-height: 1.6;">
+                        If g(n) = Σ(d|n) f(d), then f(n) = Σ(d|n) μ(d)g(n/d)
+                    </p>
+                    <p style="margin-top: 10px; font-size: 13px; opacity: 0.9;">
+                        Example: φ(n) = Σ(d|n) μ(d)·n/d connects Möbius to Euler's totient
+                    </p>
                 </div>
             </div>
         </div>
@@ -6240,36 +6695,30 @@
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             
-            if (tab === 'visualization') {
-                document.querySelectorAll('.tab')[0].classList.add('active');
-                document.getElementById('visualizationTab').classList.add('active');
-            } else if (tab === 'understanding') {
-                document.querySelectorAll('.tab')[1].classList.add('active');
-                document.getElementById('understandingTab').classList.add('active');
-            } else if (tab === 'composite-projection') {
-                document.querySelectorAll('.tab')[2].classList.add('active');
-                document.getElementById('compositeProjectionTab').classList.add('active');
-                updateCompositeVisualization();
-            } else if (tab === 'quadratic-residues') {
-                document.querySelectorAll('.tab')[3].classList.add('active');
-                document.getElementById('quadraticResiduesTab').classList.add('active');
-                updateQuadraticVisualization();
-            } else if (tab === 'primitive-roots') {
-                document.querySelectorAll('.tab')[4].classList.add('active');
-                document.getElementById('primitiveRootsTab').classList.add('active');
-                updatePrimitiveRootsVisualization();
-            } else if (tab === 'multiplication-table') {
-                document.querySelectorAll('.tab')[5].classList.add('active');
-                document.getElementById('multiplicationTableTab').classList.add('active');
-                updateMultiplicationTable();
-            } else if (tab === 'crt-visualizer') {
-                document.querySelectorAll('.tab')[6].classList.add('active');
-                document.getElementById('crtVisualizerTab').classList.add('active');
-                initCRT();
-            } else if (tab === 'cyclotomic') {
-                document.querySelectorAll('.tab')[7].classList.add('active');
-                document.getElementById('cyclotomicTab').classList.add('active');
-                updateCyclotomicVisualization();
+            const tabMap = {
+                'visualization': [0, 'visualizationTab', null],
+                'understanding': [1, 'understandingTab', null],
+                'composite-projection': [2, 'compositeProjectionTab', updateCompositeVisualization],
+                'quadratic-residues': [3, 'quadraticResiduesTab', updateQuadraticVisualization],
+                'primitive-roots': [4, 'primitiveRootsTab', updatePrimitiveRootsVisualization],
+                'multiplication-table': [5, 'multiplicationTableTab', updateMultiplicationTable],
+                'crt-visualizer': [6, 'crtVisualizerTab', initCRT],
+                'cyclotomic': [7, 'cyclotomicTab', updateCyclotomicVisualization],
+                'dirichlet': [8, 'dirichletTab', updateDirichletVisualization],
+                'mobius': [9, 'mobiusTab', updateMobiusVisualization]
+            };
+            
+            if (tabMap[tab]) {
+                const [index, tabId, initFunc] = tabMap[tab];
+                const tabs = document.querySelectorAll('.tab');
+                if (tabs[index]) {
+                    tabs[index].classList.add('active');
+                }
+                const tabContent = document.getElementById(tabId);
+                if (tabContent) {
+                    tabContent.classList.add('active');
+                }
+                if (initFunc) initFunc();
             }
         }
 
@@ -6284,6 +6733,8 @@
             initMultiplicationTable();
             initCRT();
             initCyclotomic();
+            initDirichlet();
+            initMobius();
         });
 
         // ===== COMPOSITE PROJECTION COROLLARY =====
@@ -8748,6 +9199,616 @@
                 cyclRotation = 0;
                 drawCyclotomicVisualization();
             }
+        }
+
+        // ===== EXPORT FUNCTIONS FOR ALL TABS =====
+        
+        function exportQRImage() {
+            const title = document.getElementById('qrExportTitle').value;
+            const resolution = parseFloat(document.getElementById('qrExportResolution').value);
+            const includeLegend = document.getElementById('qrIncludeLegend').checked;
+            
+            const srcCanvas = document.getElementById('quadraticCanvas');
+            const tempCanvas = document.createElement('canvas');
+            const baseSize = srcCanvas.width;
+            tempCanvas.width = baseSize * resolution;
+            tempCanvas.height = baseSize * resolution + 100 * resolution;
+            
+            const ctx = tempCanvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // Title
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${24 * resolution}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(title, tempCanvas.width / 2, 50 * resolution);
+            
+            // Main visualization
+            ctx.save();
+            ctx.translate(0, 100 * resolution);
+            ctx.scale(resolution, resolution);
+            ctx.drawImage(srcCanvas, 0, 0);
+            ctx.restore();
+            
+            const link = document.createElement('a');
+            link.download = `quadratic_residues_p${qrPrime}_${Date.now()}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function exportQRCSV() {
+            let csv = '# Quadratic Residues Data Export\n';
+            csv += `# Prime p = ${qrPrime}\n`;
+            csv += `# Generated: ${new Date().toLocaleString()}\n#\n`;
+            csv += 'Residue,Legendre_Symbol,Is_QR,Order,Square_Root\n';
+            
+            qrPoints.forEach(pt => {
+                if (pt.a === 0) {
+                    csv += `${pt.a},0,TRUE,N/A,0\n`;
+                } else {
+                    csv += `${pt.a},${pt.legendre},${pt.isQR},${pt.a},${pt.squareRoot || 'N/A'}\n`;
+                }
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = `quadratic_residues_p${qrPrime}_${Date.now()}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+
+        function exportPRImage() {
+            const title = document.getElementById('prExportTitle').value;
+            const resolution = parseFloat(document.getElementById('prExportResolution').value);
+            
+            const srcCanvas = document.getElementById('primitiveCanvas');
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = srcCanvas.width * resolution;
+            tempCanvas.height = srcCanvas.height * resolution + 100 * resolution;
+            
+            const ctx = tempCanvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${24 * resolution}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(title, tempCanvas.width / 2, 50 * resolution);
+            
+            ctx.save();
+            ctx.translate(0, 100 * resolution);
+            ctx.scale(resolution, resolution);
+            ctx.drawImage(srcCanvas, 0, 0);
+            ctx.restore();
+            
+            const link = document.createElement('a');
+            link.download = `primitive_roots_m${prModulus}_${Date.now()}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function exportPRCSV() {
+            let csv = '# Primitive Roots Data Export\n';
+            csv += `# Modulus m = ${prModulus}\n`;
+            csv += `# φ(m) = ${phi(prModulus)}\n#\n`;
+            csv += 'Element,Order,Is_Primitive_Root\n';
+            
+            prElements.forEach(el => {
+                csv += `${el.a},${el.order},${el.isPrimitiveRoot}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = `primitive_roots_m${prModulus}_${Date.now()}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+
+        function exportMTImage() {
+            const title = document.getElementById('mtExportTitle').value;
+            const resolution = parseFloat(document.getElementById('mtExportResolution').value);
+            
+            const srcCanvas = document.getElementById('multiplicationCanvas');
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = srcCanvas.width * resolution;
+            tempCanvas.height = srcCanvas.height * resolution + 100;
+            
+            const ctx = tempCanvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(title, tempCanvas.width / 2, 50);
+            
+            ctx.save();
+            ctx.translate(0, 100);
+            ctx.scale(resolution, resolution);
+            ctx.drawImage(srcCanvas, 0, 0);
+            ctx.restore();
+            
+            const link = document.createElement('a');
+            link.download = `multiplication_table_m${mtModulus}_${Date.now()}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function exportMTCSV() {
+            const m = mtModulus;
+            const tableType = document.getElementById('mtTableType').value;
+            
+            let csv = '# Multiplication Table Data Export\n';
+            csv += `# Modulus m = ${m}\n`;
+            csv += `# Table Type: ${tableType}\n#\n`;
+            
+            let elements = [];
+            if (tableType === 'full') {
+                for (let i = 0; i < m; i++) elements.push(i);
+            } else if (tableType === 'units') {
+                for (let i = 1; i < m; i++) {
+                    if (gcd(i, m) === 1) elements.push(i);
+                }
+            }
+            
+            csv += ',' + elements.join(',') + '\n';
+            elements.forEach(a => {
+                csv += a;
+                elements.forEach(b => {
+                    const result = (a * b) % m;
+                    csv += ',' + result;
+                });
+                csv += '\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = `multiplication_table_m${m}_${Date.now()}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+
+        function exportCRTImage() {
+            const title = document.getElementById('crtExportTitle').value;
+            const resolution = parseFloat(document.getElementById('crtExportResolution').value);
+            
+            const srcCanvas = document.getElementById('crtCanvas');
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = srcCanvas.width * resolution;
+            tempCanvas.height = srcCanvas.height * resolution + 100 * resolution;
+            
+            const ctx = tempCanvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${24 * resolution}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(title, tempCanvas.width / 2, 50 * resolution);
+            
+            ctx.save();
+            ctx.translate(0, 100 * resolution);
+            ctx.scale(resolution, resolution);
+            ctx.drawImage(srcCanvas, 0, 0);
+            ctx.restore();
+            
+            const link = document.createElement('a');
+            link.download = `crt_solution_${Date.now()}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function exportCRTCSV() {
+            let csv = '# Chinese Remainder Theorem Solution\n';
+            csv += `# Generated: ${new Date().toLocaleString()}\n#\n`;
+            csv += 'Congruence,a_i,m_i\n';
+            
+            crtSystem.forEach((eq, i) => {
+                csv += `${i + 1},${eq.a},${eq.m}\n`;
+            });
+            
+            if (crtSolution !== null) {
+                const M = crtSystem.reduce((prod, eq) => prod * eq.m, 1);
+                csv += `\n# Solution: x ≡ ${crtSolution} (mod ${M})\n`;
+            }
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = `crt_solution_${Date.now()}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+
+        function exportCyclImage() {
+            const title = document.getElementById('cyclExportTitle').value;
+            const resolution = parseFloat(document.getElementById('cyclExportResolution').value);
+            
+            const srcCanvas = document.getElementById('cyclotomicCanvas');
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = srcCanvas.width * resolution;
+            tempCanvas.height = srcCanvas.height * resolution + 100 * resolution;
+            
+            const ctx = tempCanvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${24 * resolution}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(title, tempCanvas.width / 2, 50 * resolution);
+            
+            ctx.save();
+            ctx.translate(0, 100 * resolution);
+            ctx.scale(resolution, resolution);
+            ctx.drawImage(srcCanvas, 0, 0);
+            ctx.restore();
+            
+            const link = document.createElement('a');
+            link.download = `cyclotomic_n${cyclN}_${Date.now()}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function exportCyclCSV() {
+            let csv = '# Cyclotomic Roots Data Export\n';
+            csv += `# Order n = ${cyclN}\n`;
+            csv += `# φ(n) = ${phi(cyclN)}\n#\n`;
+            csv += 'k,Angle_Degrees,Angle_Radians,Order,Is_Primitive\n';
+            
+            cyclRoots.forEach(root => {
+                const angleDeg = (root.angle * 180 / Math.PI).toFixed(4);
+                const angleRad = root.angle.toFixed(6);
+                csv += `${root.k},${angleDeg},${angleRad},${root.order},${root.isPrimitive}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = `cyclotomic_n${cyclN}_${Date.now()}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+
+        // ===== DIRICHLET CHARACTERS =====
+        let dirModulus = 12;
+        let dirCharacters = [];
+        let dirCurrentChar = 0;
+
+        function initDirichlet() {
+            const slider = document.getElementById('dirModSlider');
+            const input = document.getElementById('dirModInput');
+            
+            slider.addEventListener('input', () => {
+                dirModulus = parseInt(slider.value);
+                input.value = dirModulus;
+                document.getElementById('dirModDisplay').textContent = dirModulus;
+                updateDirichletVisualization();
+            });
+            
+            input.addEventListener('input', () => {
+                const val = parseInt(input.value);
+                if (!isNaN(val) && val >= 3) {
+                    dirModulus = val;
+                    slider.value = Math.min(val, 50);
+                    document.getElementById('dirModDisplay').textContent = val;
+                    updateDirichletVisualization();
+                }
+            });
+            
+            updateDirichletVisualization();
+        }
+
+        function updateDirichletVisualization() {
+            const q = dirModulus;
+            const phiQ = phi(q);
+            
+            document.getElementById('dirModulus').textContent = q;
+            document.getElementById('dirPhi').textContent = phiQ;
+            document.getElementById('dirCharCount').textContent = phiQ;
+            document.getElementById('dirCharType').textContent = 'Principal';
+            
+            let analysis = `<p>The modulus q = ${q} has φ(${q}) = ${phiQ} Dirichlet characters.</p>`;
+            analysis += `<p>Characters are multiplicative functions χ: (ℤ/${q}ℤ)× → ℂ*.</p>`;
+            analysis += `<p>The principal character χ₀(n) = 1 if gcd(n,${q})=1, else 0.</p>`;
+            
+            document.getElementById('dirAnalysis').innerHTML = analysis;
+            
+            const tbody = document.getElementById('dirTableBody');
+            tbody.innerHTML = '';
+            
+            for (let n = 1; n <= q; n++) {
+                const g = gcd(n, q);
+                const chiN = g === 1 ? 1 : 0;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">${n}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">${g}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center; font-weight: 600;">${chiN}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">${chiN}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">0°</td>
+                `;
+                tbody.appendChild(row);
+            }
+            
+            drawDirichletVisualization();
+        }
+
+        function drawDirichletVisualization() {
+            const canvas = document.getElementById('dirichletCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) * 0.40;
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+            
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            const q = dirModulus;
+            for (let n = 1; n < q; n++) {
+                const angle = -2 * Math.PI * n / q;
+                const x = radius * Math.cos(angle);
+                const y = radius * Math.sin(angle);
+                
+                const g = gcd(n, q);
+                const color = g === 1 ? '#00ff00' : '#ff0064';
+                const size = g === 1 ? 6 : 3;
+                
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            ctx.restore();
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Dirichlet Characters mod ${q}`, width / 2, 30);
+        }
+
+        function exportDirImage() {
+            const title = document.getElementById('dirExportTitle').value;
+            const resolution = parseFloat(document.getElementById('dirExportResolution').value);
+            const srcCanvas = document.getElementById('dirichletCanvas');
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = srcCanvas.width * resolution;
+            tempCanvas.height = srcCanvas.height * resolution + 100 * resolution;
+            
+            const ctx = tempCanvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${24 * resolution}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(title, tempCanvas.width / 2, 50 * resolution);
+            ctx.save();
+            ctx.translate(0, 100 * resolution);
+            ctx.scale(resolution, resolution);
+            ctx.drawImage(srcCanvas, 0, 0);
+            ctx.restore();
+            
+            const link = document.createElement('a');
+            link.download = `dirichlet_q${dirModulus}_${Date.now()}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function exportDirCSV() {
+            let csv = '# Dirichlet Characters Export\n';
+            csv += `# Modulus q = ${dirModulus}\n#\n`;
+            csv += 'n,gcd(n,q),chi(n)\n';
+            
+            for (let n = 1; n <= dirModulus; n++) {
+                const g = gcd(n, dirModulus);
+                const chiN = g === 1 ? 1 : 0;
+                csv += `${n},${g},${chiN}\n`;
+            }
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = `dirichlet_q${dirModulus}_${Date.now()}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+
+        // ===== MÖBIUS FUNCTION =====
+        let mobMax = 60;
+        let mobValues = [];
+
+        function initMobius() {
+            const slider = document.getElementById('mobMaxSlider');
+            
+            slider.addEventListener('input', () => {
+                mobMax = parseInt(slider.value);
+                document.getElementById('mobMaxDisplay').textContent = mobMax;
+                updateMobiusVisualization();
+            });
+            
+            updateMobiusVisualization();
+        }
+
+        function mobiusFunction(n) {
+            if (n === 1) return 1;
+            
+            let primeFactors = [];
+            let temp = n;
+            
+            for (let p = 2; p * p <= temp; p++) {
+                if (temp % p === 0) {
+                    let count = 0;
+                    while (temp % p === 0) {
+                        count++;
+                        temp /= p;
+                    }
+                    if (count > 1) return 0;
+                    primeFactors.push(p);
+                }
+            }
+            if (temp > 1) primeFactors.push(temp);
+            
+            return primeFactors.length % 2 === 0 ? 1 : -1;
+        }
+
+        function updateMobiusVisualization() {
+            const n = mobMax;
+            mobValues = [];
+            
+            let sum = 0;
+            let plusOne = 0;
+            let minusOne = 0;
+            let zero = 0;
+            
+            for (let i = 1; i <= n; i++) {
+                const mu = mobiusFunction(i);
+                mobValues.push({ n: i, mu: mu, sum: sum + mu });
+                sum += mu;
+                
+                if (mu === 1) plusOne++;
+                else if (mu === -1) minusOne++;
+                else zero++;
+            }
+            
+            document.getElementById('mobRange').textContent = `1 to ${n}`;
+            document.getElementById('mobSum').textContent = sum;
+            document.getElementById('mobPlusOne').textContent = plusOne;
+            document.getElementById('mobMinusOne').textContent = minusOne;
+            document.getElementById('mobZero').textContent = zero;
+            
+            let analysis = `<p>The Möbius function μ(n) is defined as:</p>`;
+            analysis += `<p>μ(n) = 1 if n is square-free with even number of prime factors</p>`;
+            analysis += `<p>μ(n) = -1 if n is square-free with odd number of prime factors</p>`;
+            analysis += `<p>μ(n) = 0 if n has a squared prime factor</p>`;
+            analysis += `<p>Mertens function M(x) = Σμ(n) for n≤x: M(${n}) = ${sum}</p>`;
+            
+            document.getElementById('mobAnalysis').innerHTML = analysis;
+            
+            const tbody = document.getElementById('mobTableBody');
+            tbody.innerHTML = '';
+            
+            mobValues.forEach(val => {
+                const factors = primeFactorization(val.n);
+                const row = document.createElement('tr');
+                const color = val.mu === 1 ? '#00ff00' : val.mu === -1 ? '#ff0064' : '#666666';
+                row.style.background = `${color}22`;
+                
+                row.innerHTML = `
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">${val.n}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); font-size: 10px;">${factors}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center; font-weight: 600; color: ${color};">${val.mu}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">${val.sum}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            drawMobiusVisualization();
+        }
+
+        function drawMobiusVisualization() {
+            const canvas = document.getElementById('mobiusCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const maxRadius = Math.min(width, height) * 0.42;
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+            
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            mobValues.forEach((val, idx) => {
+                const m = Math.floor(Math.sqrt(mobMax)) + 1;
+                const ringIdx = Math.floor(idx / m);
+                const posInRing = idx % m;
+                const radius = (ringIdx + 1) * (maxRadius / Math.ceil(mobMax / m));
+                const angle = -2 * Math.PI * posInRing / m;
+                
+                const x = radius * Math.cos(angle);
+                const y = radius * Math.sin(angle);
+                
+                let color, size;
+                if (val.mu === 1) {
+                    color = '#00ff00';
+                    size = 5;
+                } else if (val.mu === -1) {
+                    color = '#ff0064';
+                    size = 5;
+                } else {
+                    color = '#666666';
+                    size = 3;
+                }
+                
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+            
+            ctx.restore();
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Möbius Function μ(n) for n ≤ ${mobMax}`, width / 2, 30);
+        }
+
+        function exportMobImage() {
+            const title = document.getElementById('mobExportTitle').value;
+            const resolution = parseFloat(document.getElementById('mobExportResolution').value);
+            const srcCanvas = document.getElementById('mobiusCanvas');
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = srcCanvas.width * resolution;
+            tempCanvas.height = srcCanvas.height * resolution + 100 * resolution;
+            
+            const ctx = tempCanvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${24 * resolution}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(title, tempCanvas.width / 2, 50 * resolution);
+            ctx.save();
+            ctx.translate(0, 100 * resolution);
+            ctx.scale(resolution, resolution);
+            ctx.drawImage(srcCanvas, 0, 0);
+            ctx.restore();
+            
+            const link = document.createElement('a');
+            link.download = `mobius_n${mobMax}_${Date.now()}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function exportMobCSV() {
+            let csv = '# Möbius Function Export\n';
+            csv += `# Range: 1 to ${mobMax}\n#\n`;
+            csv += 'n,Prime_Factorization,mu(n),M(n)\n';
+            
+            mobValues.forEach(val => {
+                const factors = primeFactorization(val.n);
+                csv += `${val.n},"${factors}",${val.mu},${val.sum}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = `mobius_n${mobMax}_${Date.now()}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
         }
     </script>
 </body>
