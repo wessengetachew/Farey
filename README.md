@@ -1919,14 +1919,13 @@
                         </label>
                         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
                             <span style="font-size: 11px;">2</span>
-                            <input type="range" id="mtModSlider" min="2" max="10000" value="12" 
+                            <input type="range" id="mtModSlider" min="2" max="50" value="12" 
                                    style="flex: 1; height: 8px;">
-                            <span style="font-size: 11px;">10000</span>
+                            <span style="font-size: 11px;">50</span>
                         </div>
-                        <input type="number" id="mtModInput" min="2" value="12" 
+                        <input type="number" id="mtModInput" min="2" max="100" value="12" 
                                style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
                                       background: var(--bg-primary); color: var(--text-primary);">
-                        <div style="font-size: 10px; opacity: 0.7; margin-top: 5px;">Enter any modulus (no limit). Large values may take longer.</div>
                     </div>
                     
                     <div style="margin-bottom: 20px;">
@@ -2006,58 +2005,9 @@
                     <div id="mtAnalysisText" style="font-size: 14px; line-height: 1.8;"></div>
                 </div>
                 
-                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px;">
                     <h3 style="margin-bottom: 15px;">Special Elements</h3>
                     <div id="mtSpecialElements" style="font-size: 13px; line-height: 1.6;"></div>
-                </div>
-                
-                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px;">
-                    <h3 style="margin-bottom: 15px;">Export Options</h3>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Title</label>
-                        <input type="text" id="mtExportTitle" value="Multiplication Table Visualization" 
-                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
-                                      background: var(--bg-primary); color: var(--text-primary);">
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Resolution</label>
-                        <select id="mtExportResolution" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
-                            <option value="1">Standard (Current Size)</option>
-                            <option value="2">HD (2x)</option>
-                            <option value="3">2K (3x)</option>
-                            <option value="4" selected>4K (4x)</option>
-                            <option value="6">6K (6x)</option>
-                            <option value="8">8K (8x)</option>
-                        </select>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="checkbox" id="mtIncludeLegend" checked style="margin-right: 8px;">
-                            Include Parameter Legend
-                        </label>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="checkbox" id="mtIncludeColorKey" checked style="margin-right: 8px;">
-                            Include Color Key Legend
-                        </label>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="checkbox" id="mtIncludeTimestamp" checked style="margin-right: 8px;">
-                            Include Timestamp
-                        </label>
-                    </div>
-                    
-                    <div class="button-group">
-                        <button onclick="exportMTImage()" style="background: #2196F3; color: #ffffff;">Export PNG</button>
-                        <button onclick="exportMTCSV()" style="background: #FF9800; color: #ffffff;">Export CSV</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -8522,7 +8472,7 @@
                 const val = parseInt(input.value);
                 if (!isNaN(val) && val >= 2) {
                     mtModulus = val;
-                    slider.value = Math.min(val, 10000);
+                    slider.value = Math.min(val, 50);
                     document.getElementById('mtModDisplay').textContent = val;
                     updateMultiplicationTable();
                 }
@@ -9615,211 +9565,33 @@
         }
 
         function exportMTImage() {
-            const includeLegend = document.getElementById('mtIncludeLegend').checked;
-            const includeColorKey = document.getElementById('mtIncludeColorKey').checked;
-            const includeTimestamp = document.getElementById('mtIncludeTimestamp').checked;
-            const exportTitle = document.getElementById('mtExportTitle').value;
+            const title = document.getElementById('mtExportTitle').value;
             const resolution = parseFloat(document.getElementById('mtExportResolution').value);
             
             const srcCanvas = document.getElementById('multiplicationCanvas');
-            const baseWidth = srcCanvas.width;
-            const baseHeight = srcCanvas.height;
-            
-            // Reserve space for title at top
-            const titleHeight = 100 * resolution;
-            
-            let exportWidth = baseWidth * resolution;
-            let exportHeight = baseHeight * resolution + titleHeight;
-            
-            // Calculate legend dimensions
-            let legendWidth = 0;
-            if (includeLegend) {
-                legendWidth = 500 * resolution;
-                exportWidth += legendWidth;
-            }
-            
             const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = exportWidth;
-            tempCanvas.height = exportHeight;
-            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = srcCanvas.width * resolution;
+            tempCanvas.height = srcCanvas.height * resolution + 100;
             
-            // Fill background
-            const bgColor = '#000000';
-            const textColor = '#ffffff';
-            tempCtx.fillStyle = bgColor;
-            tempCtx.fillRect(0, 0, exportWidth, exportHeight);
+            const ctx = tempCanvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
             
-            // Draw title
-            const fontSize = 18 * resolution;
-            tempCtx.fillStyle = textColor;
-            tempCtx.font = `bold ${fontSize * 1.8}px Arial`;
-            tempCtx.textAlign = 'center';
-            const titleY = titleHeight / 2 + fontSize / 2;
-            tempCtx.fillText(exportTitle, exportWidth / 2, titleY);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(title, tempCanvas.width / 2, 50);
             
-            // Draw timestamp if enabled
-            if (includeTimestamp) {
-                tempCtx.font = `${fontSize * 0.8}px Arial`;
-                const timestamp = new Date().toLocaleString();
-                tempCtx.fillText(timestamp, exportWidth / 2, titleY + fontSize * 1.5);
-            }
-            
-            // Draw main visualization
-            tempCtx.save();
-            tempCtx.translate(0, titleHeight);
-            tempCtx.scale(resolution, resolution);
-            tempCtx.drawImage(srcCanvas, 0, 0);
-            tempCtx.restore();
-            
-            // Draw legend if enabled
-            if (includeLegend) {
-                drawMTLegend(tempCtx, legendWidth, exportWidth, exportHeight, resolution, textColor, titleHeight, includeColorKey);
-            }
+            ctx.save();
+            ctx.translate(0, 100);
+            ctx.scale(resolution, resolution);
+            ctx.drawImage(srcCanvas, 0, 0);
+            ctx.restore();
             
             const link = document.createElement('a');
-            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-            link.download = `multiplication_table_m${mtModulus}_${timestamp}.png`;
+            link.download = `multiplication_table_m${mtModulus}_${Date.now()}.png`;
             link.href = tempCanvas.toDataURL('image/png');
             link.click();
-        }
-
-        function drawMTLegend(ctx, legendWidth, totalWidth, totalHeight, resolution, textColor, titleHeight, includeColorKey) {
-            const m = mtModulus;
-            const tableType = document.getElementById('mtTableType').value;
-            const colorScheme = document.getElementById('mtColorScheme').value;
-            
-            const fontSize = 13 * resolution;
-            const lineHeight = 18 * resolution;
-            const padding = 25 * resolution;
-            const sectionSpacing = 15 * resolution;
-            
-            const startX = totalWidth - legendWidth + padding;
-            const maxWidth = legendWidth - 2 * padding;
-            
-            let y = titleHeight + padding * 2;
-            ctx.textAlign = 'left';
-            
-            function drawSectionHeader(title) {
-                ctx.font = `bold ${fontSize * 1.1}px Arial`;
-                ctx.fillStyle = textColor;
-                ctx.fillText(title, startX, y);
-                y += lineHeight * 0.3;
-                
-                ctx.strokeStyle = textColor;
-                ctx.lineWidth = 1.5 * resolution;
-                ctx.beginPath();
-                ctx.moveTo(startX, y);
-                ctx.lineTo(startX + maxWidth * 0.9, y);
-                ctx.stroke();
-                y += lineHeight * 0.8;
-            }
-            
-            // CONFIGURATION
-            drawSectionHeader('CONFIGURATION');
-            
-            ctx.font = `${fontSize}px Arial`;
-            ctx.fillStyle = textColor;
-            
-            ctx.fillText(`Modulus: m = ${m}`, startX, y);
-            y += lineHeight;
-            ctx.fillText(`Table Type: ${tableType}`, startX, y);
-            y += lineHeight;
-            ctx.fillText(`Color Scheme: ${colorScheme}`, startX, y);
-            y += lineHeight;
-            ctx.fillText(`Prime Factorization: ${primeFactorization(m)}`, startX, y);
-            y += lineHeight;
-            
-            y += sectionSpacing;
-            
-            // STATISTICS
-            drawSectionHeader('STATISTICS');
-            
-            const units = [];
-            for (let a = 0; a < m; a++) {
-                if (gcd(a, m) === 1) units.push(a);
-            }
-            
-            ctx.fillText(`φ(${m}) = ${units.length} units`, startX, y);
-            y += lineHeight;
-            ctx.fillText(`Total Elements: ${m}`, startX, y);
-            y += lineHeight;
-            ctx.fillText(`Non-Units: ${m - units.length}`, startX, y);
-            y += lineHeight;
-            
-            y += sectionSpacing;
-            
-            // COLOR KEY
-            if (includeColorKey) {
-                drawSectionHeader('COLOR KEY');
-                
-                ctx.font = `${fontSize * 0.95}px Arial`;
-                
-                if (colorScheme === 'rainbow') {
-                    ctx.fillText('Colors map values 0 to m-1', startX, y);
-                    y += lineHeight;
-                    ctx.fillText('using rainbow hue spectrum', startX, y);
-                    y += lineHeight;
-                } else if (colorScheme === 'zero-divisors') {
-                    const items = [
-                        { color: '#ff0000', label: 'Red = Zero Divisors' },
-                        { color: '#00ff00', label: 'Green = Units' },
-                        { color: '#666666', label: 'Gray = Other Elements' }
-                    ];
-                    
-                    items.forEach(item => {
-                        ctx.fillStyle = item.color;
-                        ctx.beginPath();
-                        ctx.arc(startX + 10 * resolution, y - 5 * resolution, 6 * resolution, 0, 2 * Math.PI);
-                        ctx.fill();
-                        
-                        ctx.fillStyle = textColor;
-                        ctx.fillText(item.label, startX + 25 * resolution, y);
-                        y += lineHeight * 1.2;
-                    });
-                } else if (colorScheme === 'idempotents') {
-                    ctx.fillText('Yellow = Idempotent (a² = a)', startX, y);
-                    y += lineHeight;
-                    ctx.fillText('Rainbow = Other values', startX, y);
-                    y += lineHeight;
-                }
-                
-                y += sectionSpacing;
-            }
-            
-            // SPECIAL ELEMENTS
-            drawSectionHeader('SPECIAL ELEMENTS');
-            
-            ctx.font = `${fontSize * 0.9}px Arial`;
-            
-            if (units.length <= 20) {
-                ctx.fillText(`Units: {${units.join(', ')}}`, startX, y);
-            } else {
-                ctx.fillText(`Units: ${units.length} elements`, startX, y);
-            }
-            y += lineHeight;
-            
-            // Idempotents
-            const idempotents = [];
-            for (let a = 0; a < m; a++) {
-                if ((a * a) % m === a) idempotents.push(a);
-            }
-            ctx.fillText(`Idempotents: {${idempotents.join(', ')}}`, startX, y);
-            y += lineHeight;
-            
-            y += sectionSpacing;
-            
-            // METADATA
-            drawSectionHeader('METADATA');
-            
-            ctx.font = `${fontSize * 0.9}px Arial`;
-            ctx.fillText(`Generated: ${new Date().toLocaleString()}`, startX, y);
-            y += lineHeight;
-            ctx.fillText(`Author: Wessen Getachew`, startX, y);
-            y += lineHeight;
-            ctx.fillText(`Tool: Multiplication Table`, startX, y);
-            y += lineHeight;
-            const resText = document.getElementById('mtExportResolution').selectedOptions[0].text;
-            ctx.fillText(`Resolution: ${resText}`, startX, y);
         }
 
         function exportMTCSV() {
