@@ -2793,6 +2793,54 @@
                             </button>
                         </div>
                     </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 10px;">
+                            Rotation: <span id="compRotationDisplay">0</span>°
+                        </label>
+                        <input type="range" id="compRotationSlider" min="0" max="360" step="1" value="0" 
+                               style="width: 100%; height: 8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="compAnimateRotation" style="margin-right: 8px;">
+                            Animate Rotation
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="compShowCoprimeOnly" style="margin-right: 8px;">
+                            Show Only Coprime Residues (gcd=1)
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="compEnableSweep" style="margin-right: 8px;">
+                            Enable Coprime Sweep Animation
+                        </label>
+                    </div>
+                    
+                    <div id="compSweepControls" style="display: none; margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Sweep Speed: <span id="compSweepSpeedDisplay">1</span>
+                        </label>
+                        <input type="range" id="compSweepSpeed" min="0.1" max="5" step="0.1" value="1" 
+                               style="width: 100%; height: 8px;">
+                        
+                        <label style="display: block; margin-top: 10px; margin-bottom: 10px; font-weight: 600;">
+                            Current Coprime: <span id="compCurrentCoprime" style="color: #00ffff;">1</span>
+                        </label>
+                        
+                        <div class="button-group" style="margin-top: 10px;">
+                            <button id="compSweepPlayBtn" onclick="toggleCompositeSweep()" 
+                                    style="background: #00ff00; color: #000000;">Play Sweep</button>
+                            <button onclick="resetCompositeSweep()" 
+                                    style="background: var(--bg-secondary); color: var(--text-primary);">Reset</button>
+                        </div>
+                    </div>
                 </div>
                 
                 <div style="position: relative; display: flex; justify-content: center; margin-bottom: 20px;">
@@ -6876,6 +6924,12 @@
         let compositePoints = [];
         let compositeZoom = 1;
         let compositePan = {x: 0, y: 0};
+        let compositeRotation = 0;
+        let compositeAnimationId = null;
+        let compositeSweepId = null;
+        let compositeSweepIndex = 0;
+        let compositeCoprimes = [];
+        let compositeShowCoprimeOnly = false;
 
         function initCompositeProjection() {
             const slider = document.getElementById('compModSlider');
@@ -6885,6 +6939,11 @@
             const colorScheme = document.getElementById('compColorScheme');
             const canvas = document.getElementById('compositeCanvas');
             const tooltip = document.getElementById('compositeTooltip');
+            const rotationSlider = document.getElementById('compRotationSlider');
+            const animateRotation = document.getElementById('compAnimateRotation');
+            const showCoprimeOnly = document.getElementById('compShowCoprimeOnly');
+            const enableSweep = document.getElementById('compEnableSweep');
+            const sweepSpeed = document.getElementById('compSweepSpeed');
             
             slider.addEventListener('input', () => {
                 compositeModulus = parseInt(slider.value);
@@ -6925,6 +6984,38 @@
             
             document.getElementById('showMultiplicityInfo').addEventListener('change', () => {
                 drawCompositeVisualization();
+            });
+            
+            rotationSlider.addEventListener('input', () => {
+                compositeRotation = parseFloat(rotationSlider.value);
+                document.getElementById('compRotationDisplay').textContent = compositeRotation.toFixed(0);
+                drawCompositeVisualization();
+            });
+            
+            animateRotation.addEventListener('change', () => {
+                if (animateRotation.checked) {
+                    startCompositeAnimation();
+                } else {
+                    stopCompositeAnimation();
+                }
+            });
+            
+            showCoprimeOnly.addEventListener('change', () => {
+                compositeShowCoprimeOnly = showCoprimeOnly.checked;
+                drawCompositeVisualization();
+            });
+            
+            enableSweep.addEventListener('change', () => {
+                const sweepControls = document.getElementById('compSweepControls');
+                sweepControls.style.display = enableSweep.checked ? 'block' : 'none';
+                if (!enableSweep.checked) {
+                    stopCompositeSweep();
+                }
+            });
+            
+            sweepSpeed.addEventListener('input', () => {
+                document.getElementById('compSweepSpeedDisplay').textContent = 
+                    parseFloat(sweepSpeed.value).toFixed(1);
             });
             
             // Mouse wheel zoom
@@ -7007,6 +7098,14 @@
                 }
             }
             
+            // Get coprime residues for sweep
+            compositeCoprimes = [];
+            for (let r = 1; r < M; r++) {
+                if (gcd(r, M) === 1) {
+                    compositeCoprimes.push(r);
+                }
+            }
+            
             // Get prime factorization
             const factorization = primeFactorization(M);
             
@@ -7028,9 +7127,19 @@
             document.getElementById('compPrimeFactors').textContent = factorization;
             document.getElementById('compDivisors').textContent = divisorText;
             
-            // Update analysis text
+            // Update analysis text with Φ(M) information
             let analysisHTML = `<p style="margin-bottom: 12px;"><strong>M = ${M} = ${factorization}</strong></p>`;
             analysisHTML += `<p style="margin-bottom: 12px;">This composite modulus has <strong>${phiM} coprime residues</strong> (φ(${M}) = ${phiM}) and <strong>${reducible} reducible residues</strong>.</p>`;
+            
+            // Special note for M = 30×2^n
+            if (M % 30 === 0 && isPowerOfTwo(M / 30)) {
+                const n = Math.log2(M / 30);
+                analysisHTML += `<p style="margin-bottom: 12px; background: rgba(0, 255, 255, 0.1); padding: 10px; border-left: 3px solid #00ffff;"><strong>Special M₃₀ Modulus: M = 30 × 2^${n}</strong><br>`;
+                analysisHTML += `This modulus automatically excludes residues divisible by 2, 3, or 5.<br>`;
+                analysisHTML += `All primes p > 5 satisfy p mod ${M} ∈ Φ(${M}).<br>`;
+                analysisHTML += `The coprime residue system Φ(${M}) forms a closed multiplicative system under prime factorization.</p>`;
+            }
+            
             analysisHTML += `<p style="margin-bottom: 12px;">The reducible residues project onto <strong>${channels.length} distinct Farey channels</strong> with denominators: ${channels.join(', ')}.</p>`;
             analysisHTML += `<p style="margin-bottom: 12px;"><strong>Channel multiplicities:</strong> Each channel M' receives exactly d = M/M' residues.</p>`;
             analysisHTML += `<ul style="margin-left: 25px; margin-bottom: 12px;">`;
@@ -7079,6 +7188,76 @@
                 });
             }
             
+            drawCompositeVisualization();
+        }
+        
+        function isPowerOfTwo(n) {
+            return n > 0 && (n & (n - 1)) === 0;
+        }
+        
+        function startCompositeAnimation() {
+            if (!compositeAnimationId) {
+                function animate() {
+                    compositeRotation += 0.5;
+                    if (compositeRotation >= 360) compositeRotation -= 360;
+                    document.getElementById('compRotationSlider').value = compositeRotation;
+                    document.getElementById('compRotationDisplay').textContent = compositeRotation.toFixed(0);
+                    drawCompositeVisualization();
+                    compositeAnimationId = requestAnimationFrame(animate);
+                }
+                compositeAnimationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        function stopCompositeAnimation() {
+            if (compositeAnimationId) {
+                cancelAnimationFrame(compositeAnimationId);
+                compositeAnimationId = null;
+            }
+        }
+        
+        function toggleCompositeSweep() {
+            if (compositeSweepId) {
+                stopCompositeSweep();
+                document.getElementById('compSweepPlayBtn').textContent = 'Play Sweep';
+                document.getElementById('compSweepPlayBtn').style.background = '#00ff00';
+            } else {
+                startCompositeSweep();
+                document.getElementById('compSweepPlayBtn').textContent = 'Pause Sweep';
+                document.getElementById('compSweepPlayBtn').style.background = '#ff0000';
+            }
+        }
+        
+        function startCompositeSweep() {
+            if (!compositeSweepId && compositeCoprimes.length > 0) {
+                function sweep() {
+                    const speed = parseFloat(document.getElementById('compSweepSpeed').value);
+                    compositeSweepIndex = (compositeSweepIndex + 0.02 * speed) % compositeCoprimes.length;
+                    const currentIdx = Math.floor(compositeSweepIndex);
+                    const currentCoprime = compositeCoprimes[currentIdx];
+                    document.getElementById('compCurrentCoprime').textContent = currentCoprime;
+                    drawCompositeVisualization();
+                    compositeSweepId = requestAnimationFrame(sweep);
+                }
+                compositeSweepId = requestAnimationFrame(sweep);
+            }
+        }
+        
+        function stopCompositeSweep() {
+            if (compositeSweepId) {
+                cancelAnimationFrame(compositeSweepId);
+                compositeSweepId = null;
+            }
+        }
+        
+        function resetCompositeSweep() {
+            stopCompositeSweep();
+            compositeSweepIndex = 0;
+            if (compositeCoprimes.length > 0) {
+                document.getElementById('compCurrentCoprime').textContent = compositeCoprimes[0];
+            }
+            document.getElementById('compSweepPlayBtn').textContent = 'Play Sweep';
+            document.getElementById('compSweepPlayBtn').style.background = '#00ff00';
             drawCompositeVisualization();
         }
 
@@ -7132,6 +7311,7 @@
             ctx.save();
             ctx.translate(centerX, centerY);
             ctx.scale(compositeZoom, compositeZoom);
+            ctx.rotate(compositeRotation * Math.PI / 180);
             
             if (projectionMode === 'lines') {
                 // Draw projection lines mode
@@ -7201,11 +7381,29 @@
                 
                 // Draw points on outer ring
                 compositePoints.forEach(point => {
+                    // Skip non-coprime if filter enabled
+                    if (compositeShowCoprimeOnly && !point.isOpen) return;
+                    
                     const x = baseRadius * Math.cos(point.angle);
                     const y = baseRadius * Math.sin(point.angle);
                     
                     const color = getPointColor(point);
-                    const size = point.isOpen ? pointSize : pointSize * 1.1;
+                    let size = point.isOpen ? pointSize : pointSize * 1.1;
+                    
+                    // Highlight current sweep residue
+                    const enableSweep = document.getElementById('compEnableSweep').checked;
+                    if (enableSweep && point.isOpen) {
+                        const currentIdx = Math.floor(compositeSweepIndex);
+                        const currentCoprime = compositeCoprimes[currentIdx];
+                        if (point.r === currentCoprime) {
+                            size = pointSize * 2;
+                            ctx.strokeStyle = '#ffff00';
+                            ctx.lineWidth = 3 / compositeZoom;
+                            ctx.beginPath();
+                            ctx.arc(x, y, size / compositeZoom + 3, 0, 2 * Math.PI);
+                            ctx.stroke();
+                        }
+                    }
                     
                     ctx.fillStyle = color;
                     ctx.beginPath();
@@ -7213,8 +7411,8 @@
                     ctx.fill();
                     
                     // Store screen coordinates for hover detection
-                    point.screenX = centerX + x * compositeZoom;
-                    point.screenY = centerY + y * compositeZoom;
+                    point.screenX = centerX + (x * compositeZoom * Math.cos(compositeRotation * Math.PI / 180) - y * compositeZoom * Math.sin(compositeRotation * Math.PI / 180));
+                    point.screenY = centerY + (x * compositeZoom * Math.sin(compositeRotation * Math.PI / 180) + y * compositeZoom * Math.cos(compositeRotation * Math.PI / 180));
                     point.screenRadius = size;
                 });
                 
