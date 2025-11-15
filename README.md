@@ -691,6 +691,8 @@
             <button class="tab" onclick="switchTab('quadratic-residues')">Quadratic Residues</button>
             <button class="tab" onclick="switchTab('primitive-roots')">Primitive Roots</button>
             <button class="tab" onclick="switchTab('multiplication-table')">Multiplication Table</button>
+            <button class="tab" onclick="switchTab('crt-visualizer')">Chinese Remainder</button>
+            <button class="tab" onclick="switchTab('cyclotomic')">Cyclotomic Polynomials</button>
         </div>
 
         <div id="visualizationTab" class="tab-content active">
@@ -1893,6 +1895,218 @@
                 <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px;">
                     <h3 style="margin-bottom: 15px;">Special Elements</h3>
                     <div id="mtSpecialElements" style="font-size: 13px; line-height: 1.6;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="crtVisualizerTab" class="tab-content">
+            <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Chinese Remainder Theorem Visualizer</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">System Configuration</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Number of Congruences:</label>
+                        <select id="crtNumEqs" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="2" selected>2 congruences</option>
+                            <option value="3">3 congruences</option>
+                            <option value="4">4 congruences</option>
+                        </select>
+                    </div>
+                    
+                    <div id="crtEquations" style="margin-bottom: 20px;">
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">x ≡ a₁ (mod m₁)</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <input type="number" id="crt_a1" value="2" placeholder="a₁" style="padding: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                                <input type="number" id="crt_m1" value="3" placeholder="m₁" min="2" style="padding: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">x ≡ a₂ (mod m₂)</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <input type="number" id="crt_a2" value="3" placeholder="a₂" style="padding: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                                <input type="number" id="crt_m2" value="5" placeholder="m₂" min="2" style="padding: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            </div>
+                        </div>
+                        
+                        <div id="crtEq3" style="margin-bottom: 15px; display: none;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">x ≡ a₃ (mod m₃)</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <input type="number" id="crt_a3" value="2" placeholder="a₃" style="padding: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                                <input type="number" id="crt_m3" value="7" placeholder="m₃" min="2" style="padding: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            </div>
+                        </div>
+                        
+                        <div id="crtEq4" style="margin-bottom: 15px; display: none;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">x ≡ a₄ (mod m₄)</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <input type="number" id="crt_a4" value="1" placeholder="a₄" style="padding: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                                <input type="number" id="crt_m4" value="11" placeholder="m₄" min="2" style="padding: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Visualization Mode:</label>
+                        <select id="crtVizMode" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="2d-lattice">2D Lattice (2 congruences)</option>
+                            <option value="circles">Concentric Circles</option>
+                            <option value="number-line">Number Line Intersection</option>
+                        </select>
+                    </div>
+                    
+                    <button onclick="solveCRT()" style="width: 100%; padding: 12px; font-size: 14px; background: #00ff00; color: #000000;">Solve System</button>
+                </div>
+                
+                <div style="position: relative; display: flex; justify-content: center; margin-bottom: 20px;">
+                    <canvas id="crtCanvas" width="700" height="700" 
+                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px;">
+                    </canvas>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Solution</h3>
+                    <div id="crtSolution" style="font-size: 16px; font-weight: 600; color: #00ff00; margin-bottom: 15px;"></div>
+                    <div id="crtSteps" style="font-size: 13px; line-height: 1.8;"></div>
+                </div>
+                
+                <div style="background: rgba(0, 255, 100, 0.1); border: 2px solid #00ff64; padding: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #00ff64;">Chinese Remainder Theorem</h3>
+                    <p style="margin: 0; font-size: 15px; line-height: 1.6;">
+                        If m₁, m₂, ..., mₙ are pairwise coprime, then the system of congruences
+                        x ≡ aᵢ (mod mᵢ) has a unique solution modulo M = m₁m₂...mₙ.
+                    </p>
+                    <p style="margin-top: 10px; font-size: 13px; opacity: 0.9;">
+                        The ring isomorphism: ℤ/Mℤ ≅ ℤ/m₁ℤ × ℤ/m₂ℤ × ... × ℤ/mₙℤ
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="cyclotomicTab" class="tab-content">
+            <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Cyclotomic Polynomials & Roots of Unity</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Configuration</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Order n: <span id="cyclNDisplay" style="color: #00ffff;">12</span>
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                            <span style="font-size: 11px;">2</span>
+                            <input type="range" id="cyclNSlider" min="2" max="60" value="12" 
+                                   style="flex: 1; height: 8px;">
+                            <span style="font-size: 11px;">60</span>
+                        </div>
+                        <input type="number" id="cyclNInput" min="2" max="100" value="12" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px;">
+                        <button onclick="setCyclN(3)" style="padding: 8px;">n = 3</button>
+                        <button onclick="setCyclN(4)" style="padding: 8px;">n = 4</button>
+                        <button onclick="setCyclN(5)" style="padding: 8px;">n = 5</button>
+                        <button onclick="setCyclN(6)" style="padding: 8px;">n = 6</button>
+                        <button onclick="setCyclN(8)" style="padding: 8px;">n = 8</button>
+                        <button onclick="setCyclN(12)" style="padding: 8px;">n = 12</button>
+                        <button onclick="setCyclN(15)" style="padding: 8px;">n = 15</button>
+                        <button onclick="setCyclN(24)" style="padding: 8px;">n = 24</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Visualization Mode:</label>
+                        <select id="cyclVizMode" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="all-roots">All n-th Roots of Unity</option>
+                            <option value="primitive-only">Primitive Roots Only</option>
+                            <option value="by-order">Colored by Order</option>
+                            <option value="galois-orbits">Galois Orbits</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="cyclShowConnections" checked style="margin-right: 8px;">
+                            Show Connections Between Roots
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="cyclShowPolygon" checked style="margin-right: 8px;">
+                            Draw Regular Polygon
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="cyclAnimateRotation" style="margin-right: 8px;">
+                            Animate Rotation
+                        </label>
+                    </div>
+                </div>
+                
+                <div style="position: relative; display: flex; justify-content: center; margin-bottom: 20px;">
+                    <canvas id="cyclotomicCanvas" width="700" height="700" 
+                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px;">
+                    </canvas>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Order n</div>
+                        <div id="cyclOrder" style="font-size: 24px; font-weight: 600; color: #00ffff;">12</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">φ(n)</div>
+                        <div id="cyclPhi" style="font-size: 24px; font-weight: 600; color: #00ff00;">4</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">All Roots</div>
+                        <div id="cyclAllRoots" style="font-size: 24px; font-weight: 600; color: #ffffff;">12</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Primitive</div>
+                        <div id="cyclPrimitive" style="font-size: 24px; font-weight: 600; color: #ff00ff;">4</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Degree Φₙ(x)</div>
+                        <div id="cyclDegree" style="font-size: 24px; font-weight: 600; color: #ffc800;">4</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Cyclotomic Polynomial Φₙ(x)</h3>
+                    <div id="cyclPolynomial" style="font-size: 16px; font-weight: 600; color: #00ffff; margin-bottom: 15px; font-family: 'Courier New', monospace;"></div>
+                    <div id="cyclAnalysis" style="font-size: 14px; line-height: 1.8;"></div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Roots Table</h3>
+                    <div id="cyclRootsTableContainer" style="max-height: 400px; overflow-y: auto;">
+                        <table id="cyclRootsTable" style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--bg-primary); position: sticky; top: 0;">
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">k</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">ζₙᵏ</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">Angle</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">Order</th>
+                                    <th style="padding: 8px; border: 1px solid var(--border-color);">Primitive?</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cyclRootsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px;">
+                    <h3 style="margin-bottom: 15px;">Factorization of xⁿ - 1</h3>
+                    <div id="cyclFactorization" style="font-size: 14px; line-height: 1.8; font-family: 'Courier New', monospace;"></div>
                 </div>
             </div>
         </div>
@@ -6049,6 +6263,14 @@
                 document.querySelectorAll('.tab')[5].classList.add('active');
                 document.getElementById('multiplicationTableTab').classList.add('active');
                 updateMultiplicationTable();
+            } else if (tab === 'crt-visualizer') {
+                document.querySelectorAll('.tab')[6].classList.add('active');
+                document.getElementById('crtVisualizerTab').classList.add('active');
+                initCRT();
+            } else if (tab === 'cyclotomic') {
+                document.querySelectorAll('.tab')[7].classList.add('active');
+                document.getElementById('cyclotomicTab').classList.add('active');
+                updateCyclotomicVisualization();
             }
         }
 
@@ -6061,6 +6283,8 @@
             initQuadraticResidues();
             initPrimitiveRoots();
             initMultiplicationTable();
+            initCRT();
+            initCyclotomic();
         });
 
         // ===== COMPOSITE PROJECTION COROLLARY =====
@@ -7893,6 +8117,637 @@
                 ctx.moveTo(offsetX + i * cellSize, offsetY);
                 ctx.lineTo(offsetX + i * cellSize, offsetY + totalSize);
                 ctx.stroke();
+            }
+        }
+        
+        // ===== CHINESE REMAINDER THEOREM VISUALIZER =====
+        let crtSystem = [];
+        let crtSolution = null;
+
+        function initCRT() {
+            const numEqs = document.getElementById('crtNumEqs');
+            const vizMode = document.getElementById('crtVizMode');
+            
+            numEqs.addEventListener('change', () => {
+                const n = parseInt(numEqs.value);
+                document.getElementById('crtEq3').style.display = n >= 3 ? 'block' : 'none';
+                document.getElementById('crtEq4').style.display = n >= 4 ? 'block' : 'none';
+            });
+            
+            vizMode.addEventListener('change', () => {
+                if (crtSolution !== null) {
+                    drawCRTVisualization();
+                }
+            });
+            
+            // Add change listeners to all inputs
+            for (let i = 1; i <= 4; i++) {
+                const aInput = document.getElementById(`crt_a${i}`);
+                const mInput = document.getElementById(`crt_m${i}`);
+                if (aInput) aInput.addEventListener('change', () => { crtSolution = null; });
+                if (mInput) mInput.addEventListener('change', () => { crtSolution = null; });
+            }
+            
+            // Initial solve
+            solveCRT();
+        }
+
+        function extendedGCD(a, b) {
+            if (b === 0) return { gcd: a, x: 1, y: 0 };
+            const result = extendedGCD(b, a % b);
+            return {
+                gcd: result.gcd,
+                x: result.y,
+                y: result.x - Math.floor(a / b) * result.y
+            };
+        }
+
+        function modInverse(a, m) {
+            const result = extendedGCD(a, m);
+            if (result.gcd !== 1) return null;
+            return ((result.x % m) + m) % m;
+        }
+
+        function solveCRT() {
+            const numEqs = parseInt(document.getElementById('crtNumEqs').value);
+            crtSystem = [];
+            
+            // Gather equations
+            for (let i = 1; i <= numEqs; i++) {
+                const a = parseInt(document.getElementById(`crt_a${i}`).value);
+                const m = parseInt(document.getElementById(`crt_m${i}`).value);
+                if (!isNaN(a) && !isNaN(m) && m > 0) {
+                    crtSystem.push({ a: a % m, m: m });
+                }
+            }
+            
+            if (crtSystem.length < 2) {
+                document.getElementById('crtSolution').textContent = 'Error: Need at least 2 congruences';
+                return;
+            }
+            
+            // Check pairwise coprimality
+            for (let i = 0; i < crtSystem.length; i++) {
+                for (let j = i + 1; j < crtSystem.length; j++) {
+                    if (gcd(crtSystem[i].m, crtSystem[j].m) !== 1) {
+                        document.getElementById('crtSolution').textContent = 
+                            `Error: m${i+1} = ${crtSystem[i].m} and m${j+1} = ${crtSystem[j].m} are not coprime!`;
+                        document.getElementById('crtSteps').innerHTML = 
+                            `<p style="color: #ff0064;">The moduli must be pairwise coprime for CRT to apply.</p>`;
+                        return;
+                    }
+                }
+            }
+            
+            // Compute M = product of all moduli
+            let M = 1;
+            crtSystem.forEach(eq => { M *= eq.m; });
+            
+            // Apply CRT algorithm
+            let x = 0;
+            let steps = '<p><strong>Solution Steps:</strong></p>';
+            steps += `<p>M = ${crtSystem.map(eq => eq.m).join(' × ')} = ${M}</p>`;
+            
+            crtSystem.forEach((eq, i) => {
+                const Mi = M / eq.m;
+                const yi = modInverse(Mi, eq.m);
+                const term = eq.a * Mi * yi;
+                x += term;
+                
+                steps += `<p style="margin-top: 10px;"><strong>For x ≡ ${eq.a} (mod ${eq.m}):</strong></p>`;
+                steps += `<p>M${i+1} = M/m${i+1} = ${M}/${eq.m} = ${Mi}</p>`;
+                steps += `<p>Find y${i+1}: ${Mi} × y${i+1} ≡ 1 (mod ${eq.m})</p>`;
+                steps += `<p>y${i+1} = ${yi}</p>`;
+                steps += `<p>Contribution: ${eq.a} × ${Mi} × ${yi} = ${term}</p>`;
+            });
+            
+            x = ((x % M) + M) % M;
+            crtSolution = x;
+            
+            steps += `<p style="margin-top: 15px;"><strong>Sum all contributions and reduce mod ${M}:</strong></p>`;
+            steps += `<p style="color: #00ff00; font-size: 16px; font-weight: 600;">x ≡ ${x} (mod ${M})</p>`;
+            
+            // Verification
+            steps += `<p style="margin-top: 15px;"><strong>Verification:</strong></p>`;
+            let allCorrect = true;
+            crtSystem.forEach((eq, i) => {
+                const check = x % eq.m;
+                const correct = check === eq.a;
+                allCorrect = allCorrect && correct;
+                steps += `<p>${x} mod ${eq.m} = ${check} ${correct ? '✓' : '✗ (expected ' + eq.a + ')'}</p>`;
+            });
+            
+            document.getElementById('crtSolution').textContent = `Solution: x ≡ ${x} (mod ${M})`;
+            document.getElementById('crtSteps').innerHTML = steps;
+            
+            drawCRTVisualization();
+        }
+
+        function drawCRTVisualization() {
+            const canvas = document.getElementById('crtCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+            
+            if (crtSystem.length < 2 || crtSolution === null) return;
+            
+            const vizMode = document.getElementById('crtVizMode').value;
+            
+            if (vizMode === '2d-lattice' && crtSystem.length >= 2) {
+                // 2D lattice visualization for 2 congruences
+                const m1 = crtSystem[0].m;
+                const m2 = crtSystem[1].m;
+                const a1 = crtSystem[0].a;
+                const a2 = crtSystem[1].a;
+                
+                const cellSize = Math.min(width / (m1 + 2), height / (m2 + 2));
+                const offsetX = (width - m1 * cellSize) / 2;
+                const offsetY = (height - m2 * cellSize) / 2;
+                
+                // Draw grid
+                ctx.strokeStyle = '#333333';
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i <= m1; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(offsetX + i * cellSize, offsetY);
+                    ctx.lineTo(offsetX + i * cellSize, offsetY + m2 * cellSize);
+                    ctx.stroke();
+                }
+                for (let j = 0; j <= m2; j++) {
+                    ctx.beginPath();
+                    ctx.moveTo(offsetX, offsetY + j * cellSize);
+                    ctx.lineTo(offsetX + m1 * cellSize, offsetY + j * cellSize);
+                    ctx.stroke();
+                }
+                
+                // Highlight solutions
+                for (let i = 0; i < m1; i++) {
+                    for (let j = 0; j < m2; j++) {
+                        const x = offsetX + i * cellSize;
+                        const y = offsetY + (m2 - 1 - j) * cellSize;
+                        
+                        const meetsFirst = (i % m1) === a1;
+                        const meetsSecond = (j % m2) === a2;
+                        
+                        if (meetsFirst && meetsSecond) {
+                            ctx.fillStyle = '#00ff00';
+                            ctx.fillRect(x, y, cellSize, cellSize);
+                            
+                            ctx.fillStyle = '#000000';
+                            ctx.font = `${cellSize * 0.3}px Arial`;
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            const val = i + j * m1;
+                            ctx.fillText(val % (m1 * m2), x + cellSize / 2, y + cellSize / 2);
+                        } else if (meetsFirst) {
+                            ctx.fillStyle = 'rgba(0, 255, 255, 0.3)';
+                            ctx.fillRect(x, y, cellSize, cellSize);
+                        } else if (meetsSecond) {
+                            ctx.fillStyle = 'rgba(255, 0, 255, 0.3)';
+                            ctx.fillRect(x, y, cellSize, cellSize);
+                        }
+                    }
+                }
+                
+                // Labels
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`x ≡ ${a1} (mod ${m1})`, width / 2, 25);
+                
+                ctx.save();
+                ctx.translate(25, height / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText(`x ≡ ${a2} (mod ${m2})`, 0, 0);
+                ctx.restore();
+                
+            } else if (vizMode === 'circles') {
+                // Concentric circles representation
+                const maxRadius = Math.min(width, height) * 0.40;
+                const numEqs = crtSystem.length;
+                
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                
+                crtSystem.forEach((eq, idx) => {
+                    const radius = maxRadius * (idx + 1) / numEqs;
+                    
+                    // Draw ring
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    
+                    // Draw points
+                    for (let k = 0; k < eq.m; k++) {
+                        const angle = -2 * Math.PI * k / eq.m;
+                        const x = radius * Math.cos(angle);
+                        const y = radius * Math.sin(angle);
+                        
+                        const isSolution = (k === eq.a);
+                        ctx.fillStyle = isSolution ? '#00ff00' : '#666666';
+                        ctx.beginPath();
+                        ctx.arc(x, y, isSolution ? 6 : 3, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                    
+                    // Label
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`m = ${eq.m}, a = ${eq.a}`, 0, -radius - 15);
+                });
+                
+                ctx.restore();
+                
+            } else if (vizMode === 'number-line') {
+                // Number line representation
+                const M = crtSystem.reduce((prod, eq) => prod * eq.m, 1);
+                const displayRange = Math.min(M, 100);
+                const spacing = (width - 100) / displayRange;
+                const y = height / 2;
+                
+                // Draw number line
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(50, y);
+                ctx.lineTo(width - 50, y);
+                ctx.stroke();
+                
+                // Draw ticks and highlight solutions
+                for (let x = 0; x < displayRange; x++) {
+                    const screenX = 50 + x * spacing;
+                    
+                    let meetsAll = true;
+                    crtSystem.forEach(eq => {
+                        if (x % eq.m !== eq.a) meetsAll = false;
+                    });
+                    
+                    if (meetsAll) {
+                        ctx.fillStyle = '#00ff00';
+                        ctx.fillRect(screenX - 3, y - 20, 6, 40);
+                        
+                        ctx.fillStyle = '#00ff00';
+                        ctx.font = 'bold 12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(x, screenX, y - 30);
+                    } else {
+                        ctx.strokeStyle = '#666666';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(screenX, y - 5);
+                        ctx.lineTo(screenX, y + 5);
+                        ctx.stroke();
+                    }
+                }
+                
+                // Labels
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'left';
+                let labelY = height - 100;
+                crtSystem.forEach((eq, idx) => {
+                    ctx.fillText(`x ≡ ${eq.a} (mod ${eq.m})`, 50, labelY);
+                    labelY += 25;
+                });
+            }
+        }
+
+        // ===== CYCLOTOMIC POLYNOMIALS =====
+        let cyclN = 12;
+        let cyclRoots = [];
+        let cyclAnimationId = null;
+        let cyclRotation = 0;
+
+        function initCyclotomic() {
+            const slider = document.getElementById('cyclNSlider');
+            const input = document.getElementById('cyclNInput');
+            const vizMode = document.getElementById('cyclVizMode');
+            const showConn = document.getElementById('cyclShowConnections');
+            const showPoly = document.getElementById('cyclShowPolygon');
+            const animate = document.getElementById('cyclAnimateRotation');
+            
+            slider.addEventListener('input', () => {
+                cyclN = parseInt(slider.value);
+                input.value = cyclN;
+                document.getElementById('cyclNDisplay').textContent = cyclN;
+                updateCyclotomicVisualization();
+            });
+            
+            input.addEventListener('input', () => {
+                const val = parseInt(input.value);
+                if (!isNaN(val) && val >= 2) {
+                    cyclN = val;
+                    slider.value = Math.min(val, 60);
+                    document.getElementById('cyclNDisplay').textContent = val;
+                    updateCyclotomicVisualization();
+                }
+            });
+            
+            vizMode.addEventListener('change', () => drawCyclotomicVisualization());
+            showConn.addEventListener('change', () => drawCyclotomicVisualization());
+            showPoly.addEventListener('change', () => drawCyclotomicVisualization());
+            
+            animate.addEventListener('change', () => {
+                if (animate.checked) {
+                    startCyclAnimation();
+                } else {
+                    stopCyclAnimation();
+                }
+            });
+            
+            updateCyclotomicVisualization();
+        }
+
+        function setCyclN(n) {
+            cyclN = n;
+            document.getElementById('cyclNSlider').value = n;
+            document.getElementById('cyclNInput').value = n;
+            document.getElementById('cyclNDisplay').textContent = n;
+            updateCyclotomicVisualization();
+        }
+
+        function computeOrderOfRoot(k, n) {
+            const g = gcd(k, n);
+            return n / g;
+        }
+
+        function cyclotomicPolynomial(n) {
+            // Simplified: just return degree and a representation
+            // Full computation would require polynomial arithmetic
+            const phiN = phi(n);
+            
+            // For small n, we can hardcode
+            const polys = {
+                1: 'x - 1',
+                2: 'x + 1',
+                3: 'x² + x + 1',
+                4: 'x² + 1',
+                5: 'x⁴ + x³ + x² + x + 1',
+                6: 'x² - x + 1',
+                7: 'x⁶ + x⁵ + x⁴ + x³ + x² + x + 1',
+                8: 'x⁴ + 1',
+                9: 'x⁶ + x³ + 1',
+                10: 'x⁴ - x³ + x² - x + 1',
+                12: 'x⁴ - x² + 1',
+                15: 'x⁸ - x⁷ + x⁵ - x⁴ + x³ - x + 1',
+                16: 'x⁸ + 1',
+                20: 'x⁸ - x⁶ + x⁴ - x² + 1',
+                24: 'x⁸ - x⁴ + 1',
+                30: 'x⁸ + x⁷ - x⁵ - x⁴ - x³ + x + 1'
+            };
+            
+            if (polys[n]) {
+                return polys[n];
+            } else {
+                return `Φ${n}(x) [degree ${phiN}]`;
+            }
+        }
+
+        function updateCyclotomicVisualization() {
+            const n = cyclN;
+            const phiN = phi(n);
+            
+            // Generate all n-th roots of unity
+            cyclRoots = [];
+            for (let k = 0; k < n; k++) {
+                const angle = 2 * Math.PI * k / n;
+                const order = computeOrderOfRoot(k, n);
+                const isPrimitive = order === n;
+                
+                cyclRoots.push({
+                    k: k,
+                    n: n,
+                    angle: angle,
+                    order: order,
+                    isPrimitive: isPrimitive
+                });
+            }
+            
+            const primitiveCount = cyclRoots.filter(r => r.isPrimitive).length;
+            
+            // Update statistics
+            document.getElementById('cyclOrder').textContent = n;
+            document.getElementById('cyclPhi').textContent = phiN;
+            document.getElementById('cyclAllRoots').textContent = n;
+            document.getElementById('cyclPrimitive').textContent = primitiveCount;
+            document.getElementById('cyclDegree').textContent = phiN;
+            
+            // Polynomial
+            const poly = cyclotomicPolynomial(n);
+            document.getElementById('cyclPolynomial').textContent = `Φ${n}(x) = ${poly}`;
+            
+            // Analysis
+            let analysisHTML = `<p style="margin-bottom: 12px;">The ${n}-th roots of unity are the complex solutions to x${getSuper(n)} = 1.</p>`;
+            analysisHTML += `<p style="margin-bottom: 12px;">They form a cyclic group of order ${n} under multiplication.</p>`;
+            analysisHTML += `<p style="margin-bottom: 12px;">There are φ(${n}) = ${phiN} primitive ${n}-th roots of unity.</p>`;
+            analysisHTML += `<p style="margin-bottom: 12px;">The cyclotomic polynomial Φ${n}(x) has degree ${phiN} and its roots are exactly the primitive ${n}-th roots.</p>`;
+            
+            if (isPrime(n)) {
+                analysisHTML += `<p style="margin-bottom: 12px;"><strong>Since ${n} is prime</strong>, all non-identity roots are primitive.</p>`;
+            }
+            
+            document.getElementById('cyclAnalysis').innerHTML = analysisHTML;
+            
+            // Roots table
+            updateCyclRootsTable();
+            
+            // Factorization
+            let factHTML = `<p>x${getSuper(n)} - 1 = `;
+            const divisors = [];
+            for (let d = 1; d <= n; d++) {
+                if (n % d === 0) divisors.push(d);
+            }
+            factHTML += divisors.map(d => `Φ${d}(x)`).join(' × ');
+            factHTML += `</p>`;
+            
+            document.getElementById('cyclFactorization').innerHTML = factHTML;
+            
+            drawCyclotomicVisualization();
+        }
+
+        function getSuper(n) {
+            const supers = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+            return String(n).split('').map(d => supers[parseInt(d)]).join('');
+        }
+
+        function updateCyclRootsTable() {
+            const tbody = document.getElementById('cyclRootsTableBody');
+            tbody.innerHTML = '';
+            
+            cyclRoots.forEach(root => {
+                const row = document.createElement('tr');
+                row.style.background = root.isPrimitive ? 'rgba(255, 0, 255, 0.2)' : 'transparent';
+                
+                const angleStr = `${(root.angle * 180 / Math.PI).toFixed(1)}° = ${(root.k / root.n).toFixed(4)} × 2π`;
+                
+                row.innerHTML = `
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">${root.k}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">e^(2πi × ${root.k}/${root.n})</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); font-size: 10px;">${angleStr}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center;">${root.order}</td>
+                    <td style="padding: 6px; border: 1px solid var(--border-color); text-align: center; color: ${root.isPrimitive ? '#ff00ff' : '#666'};">${root.isPrimitive ? 'YES' : 'no'}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function drawCyclotomicVisualization() {
+            const canvas = document.getElementById('cyclotomicCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) * 0.40;
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+            
+            const n = cyclN;
+            const vizMode = document.getElementById('cyclVizMode').value;
+            const showConn = document.getElementById('cyclShowConnections').checked;
+            const showPoly = document.getElementById('cyclShowPolygon').checked;
+            
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(cyclRotation);
+            
+            // Draw unit circle
+            ctx.strokeStyle = '#666666';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Draw axes
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(-radius, 0);
+            ctx.lineTo(radius, 0);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, -radius);
+            ctx.lineTo(0, radius);
+            ctx.stroke();
+            
+            // Draw polygon if enabled
+            if (showPoly) {
+                ctx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                cyclRoots.forEach((root, idx) => {
+                    const x = radius * Math.cos(root.angle);
+                    const y = radius * Math.sin(root.angle);
+                    if (idx === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.closePath();
+                ctx.stroke();
+            }
+            
+            // Draw connections if enabled
+            if (showConn && vizMode === 'primitive-only') {
+                const primRoots = cyclRoots.filter(r => r.isPrimitive);
+                ctx.strokeStyle = 'rgba(255, 0, 255, 0.3)';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < primRoots.length; i++) {
+                    for (let j = i + 1; j < primRoots.length; j++) {
+                        const r1 = primRoots[i];
+                        const r2 = primRoots[j];
+                        const x1 = radius * Math.cos(r1.angle);
+                        const y1 = radius * Math.sin(r1.angle);
+                        const x2 = radius * Math.cos(r2.angle);
+                        const y2 = radius * Math.sin(r2.angle);
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            // Draw roots
+            cyclRoots.forEach(root => {
+                const x = radius * Math.cos(root.angle);
+                const y = radius * Math.sin(root.angle);
+                
+                let color, size = 5;
+                let shouldDraw = true;
+                
+                if (vizMode === 'all-roots') {
+                    color = root.isPrimitive ? '#ff00ff' : '#00ffff';
+                    if (root.isPrimitive) size = 7;
+                } else if (vizMode === 'primitive-only') {
+                    if (!root.isPrimitive) shouldDraw = false;
+                    color = '#ff00ff';
+                    size = 7;
+                } else if (vizMode === 'by-order') {
+                    const hue = (root.order / n) * 360;
+                    color = `hsl(${hue}, 100%, 50%)`;
+                    size = 6;
+                }
+                
+                if (shouldDraw) {
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Draw line to center for primitive roots
+                    if (root.isPrimitive && vizMode !== 'primitive-only') {
+                        ctx.strokeStyle = 'rgba(255, 0, 255, 0.2)';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(0, 0);
+                        ctx.lineTo(x, y);
+                        ctx.stroke();
+                    }
+                }
+            });
+            
+            ctx.restore();
+            
+            // Center dot
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Title
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${n}-th Roots of Unity`, width / 2, 30);
+        }
+
+        function startCyclAnimation() {
+            if (!cyclAnimationId) {
+                function animate() {
+                    cyclRotation += 0.01;
+                    drawCyclotomicVisualization();
+                    cyclAnimationId = requestAnimationFrame(animate);
+                }
+                cyclAnimationId = requestAnimationFrame(animate);
+            }
+        }
+
+        function stopCyclAnimation() {
+            if (cyclAnimationId) {
+                cancelAnimationFrame(cyclAnimationId);
+                cyclAnimationId = null;
+                cyclRotation = 0;
+                drawCyclotomicVisualization();
             }
         }
     </script>
