@@ -152,6 +152,10 @@
         .tab.color-cyclotomic { border-bottom-color: #8800ff; }
         .tab.color-dirichlet { border-bottom-color: #ff0080; }
         .tab.color-mobius { border-bottom-color: #00ffaa; }
+        .tab.color-farey { border-bottom-color: #ffaa00; }
+        .tab.color-helix { border-bottom-color: #00aaff; }
+        .tab.color-ramanujan { border-bottom-color: #aa00ff; }
+        .tab.color-conjecture { border-bottom-color: #ff0088; }
 
         .tab.active.color-main { background: rgba(0, 255, 0, 0.1); }
         .tab.active.color-theory { background: rgba(0, 255, 255, 0.1); }
@@ -163,6 +167,10 @@
         .tab.active.color-cyclotomic { background: rgba(136, 0, 255, 0.1); }
         .tab.active.color-dirichlet { background: rgba(255, 0, 128, 0.1); }
         .tab.active.color-mobius { background: rgba(0, 255, 170, 0.1); }
+        .tab.active.color-farey { background: rgba(255, 170, 0, 0.1); }
+        .tab.active.color-helix { background: rgba(0, 170, 255, 0.1); }
+        .tab.active.color-ramanujan { background: rgba(170, 0, 255, 0.1); }
+        .tab.active.color-conjecture { background: rgba(255, 0, 136, 0.1); }
 
         .tab-content {
             display: none;
@@ -716,6 +724,10 @@
             <button class="tab color-cyclotomic" onclick="switchTab('cyclotomic')">Cyclotomic</button>
             <button class="tab color-dirichlet" onclick="switchTab('dirichlet')">Dirichlet</button>
             <button class="tab color-mobius" onclick="switchTab('mobius')">Möbius</button>
+            <button class="tab color-farey" onclick="switchTab('farey-graph')">Farey Graph</button>
+            <button class="tab color-helix" onclick="switchTab('helix-3d')">3D Helix</button>
+            <button class="tab color-ramanujan" onclick="switchTab('ramanujan')">Ramanujan</button>
+            <button class="tab color-conjecture" onclick="switchTab('conjecture')">Conjecture</button>
         </div>
 
         <div id="visualizationTab" class="tab-content active">
@@ -2410,6 +2422,523 @@
                     </p>
                     <p style="margin-top: 10px; font-size: 13px; opacity: 0.9;">
                         Orthogonality: Σ χ(n)χ'(n)* = φ(q) if χ = χ', else 0
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="helix3dTab" class="tab-content">
+            <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">3D Modular Helix</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Configuration</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Modulus Range: <span id="helixModRangeDisplay">1 to 30</span>
+                        </label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div>
+                                <label style="font-size: 11px;">Start</label>
+                                <input type="number" id="helixModStart" value="1" min="1" max="100" 
+                                       style="width: 100%; padding: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px;">End</label>
+                                <input type="number" id="helixModEnd" value="30" min="1" max="100" 
+                                       style="width: 100%; padding: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Helix Pitch: <span id="helixPitchDisplay">0.5</span>
+                        </label>
+                        <input type="range" id="helixPitch" min="0.1" max="2" step="0.1" value="0.5" style="width: 100%; height: 8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Spiral Mode:
+                        </label>
+                        <select id="helixSpiralMode" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="linear">Linear (Constant Pitch)</option>
+                            <option value="golden">Golden Spiral</option>
+                            <option value="logarithmic">Logarithmic</option>
+                            <option value="cylindrical">Cylindrical (No Spiral)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="helixShowConnections" checked style="margin-right: 8px;">
+                            Show Inter-Ring Connections
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="helixAutoRotate" checked style="margin-right: 8px;">
+                            Auto-Rotate
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="helixColorByHeight" style="margin-right: 8px;">
+                            Color by Height
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="resetHelixCamera()" style="background: var(--bg-primary); color: var(--text-primary);">Reset Camera</button>
+                        <button onclick="updateHelixVisualization()">Update</button>
+                    </div>
+                </div>
+                
+                <div style="position: relative; display: flex; justify-content: center; margin-bottom: 20px;">
+                    <canvas id="helixCanvas" width="900" height="700" 
+                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px; cursor: grab;">
+                    </canvas>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Total Layers</div>
+                        <div id="helixLayerCount" style="font-size: 24px; font-weight: 600; color: #00aaff;">30</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Total Points</div>
+                        <div id="helixPointCount" style="font-size: 24px; font-weight: 600; color: #00ff00;">465</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Helix Height</div>
+                        <div id="helixHeight" style="font-size: 24px; font-weight: 600; color: #ffffff;">15.0</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Camera Angle</div>
+                        <div id="helixCameraAngle" style="font-size: 24px; font-weight: 600; color: #00aaff;">45°</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Export Options</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Title</label>
+                        <input type="text" id="helixExportTitle" value="3D Modular Helix Visualization" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Resolution</label>
+                        <select id="helixExportResolution" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="1">Standard (900×700)</option>
+                            <option value="2">HD (1800×1400)</option>
+                            <option value="4" selected>4K (3600×2800)</option>
+                            <option value="8">8K (7200×5600)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="helixIncludeLegend" checked style="margin-right: 8px;">
+                            Include Legend & Stats
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="exportHelixImage()" style="background: #2196F3; color: #ffffff;">Export PNG</button>
+                        <button onclick="exportHelixCSV()" style="background: #FF9800; color: #ffffff;">Export CSV</button>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(0, 170, 255, 0.1); border: 2px solid #00aaff; padding: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #00aaff;">3D Helix Interpretation</h3>
+                    <p style="margin: 0; font-size: 15px; line-height: 1.6;">
+                        This 3D helix maps modular rings into vertical space, with height representing the modulus value. 
+                        The spiral reveals how coprime residues flow through different modular levels.
+                    </p>
+                    <p style="margin-top: 10px; font-size: 13px; opacity: 0.9;">
+                        Connection to prime distribution: Vertical alignment patterns correspond to arithmetic progressions.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="ramanujanTab" class="tab-content">
+            <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Ramanujan Sums</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Configuration</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Maximum q: <span id="ramQDisplay" style="color: #00ffff;">30</span>
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                            <span style="font-size: 11px;">5</span>
+                            <input type="range" id="ramQSlider" min="5" max="60" value="30" style="flex: 1; height: 8px;">
+                            <span style="font-size: 11px;">60</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Fixed n: <span id="ramNDisplay" style="color: #aa00ff;">12</span>
+                        </label>
+                        <input type="number" id="ramNInput" value="12" min="1" max="100" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Visualization Mode:</label>
+                        <select id="ramVizMode" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="heatmap">Heatmap: c_q(n) for all q,n</option>
+                            <option value="fixed-n">Fixed n: c_q(n) vs q</option>
+                            <option value="fixed-q">Fixed q: c_q(n) vs n</option>
+                            <option value="radial">Radial Plot</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="ramShowFormula" checked style="margin-right: 8px;">
+                            Show Formula Breakdown
+                        </label>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px;">
+                        <button onclick="setRamN(6)" style="padding: 8px;">n = 6</button>
+                        <button onclick="setRamN(12)" style="padding: 8px;">n = 12</button>
+                        <button onclick="setRamN(24)" style="padding: 8px;">n = 24</button>
+                        <button onclick="setRamN(30)" style="padding: 8px;">n = 30</button>
+                    </div>
+                </div>
+                
+                <div style="position: relative; display: flex; justify-content: center; margin-bottom: 20px;">
+                    <canvas id="ramanujanCanvas" width="900" height="700" 
+                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px; cursor: crosshair;">
+                    </canvas>
+                    <div id="ramanujanTooltip" style="position: absolute; padding: 10px; background: rgba(255, 255, 255, 0.95); 
+                         color: #000000; border: 1px solid #000; pointer-events: none; font-size: 11px; 
+                         line-height: 1.4; opacity: 0; transition: opacity 0.2s; z-index: 1000; max-width: 300px;
+                         font-family: 'Courier New', monospace;">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Max q</div>
+                        <div id="ramMaxQ" style="font-size: 24px; font-weight: 600; color: #00ffff;">30</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Current n</div>
+                        <div id="ramCurrentN" style="font-size: 24px; font-weight: 600; color: #aa00ff;">12</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Sum c_q(n)</div>
+                        <div id="ramSumValue" style="font-size: 24px; font-weight: 600; color: #00ff00;">0</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Total Values</div>
+                        <div id="ramTotalValues" style="font-size: 24px; font-weight: 600; color: #ffffff;">900</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Ramanujan Sum c<sub>q</sub>(n)</h3>
+                    <div id="ramFormulaDisplay" style="font-size: 14px; line-height: 2; font-family: 'Courier New', monospace;"></div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Export Options</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Title</label>
+                        <input type="text" id="ramExportTitle" value="Ramanujan Sums Visualization" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Resolution</label>
+                        <select id="ramExportResolution" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="1">Standard (900×700)</option>
+                            <option value="2">HD (1800×1400)</option>
+                            <option value="4" selected>4K (3600×2800)</option>
+                            <option value="8">8K (7200×5600)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="ramIncludeLegend" checked style="margin-right: 8px;">
+                            Include Formula & Legend
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="exportRamImage()" style="background: #2196F3; color: #ffffff;">Export PNG</button>
+                        <button onclick="exportRamCSV()" style="background: #FF9800; color: #ffffff;">Export CSV</button>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(170, 0, 255, 0.1); border: 2px solid #aa00ff; padding: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #aa00ff;">Ramanujan Sum Definition</h3>
+                    <p style="margin: 0; font-size: 15px; line-height: 1.6;">
+                        c<sub>q</sub>(n) = Σ<sub>gcd(k,q)=1</sub> e<sup>2πikn/q</sup> = μ(q/gcd(n,q)) × φ(q) / φ(q/gcd(n,q))
+                    </p>
+                    <p style="margin-top: 10px; font-size: 13px; opacity: 0.9;">
+                        These sums are fundamental in analytic number theory and connect deeply to the Möbius function and Euler's totient.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="conjectureTab" class="tab-content">
+            <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Conjecture Testing Sandbox</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Define Your Conjecture</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Conjecture Type:</label>
+                        <select id="conjectureType" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="prime-pattern">Prime Number Pattern</option>
+                            <option value="modular-relation">Modular Relation</option>
+                            <option value="arithmetic-function">Arithmetic Function Property</option>
+                            <option value="farey-property">Farey Sequence Property</option>
+                            <option value="custom">Custom Predicate</option>
+                        </select>
+                    </div>
+                    
+                    <div id="conjecturePrimePattern" style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Pattern Statement:</label>
+                        <select id="primePatternSelect" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="twin">If p is prime and p ≡ 3 (mod 4), then...</option>
+                            <option value="sophie">Sophie Germain: If p prime, is 2p+1 prime?</option>
+                            <option value="safe">Safe primes: If p = 2q+1 where q prime</option>
+                            <option value="mersenne">Mersenne pattern: 2^p - 1 primality</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Test Range:</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div>
+                                <label style="font-size: 11px;">Start</label>
+                                <input type="number" id="conjectureStart" value="3" min="1" 
+                                       style="width: 100%; padding: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px;">End</label>
+                                <input type="number" id="conjectureEnd" value="1000" min="1" 
+                                       style="width: 100%; padding: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Custom JavaScript Predicate (Advanced):</label>
+                        <textarea id="conjectureCustom" rows="4" placeholder="// Return true if n satisfies your conjecture&#10;// Example: return isPrime(n) && isPrime(2*n+1);" 
+                                  style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-family: 'Courier New', monospace; font-size: 12px;"></textarea>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="runConjectureTest()" style="background: #00ff00; color: #000000; font-weight: 700;">Run Test</button>
+                        <button onclick="clearConjectureResults()" style="background: var(--bg-primary); color: var(--text-primary);">Clear Results</button>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Test Results</h3>
+                    <div id="conjectureResults" style="font-size: 14px; line-height: 1.8; min-height: 200px;">
+                        <p style="opacity: 0.6; font-style: italic;">Run a test to see results...</p>
+                    </div>
+                </div>
+                
+                <div style="position: relative; display: flex; justify-content: center; margin-bottom: 20px;">
+                    <canvas id="conjectureCanvas" width="900" height="400" 
+                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px;">
+                    </canvas>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Tests Run</div>
+                        <div id="conjectureTestsRun" style="font-size: 24px; font-weight: 600; color: #00ffff;">0</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Passed</div>
+                        <div id="conjecturePassed" style="font-size: 24px; font-weight: 600; color: #00ff00;">0</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Failed</div>
+                        <div id="conjectureFailed" style="font-size: 24px; font-weight: 600; color: #ff0064;">0</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Success Rate</div>
+                        <div id="conjectureSuccessRate" style="font-size: 24px; font-weight: 600; color: #ffffff;">0%</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Export Options</h3>
+                    
+                    <div class="button-group">
+                        <button onclick="exportConjectureResults()" style="background: #FF9800; color: #ffffff;">Export Results CSV</button>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255, 0, 136, 0.1); border: 2px solid #ff0088; padding: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #ff0088;">Conjecture Testing Framework</h3>
+                    <p style="margin: 0; font-size: 15px; line-height: 1.6;">
+                        Test mathematical conjectures against computational data. Define predicates and watch them being verified across thousands of cases.
+                    </p>
+                    <p style="margin-top: 10px; font-size: 13px; opacity: 0.9;">
+                        Warning: Computational verification does not constitute mathematical proof, but can guide intuition and identify counterexamples.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="fareyGraphTab" class="tab-content">
+            <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
+                <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Farey Graph & Mediant Structure</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Configuration</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Maximum Order: <span id="fareyOrderDisplay" style="color: #00ffff;">5</span>
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                            <span style="font-size: 11px;">1</span>
+                            <input type="range" id="fareyOrderSlider" min="1" max="8" value="5" style="flex: 1; height: 8px;">
+                            <span style="font-size: 11px;">8</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px;">
+                        <button onclick="setFareyOrder(3)" style="padding: 8px;">Order 3</button>
+                        <button onclick="setFareyOrder(4)" style="padding: 8px;">Order 4</button>
+                        <button onclick="setFareyOrder(5)" style="padding: 8px;">Order 5</button>
+                        <button onclick="setFareyOrder(6)" style="padding: 8px;">Order 6</button>
+                        <button onclick="setFareyOrder(7)" style="padding: 8px;">Order 7</button>
+                        <button onclick="setFareyOrder(8)" style="padding: 8px;">Order 8</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Graph Layout:</label>
+                        <select id="fareyLayoutMode" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="tree">Tree Layout (Stern-Brocot)</option>
+                            <option value="circle">Circular Layout</option>
+                            <option value="number-line">Number Line Layout</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="fareyShowMediantsValue" checked style="margin-right: 8px;">
+                            Show Mediant Connections
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="fareyShowLabels" checked style="margin-right: 8px;">
+                            Show Fraction Labels
+                        </label>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">
+                            Node Size: <span id="fareyNodeSizeDisplay">8</span>
+                        </label>
+                        <input type="range" id="fareyNodeSize" min="4" max="16" step="1" value="8" style="width: 100%; height: 8px;">
+                    </div>
+                </div>
+                
+                <div style="position: relative; display: flex; justify-content: center; margin-bottom: 20px;">
+                    <canvas id="fareyCanvas" width="900" height="700" 
+                            style="border: 2px solid var(--border-color); background: #000000; border-radius: 4px; cursor: crosshair;">
+                    </canvas>
+                    <div id="fareyTooltip" style="position: absolute; padding: 10px; background: rgba(255, 255, 255, 0.95); 
+                         color: #000000; border: 1px solid #000; pointer-events: none; font-size: 11px; 
+                         line-height: 1.4; opacity: 0; transition: opacity 0.2s; z-index: 1000; max-width: 250px;
+                         font-family: 'Courier New', monospace;">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Order n</div>
+                        <div id="fareyOrderStat" style="font-size: 24px; font-weight: 600; color: #00ffff;">5</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Total Fractions</div>
+                        <div id="fareyTotalFractions" style="font-size: 24px; font-weight: 600; color: #00ff00;">11</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Graph Edges</div>
+                        <div id="fareyEdgeCount" style="font-size: 24px; font-weight: 600; color: #ffaa00;">10</div>
+                    </div>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">Max Denominator</div>
+                        <div id="fareyMaxDenom" style="font-size: 24px; font-weight: 600; color: #ffffff;">5</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Farey Sequence F<sub>n</sub></h3>
+                    <div id="fareySequenceDisplay" style="font-size: 14px; line-height: 2; font-family: 'Courier New', monospace;"></div>
+                </div>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 20px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Export Options</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Title</label>
+                        <input type="text" id="fareyExportTitle" value="Farey Graph Visualization" 
+                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+                                      background: var(--bg-primary); color: var(--text-primary);">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Export Resolution</label>
+                        <select id="fareyExportResolution" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                            <option value="1">Standard (900×700)</option>
+                            <option value="2">HD (1800×1400)</option>
+                            <option value="4" selected>4K (3600×2800)</option>
+                            <option value="8">8K (7200×5600)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="fareyIncludeLegend" checked style="margin-right: 8px;">
+                            Include Legend & Description
+                        </label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button onclick="exportFareyImage()" style="background: #2196F3; color: #ffffff;">Export PNG</button>
+                        <button onclick="exportFareyCSV()" style="background: #FF9800; color: #ffffff;">Export CSV</button>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255, 170, 0, 0.1); border: 2px solid #ffaa00; padding: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #ffaa00;">Farey Sequence Properties</h3>
+                    <p style="margin: 0; font-size: 15px; line-height: 1.6;">
+                        The Farey sequence F<sub>n</sub> lists all reduced fractions between 0 and 1 with denominator ≤ n, ordered by size.
+                    </p>
+                    <p style="margin-top: 10px; font-size: 13px; opacity: 0.9;">
+                        Mediant property: If a/b and c/d are consecutive in F<sub>n</sub>, their mediant (a+c)/(b+d) first appears in F<sub>b+d</sub>.
                     </p>
                 </div>
             </div>
@@ -6705,7 +7234,11 @@
                 'crt-visualizer': [6, 'crtVisualizerTab', initCRT],
                 'cyclotomic': [7, 'cyclotomicTab', updateCyclotomicVisualization],
                 'dirichlet': [8, 'dirichletTab', updateDirichletVisualization],
-                'mobius': [9, 'mobiusTab', updateMobiusVisualization]
+                'mobius': [9, 'mobiusTab', updateMobiusVisualization],
+                'farey-graph': [10, 'fareyGraphTab', updateFareyGraph],
+                'helix-3d': [11, 'helix3dTab', init3DHelix],
+                'ramanujan': [12, 'ramanujanTab', updateRamanujanSums],
+                'conjecture': [13, 'conjectureTab', initConjectureTester]
             };
             
             if (tabMap[tab]) {
@@ -6722,6 +7255,781 @@
             }
         }
 
+        // ===== FAREY GRAPH =====
+        let fareyOrder = 5;
+        let fareyNodes = [];
+        let fareyEdges = [];
+
+        function initFareyGraph() {
+            const slider = document.getElementById('fareyOrderSlider');
+            const layout = document.getElementById('fareyLayoutMode');
+            const showMediantsEl = document.getElementById('fareyShowMediantsValue');
+            const showLabels = document.getElementById('fareyShowLabels');
+            const nodeSize = document.getElementById('fareyNodeSize');
+            
+            slider.addEventListener('input', () => {
+                fareyOrder = parseInt(slider.value);
+                document.getElementById('fareyOrderDisplay').textContent = fareyOrder;
+                updateFareyGraph();
+            });
+            
+            layout.addEventListener('change', () => updateFareyGraph());
+            showMediantsEl.addEventListener('change', () => drawFareyGraph());
+            showLabels.addEventListener('change', () => drawFareyGraph());
+            nodeSize.addEventListener('input', () => {
+                document.getElementById('fareyNodeSizeDisplay').textContent = nodeSize.value;
+                drawFareyGraph();
+            });
+            
+            updateFareyGraph();
+        }
+
+        function setFareyOrder(n) {
+            fareyOrder = n;
+            document.getElementById('fareyOrderSlider').value = n;
+            document.getElementById('fareyOrderDisplay').textContent = n;
+            updateFareyGraph();
+        }
+
+        function generateFareySequence(n) {
+            const fractions = [{num: 0, den: 1}, {num: 1, den: 1}];
+            
+            for (let den = 2; den <= n; den++) {
+                for (let num = 1; num < den; num++) {
+                    if (gcd(num, den) === 1) {
+                        fractions.push({num, den});
+                    }
+                }
+            }
+            
+            fractions.sort((a, b) => a.num/a.den - b.num/b.den);
+            return fractions;
+        }
+
+        function updateFareyGraph() {
+            fareyNodes = generateFareySequence(fareyOrder);
+            fareyEdges = [];
+            
+            // Build mediant edges (Stern-Brocot tree structure)
+            for (let i = 0; i < fareyNodes.length - 1; i++) {
+                const a = fareyNodes[i];
+                const b = fareyNodes[i + 1];
+                
+                // Check if consecutive in Farey sequence
+                if (Math.abs(a.den * b.num - a.num * b.den) === 1) {
+                    fareyEdges.push({from: i, to: i + 1});
+                }
+            }
+            
+            // Update statistics
+            document.getElementById('fareyOrderStat').textContent = fareyOrder;
+            document.getElementById('fareyTotalFractions').textContent = fareyNodes.length;
+            document.getElementById('fareyEdgeCount').textContent = fareyEdges.length;
+            document.getElementById('fareyMaxDenom').textContent = fareyOrder;
+            
+            // Display sequence
+            const seqText = fareyNodes.map(f => `${f.num}/${f.den}`).join(', ');
+            document.getElementById('fareySequenceDisplay').textContent = 'F' + fareyOrder + ' = {' + seqText + '}';
+            
+            drawFareyGraph();
+        }
+
+        function drawFareyGraph() {
+            const canvas = document.getElementById('fareyCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+            
+            const layout = document.getElementById('fareyLayoutMode').value;
+            const showMediantsEl = document.getElementById('fareyShowMediantsValue').checked;
+            const showLabels = document.getElementById('fareyShowLabels').checked;
+            const nodeSize = parseFloat(document.getElementById('fareyNodeSize').value);
+            
+            // Calculate positions based on layout
+            const positions = [];
+            
+            if (layout === 'number-line') {
+                const padding = 80;
+                const lineY = height / 2;
+                fareyNodes.forEach(node => {
+                    const x = padding + (node.num / node.den) * (width - 2 * padding);
+                    positions.push({x, y: lineY});
+                });
+            } else if (layout === 'circle') {
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const radius = Math.min(width, height) * 0.4;
+                fareyNodes.forEach(node => {
+                    const angle = 2 * Math.PI * (node.num / node.den);
+                    positions.push({
+                        x: centerX + radius * Math.cos(angle - Math.PI / 2),
+                        y: centerY + radius * Math.sin(angle - Math.PI / 2)
+                    });
+                });
+            } else { // tree layout
+                const levels = Math.ceil(Math.log2(fareyNodes.length)) + 1;
+                fareyNodes.forEach((node, idx) => {
+                    const level = Math.floor(Math.log2(idx + 1));
+                    const posInLevel = idx - (Math.pow(2, level) - 1);
+                    const totalInLevel = Math.pow(2, level);
+                    const x = (width / (totalInLevel + 1)) * (posInLevel + 1);
+                    const y = 60 + (height - 120) * (level / levels);
+                    positions.push({x, y});
+                });
+            }
+            
+            // Draw edges
+            if (showMediantsEl) {
+                ctx.strokeStyle = 'rgba(255, 170, 0, 0.4)';
+                ctx.lineWidth = 1.5;
+                fareyEdges.forEach(edge => {
+                    const from = positions[edge.from];
+                    const to = positions[edge.to];
+                    ctx.beginPath();
+                    ctx.moveTo(from.x, from.y);
+                    ctx.lineTo(to.x, to.y);
+                    ctx.stroke();
+                });
+            }
+            
+            // Draw nodes
+            fareyNodes.forEach((node, idx) => {
+                const pos = positions[idx];
+                const value = node.num / node.den;
+                
+                // Color by value
+                const hue = value * 60;
+                ctx.fillStyle = `hsl(${hue}, 80%, 50%)`;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, nodeSize, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // Labels
+                if (showLabels) {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '11px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${node.num}/${node.den}`, pos.x, pos.y - nodeSize - 5);
+                }
+                
+                // Store for hover
+                node.screenX = pos.x;
+                node.screenY = pos.y;
+                node.screenRadius = nodeSize;
+            });
+            
+            // Title
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Farey Graph F${fareyOrder}`, width / 2, 30);
+        }
+
+        function exportFareyImage() {
+            const title = document.getElementById('fareyExportTitle').value;
+            const resolution = parseFloat(document.getElementById('fareyExportResolution').value);
+            const includeLegend = document.getElementById('fareyIncludeLegend').checked;
+            
+            const srcCanvas = document.getElementById('fareyCanvas');
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = srcCanvas.width * resolution;
+            tempCanvas.height = srcCanvas.height * resolution + 100 * resolution;
+            
+            const ctx = tempCanvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${24 * resolution}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(title, tempCanvas.width / 2, 50 * resolution);
+            
+            ctx.save();
+            ctx.translate(0, 100 * resolution);
+            ctx.scale(resolution, resolution);
+            ctx.drawImage(srcCanvas, 0, 0);
+            ctx.restore();
+            
+            const link = document.createElement('a');
+            link.download = `farey_graph_F${fareyOrder}_${Date.now()}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function exportFareyCSV() {
+            let csv = '# Farey Graph Data Export\n';
+            csv += `# Order n = ${fareyOrder}\n`;
+            csv += `# Total Fractions: ${fareyNodes.length}\n#\n`;
+            csv += 'Index,Numerator,Denominator,Value,Decimal\n';
+            
+            fareyNodes.forEach((node, idx) => {
+                const val = (node.num / node.den).toFixed(8);
+                csv += `${idx},${node.num},${node.den},${node.num}/${node.den},${val}\n`;
+            });
+            
+            csv += '\n# Mediant Edges\n';
+            csv += 'From_Index,To_Index,From_Fraction,To_Fraction\n';
+            fareyEdges.forEach(edge => {
+                const from = fareyNodes[edge.from];
+                const to = fareyNodes[edge.to];
+                csv += `${edge.from},${edge.to},${from.num}/${from.den},${to.num}/${to.den}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = `farey_graph_F${fareyOrder}_${Date.now()}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+
+        // ===== 3D HELIX =====
+        let helixRotationX = 0.5;
+        let helixRotationY = 0;
+        let helixAnimationId = null;
+
+        function init3DHelix() {
+            document.getElementById('helixModStart').addEventListener('input', updateHelixVisualization);
+            document.getElementById('helixModEnd').addEventListener('input', updateHelixVisualization);
+            document.getElementById('helixPitch').addEventListener('input', () => {
+                document.getElementById('helixPitchDisplay').textContent = document.getElementById('helixPitch').value;
+                drawHelixVisualization();
+            });
+            document.getElementById('helixSpiralMode').addEventListener('change', drawHelixVisualization);
+            document.getElementById('helixShowConnections').addEventListener('change', drawHelixVisualization);
+            document.getElementById('helixColorByHeight').addEventListener('change', drawHelixVisualization);
+            document.getElementById('helixAutoRotate').addEventListener('change', (e) => {
+                if (e.target.checked) startHelixAnimation();
+                else stopHelixAnimation();
+            });
+            
+            const canvas = document.getElementById('helixCanvas');
+            let isDragging = false;
+            let lastX = 0, lastY = 0;
+            
+            canvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                lastX = e.clientX;
+                lastY = e.clientY;
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const dx = e.clientX - lastX;
+                const dy = e.clientY - lastY;
+                helixRotationY += dx * 0.01;
+                helixRotationX += dy * 0.01;
+                helixRotationX = Math.max(-Math.PI/2, Math.min(Math.PI/2, helixRotationX));
+                lastX = e.clientX;
+                lastY = e.clientY;
+                drawHelixVisualization();
+            });
+            
+            canvas.addEventListener('mouseup', () => { isDragging = false; });
+            canvas.addEventListener('mouseleave', () => { isDragging = false; });
+            
+            updateHelixVisualization();
+        }
+
+        function updateHelixVisualization() {
+            const start = parseInt(document.getElementById('helixModStart').value);
+            const end = parseInt(document.getElementById('helixModEnd').value);
+            document.getElementById('helixModRangeDisplay').textContent = `${start} to ${end}`;
+            
+            const layers = end - start + 1;
+            let totalPoints = 0;
+            for (let m = start; m <= end; m++) totalPoints += m;
+            
+            document.getElementById('helixLayerCount').textContent = layers;
+            document.getElementById('helixPointCount').textContent = totalPoints;
+            document.getElementById('helixHeight').textContent = (layers * parseFloat(document.getElementById('helixPitch').value)).toFixed(1);
+            
+            drawHelixVisualization();
+        }
+
+        function drawHelixVisualization() {
+            const canvas = document.getElementById('helixCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+            
+            const start = parseInt(document.getElementById('helixModStart').value);
+            const end = parseInt(document.getElementById('helixModEnd').value);
+            const pitch = parseFloat(document.getElementById('helixPitch').value);
+            const spiralMode = document.getElementById('helixSpiralMode').value;
+            const showConn = document.getElementById('helixShowConnections').checked;
+            const colorByHeight = document.getElementById('helixColorByHeight').checked;
+            
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const baseRadius = 150;
+            
+            // Project 3D to 2D
+            function project3D(x, y, z) {
+                const cosX = Math.cos(helixRotationX);
+                const sinX = Math.sin(helixRotationX);
+                const cosY = Math.cos(helixRotationY);
+                const sinY = Math.sin(helixRotationY);
+                
+                const y1 = y * cosX - z * sinX;
+                const z1 = y * sinX + z * cosX;
+                const x1 = x * cosY - z1 * sinY;
+                const z2 = x * sinY + z1 * cosY;
+                
+                const scale = 300 / (300 + z2);
+                return {
+                    x: centerX + x1 * scale,
+                    y: centerY + y1 * scale,
+                    z: z2
+                };
+            }
+            
+            const points = [];
+            
+            for (let m = start; m <= end; m++) {
+                const level = m - start;
+                const z = level * pitch * 30;
+                const phiM = phi(m);
+                
+                for (let r = 0; r < m; r++) {
+                    const isOpen = gcd(r, m) === 1;
+                    let angle = -2 * Math.PI * r / m;
+                    
+                    if (spiralMode === 'linear') {
+                        angle += level * 0.2;
+                    } else if (spiralMode === 'golden') {
+                        angle += level * 2.399963; // golden angle
+                    } else if (spiralMode === 'logarithmic') {
+                        angle += Math.log(level + 1) * 2;
+                    }
+                    
+                    const x = baseRadius * Math.cos(angle);
+                    const y = baseRadius * Math.sin(angle);
+                    
+                    const proj = project3D(x, y, z);
+                    points.push({m, r, isOpen, proj, angle, level});
+                }
+            }
+            
+            // Sort by z-depth
+            points.sort((a, b) => a.proj.z - b.proj.z);
+            
+            // Draw connections
+            if (showConn) {
+                ctx.strokeStyle = 'rgba(0, 170, 255, 0.15)';
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i < points.length; i++) {
+                    const p1 = points[i];
+                    for (let j = i + 1; j < points.length && j < i + 10; j++) {
+                        const p2 = points[j];
+                        if (p2.m === p1.m + 1 && p2.r === p1.r) {
+                            ctx.beginPath();
+                            ctx.moveTo(p1.proj.x, p1.proj.y);
+                            ctx.lineTo(p2.proj.x, p2.proj.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+            
+            // Draw points
+            points.forEach(point => {
+                let color;
+                if (colorByHeight) {
+                    const hue = (point.level / (end - start)) * 240;
+                    color = `hsl(${hue}, 80%, 50%)`;
+                } else {
+                    color = point.isOpen ? '#00ff00' : '#ff0064';
+                }
+                
+                const size = point.isOpen ? 3 : 2;
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(point.proj.x, point.proj.y, size, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('3D Modular Helix (Drag to Rotate)', width / 2, 25);
+            
+            const angle = Math.round(helixRotationY * 180 / Math.PI);
+            document.getElementById('helixCameraAngle').textContent = angle + '°';
+        }
+
+        function startHelixAnimation() {
+            if (!helixAnimationId) {
+                function animate() {
+                    helixRotationY += 0.005;
+                    drawHelixVisualization();
+                    helixAnimationId = requestAnimationFrame(animate);
+                }
+                helixAnimationId = requestAnimationFrame(animate);
+            }
+        }
+
+        function stopHelixAnimation() {
+            if (helixAnimationId) {
+                cancelAnimationFrame(helixAnimationId);
+                helixAnimationId = null;
+            }
+        }
+
+        function resetHelixCamera() {
+            helixRotationX = 0.5;
+            helixRotationY = 0;
+            drawHelixVisualization();
+        }
+
+        function exportHelixImage() {
+            const srcCanvas = document.getElementById('helixCanvas');
+            const title = document.getElementById('helixExportTitle').value;
+            const resolution = parseFloat(document.getElementById('helixExportResolution').value);
+            
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = srcCanvas.width * resolution;
+            tempCanvas.height = srcCanvas.height * resolution + 100 * resolution;
+            const ctx = tempCanvas.getContext('2d');
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${24 * resolution}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(title, tempCanvas.width / 2, 50 * resolution);
+            
+            ctx.save();
+            ctx.translate(0, 100 * resolution);
+            ctx.scale(resolution, resolution);
+            ctx.drawImage(srcCanvas, 0, 0);
+            ctx.restore();
+            
+            const link = document.createElement('a');
+            link.download = `helix_3d_${Date.now()}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function exportHelixCSV() {
+            let csv = '# 3D Helix Export\n#\nLayer,Modulus,Residue,IsOpen,Angle,Height\n';
+            const start = parseInt(document.getElementById('helixModStart').value);
+            const end = parseInt(document.getElementById('helixModEnd').value);
+            const pitch = parseFloat(document.getElementById('helixPitch').value);
+            
+            for (let m = start; m <= end; m++) {
+                const level = m - start;
+                const z = level * pitch * 30;
+                for (let r = 0; r < m; r++) {
+                    const isOpen = gcd(r, m) === 1;
+                    const angle = -2 * Math.PI * r / m;
+                    csv += `${level},${m},${r},${isOpen},${angle.toFixed(6)},${z.toFixed(2)}\n`;
+                }
+            }
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = `helix_3d_${Date.now()}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+
+        // ===== RAMANUJAN SUMS =====
+        let ramQ = 30;
+        let ramN = 12;
+        let ramValues = [];
+
+        function updateRamanujanSums() {
+            const slider = document.getElementById('ramQSlider');
+            const nInput = document.getElementById('ramNInput');
+            const vizMode = document.getElementById('ramVizMode');
+            
+            slider.addEventListener('input', () => {
+                ramQ = parseInt(slider.value);
+                document.getElementById('ramQDisplay').textContent = ramQ;
+                calculateRamanujanValues();
+            });
+            
+            nInput.addEventListener('input', () => {
+                ramN = parseInt(nInput.value);
+                document.getElementById('ramNDisplay').textContent = ramN;
+                calculateRamanujanValues();
+            });
+            
+            vizMode.addEventListener('change', drawRamanujanVisualization);
+            
+            calculateRamanujanValues();
+        }
+
+        function setRamN(n) {
+            ramN = n;
+            document.getElementById('ramNInput').value = n;
+            document.getElementById('ramNDisplay').textContent = n;
+            calculateRamanujanValues();
+        }
+
+        function ramanujanSum(q, n) {
+            const d = gcd(n, q);
+            const mu = mobiusFunction(q / d);
+            const phiQ = phi(q);
+            const phiQoverD = phi(q / d);
+            return mu * phiQ / phiQoverD;
+        }
+
+        function calculateRamanujanValues() {
+            ramValues = [];
+            let sum = 0;
+            
+            for (let q = 1; q <= ramQ; q++) {
+                for (let n = 1; n <= ramQ; n++) {
+                    const val = ramanujanSum(q, n);
+                    ramValues.push({q, n, value: val});
+                    if (n === ramN) sum += val;
+                }
+            }
+            
+            document.getElementById('ramMaxQ').textContent = ramQ;
+            document.getElementById('ramCurrentN').textContent = ramN;
+            document.getElementById('ramSumValue').textContent = sum;
+            document.getElementById('ramTotalValues').textContent = ramValues.length;
+            
+            const formula = `c_${ramQ}(${ramN}) = μ(${ramQ}/gcd(${ramN},${ramQ})) × φ(${ramQ}) / φ(${ramQ}/gcd(${ramN},${ramQ}))`;
+            const computed = ramanujanSum(ramQ, ramN);
+            document.getElementById('ramFormulaDisplay').innerHTML = `${formula}<br><br>= ${computed}`;
+            
+            drawRamanujanVisualization();
+        }
+
+        function drawRamanujanVisualization() {
+            const canvas = document.getElementById('ramanujanCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+            
+            const mode = document.getElementById('ramVizMode').value;
+            
+            if (mode === 'heatmap') {
+                const cellW = width / ramQ;
+                const cellH = height / ramQ;
+                const maxVal = Math.max(...ramValues.map(v => Math.abs(v.value)));
+                
+                ramValues.forEach(v => {
+                    const intensity = v.value / maxVal;
+                    const color = intensity > 0 ? 
+                        `rgb(0, ${Math.floor(255 * intensity)}, 0)` :
+                        `rgb(${Math.floor(255 * -intensity)}, 0, 0)`;
+                    
+                    ctx.fillStyle = color;
+                    ctx.fillRect((v.q - 1) * cellW, (v.n - 1) * cellH, cellW, cellH);
+                });
+            } else if (mode === 'fixed-n') {
+                const vals = ramValues.filter(v => v.n === ramN);
+                const maxVal = Math.max(...vals.map(v => Math.abs(v.value)));
+                const barWidth = width / vals.length;
+                const centerY = height / 2;
+                const scale = (height / 2 - 20) / maxVal;
+                
+                vals.forEach((v, i) => {
+                    const barHeight = v.value * scale;
+                    const color = v.value > 0 ? '#00ff00' : '#ff0064';
+                    ctx.fillStyle = color;
+                    ctx.fillRect(i * barWidth, centerY - barHeight, barWidth - 2, barHeight);
+                });
+                
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, centerY);
+                ctx.lineTo(width, centerY);
+                ctx.stroke();
+            }
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Ramanujan Sums c_q(${ramN})`, width / 2, 25);
+        }
+
+        function exportRamImage() {
+            const srcCanvas = document.getElementById('ramanujanCanvas');
+            const title = document.getElementById('ramExportTitle').value;
+            const resolution = parseFloat(document.getElementById('ramExportResolution').value);
+            
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = srcCanvas.width * resolution;
+            tempCanvas.height = srcCanvas.height * resolution + 100 * resolution;
+            const ctx = tempCanvas.getContext('2d');
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${24 * resolution}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(title, tempCanvas.width / 2, 50 * resolution);
+            
+            ctx.save();
+            ctx.translate(0, 100 * resolution);
+            ctx.scale(resolution, resolution);
+            ctx.drawImage(srcCanvas, 0, 0);
+            ctx.restore();
+            
+            const link = document.createElement('a');
+            link.download = `ramanujan_n${ramN}_${Date.now()}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function exportRamCSV() {
+            let csv = '# Ramanujan Sums Export\n#\nq,n,c_q(n)\n';
+            ramValues.forEach(v => {
+                csv += `${v.q},${v.n},${v.value}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = `ramanujan_${Date.now()}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+
+        // ===== CONJECTURE TESTER =====
+        let conjectureTestResults = [];
+
+        function initConjectureTester() {
+            // Initialized - users interact via buttons
+        }
+
+        function runConjectureTest() {
+            const type = document.getElementById('conjectureType').value;
+            const start = parseInt(document.getElementById('conjectureStart').value);
+            const end = parseInt(document.getElementById('conjectureEnd').value);
+            const pattern = document.getElementById('primePatternSelect').value;
+            const customCode = document.getElementById('conjectureCustom').value;
+            
+            conjectureTestResults = [];
+            let passed = 0;
+            let failed = 0;
+            
+            for (let n = start; n <= end; n++) {
+                let result = false;
+                
+                if (type === 'prime-pattern') {
+                    if (pattern === 'twin') {
+                        result = isPrime(n) && (n % 4 === 3) && isPrime(n + 2);
+                    } else if (pattern === 'sophie') {
+                        result = isPrime(n) && isPrime(2 * n + 1);
+                    } else if (pattern === 'safe') {
+                        result = isPrime(n) && n > 2 && isPrime((n - 1) / 2);
+                    }
+                } else if (type === 'custom' && customCode) {
+                    try {
+                        const testFunc = new Function('n', 'isPrime', 'phi', 'gcd', 'mobiusFunction', customCode);
+                        result = testFunc(n, isPrime, phi, gcd, mobiusFunction);
+                    } catch (e) {
+                        document.getElementById('conjectureResults').innerHTML = `<p style="color: #ff0064;">Error in custom code: ${e.message}</p>`;
+                        return;
+                    }
+                }
+                
+                conjectureTestResults.push({n, result});
+                if (result) passed++;
+                else failed++;
+            }
+            
+            const testsRun = conjectureTestResults.length;
+            const successRate = testsRun > 0 ? ((passed / testsRun) * 100).toFixed(1) : 0;
+            
+            document.getElementById('conjectureTestsRun').textContent = testsRun;
+            document.getElementById('conjecturePassed').textContent = passed;
+            document.getElementById('conjectureFailed').textContent = failed;
+            document.getElementById('conjectureSuccessRate').textContent = successRate + '%';
+            
+            let resultsHTML = `<p><strong>Test Complete:</strong> ${testsRun} values tested from ${start} to ${end}</p>`;
+            resultsHTML += `<p><strong>Passed:</strong> ${passed} | <strong>Failed:</strong> ${failed}</p>`;
+            
+            if (passed > 0) {
+                const passedValues = conjectureTestResults.filter(r => r.result).map(r => r.n);
+                resultsHTML += `<p><strong>Values satisfying conjecture:</strong> ${passedValues.slice(0, 20).join(', ')}${passedValues.length > 20 ? '...' : ''}</p>`;
+            }
+            
+            if (failed > 0 && failed < 10) {
+                const failedValues = conjectureTestResults.filter(r => !r.result).map(r => r.n);
+                resultsHTML += `<p><strong>Counterexamples:</strong> ${failedValues.join(', ')}</p>`;
+            }
+            
+            document.getElementById('conjectureResults').innerHTML = resultsHTML;
+            
+            drawConjectureVisualization();
+        }
+
+        function drawConjectureVisualization() {
+            const canvas = document.getElementById('conjectureCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+            
+            if (conjectureTestResults.length === 0) return;
+            
+            const barWidth = width / conjectureTestResults.length;
+            
+            conjectureTestResults.forEach((r, i) => {
+                ctx.fillStyle = r.result ? '#00ff00' : '#ff0064';
+                ctx.fillRect(i * barWidth, 0, barWidth - 1, height);
+            });
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Test Results (Green = Pass, Red = Fail)', width / 2, height - 10);
+        }
+
+        function clearConjectureResults() {
+            conjectureTestResults = [];
+            document.getElementById('conjectureResults').innerHTML = '<p style="opacity: 0.6; font-style: italic;">Run a test to see results...</p>';
+            document.getElementById('conjectureTestsRun').textContent = '0';
+            document.getElementById('conjecturePassed').textContent = '0';
+            document.getElementById('conjectureFailed').textContent = '0';
+            document.getElementById('conjectureSuccessRate').textContent = '0%';
+            
+            const canvas = document.getElementById('conjectureCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function exportConjectureResults() {
+            if (conjectureTestResults.length === 0) {
+                alert('No results to export. Run a test first.');
+                return;
+            }
+            
+            let csv = '# Conjecture Test Results\n#\nn,Passed\n';
+            conjectureTestResults.forEach(r => {
+                csv += `${r.n},${r.result}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = `conjecture_test_${Date.now()}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+
         window.addEventListener('load', () => {
             initializeTheme();
             updateRangeDisplays();
@@ -6735,6 +8043,7 @@
             initCyclotomic();
             initDirichlet();
             initMobius();
+            initFareyGraph();
         });
 
         // ===== COMPOSITE PROJECTION COROLLARY =====
