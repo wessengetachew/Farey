@@ -1910,6 +1910,22 @@
             <div style="padding: 30px; max-width: 1400px; margin: 0 auto;">
                 <h2 style="font-size: 28px; margin-bottom: 20px; text-align: center;">Modular Multiplication Table & Cayley Table</h2>
                 
+                <div style="background: rgba(0, 200, 255, 0.1); border: 2px solid #00c8ff; padding: 20px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px; color: #00c8ff;">Understanding the Multiplication Table</h3>
+                    <p style="margin-bottom: 12px;">
+                        This visualization displays the multiplication table for ℤ/mℤ, showing all products a × b (mod m). 
+                        The table reveals the algebraic structure of the ring and highlights special elements crucial to number theory.
+                    </p>
+                    <p style="margin-bottom: 12px;">
+                        <strong>Table Types:</strong>
+                    </p>
+                    <ul style="margin-left: 25px; margin-bottom: 12px;">
+                        <li><strong>Full Multiplication:</strong> Shows all elements {0, 1, 2, ..., m-1} and their products</li>
+                        <li><strong>Units Only (Cayley Table):</strong> Restricts to invertible elements, forming the group (ℤ/mℤ)×</li>
+                        <li><strong>Addition Table:</strong> Displays addition structure instead of multiplication</li>
+                    </ul>
+                </div>
+
                 <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
                     <h3 style="margin-bottom: 15px;">Configuration</h3>
                     
@@ -2009,6 +2025,99 @@
                 <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
                     <h3 style="margin-bottom: 15px;">Special Elements</h3>
                     <div id="mtSpecialElements" style="font-size: 13px; line-height: 1.6;"></div>
+                </div>
+                
+                <div style="background: rgba(255, 200, 0, 0.1); border: 2px solid #ffc800; padding: 20px; margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px; color: #ffc800;">Special Elements Explained</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <h4 style="color: #00ff00; margin-bottom: 8px;">Units (Invertible Elements)</h4>
+                        <p style="margin-bottom: 8px;">
+                            An element a ∈ ℤ/mℤ is a <strong>unit</strong> if there exists some b such that a × b ≡ 1 (mod m).
+                        </p>
+                        <p style="margin-bottom: 8px;">
+                            <strong>Key property:</strong> a is a unit ⟺ gcd(a, m) = 1
+                        </p>
+                        <p style="margin-bottom: 8px;">
+                            <strong>Count:</strong> There are exactly φ(m) units, where φ is Euler's totient function.
+                        </p>
+                        <p style="margin-bottom: 8px;">
+                            <strong>Example:</strong> In ℤ/12ℤ, the units are {1, 5, 7, 11} because gcd(1,12)=gcd(5,12)=gcd(7,12)=gcd(11,12)=1.
+                            For instance: 5 × 5 ≡ 25 ≡ 1 (mod 12), so 5 is its own inverse.
+                        </p>
+                        <p style="font-style: italic; opacity: 0.9;">
+                            The units form a group under multiplication called (ℤ/mℤ)×, the "group of units mod m".
+                        </p>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <h4 style="color: #ff0064; margin-bottom: 8px;">Zero Divisors</h4>
+                        <p style="margin-bottom: 8px;">
+                            An element a ≠ 0 is a <strong>zero divisor</strong> if there exists some b ≠ 0 such that a × b ≡ 0 (mod m).
+                        </p>
+                        <p style="margin-bottom: 8px;">
+                            <strong>Key property:</strong> a is a zero divisor ⟺ gcd(a, m) > 1 and a ≠ 0
+                        </p>
+                        <p style="margin-bottom: 8px;">
+                            <strong>Example:</strong> In ℤ/12ℤ, consider a=3 and b=4: 3 × 4 = 12 ≡ 0 (mod 12).
+                            So both 3 and 4 are zero divisors. Similarly, 6 × 2 ≡ 0 (mod 12).
+                        </p>
+                        <p style="font-style: italic; opacity: 0.9;">
+                            Zero divisors prevent ℤ/mℤ from being an integral domain when m is composite. 
+                            A ring has zero divisors ⟺ it's not an integral domain ⟺ the modulus is composite.
+                        </p>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <h4 style="color: #ffff00; margin-bottom: 8px;">Idempotents</h4>
+                        <p style="margin-bottom: 8px;">
+                            An element a is <strong>idempotent</strong> if a² ≡ a (mod m), meaning multiplying by itself gives itself.
+                        </p>
+                        <p style="margin-bottom: 8px;">
+                            <strong>Always present:</strong> 0 and 1 are always idempotent (0² = 0 and 1² = 1).
+                        </p>
+                        <p style="margin-bottom: 8px;">
+                            <strong>Example:</strong> In ℤ/12ℤ, check a=4: 4² = 16 ≡ 4 (mod 12). So 4 is idempotent.
+                            The complete set of idempotents in ℤ/12ℤ is {0, 1, 4, 9}.
+                        </p>
+                        <p style="margin-bottom: 8px;">
+                            <strong>Connection to factorization:</strong> The number of idempotents equals 2^k where k is the number of 
+                            distinct prime factors of m. For m=12=2²×3, we have k=2 distinct primes, giving 2²=4 idempotents.
+                        </p>
+                        <p style="font-style: italic; opacity: 0.9;">
+                            Idempotents correspond to ways of "splitting" the ring. In ℤ/12ℤ, the idempotent 4 acts like a 
+                            "partial identity" that selects elements divisible by certain prime factors.
+                        </p>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <h4 style="color: #ff00ff; margin-bottom: 8px;">Nilpotents</h4>
+                        <p style="margin-bottom: 8px;">
+                            An element a is <strong>nilpotent</strong> if some power of a equals zero: a^k ≡ 0 (mod m) for some k > 0.
+                        </p>
+                        <p style="margin-bottom: 8px;">
+                            <strong>Example:</strong> In ℤ/12ℤ, consider a=6: 6² = 36 = 3×12 ≡ 0 (mod 12). So 6 is nilpotent with index 2.
+                        </p>
+                        <p style="font-style: italic; opacity: 0.9;">
+                            Nilpotents only exist when m has a repeated prime factor (like 4, 8, 9, 12, 16, ...).
+                            In a reduced ring (no nilpotents), m must be square-free.
+                        </p>
+                    </div>
+                    
+                    <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-left: 4px solid #00ffff;">
+                        <h4 style="color: #00ffff; margin-bottom: 8px;">Fundamental Theorem</h4>
+                        <p style="margin-bottom: 8px;">
+                            Every element in ℤ/mℤ is <strong>either</strong> a unit <strong>or</strong> a zero divisor (or zero itself).
+                        </p>
+                        <p style="margin-bottom: 8px;">
+                            <strong>Why?</strong> By Bézout's identity, if gcd(a,m)=1, then there exist x,y with ax+my=1, 
+                            so ax≡1 (mod m) and a is a unit. Otherwise gcd(a,m)=d>1, so a×(m/d)≡0 (mod m) and a is a zero divisor.
+                        </p>
+                        <p style="font-style: italic;">
+                            This dichotomy is fundamental: the ring ℤ/mℤ splits into units (which form a group) 
+                            and zero divisors (which prevent the ring from being a field unless m is prime).
+                        </p>
+                    </div>
                 </div>
                 
                 <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); padding: 25px;">
@@ -4266,11 +4375,15 @@
                     if (isOpen) totalOpen++;
                     else totalClosed++;
 
+                    // Gap analysis: check if both r and r+gap are coprime (open channels)
                     let admissibleGaps = [];
                     if (isOpen && gaps.length > 0) {
                         gaps.forEach(gap => {
+                            // For gap g, we need both r and r+g to be coprime to m
                             const rPlusG = (r + gap) % m;
-                            if (gcd(rPlusG, m) === 1) {
+                            const rPlusGGcd = gcd(rPlusG, m);
+                            // Both r and r+gap must be open (coprime)
+                            if (rPlusGGcd === 1) {
                                 admissibleGaps.push(gap);
                             }
                         });
@@ -5029,11 +5142,15 @@
                     if (isOpen) totalOpen++;
                     else totalClosed++;
 
+                    // Gap analysis: check if both r and r+gap are coprime (open channels)
                     let admissibleGaps = [];
                     if (enableGap && isOpen) {
                         gaps.forEach(gap => {
+                            // For gap g, we need both r and r+g to be coprime to m
                             const rPlusG = (r + gap) % m;
-                            if (gcd(rPlusG, m) === 1) {
+                            const rPlusGGcd = gcd(rPlusG, m);
+                            // Both r and r+gap must be open (coprime)
+                            if (rPlusGGcd === 1) {
                                 admissibleGaps.push(gap);
                             }
                         });
@@ -5180,11 +5297,15 @@
                     if (isOpen) totalOpen++;
                     else totalClosed++;
 
+                    // Gap analysis: check if both r and r+gap are coprime (open channels)
                     let admissibleGaps = [];
                     if (isOpen && gaps.length > 0) {
                         gaps.forEach(gap => {
+                            // For gap g, we need both r and r+g to be coprime to m
                             const rPlusG = (r + gap) % m;
-                            if (gcd(rPlusG, m) === 1) {
+                            const rPlusGGcd = gcd(rPlusG, m);
+                            // Both r and r+gap must be open (coprime)
+                            if (rPlusGGcd === 1) {
                                 admissibleGaps.push(gap);
                             }
                         });
