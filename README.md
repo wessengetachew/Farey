@@ -589,6 +589,15 @@
             transform: translateY(-1px);
         }
 
+        .export-share {
+            bottom: 270px;
+            background: #9C27B0;
+        }
+
+        .export-share:hover {
+            background: #7B1FA2 !important;
+        }
+
         .preset-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -1423,6 +1432,11 @@
                 <!-- Floating Update Button -->
                 <button class="floating-update-btn" onclick="updateVisualization()" title="Update Visualization">
                     ⟳ Update
+                </button>
+
+                <!-- Floating Share Button -->
+                <button class="floating-export-btn export-share" onclick="showShareDialog()" title="Share Configuration">
+                    📤 SHARE
                 </button>
 
                 <div class="canvas-container" style="display: flex; gap: 20px; align-items: flex-start;">
