@@ -5737,6 +5737,31 @@
                 }
             }
 
+            // Get spiral settings
+            const perRingSpiral = parseFloat(document.getElementById('perRingSpiral').value);
+            const spiralMode = document.getElementById('spiralMode').value;
+            
+            // Calculate spiral rotation for each modulus
+            function getSpiralRotation(m) {
+                const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+                const ringIndex = moduli.indexOf(m);
+                if (ringIndex === -1) return 0;
+                
+                let spiralAngle = 0;
+                if (spiralMode === 'linear') {
+                    spiralAngle = ringIndex * perRingSpiral;
+                } else if (spiralMode === 'fibonacci') {
+                    // Fibonacci spiral: each ring rotates by golden angle
+                    const goldenAngle = 137.5; // degrees
+                    spiralAngle = ringIndex * perRingSpiral * (goldenAngle / 360);
+                } else if (spiralMode === 'logarithmic') {
+                    spiralAngle = perRingSpiral * Math.log(ringIndex + 1);
+                } else if (spiralMode === 'sine') {
+                    spiralAngle = perRingSpiral * Math.sin(ringIndex * Math.PI / 10);
+                }
+                return spiralAngle;
+            }
+            
             // Draw points (with batching for performance)
             const batchSize = performanceMode ? 5000 : pointsData.length;
             
@@ -5750,7 +5775,8 @@
                     if (!showClosed && !point.isOpen) continue;
 
                 const modRot = modRotations[point.m] || 0;
-                const totalAngle = point.angle + (modRot * Math.PI / 180);
+                const spiralRot = getSpiralRotation(point.m);
+                const totalAngle = point.angle + (modRot * Math.PI / 180) + (spiralRot * Math.PI / 180);
                 const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
                 const x = r * Math.cos(totalAngle);
                 const y = r * Math.sin(totalAngle);
