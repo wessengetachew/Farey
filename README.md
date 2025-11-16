@@ -6849,6 +6849,244 @@
             updateVisualization();
         }
 
+        // ===== URL SHARING SYSTEM =====
+        function getConfigURL() {
+            const config = {
+                // Modulus Configuration
+                modSelectionMode: document.getElementById('modSelectionMode').value,
+                modMin: document.getElementById('modMin').value,
+                modMax: document.getElementById('modMax').value,
+                modStep: document.getElementById('modStep').value,
+                customModuli: document.getElementById('customModuli').value,
+                sequenceMax: document.getElementById('sequenceMax').value,
+                sequenceTerms: document.getElementById('sequenceTerms').value,
+                
+                // Display Settings
+                displayMode: document.getElementById('displayMode').value,
+                angularMapping: document.getElementById('angularMapping').value,
+                pointSize: document.getElementById('pointSize').value,
+                showOpen: document.getElementById('showOpen').checked ? '1' : '0',
+                showClosed: document.getElementById('showClosed').checked ? '1' : '0',
+                showRingLines: document.getElementById('showRingLines').checked ? '1' : '0',
+                
+                // Coloring
+                openColorMode: document.getElementById('openColorMode').value,
+                closedColorMode: document.getElementById('closedColorMode').value,
+                baseOpenColor: document.getElementById('baseOpenColor').value,
+                baseClosedColor: document.getElementById('baseClosedColor').value,
+                
+                // Rotation
+                globalSpeed: document.getElementById('globalSpeed').value,
+                modRotSpeed: document.getElementById('modRotSpeed').value,
+                perRingSpiral: document.getElementById('perRingSpiral').value,
+                spiralMode: document.getElementById('spiralMode').value,
+                invertModOrder: document.getElementById('invertModOrder').checked ? '1' : '0',
+                
+                // Gap Analysis
+                enableGapAnalysis: document.getElementById('enableGapAnalysis').checked ? '1' : '0',
+                gapValues: document.getElementById('gapValues').value,
+                showGapLines: document.getElementById('showGapLines').checked ? '1' : '0',
+                onlyPrimeGaps: document.getElementById('onlyPrimeGaps').checked ? '1' : '0',
+                highlightAdmissible: document.getElementById('highlightAdmissible').checked ? '1' : '0',
+                
+                // Connections
+                enableConnections: document.getElementById('enableConnections').checked ? '1' : '0',
+                connectionMode: document.getElementById('connectionMode').value,
+                
+                // Theorem Mode
+                theoremMode: document.getElementById('theoremMode').value
+            };
+            
+            const params = new URLSearchParams();
+            Object.keys(config).forEach(key => {
+                if (config[key]) params.set(key, config[key]);
+            });
+            
+            return window.location.origin + window.location.pathname + '?' + params.toString();
+        }
+
+        function loadFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            
+            if (params.size === 0) return; // No parameters to load
+            
+            console.log('Loading configuration from URL...');
+            
+            // Helper function to safely set value
+            function safeSet(id, value) {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (el.type === 'checkbox') {
+                        el.checked = value === '1';
+                    } else {
+                        el.value = value;
+                    }
+                    // Trigger change event for dependent UI updates
+                    el.dispatchEvent(new Event('change'));
+                }
+            }
+            
+            // Load all parameters
+            params.forEach((value, key) => {
+                safeSet(key, value);
+            });
+            
+            // Update displays that depend on range inputs
+            updateRangeDisplays();
+            
+            // Show notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #00ff00;
+                color: #000000;
+                padding: 15px 30px;
+                border-radius: 5px;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 4px 15px rgba(0,255,0,0.5);
+            `;
+            notification.textContent = '✓ Configuration loaded from URL';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transition = 'opacity 0.5s';
+                notification.style.opacity = '0';
+                setTimeout(() => document.body.removeChild(notification), 500);
+            }, 2000);
+            
+            // Update visualization with loaded config
+            setTimeout(() => {
+                updateVisualization();
+            }, 100);
+        }
+
+        function copyConfigToClipboard() {
+            const url = getConfigURL();
+            
+            // Modern clipboard API
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(() => {
+                    showCopyNotification('✓ Share link copied to clipboard!');
+                }).catch(err => {
+                    // Fallback for clipboard errors
+                    fallbackCopyToClipboard(url);
+                });
+            } else {
+                // Fallback for older browsers
+                fallbackCopyToClipboard(url);
+            }
+        }
+        
+        function fallbackCopyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showCopyNotification('✓ Share link copied to clipboard!');
+            } catch (err) {
+                showCopyNotification('❌ Could not copy. Please copy manually: ' + text.substring(0, 50) + '...', true);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        function showCopyNotification(message, isError = false) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${isError ? '#ff0064' : '#00ff00'};
+                color: ${isError ? '#ffffff' : '#000000'};
+                padding: 15px 30px;
+                border-radius: 5px;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 4px 15px ${isError ? 'rgba(255,0,100,0.5)' : 'rgba(0,255,0,0.5)'};
+                max-width: 80%;
+                text-align: center;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transition = 'opacity 0.5s';
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 500);
+            }, isError ? 4000 : 2000);
+        }
+        
+        function showShareDialog() {
+            const url = getConfigURL();
+            
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.85);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            dialog.innerHTML = `
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); 
+                     padding: 30px; max-width: 600px; width: 90%; border-radius: 0;">
+                    <h3 style="margin: 0 0 20px 0; color: var(--text-primary); text-transform: uppercase; letter-spacing: 1px;">
+                        Share Configuration
+                    </h3>
+                    <p style="margin-bottom: 15px; color: var(--text-primary);">
+                        Copy this URL to share your exact visualization settings:
+                    </p>
+                    <input type="text" readonly value="${url}" 
+                           style="width: 100%; padding: 12px; margin-bottom: 20px; background: var(--bg-primary); 
+                                  color: var(--text-primary); border: 1px solid var(--border-color); 
+                                  font-family: monospace; font-size: 12px;"
+                           onclick="this.select()">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button onclick="copyConfigToClipboard(); document.body.removeChild(this.closest('div').parentElement.parentElement)"
+                                style="padding: 12px; background: #00ff00; color: #000000; border: none; 
+                                       font-weight: bold; cursor: pointer; text-transform: uppercase;">
+                            📋 Copy Link
+                        </button>
+                        <button onclick="document.body.removeChild(this.parentElement.parentElement.parentElement)"
+                                style="padding: 12px; background: var(--bg-primary); color: var(--text-primary); 
+                                       border: 1px solid var(--border-color); font-weight: bold; cursor: pointer; 
+                                       text-transform: uppercase;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(dialog);
+            
+            // Close on background click
+            dialog.addEventListener('click', (e) => {
+                if (e.target === dialog) {
+                    document.body.removeChild(dialog);
+                }
+            });
+        }
+
         function exportCSV() {
             const csvMode = document.getElementById('csvExportMode').value;
             const includeHeader = document.getElementById('csvIncludeHeader').checked;
