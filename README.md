@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -5845,15 +5845,14 @@
                         pointsByMod[p.m][p.r] = p;
                     });
 
-                    // Draw lines for this gap
+                    // Draw lines for this gap - within each modulus, connect r to (r+gap) mod m
                     pointsData.forEach(point => {
                         if (!point.isOpen) return;
                         
                         // If only prime gaps is enabled, check if current residue is prime
                         if (onlyPrimeGaps && !isPrime(point.r)) return;
                         
-                        if (!point.admissibleGaps.includes(gap)) return;
-
+                        // Calculate target residue within the same modulus
                         const rPlusG = (point.r + gap) % point.m;
                         const targetPoint = pointsByMod[point.m] && pointsByMod[point.m][rPlusG];
                         
@@ -6455,6 +6454,14 @@
                 alert('Computation already in progress. Please wait...');
                 return;
             }
+            
+            // Force recalculation of gap analysis
+            const enableGap = document.getElementById('enableGapAnalysis');
+            if (enableGap && enableGap.checked) {
+                // Update gap color pickers to ensure they're current
+                updateGapColorPickers();
+            }
+            
             generatePointsData();
             if (!isComputing) {
                 if (currentRenderer === 'canvas2d') {
