@@ -1310,12 +1310,42 @@
                                 <option value="first-hardy">First Hardy-Littlewood (2,6,8)</option>
                                 <option value="admissible-5">Admissible 5-tuple (2,6,8,12)</option>
                                 <option value="sexy-pair">Sexy Pair (6,12)</option>
+                                <option value="powers-of-2">Powers of 2: 2^n</option>
+                                <option value="even-numbers">Even Numbers: 2n</option>
+                                <option value="multiples-6">Multiples of 6: 6n</option>
                             </select>
+                        </div>
+
+                        <div class="control-group" id="gapRangeConfig" style="display: none;">
+                            <label>Range Configuration</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                                <div>
+                                    <label style="font-size: 10px;">Start n</label>
+                                    <input type="number" id="gapRangeStart" value="0" min="0" max="20">
+                                </div>
+                                <div>
+                                    <label style="font-size: 10px;">End n</label>
+                                    <input type="number" id="gapRangeEnd" value="5" min="0" max="20">
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <div>
+                                    <label style="font-size: 10px;">Multiplier</label>
+                                    <input type="number" id="gapMultiplier" value="2" min="1" max="100">
+                                </div>
+                                <div>
+                                    <label style="font-size: 10px;">Max n Value</label>
+                                    <input type="number" id="gapMaxN" value="10" min="1" max="50">
+                                </div>
+                            </div>
+                            <button onclick="generateGapRange()" style="width: 100%; margin-top: 8px; padding: 8px; font-size: 11px;">
+                                Generate Gap Range
+                            </button>
                         </div>
 
                         <div class="control-group">
                             <label>Gap Values (comma-separated)</label>
-                            <input type="text" id="gapValues" value="2" placeholder="e.g., 2,4,6">
+                            <input type="text" id="gapValues" value="2" placeholder="e.g., 2,4,6 or use range generator">
                         </div>
 
                         <div class="control-group">
