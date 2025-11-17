@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7375,7 +7375,7 @@
                 'quadratic-residues': [3, 'quadraticResiduesTab', updateQuadraticVisualization],
                 'primitive-roots': [4, 'primitiveRootsTab', updatePrimitiveRootsVisualization],
                 'multiplication-table': [5, 'multiplicationTableTab', updateMultiplicationTable],
-                'crt-visualizer': [6, 'crtVisualizerTab', initCRT],
+                'crt-visualizer': [6, 'crtVisualizerTab', null],
                 'cyclotomic': [7, 'cyclotomicTab', updateCyclotomicVisualization],
                 'dirichlet': [8, 'dirichletTab', updateDirichletVisualization],
                 'mobius': [9, 'mobiusTab', updateMobiusVisualization]
@@ -7390,8 +7390,16 @@
                 const tabContent = document.getElementById(tabId);
                 if (tabContent) {
                     tabContent.classList.add('active');
+                    
+                    // Execute tab-specific initialization function
+                    if (initFunc) {
+                        try {
+                            initFunc();
+                        } catch (e) {
+                            console.error(`Error initializing ${tab}:`, e);
+                        }
+                    }
                 }
-                if (initFunc) initFunc();
             }
         }
 
@@ -7399,15 +7407,58 @@
             initializeTheme();
             updateRangeDisplays();
             updateGapColorPickers();
+            
+            // Initialize main visualization tab
             updateVisualization();
-            initCompositeProjection();
-            initQuadraticResidues();
-            initPrimitiveRoots();
-            initMultiplicationTable();
-            initCRT();
-            initCyclotomic();
-            initDirichlet();
-            initMobius();
+            
+            // Initialize all other tabs
+            try {
+                initCompositeProjection();
+            } catch (e) {
+                console.error('Failed to init Composite Projection:', e);
+            }
+            
+            try {
+                initQuadraticResidues();
+            } catch (e) {
+                console.error('Failed to init Quadratic Residues:', e);
+            }
+            
+            try {
+                initPrimitiveRoots();
+            } catch (e) {
+                console.error('Failed to init Primitive Roots:', e);
+            }
+            
+            try {
+                initMultiplicationTable();
+            } catch (e) {
+                console.error('Failed to init Multiplication Table:', e);
+            }
+            
+            try {
+                initCRT();
+            } catch (e) {
+                console.error('Failed to init CRT:', e);
+            }
+            
+            try {
+                initCyclotomic();
+            } catch (e) {
+                console.error('Failed to init Cyclotomic:', e);
+            }
+            
+            try {
+                initDirichlet();
+            } catch (e) {
+                console.error('Failed to init Dirichlet:', e);
+            }
+            
+            try {
+                initMobius();
+            } catch (e) {
+                console.error('Failed to init Mobius:', e);
+            }
         });
 
         // ===== COMPOSITE PROJECTION COROLLARY =====
