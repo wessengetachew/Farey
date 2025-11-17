@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -4857,6 +4857,7 @@
         syncInputs('globalSpeed', 'globalSpeedNum');
         syncInputs('modRotSpeed', 'modRotSpeedNum');
         syncInputs('perRingSpiral', 'perRingSpiralNum');
+        syncInputs('perRingSpiral', 'perRingSpiralNum');
         syncInputs('gradientStrength', 'gradientStrengthNum');
         syncInputs('trackerSize', 'trackerSizeNum');
         syncInputs('pointSize', 'pointSizeNum');
@@ -4867,6 +4868,48 @@
         syncInputs('gapOpacity', 'gapOpacityNum');
         syncInputs('gapLineWidth', 'gapLineWidthNum');
         syncInputs('connLineWidth', 'connLineWidthNum');
+        
+        function setSpiralPreset(preset) {
+            const spiralSlider = document.getElementById('perRingSpiral');
+            const spiralNum = document.getElementById('perRingSpiralNum');
+            const spiralMode = document.getElementById('spiralMode');
+            
+            switch(preset) {
+                case 'gentle':
+                    spiralSlider.value = 15;
+                    spiralNum.value = 15;
+                    spiralMode.value = 'linear';
+                    break;
+                case 'moderate':
+                    spiralSlider.value = 45;
+                    spiralNum.value = 45;
+                    spiralMode.value = 'linear';
+                    break;
+                case 'strong':
+                    spiralSlider.value = 90;
+                    spiralNum.value = 90;
+                    spiralMode.value = 'linear';
+                    break;
+                case 'golden':
+                    spiralSlider.value = 30;
+                    spiralNum.value = 30;
+                    spiralMode.value = 'fibonacci';
+                    break;
+                case 'galaxy':
+                    spiralSlider.value = 60;
+                    spiralNum.value = 60;
+                    spiralMode.value = 'logarithmic';
+                    break;
+                case 'dna':
+                    spiralSlider.value = 45;
+                    spiralNum.value = 45;
+                    spiralMode.value = 'sine';
+                    break;
+            }
+            
+            updateRangeDisplays();
+            autoStartAnimation();
+        }
 
         function updateAllStats(total, open, closed, ratio, avgPhi, moduli, primes, composites, avgPoints, admissible, admRatio, error, convergence) {
             document.getElementById('statTotal').textContent = total.toLocaleString();
@@ -5059,17 +5102,21 @@
             const autoRotate = document.getElementById('autoRotate').checked;
             const globalSpeed = parseFloat(document.getElementById('globalSpeed').value);
             const modRotSpeed = parseFloat(document.getElementById('modRotSpeed').value);
+            const perRingSpiral = parseFloat(document.getElementById('perRingSpiral').value);
             
-            if (autoRotate && (globalSpeed > 0 || modRotSpeed > 0)) {
+            if (autoRotate && (globalSpeed > 0 || modRotSpeed > 0 || perRingSpiral !== 0)) {
                 if (!animationId) {
                     startAnimation();
                 }
-            } else if (globalSpeed === 0 && modRotSpeed === 0) {
-                // Stop animation and reset to 0 when both sliders return to 0
+            } else if (globalSpeed === 0 && modRotSpeed === 0 && perRingSpiral === 0) {
+                // Stop animation and reset to 0 when all sliders return to 0
                 if (animationId) {
                     stopAnimation();
                 }
             }
+            
+            // Always redraw when sliders change
+            drawVisualization();
         }
 
         function toggleAnimation() {
@@ -5098,6 +5145,8 @@
         document.getElementById('globalSpeedNum').addEventListener('input', autoStartAnimation);
         document.getElementById('modRotSpeed').addEventListener('input', autoStartAnimation);
         document.getElementById('modRotSpeedNum').addEventListener('input', autoStartAnimation);
+        document.getElementById('perRingSpiral').addEventListener('input', autoStartAnimation);
+        document.getElementById('perRingSpiralNum').addEventListener('input', autoStartAnimation);
 
         document.getElementById('invertModOrder').addEventListener('change', () => {
             drawVisualization();
@@ -5106,6 +5155,7 @@
         function updateRangeDisplays() {
             document.getElementById('globalSpeedDisplay').textContent = document.getElementById('globalSpeed').value;
             document.getElementById('modRotSpeedDisplay').textContent = document.getElementById('modRotSpeed').value;
+            document.getElementById('perRingSpiralDisplay').textContent = document.getElementById('perRingSpiral').value;
             document.getElementById('gradientStrengthDisplay').textContent = document.getElementById('gradientStrength').value;
             document.getElementById('pointSizeDisplay').textContent = document.getElementById('pointSize').value;
             document.getElementById('trackerSizeDisplay').textContent = document.getElementById('trackerSize').value;
@@ -5741,6 +5791,17 @@
             // Draw points (with batching for performance)
             const batchSize = performanceMode ? 5000 : pointsData.length;
             
+            // Get spiral settings
+            const perRingSpiral = parseFloat(document.getElementById('perRingSpiral').value);
+            const spiralMode = document.getElementById('spiralMode').value;
+            
+            // Build moduli list to determine ring indices
+            const moduli = [...new Set(pointsData.map(p => p.m))].sort((a, b) => a - b);
+            const modIndexMap = {};
+            moduli.forEach((m, idx) => {
+                modIndexMap[m] = idx;
+            });
+            
             for (let batchStart = 0; batchStart < pointsData.length; batchStart += batchSize) {
                 const batchEnd = Math.min(batchStart + batchSize, pointsData.length);
                 
@@ -5750,8 +5811,28 @@
                     if (!showOpen && point.isOpen) continue;
                     if (!showClosed && !point.isOpen) continue;
 
+                // Calculate spiral rotation based on ring index
+                // ringIndex = 0 for innermost, increasing outward
+                const ringIndex = modIndexMap[point.m];
+                let spiralRotation = 0;
+                
+                if (spiralMode === 'linear') {
+                    // Multiplicative accumulation: angle × ringIndex
+                    spiralRotation = perRingSpiral * ringIndex;
+                } else if (spiralMode === 'fibonacci') {
+                    // Golden angle spiral: φ × angle × ringIndex
+                    spiralRotation = perRingSpiral * ringIndex * 1.618;
+                } else if (spiralMode === 'logarithmic') {
+                    // Logarithmic growth: angle × log(ringIndex + 1)
+                    spiralRotation = perRingSpiral * Math.log(ringIndex + 2) * 20;
+                } else if (spiralMode === 'sine') {
+                    // Sine wave modulation
+                    spiralRotation = perRingSpiral * Math.sin(ringIndex * Math.PI / 10) * ringIndex;
+                }
+                
+                // Total angle = base angle + individual mod rotation + spiral rotation
                 const modRot = modRotations[point.m] || 0;
-                const totalAngle = point.angle + (modRot * Math.PI / 180);
+                const totalAngle = point.angle + (modRot * Math.PI / 180) + (spiralRotation * Math.PI / 180);
                 const r = displayMode === 'unit' ? maxRadius : getRadius(point.m);
                 const x = r * Math.cos(totalAngle);
                 const y = r * Math.sin(totalAngle);
